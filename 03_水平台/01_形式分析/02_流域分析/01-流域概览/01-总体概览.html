@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>湖北省水生态环境综合管理 - 总体概览</title>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography,container-queries"></script>
+
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#3b82f6",
+                        "background-light": "#f4f7fb",
+                        "background-dark": "#0f172a",
+                    },
+                    fontFamily: {
+                        display: ["Inter", "system-ui", "-apple-system", "sans-serif"],
+                    },
+                },
+            },
+        };
+    </script>
+
+    <style type="text/tailwindcss">
+        body { font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif; }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+        .section-title-bar {
+            width: 4px;
+            height: 16px;
+            background: linear-gradient(to bottom, #93c5fd, #3b82f6);
+            border-radius: 4px;
+            margin-right: 8px;
+        }
+
+        #sidebar { transition: width 0.3s ease; }
+        .sidebar-text { transition: opacity 0.2s ease; white-space: nowrap; }
+        .hide-text .sidebar-text { display: none; opacity: 0; }
+        .collapsed-sidebar .nav-item { justify-content: center; padding-left: 0; padding-right: 0; }
+        .collapsed-sidebar .nav-item span.material-symbols-outlined { margin-right: 0; }
+
+        .card-shadow { box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1); }
+
+        .chart-action-icon {
+            @apply text-lg cursor-pointer text-slate-400 hover:text-primary transition-colors p-1.5 rounded hover:bg-blue-50 dark:hover:bg-slate-800;
+        }
+
+        /* 月份切换按钮样式 */
+        .toggle-btn {
+            @apply h-full px-4 flex items-center justify-center text-[13px] font-bold rounded-md transition-colors cursor-pointer select-none;
+        }
+        .toggle-btn.active { @apply bg-primary text-white shadow-sm; }
+        .toggle-btn.inactive { @apply text-slate-500 hover:text-slate-700 hover:bg-slate-200 dark:text-slate-400 dark:hover:bg-slate-700/50; }
+
+        /* 地图卡片内部数据文本 */
+        .map-stat-text { @apply text-[12px] text-slate-600 dark:text-slate-300; }
+        .map-stat-val { @apply font-bold ml-1; }
+        .val-good { @apply bg-emerald-100 text-emerald-700 px-1 rounded-sm; }
+        .val-bad { @apply bg-red-100 text-red-700 px-1 rounded-sm; }
+        .val-neutral { @apply bg-slate-100 text-slate-600 px-1 rounded-sm; }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-800 dark:text-slate-100 h-screen overflow-hidden flex flex-col">
+
+<header class="bg-primary h-14 flex items-center justify-between px-4 text-white shrink-0 shadow-md z-50">
+    <div class="flex items-center space-x-3">
+        <div class="w-8 h-8 bg-white rounded-full flex items-center justify-center">
+            <span class="material-symbols-outlined text-primary text-xl">water_drop</span>
+        </div>
+        <h1 class="text-xl font-bold tracking-tight">湖北省水生态环境综合管理</h1>
+    </div>
+    <nav class="flex h-full">
+        <a class="px-6 flex items-center space-x-2 bg-white/20 border-b-2 border-white transition-colors" href="#">
+            <span class="material-symbols-outlined text-[18px]">home</span>
+            <span class="text-sm font-bold">总体概览</span>
+        </a>
+        <a class="px-6 flex items-center space-x-2 hover:bg-white/10 transition-colors" href="#">
+            <span class="material-symbols-outlined text-[18px]">assessment</span>
+            <span class="text-sm">形势分析</span>
+        </a>
+        <a class="px-6 flex items-center space-x-2 hover:bg-white/10 transition-colors" href="#">
+            <span class="material-symbols-outlined text-[18px]">map</span>
+            <span class="text-sm">空间分析</span>
+        </a>
+        <a class="px-6 flex items-center space-x-2 hover:bg-white/10 transition-colors" href="#">
+            <span class="material-symbols-outlined text-[18px]">waves</span>
+            <span class="text-sm">水污染源</span>
+        </a>
+        <a class="px-6 flex items-center space-x-2 hover:bg-white/10 transition-colors" href="#">
+            <span class="material-symbols-outlined text-[18px]">report_problem</span>
+            <span class="text-sm">问题聚焦</span>
+        </a>
+        <a class="px-6 flex items-center space-x-2 hover:bg-white/10 transition-colors" href="#">
+            <span class="material-symbols-outlined text-[18px]">apps</span>
+            <span class="text-sm">专题应用</span>
+        </a>
+    </nav>
+    <div class="flex items-center space-x-6">
+        <div class="flex items-center space-x-2 text-sm opacity-90">
+            <span class="material-symbols-outlined text-[18px]">public</span>
+            <span>碧水荆灵</span>
+        </div>
+        <div class="flex items-center space-x-2 text-sm cursor-pointer hover:opacity-80">
+            <span class="material-symbols-outlined text-[18px]">account_circle</span>
+            <span>wangyunpeng</span>
+        </div>
+    </div>
+</header>
+
+<div class="flex flex-1 overflow-hidden">
+    <aside id="sidebar" class="w-[270px] bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 flex flex-col shrink-0 z-40">
+        <div class="flex-1 py-4 overflow-y-auto custom-scrollbar flex flex-col gap-1">
+            <div class="mb-2 px-2">
+                <button class="nav-item w-full flex items-center justify-between px-4 py-3 text-[16px] font-medium text-blue-700 bg-blue-50/50 dark:bg-blue-900/10 rounded-lg group transition-colors" onclick="toggleSubmenu('submenu-overview')">
+                    <div class="flex items-center">
+                        <span class="material-symbols-outlined mr-3 text-blue-600">dashboard</span>
+                        <span class="sidebar-text font-bold text-slate-800 dark:text-white">流域概览</span>
+                    </div>
+                    <span class="material-symbols-outlined text-sm text-blue-600 sidebar-chevron transition-transform duration-200" style="transform: rotate(180deg);">expand_more</span>
+                </button>
+                <div id="submenu-overview" class="mt-1 space-y-1 overflow-hidden transition-all duration-300">
+                    <a class="flex items-center px-12 py-2.5 text-[14px] text-blue-700 bg-blue-50 dark:bg-blue-900/30 rounded-lg group transition-all font-bold relative" href="#">
+                        <span class="w-1.5 h-1.5 bg-blue-600 rounded-full mr-3 shrink-0"></span>
+                        <span class="sidebar-text">总体概览</span>
+                        <div class="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-5 bg-blue-600 rounded-r-full"></div>
+                    </a>
+                    <a class="flex items-center px-12 py-2.5 text-[14px] text-slate-600 dark:text-slate-400 hover:text-blue-600 hover:bg-blue-50/50 dark:hover:bg-blue-900/20 transition-all rounded-lg group" href="#">
+                        <span class="w-1.5 h-1.5 bg-slate-300 dark:bg-slate-600 group-hover:bg-blue-600 rounded-full mr-3 shrink-0 transition-colors"></span>
+                        <span class="sidebar-text">总体分析</span>
+                    </a>
+                    <a class="flex items-center px-12 py-2.5 text-[14px] text-slate-600 dark:text-slate-400 hover:text-blue-600 hover:bg-blue-50/50 dark:hover:bg-blue-900/20 transition-all rounded-lg group" href="#">
+                        <span class="w-1.5 h-1.5 bg-slate-300 dark:bg-slate-600 group-hover:bg-blue-600 rounded-full mr-3 shrink-0 transition-colors"></span>
+                        <span class="sidebar-text">空间分析</span>
+                    </a>
+                </div>
+            </div>
+
+            <div class="mb-2 px-2">
+                <button class="nav-item w-full flex items-center justify-between px-4 py-3 text-[16px] font-medium text-slate-600 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg group transition-colors" onclick="toggleSubmenu('submenu-analysis')">
+                    <div class="flex items-center">
+                        <span class="material-symbols-outlined mr-3 text-slate-400 group-hover:text-primary">analytics</span>
+                        <span class="sidebar-text">流域分析</span>
+                    </div>
+                    <span class="material-symbols-outlined text-sm text-slate-400 sidebar-chevron transition-transform duration-200" style="transform: rotate(0deg);">expand_more</span>
+                </button>
+                <div id="submenu-analysis" class="mt-1 space-y-1 overflow-hidden transition-all duration-300" style="max-height: 0;">
+                    <a class="flex items-center px-12 py-2.5 text-[14px] text-slate-600 dark:text-slate-400 hover:text-blue-600 hover:bg-blue-50/50 dark:hover:bg-blue-900/20 transition-all rounded-lg group" href="#">
+                        <span class="w-1.5 h-1.5 bg-slate-300 dark:bg-slate-600 group-hover:bg-blue-600 rounded-full mr-3 shrink-0 transition-colors"></span>
+                        <span class="sidebar-text">水环境</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <button id="toggleSidebarBtn" class="h-12 border-t border-slate-200 dark:border-slate-800 flex items-center justify-center space-x-2 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all text-slate-500 hover:text-primary group">
+            <span id="toggleIcon" class="material-symbols-outlined text-xl transition-transform duration-300">chevron_left</span>
+            <span class="sidebar-text text-sm font-medium tracking-wide">收起侧栏</span>
+        </button>
+    </aside>
+
+    <main class="flex-1 overflow-y-auto custom-scrollbar p-6">
+
+        <div class="h-16 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl flex items-center justify-between px-6 shrink-0 card-shadow mb-6">
+            <div class="flex items-center gap-3">
+                <span class="relative flex h-3 w-3 ml-1">
+                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-3 w-3 bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.6)]"></span>
+                </span>
+                <h2 class="text-[18px] font-bold text-slate-800 dark:text-white tracking-tight">总体概览</h2>
+            </div>
+
+            <div class="flex items-center space-x-4">
+                <div class="relative">
+                    <select class="appearance-none bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 pr-8 py-1.5 text-sm font-medium text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all cursor-pointer hover:bg-white min-w-[90px]">
+                        <option selected>国控</option>
+                        <option>省控</option>
+                        <option>市控</option>
+                    </select>
+                </div>
+                <div class="relative">
+                    <select class="appearance-none bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 pr-8 py-1.5 text-sm font-medium text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all cursor-pointer hover:bg-white min-w-[90px]">
+                        <option selected>2026年</option>
+                        <option>2025年</option>
+                    </select>
+                </div>
+                <div class="relative">
+                    <select id="month-select" class="appearance-none bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 pr-8 py-1.5 text-sm font-medium text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all cursor-pointer hover:bg-white min-w-[80px]">
+                        <option>1月</option>
+                        <option>2月</option>
+                    </select>
+                </div>
+                <div class="flex bg-slate-100 dark:bg-slate-800 p-0 rounded-lg border border-slate-200 dark:border-slate-700 ml-1 h-8">
+                    <button id="btn-current" class="toggle-btn active" onclick="setMonthMode('current')">当前月</button>
+                    <button id="btn-cumulative" class="toggle-btn inactive" onclick="setMonthMode('cumulative')">累计月</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="mb-6 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 card-shadow p-5 lg:p-6">
+
+            <div class="flex items-center mb-6">
+                <div class="section-title-bar m-0 mr-2"></div>
+                <h3 class="font-bold text-slate-800 dark:text-slate-200 text-[18px]">一级流域水质概况</h3>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+                <div class="flex flex-col rounded-xl border border-slate-100 dark:border-slate-700/60 bg-slate-50/50 dark:bg-slate-800/20 overflow-hidden hover:shadow-md transition-shadow group">
+
+                    <div class="px-5 py-4 bg-white dark:bg-slate-800/80 border-b border-slate-100 dark:border-slate-700/60">
+                        <h4 class="font-bold text-slate-800 dark:text-slate-200 text-[16px] flex items-center">
+                            <span class="w-2.5 h-2.5 bg-blue-500 rounded-full mr-2.5 shadow-[0_0_4px_#3b82f6]"></span>长江干流流域
+                        </h4>
+                    </div>
+
+                    <div class="h-[140px] relative overflow-hidden flex items-center justify-center bg-slate-50/50 dark:bg-slate-900/30">
+                        <div class="absolute inset-0 opacity-[0.15] dark:opacity-10" style="background-image: radial-gradient(#64748b 1px, transparent 1px); background-size: 14px 14px;"></div>
+                        <div class="flex flex-col items-center text-slate-400 group-hover:text-blue-500 transition-colors z-10">
+                            <i class="ri-map-2-line text-[36px] mb-1 font-light"></i>
+                            <span class="text-[11px] font-bold tracking-[0.2em] uppercase opacity-80">GIS MAP LAYER</span>
+                        </div>
+                        <div class="absolute w-2.5 h-2.5 rounded-full bg-emerald-400 top-1/3 left-1/4 shadow-[0_0_6px_#34d399] animate-pulse"></div>
+                        <div class="absolute w-3 h-3 rounded-full bg-red-400 bottom-1/3 right-1/4 shadow-[0_0_8px_#f87171] animate-pulse" style="animation-delay: 1s;"></div>
+                    </div>
+
+                    <div class="p-4 pt-2 bg-white dark:bg-slate-800/50 flex-1">
+                        <table class="w-full text-center text-[14px]">
+                            <thead>
+                            <tr>
+                                <th class="w-14 pb-2.5 border-b border-slate-100 dark:border-slate-700"></th>
+                                <th class="pb-2.5 text-[12px] font-bold text-slate-500 uppercase tracking-wider border-b border-slate-100 dark:border-slate-700">I-III类</th>
+                                <th class="pb-2.5 text-[12px] font-bold text-slate-500 uppercase tracking-wider border-b border-slate-100 dark:border-slate-700">劣V类</th>
+                            </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-50 dark:divide-slate-700/30">
+                            <tr class="hover:bg-slate-50 dark:hover:bg-slate-700/20 transition-colors">
+                                <td class="py-3.5 text-[13px] font-bold text-slate-600 dark:text-slate-400">国控</td>
+                                <td class="py-3.5">
+                                    <span class="font-bold text-[15px] text-emerald-600 dark:text-emerald-400">82%</span>
+                                    <span class="inline-flex items-center justify-center ml-1.5 min-w-[38px] text-[11px] font-medium text-red-600 bg-red-50 dark:bg-red-900/30 dark:text-red-400 px-1.5 py-0.5 rounded">↓4.67</span>
+                                </td>
+                                <td class="py-3.5">
+                                    <span class="font-bold text-[15px] text-red-500 dark:text-red-400">0%</span>
+                                    <span class="inline-flex items-center justify-center ml-1.5 min-w-[38px] text-[11px] font-medium text-slate-500 bg-slate-100 dark:bg-slate-700/50 dark:text-slate-400 px-1.5 py-0.5 rounded">0.00</span>
+                                </td>
+                            </tr>
+                            <tr class="hover:bg-slate-50 dark:hover:bg-slate-700/20 transition-colors">
+                                <td class="py-3.5 text-[13px] font-bold text-slate-600 dark:text-slate-400">省控</td>
+                                <td class="py-3.5">
+                                    <span class="font-bold text-[15px] text-emerald-600 dark:text-emerald-400">90.29%</span>
+                                    <span class="inline-flex items-center justify-center ml-1.5 min-w-[38px] text-[11px] font-medium text-emerald-600 bg-emerald-50 dark:bg-emerald-900/30 dark:text-emerald-400 px-1.5 py-0.5 rounded">↑8.01</span>
+                                </td>
+                                <td class="py-3.5">
+                                    <span class="font-bold text-[15px] text-red-500 dark:text-red-400">0%</span>
+                                    <span class="inline-flex items-center justify-center ml-1.5 min-w-[38px] text-[11px] font-medium text-slate-500 bg-slate-100 dark:bg-slate-700/50 dark:text-slate-400 px-1.5 py-0.5 rounded">0.00</span>
+                                </td>
+                            </tr>
+                            <tr class="hover:bg-slate-50 dark:hover:bg-slate-700/20 transition-colors">
+                                <td class="py-3.5 text-[13px] font-bold text-slate-600 dark:text-slate-400">市控</td>
+                                <td class="py-3.5">
+                                    <span class="font-bold text-[15px] text-emerald-600 dark:text-emerald-400">66.67%</span>
+                                    <span class="inline-flex items-center justify-center ml-1.5 min-w-[38px] text-[11px] font-medium text-emerald-600 bg-emerald-50 dark:bg-emerald-900/30 dark:text-emerald-400 px-1.5 py-0.5 rounded">↑12.12</span>
+                                </td>
+                                <td class="py-3.5">
+                                    <span class="font-bold text-[15px] text-red-500 dark:text-red-400">33.33%</span>
+                                    <span class="inline-flex items-center justify-center ml-1.5 min-w-[38px] text-[11px] font-medium text-red-600 bg-red-50 dark:bg-red-900/30 dark:text-red-400 px-1.5 py-0.5 rounded">↑27.27</span>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="flex flex-col rounded-xl border border-slate-100 dark:border-slate-700/60 bg-slate-50/50 dark:bg-slate-800/20 overflow-hidden hover:shadow-md transition-shadow group">
+
+                    <div class="px-5 py-4 bg-white dark:bg-slate-800/80 border-b border-slate-100 dark:border-slate-700/60">
+                        <h4 class="font-bold text-slate-800 dark:text-slate-200 text-[16px] flex items-center">
+                            <span class="w-2.5 h-2.5 bg-cyan-500 rounded-full mr-2.5 shadow-[0_0_4px_#06b6d4]"></span>汉江流域
+                        </h4>
+                    </div>
+
+                    <div class="h-[140px] relative overflow-hidden flex items-center justify-center bg-slate-50/50 dark:bg-slate-900/30">
+                        <div class="absolute inset-0 opacity-[0.15] dark:opacity-10" style="background-image: radial-gradient(#64748b 1px, transparent 1px); background-size: 14px 14px;"></div>
+                        <div class="flex flex-col items-center text-slate-400 group-hover:text-cyan-500 transition-colors z-10">
+                            <i class="ri-map-2-line text-[36px] mb-1 font-light"></i>
+                            <span class="text-[11px] font-bold tracking-[0.2em] uppercase opacity-80">GIS MAP LAYER</span>
+                        </div>
+                        <div class="absolute w-2.5 h-2.5 rounded-full bg-emerald-400 top-1/4 left-1/2 shadow-[0_0_6px_#34d399] animate-pulse"></div>
+                    </div>
+
+                    <div class="p-4 pt-2 bg-white dark:bg-slate-800/50 flex-1">
+                        <table class="w-full text-center text-[14px]">
+                            <thead>
+                            <tr>
+                                <th class="w-14 pb-2.5 border-b border-slate-100 dark:border-slate-700"></th>
+                                <th class="pb-2.5 text-[12px] font-bold text-slate-500 uppercase tracking-wider border-b border-slate-100 dark:border-slate-700">I-III类</th>
+                                <th class="pb-2.5 text-[12px] font-bold text-slate-500 uppercase tracking-wider border-b border-slate-100 dark:border-slate-700">劣V类</th>
+                            </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-50 dark:divide-slate-700/30">
+                            <tr class="hover:bg-slate-50 dark:hover:bg-slate-700/20 transition-colors">
+                                <td class="py-3.5 text-[13px] font-bold text-slate-600 dark:text-slate-400">国控</td>
+                                <td class="py-3.5">
+                                    <span class="font-bold text-[15px] text-emerald-600 dark:text-emerald-400">100%</span>
+                                    <span class="inline-flex items-center justify-center ml-1.5 min-w-[38px] text-[11px] font-medium text-emerald-600 bg-emerald-50 dark:bg-emerald-900/30 dark:text-emerald-400 px-1.5 py-0.5 rounded">↑7.14</span>
+                                </td>
+                                <td class="py-3.5">
+                                    <span class="font-bold text-[15px] text-red-500 dark:text-red-400">0%</span>
+                                    <span class="inline-flex items-center justify-center ml-1.5 min-w-[38px] text-[11px] font-medium text-slate-500 bg-slate-100 dark:bg-slate-700/50 dark:text-slate-400 px-1.5 py-0.5 rounded">0.00</span>
+                                </td>
+                            </tr>
+                            <tr class="hover:bg-slate-50 dark:hover:bg-slate-700/20 transition-colors">
+                                <td class="py-3.5 text-[13px] font-bold text-slate-600 dark:text-slate-400">省控</td>
+                                <td class="py-3.5">
+                                    <span class="font-bold text-[15px] text-emerald-600 dark:text-emerald-400">100%</span>
+                                    <span class="inline-flex items-center justify-center ml-1.5 min-w-[38px] text-[11px] font-medium text-emerald-600 bg-emerald-50 dark:bg-emerald-900/30 dark:text-emerald-400 px-1.5 py-0.5 rounded">↑5.26</span>
+                                </td>
+                                <td class="py-3.5">
+                                    <span class="font-bold text-[15px] text-red-500 dark:text-red-400">0%</span>
+                                    <span class="inline-flex items-center justify-center ml-1.5 min-w-[38px] text-[11px] font-medium text-slate-500 bg-slate-100 dark:bg-slate-700/50 dark:text-slate-400 px-1.5 py-0.5 rounded">0.00</span>
+                                </td>
+                            </tr>
+                            <tr class="hover:bg-slate-50 dark:hover:bg-slate-700/20 transition-colors">
+                                <td class="py-3.5 text-[13px] font-bold text-slate-600 dark:text-slate-400">市控</td>
+                                <td class="py-3.5">
+                                    <span class="font-bold text-[15px] text-emerald-600 dark:text-emerald-400">0%</span>
+                                    <span class="inline-flex items-center justify-center ml-1.5 min-w-[38px] text-[11px] font-medium text-red-600 bg-red-50 dark:bg-red-900/30 dark:text-red-400 px-1.5 py-0.5 rounded">↓100.0</span>
+                                </td>
+                                <td class="py-3.5">
+                                    <span class="font-bold text-[15px] text-red-500 dark:text-red-400">0%</span>
+                                    <span class="inline-flex items-center justify-center ml-1.5 min-w-[38px] text-[11px] font-medium text-slate-500 bg-slate-100 dark:bg-slate-700/50 dark:text-slate-400 px-1.5 py-0.5 rounded">0.00</span>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="flex flex-col rounded-xl border border-slate-100 dark:border-slate-700/60 bg-slate-50/50 dark:bg-slate-800/20 overflow-hidden hover:shadow-md transition-shadow group">
+
+                    <div class="px-5 py-4 bg-white dark:bg-slate-800/80 border-b border-slate-100 dark:border-slate-700/60">
+                        <h4 class="font-bold text-slate-800 dark:text-slate-200 text-[16px] flex items-center">
+                            <span class="w-2.5 h-2.5 bg-emerald-500 rounded-full mr-2.5 shadow-[0_0_4px_#10b981]"></span>清江流域
+                        </h4>
+                    </div>
+
+                    <div class="h-[140px] relative overflow-hidden flex items-center justify-center bg-slate-50/50 dark:bg-slate-900/30">
+                        <div class="absolute inset-0 opacity-[0.15] dark:opacity-10" style="background-image: radial-gradient(#64748b 1px, transparent 1px); background-size: 14px 14px;"></div>
+                        <div class="flex flex-col items-center text-slate-400 group-hover:text-emerald-500 transition-colors z-10">
+                            <i class="ri-map-2-line text-[36px] mb-1 font-light"></i>
+                            <span class="text-[11px] font-bold tracking-[0.2em] uppercase opacity-80">GIS MAP LAYER</span>
+                        </div>
+                        <div class="absolute w-2.5 h-2.5 rounded-full bg-emerald-400 top-1/2 left-1/3 shadow-[0_0_6px_#34d399] animate-pulse"></div>
+                    </div>
+
+                    <div class="p-4 pt-2 bg-white dark:bg-slate-800/50 flex-1">
+                        <table class="w-full text-center text-[14px]">
+                            <thead>
+                            <tr>
+                                <th class="w-14 pb-2.5 border-b border-slate-100 dark:border-slate-700"></th>
+                                <th class="pb-2.5 text-[12px] font-bold text-slate-500 uppercase tracking-wider border-b border-slate-100 dark:border-slate-700">I-III类</th>
+                                <th class="pb-2.5 text-[12px] font-bold text-slate-500 uppercase tracking-wider border-b border-slate-100 dark:border-slate-700">劣V类</th>
+                            </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-50 dark:divide-slate-700/30">
+                            <tr class="hover:bg-slate-50 dark:hover:bg-slate-700/20 transition-colors">
+                                <td class="py-3.5 text-[13px] font-bold text-slate-600 dark:text-slate-400">国控</td>
+                                <td class="py-3.5">
+                                    <span class="font-bold text-[15px] text-emerald-600 dark:text-emerald-400">100%</span>
+                                    <span class="inline-flex items-center justify-center ml-1.5 min-w-[38px] text-[11px] font-medium text-slate-500 bg-slate-100 dark:bg-slate-700/50 dark:text-slate-400 px-1.5 py-0.5 rounded">0.00</span>
+                                </td>
+                                <td class="py-3.5">
+                                    <span class="font-bold text-[15px] text-red-500 dark:text-red-400">0%</span>
+                                    <span class="inline-flex items-center justify-center ml-1.5 min-w-[38px] text-[11px] font-medium text-slate-500 bg-slate-100 dark:bg-slate-700/50 dark:text-slate-400 px-1.5 py-0.5 rounded">0.00</span>
+                                </td>
+                            </tr>
+                            <tr class="hover:bg-slate-50 dark:hover:bg-slate-700/20 transition-colors">
+                                <td class="py-3.5 text-[13px] font-bold text-slate-600 dark:text-slate-400">省控</td>
+                                <td class="py-3.5">
+                                    <span class="font-bold text-[15px] text-emerald-600 dark:text-emerald-400">100%</span>
+                                    <span class="inline-flex items-center justify-center ml-1.5 min-w-[38px] text-[11px] font-medium text-slate-500 bg-slate-100 dark:bg-slate-700/50 dark:text-slate-400 px-1.5 py-0.5 rounded">0.00</span>
+                                </td>
+                                <td class="py-3.5">
+                                    <span class="font-bold text-[15px] text-red-500 dark:text-red-400">0%</span>
+                                    <span class="inline-flex items-center justify-center ml-1.5 min-w-[38px] text-[11px] font-medium text-slate-500 bg-slate-100 dark:bg-slate-700/50 dark:text-slate-400 px-1.5 py-0.5 rounded">0.00</span>
+                                </td>
+                            </tr>
+                            <tr class="hover:bg-slate-50 dark:hover:bg-slate-700/20 transition-colors">
+                                <td class="py-3.5 text-[13px] font-bold text-slate-600 dark:text-slate-400">市控</td>
+                                <td class="py-3.5">
+                                    <span class="font-bold text-[15px] text-emerald-600 dark:text-emerald-400">100%</span>
+                                    <span class="inline-flex items-center justify-center ml-1.5 min-w-[38px] text-[11px] font-medium text-slate-500 bg-slate-100 dark:bg-slate-700/50 dark:text-slate-400 px-1.5 py-0.5 rounded">0.00</span>
+                                </td>
+                                <td class="py-3.5">
+                                    <span class="font-bold text-[15px] text-red-500 dark:text-red-400">0%</span>
+                                    <span class="inline-flex items-center justify-center ml-1.5 min-w-[38px] text-[11px] font-medium text-slate-500 bg-slate-100 dark:bg-slate-700/50 dark:text-slate-400 px-1.5 py-0.5 rounded">0.00</span>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 card-shadow p-6 mb-6">
+            <div class="flex items-center justify-between mb-2">
+                <div class="flex items-center space-x-2">
+                    <div class="section-title-bar m-0"></div>
+                    <h3 class="font-bold text-slate-800 dark:text-slate-200 text-[15px]">二级流域 I-III类 水质占比同比变化情况</h3>
+                </div>
+                <div class="flex gap-2">
+                    <i class="ri-table-2 chart-action-icon" title="查看数据表" onclick="showChartData('chart-good', '二级流域 I-III类 水质占比同比变化情况')"></i>
+                    <i class="ri-download-2-line chart-action-icon" title="下载图表" onclick="downloadChart('chart-good')"></i>
+                </div>
+            </div>
+            <div id="chart-good" class="w-full h-[320px]"></div>
+        </div>
+
+        <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 card-shadow p-6">
+            <div class="flex items-center justify-between mb-2">
+                <div class="flex items-center space-x-2">
+                    <div class="section-title-bar m-0"></div>
+                    <h3 class="font-bold text-slate-800 dark:text-slate-200 text-[15px]">二级流域 劣V类 水质占比同比变化情况</h3>
+                </div>
+                <div class="flex gap-2">
+                    <i class="ri-table-2 chart-action-icon" title="查看数据表" onclick="showChartData('chart-bad', '二级流域 劣V类 水质占比同比变化情况')"></i>
+                    <i class="ri-download-2-line chart-action-icon" title="下载图表" onclick="downloadChart('chart-bad')"></i>
+                </div>
+            </div>
+            <div id="chart-bad" class="w-full h-[280px]"></div>
+        </div>
+
+        <footer class="mt-8 pt-4 border-t border-slate-200 dark:border-slate-800 text-center text-xs text-slate-400 pb-2">
+            <p>&copy; 2026 湖北省生态环境厅 · 版权所有</p>
+        </footer>
+    </main>
+</div>
+
+<div id="data-table-modal" class="fixed inset-0 z-[100] hidden bg-slate-900/50 backdrop-blur-sm flex items-center justify-center transition-opacity opacity-0 duration-300">
+    <div class="bg-white dark:bg-slate-800 rounded shadow-2xl w-11/12 max-w-6xl flex flex-col max-h-[85vh] transform transition-transform scale-95 duration-300">
+        <div class="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-slate-700 shrink-0">
+            <div class="flex items-center space-x-2">
+                <div class="section-title-bar m-0"></div>
+                <h3 id="modal-title" class="text-base font-bold text-slate-800 dark:text-white"></h3>
+            </div>
+            <button onclick="closeModal()" class="text-slate-400 hover:text-red-500 transition-colors flex items-center justify-center">
+                <i class="ri-close-line text-2xl"></i>
+            </button>
+        </div>
+        <div class="overflow-auto flex-1 custom-scrollbar">
+            <table class="w-full text-sm text-center text-slate-600 dark:text-slate-300 border-collapse">
+                <thead class="text-slate-700 bg-slate-100 dark:bg-slate-700 dark:text-slate-200 sticky top-0 z-10" id="modal-thead">
+                </thead>
+                <tbody id="modal-tbody">
+                </tbody>
+            </table>
+        </div>
+        <div class="px-6 py-4 border-t border-slate-100 dark:border-slate-700 bg-white dark:bg-slate-800 shrink-0 flex justify-center space-x-4">
+            <button onclick="closeModal()" class="px-6 py-1.5 bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded text-sm text-slate-600 dark:text-slate-200 hover:bg-slate-50 transition-colors">
+                取消
+            </button>
+            <button onclick="exportExcel()" class="px-6 py-1.5 bg-blue-500 text-white border border-blue-500 rounded text-sm hover:bg-blue-600 transition-colors">
+                导出
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // --- 1. 月份/模式切换逻辑 ---
+    function setMonthMode(mode) {
+        const btnCurrent = document.getElementById('btn-current');
+        const btnCumulative = document.getElementById('btn-cumulative');
+        const monthSelect = document.getElementById('month-select');
+
+        if (mode === 'current') {
+            btnCurrent.classList.remove('inactive'); btnCurrent.classList.add('active');
+            btnCumulative.classList.remove('active'); btnCumulative.classList.add('inactive');
+            Array.from(monthSelect.options).forEach(opt => { opt.text = opt.text.replace('1-', ''); });
+        } else {
+            btnCumulative.classList.remove('inactive'); btnCumulative.classList.add('active');
+            btnCurrent.classList.remove('active'); btnCurrent.classList.add('inactive');
+            Array.from(monthSelect.options).forEach(opt => {
+                if (!opt.text.startsWith('1-')) opt.text = '1-' + opt.text;
+            });
+        }
+    }
+
+    // --- 2. 侧边栏交互逻辑 ---
+    const sidebar = document.getElementById('sidebar');
+    const toggleBtn = document.getElementById('toggleSidebarBtn');
+    const toggleIcon = document.getElementById('toggleIcon');
+    let isCollapsed = false;
+
+    toggleBtn.addEventListener('click', () => {
+        isCollapsed = !isCollapsed;
+        if (isCollapsed) {
+            sidebar.classList.remove('w-[270px]');
+            sidebar.classList.add('w-[80px]', 'hide-text', 'collapsed-sidebar');
+            toggleIcon.style.transform = 'rotate(180deg)';
+        } else {
+            sidebar.classList.remove('w-[80px]', 'hide-text', 'collapsed-sidebar');
+            sidebar.classList.add('w-[270px]');
+            toggleIcon.style.transform = 'rotate(0deg)';
+        }
+        setTimeout(() => resizeAllCharts(), 300);
+    });
+
+    function toggleSubmenu(id) {
+        if (isCollapsed) return;
+        const submenu = document.getElementById(id);
+        const btn = submenu.previousElementSibling;
+        const chevron = btn.querySelector('.sidebar-chevron');
+        if (submenu.style.maxHeight && submenu.style.maxHeight !== '0px') {
+            submenu.style.maxHeight = '0px';
+            chevron.style.transform = 'rotate(0deg)';
+        } else {
+            submenu.style.maxHeight = submenu.scrollHeight + "px";
+            chevron.style.transform = 'rotate(180deg)';
+        }
+    }
+
+    window.addEventListener('load', () => {
+        const provSubmenu = document.getElementById('submenu-overview');
+        if(provSubmenu) provSubmenu.style.maxHeight = provSubmenu.scrollHeight + "px";
+    });
+
+    // --- 3. 图表与地图模拟绘制逻辑 ---
+    const chartInstances = {};
+    const charts = [];
+    const textCol = '#64748b';
+    const axisLineCol = '#e2e8f0';
+
+    const commonGrid = { top: '15%', left: '2%', right: '2%', bottom: '5%', containLabel: true };
+    const commonTooltip = { trigger: 'axis', axisPointer: { type: 'shadow' }, backgroundColor: 'rgba(255, 255, 255, 0.95)', extraCssText: 'box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); border-radius: 6px;' };
+
+    const regions = ['三峡库区', '四湖片区', '富水片区', '府澴河片区', '沮漳河片区', '荆南四河片区', '鄂东五河片区', '鄂东南片区', '黄柏河片区', '唐白河片区', '汉江下游片区', '汉江中游片区', '汉江丹库以上', '乌江片区', '沅江澧水片区', '清江片区'];
+
+    function renderMockMap(elementId, strokeColor, points) {
+        const dom = document.getElementById(elementId);
+        if(!dom) return;
+        const mapChart = echarts.init(dom);
+        charts.push(mapChart);
+
+        mapChart.setOption({
+            grid: { top: 0, bottom: 0, left: 0, right: 0 },
+            xAxis: { show: false, min: 0, max: 100 },
+            yAxis: { show: false, min: 0, max: 100 },
+            series: [
+                {
+                    // 模拟河流线
+                    type: 'line',
+                    smooth: true,
+                    symbol: 'none',
+                    lineStyle: { color: strokeColor, width: 2, opacity: 0.3 },
+                    data: [[10, 80], [30, 60], [50, 50], [80, 40], [90, 20]]
+                },
+                {
+                    // 模拟水质监测站点 (散点)
+                    type: 'scatter',
+                    symbolSize: 8,
+                    itemStyle: {
+                        color: (params) => {
+                            // 随机分配颜色模拟 绿(I-III), 黄(IV), 蓝(II)
+                            const colors = ['#10b981', '#3b82f6', '#3b82f6', '#10b981', '#f59e0b'];
+                            return colors[params.dataIndex % colors.length];
+                        },
+                        borderColor: '#fff',
+                        borderWidth: 1
+                    },
+                    data: points
+                }
+            ]
+        });
+    }
+
+    function initCharts() {
+        // --- 模拟顶部地图容器 ---
+        renderMockMap('map-mock-1', '#3b82f6', [[20,70],[35,55],[45,52],[60,45],[75,30],[85,25]]);
+        renderMockMap('map-mock-2', '#06b6d4', [[30,80],[40,65],[55,50],[70,40]]);
+        renderMockMap('map-mock-3', '#10b981', [[20,60],[50,50],[80,45]]);
+
+        // --- 图表1: I-III 类占比 ---
+        const cGood = echarts.init(document.getElementById('chart-good'));
+        chartInstances['chart-good'] = cGood;
+        charts.push(cGood);
+        cGood.setOption({
+            tooltip: commonTooltip,
+            legend: { top: 0, right: 0, itemWidth: 12, itemHeight: 8, icon: 'roundRect', textStyle: { fontSize: 12, color: textCol } },
+            grid: commonGrid,
+            xAxis: {
+                type: 'category',
+                data: regions,
+                axisLabel: { interval: 0, rotate: 35, fontSize: 11, color: textCol, margin: 12 },
+                axisTick: { show: false }
+            },
+            yAxis: {
+                type: 'value',
+                max: 100,
+                axisLabel: { formatter: '{value}%', color: textCol },
+                splitLine: { lineStyle: { color: axisLineCol, type: 'dashed' } }
+            },
+            series: [
+                {
+                    name: '2026年01月',
+                    type: 'bar',
+                    barGap: '0%',
+                    barWidth: '25%',
+                    data: [100, 78, 100, 78, 88, 100, 100, 95, 100, 74, 66, 91, 100, 100, 100, 100],
+                    itemStyle: { color: '#3b82f6', borderRadius: [2, 2, 0, 0] }
+                },
+                {
+                    name: '2025年01月',
+                    type: 'bar',
+                    barWidth: '25%',
+                    data: [100, 66, 100, 76, 100, 100, 100, 95, 100, 100, 70, 91, 92, 100, 100, 88],
+                    itemStyle: { color: '#14b8a6', borderRadius: [2, 2, 0, 0] }
+                }
+            ]
+        });
+
+        // --- 图表2: 劣V 类占比 ---
+        const cBad = echarts.init(document.getElementById('chart-bad'));
+        chartInstances['chart-bad'] = cBad;
+        charts.push(cBad);
+        cBad.setOption({
+            tooltip: commonTooltip,
+            legend: { top: 0, right: 0, itemWidth: 12, itemHeight: 8, icon: 'roundRect', textStyle: { fontSize: 12, color: textCol } },
+            grid: commonGrid,
+            xAxis: {
+                type: 'category',
+                data: regions,
+                axisLabel: { interval: 0, rotate: 35, fontSize: 11, color: textCol, margin: 12 },
+                axisTick: { show: false }
+            },
+            yAxis: {
+                type: 'value',
+                max: 100,
+                axisLabel: { formatter: '{value}%', color: textCol },
+                splitLine: { lineStyle: { color: axisLineCol, type: 'dashed' } }
+            },
+            series: [
+                {
+                    name: '2026年01月',
+                    type: 'bar',
+                    barGap: '0%',
+                    barWidth: '25%',
+                    data: [0, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                    itemStyle: { color: '#3b82f6', borderRadius: [2, 2, 0, 0] }
+                },
+                {
+                    name: '2025年01月',
+                    type: 'bar',
+                    barWidth: '25%',
+                    data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                    itemStyle: { color: '#14b8a6', borderRadius: [2, 2, 0, 0] }
+                }
+            ]
+        });
+    }
+
+    // --- 4. 数据表格模态框与导出逻辑 (完全复刻参考HTML) ---
+    function showChartData(chartKey, titleText) {
+        const chart = chartInstances[chartKey];
+        if (!chart) return;
+        const option = chart.getOption();
+        const series = option.series;
+
+        let categories = [];
+        if (option.xAxis && option.xAxis[0] && option.xAxis[0].data) {
+            categories = option.xAxis[0].data;
+        }
+
+        document.getElementById('modal-title').innerText = titleText;
+
+        const thead = document.getElementById('modal-thead');
+        let theadHTML = `<tr>
+            <th class="px-6 py-4 font-bold whitespace-nowrap w-16">序号</th>
+            <th class="px-6 py-4 font-bold w-48">片区名称</th>`;
+        series.forEach(s => {
+            theadHTML += `<th class="px-6 py-4 font-bold">${s.name}</th>`;
+        });
+        theadHTML += '</tr>';
+        thead.innerHTML = theadHTML;
+
+        const tbody = document.getElementById('modal-tbody');
+        let tbodyHTML = '';
+        if(categories && categories.length > 0) {
+            categories.forEach((cat, idx) => {
+                const bgClass = idx % 2 === 0 ? 'bg-white dark:bg-slate-800' : 'bg-[#fcfcfc] dark:bg-slate-800/50';
+                tbodyHTML += `<tr class="${bgClass} hover:bg-blue-50/50 dark:hover:bg-slate-700/50 transition-colors">
+                    <td class="px-6 py-4 text-slate-500">${idx + 1}</td>
+                    <td class="px-6 py-4 text-slate-700 dark:text-slate-300">${cat}</td>`;
+                series.forEach(s => {
+                    const val = (s.data[idx] !== undefined && s.data[idx] !== null) ? s.data[idx] : '-';
+                    tbodyHTML += `<td class="px-6 py-4">${val}</td>`;
+                });
+                tbodyHTML += '</tr>';
+            });
+        }
+        tbody.innerHTML = tbodyHTML;
+
+        const modal = document.getElementById('data-table-modal');
+        modal.classList.remove('hidden');
+        void modal.offsetWidth;
+        modal.classList.remove('opacity-0');
+        modal.querySelector('div').classList.remove('scale-95');
+    }
+
+    function closeModal() {
+        const modal = document.getElementById('data-table-modal');
+        modal.classList.add('opacity-0');
+        modal.querySelector('div').classList.add('scale-95');
+        setTimeout(() => { modal.classList.add('hidden'); }, 300);
+    }
+
+    function exportExcel() {
+        const table = document.querySelector('#data-table-modal table');
+        if (!table) return;
+
+        let csv = [];
+        const rows = table.querySelectorAll('tr');
+
+        for (let i = 0; i < rows.length; i++) {
+            let row = [];
+            const cols = rows[i].querySelectorAll('td, th');
+            for (let j = 0; j < cols.length; j++) {
+                let data = cols[j].innerText.trim();
+                if (i === 0 && j === 0 && data === "") data = "序号";
+                data = data.replace(/"/g, '""');
+                row.push('"' + data + '"');
+            }
+            csv.push(row.join(','));
+        }
+
+        const csvFile = new Blob(['\uFEFF' + csv.join('\n')], {type: 'text/csv;charset=utf-8;'});
+        const downloadLink = document.createElement("a");
+        const title = document.getElementById('modal-title').innerText || '导出数据';
+
+        downloadLink.download = title + ".csv";
+        downloadLink.href = window.URL.createObjectURL(csvFile);
+        downloadLink.style.display = "none";
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        document.body.removeChild(downloadLink);
+    }
+
+    // 图表下载辅助方法
+    function downloadChart(chartKey) {
+        const chart = chartInstances[chartKey];
+        if (!chart) return;
+        const url = chart.getDataURL({ type: 'png', pixelRatio: 2, backgroundColor: '#ffffff' });
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = chartKey + '.png';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+    }
+
+    function resizeAllCharts() { charts.forEach(chart => { if (chart) chart.resize(); }); }
+
+    // 初始化调用
+    window.addEventListener('load', initCharts);
+    window.addEventListener('resize', resizeAllCharts);
+</script>
+
+</body>
+</html>

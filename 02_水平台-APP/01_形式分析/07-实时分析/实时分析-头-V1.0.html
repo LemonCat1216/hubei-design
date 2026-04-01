@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>水质自动监测数据</title>
+    <style>
+        body { font-family: sans-serif; margin: 0; background-color: #f5f7f9; }
+        .container { width: 100%; max-width: 500px; margin: 0 auto; background: #fff; }
+
+        /* 顶部标题栏 */
+        .header { background-color: #1565c0; color: white; padding: 15px; text-align: center; position: relative; }
+        .back-icon { position: absolute; left: 15px; font-weight: bold; }
+
+        /* 选项卡 */
+        .tabs { display: flex; border-bottom: 1px solid #ddd; }
+        .tab { flex: 1; padding: 12px; text-align: center; cursor: pointer; }
+        .tab.active { background-color: #2196f3; color: white; }
+
+        /* 表单区域 */
+        .form-group { padding: 10px 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; }
+        .label { color: #666; font-size: 14px; }
+        .value { color: #999; font-size: 14px; }
+
+        /* 新增：自动站搜索框样式 */
+        .search-input {
+            width: 100%;
+            border: none;
+            outline: none;
+            text-align: right;
+            font-size: 14px;
+            color: #333;
+        }
+
+        /* 底部操作区 */
+        .actions { display: flex; padding: 10px; gap: 10px; }
+        .dropdown { flex: 1; background: #2196f3; color: white; padding: 10px; border-radius: 4px; text-align: center; }
+        .btn-search { flex: 1; background: #00c853; color: white; padding: 10px; border-radius: 4px; text-align: center; border: none; font-size: 16px; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <span class="back-icon">&lt;</span>
+        水质自动监测数据
+    </div>
+
+    <div class="tabs">
+        <div class="tab active">自动站(日)</div>
+        <div class="tab">自动站(时)</div>
+    </div>
+
+    <div class="form-group">
+        <span class="label">选择自动站日期</span>
+        <span class="value">2025-12-18</span>
+    </div>
+
+    <div class="form-group">
+        <span class="label">自动站名称</span>
+        <input type="text" class="search-input" placeholder="请输入站名搜索..." />
+    </div>
+
+    <div class="actions">
+        <div class="dropdown">
+            湖北省 <span style="font-size: 10px;">▼</span>
+        </div>
+        <button class="btn-search">搜索</button>
+    </div>
+
+    <div style="text-align: center; margin-top: 100px; color: #999;">
+        <img src="https://via.placeholder.com/150x100?text=Empty+Box" alt="no-data" style="opacity: 0.5;"><br>
+        <p>暂无数据</p>
+    </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>湖北省水生态环境综合管理 - 水质指数</title>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography,container-queries"></script>
+
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#3b82f6",
+                        "background-light": "#f6f9fc",
+                        "background-dark": "#0f172a",
+                        "surface-light": "#ffffff",
+                        "surface-dark": "#1e293b",
+                    },
+                    fontFamily: {
+                        display: ["Inter", "system-ui", "-apple-system", "sans-serif"],
+                    },
+                },
+            },
+        };
+    </script>
+
+    <style type="text/tailwindcss">
+        body { font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif; }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+        .section-title-bar {
+            width: 5px;
+            height: 15px;
+            background: linear-gradient(to bottom, #93c5fd, #378ae6);
+            border-radius: 99px;
+            margin-right: 8px;
+        }
+
+        #sidebar { transition: width 0.3s ease; }
+        .sidebar-text { transition: opacity 0.2s ease; white-space: nowrap; }
+        .hide-text .sidebar-text { display: none; opacity: 0; }
+        .collapsed-sidebar .nav-item { justify-content: center; padding-left: 0; padding-right: 0; }
+        .collapsed-sidebar .nav-item span.material-symbols-outlined { margin-right: 0; }
+
+        .toggle-btn {
+            @apply h-full px-4 flex items-center justify-center text-xs font-bold rounded-md transition-colors cursor-pointer select-none;
+        }
+        .toggle-btn.active { @apply bg-primary text-white shadow-sm; }
+        .toggle-btn.inactive { @apply text-slate-500 hover:text-slate-700 hover:bg-slate-200 dark:text-slate-400 dark:hover:bg-slate-700/50; }
+
+        .card-shadow { box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1); }
+
+        .chart-action-icon {
+            @apply text-lg cursor-pointer text-slate-400 hover:text-primary transition-colors p-1.5 rounded hover:bg-blue-50 dark:hover:bg-slate-800;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-800 dark:text-slate-100 h-screen overflow-hidden flex flex-col">
+
+<header class="bg-primary h-14 flex items-center justify-between px-4 text-white shrink-0 shadow-md z-50">
+    <div class="flex items-center space-x-3">
+        <div class="w-8 h-8 bg-white rounded-full flex items-center justify-center">
+            <span class="material-symbols-outlined text-primary text-xl">water_drop</span>
+        </div>
+        <h1 class="text-xl font-bold tracking-tight">湖北省水生态环境综合管理</h1>
+    </div>
+    <nav class="flex h-full">
+        <a class="px-6 flex items-center space-x-2 hover:bg-white/10 transition-colors" href="#">
+            <span class="material-symbols-outlined text-[18px]">home</span>
+            <span class="text-sm">总体概览</span>
+        </a>
+        <a class="px-6 flex items-center space-x-2 bg-white/20 border-b-2 border-white transition-colors" href="#">
+            <span class="material-symbols-outlined text-[18px]">assessment</span>
+            <span class="text-sm font-bold">形势分析</span>
+        </a>
+        <a class="px-6 flex items-center space-x-2 hover:bg-white/10 transition-colors" href="#">
+            <span class="material-symbols-outlined text-[18px]">map</span>
+            <span class="text-sm">空间分析</span>
+        </a>
+        <a class="px-6 flex items-center space-x-2 hover:bg-white/10 transition-colors" href="#">
+            <span class="material-symbols-outlined text-[18px]">waves</span>
+            <span class="text-sm">水污染源</span>
+        </a>
+        <a class="px-6 flex items-center space-x-2 hover:bg-white/10 transition-colors" href="#">
+            <span class="material-symbols-outlined text-[18px]">report_problem</span>
+            <span class="text-sm">问题聚焦</span>
+        </a>
+        <a class="px-6 flex items-center space-x-2 hover:bg-white/10 transition-colors" href="#">
+            <span class="material-symbols-outlined text-[18px]">apps</span>
+            <span class="text-sm">专题应用</span>
+        </a>
+    </nav>
+    <div class="flex items-center space-x-6">
+        <div class="flex items-center space-x-2 text-sm opacity-90">
+            <span class="material-symbols-outlined text-[18px]">public</span>
+            <span>碧水荆灵</span>
+        </div>
+        <div class="flex items-center space-x-2 text-sm">
+            <span class="material-symbols-outlined text-[18px]">account_circle</span>
+            <span>wangyunpeng</span>
+        </div>
+    </div>
+</header>
+
+<div class="flex flex-1 overflow-hidden">
+    <aside id="sidebar" class="w-[270px] bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 flex flex-col shrink-0">
+        <div class="flex-1 py-4 overflow-y-auto custom-scrollbar flex flex-col gap-1">
+            <div class="mb-2 px-2">
+                <button class="nav-item w-full flex items-center justify-between px-4 py-3 text-[16px] font-medium text-slate-600 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg group transition-colors">
+                    <div class="flex items-center">
+                        <span class="material-symbols-outlined mr-3 text-slate-400 group-hover:text-primary">dashboard</span>
+                        <span class="sidebar-text">总体概览</span>
+                    </div>
+                    <span class="material-symbols-outlined text-sm text-slate-400 sidebar-chevron transition-transform duration-200">chevron_right</span>
+                </button>
+            </div>
+
+            <div class="mb-2 px-2">
+                <button class="nav-item w-full flex items-center justify-between px-4 py-3 text-[16px] font-medium text-blue-700 bg-blue-50/50 dark:bg-blue-900/10 rounded-lg group transition-colors" onclick="toggleSubmenu('submenu-ministry')">
+                    <div class="flex items-center">
+                        <span class="material-symbols-outlined mr-3 text-blue-600">analytics</span>
+                        <span class="sidebar-text font-bold text-slate-800 dark:text-white">部级分析</span>
+                    </div>
+                    <span class="material-symbols-outlined text-sm text-blue-600 sidebar-chevron transition-transform duration-200" style="transform: rotate(180deg);">expand_more</span>
+                </button>
+
+                <div id="submenu-ministry" class="mt-1 space-y-1 overflow-hidden transition-all duration-300">
+                    <a class="flex items-center px-12 py-2 text-[14px] text-slate-600 dark:text-slate-400 hover:text-blue-600 hover:bg-blue-50/50 dark:hover:bg-blue-900/20 rounded-lg group transition-all" href="#">
+                        <span class="w-1.5 h-1.5 bg-slate-300 dark:bg-slate-600 group-hover:bg-blue-600 rounded-full mr-3 shrink-0 transition-colors"></span>
+                        <span class="sidebar-text">部级概览</span>
+                    </a>
+                    <a class="flex items-center px-12 py-2 text-[14px] text-blue-700 bg-blue-50 dark:bg-blue-900/30 rounded-lg group transition-all font-medium" href="#">
+                        <span class="w-1.5 h-1.5 bg-blue-600 rounded-full mr-3 shrink-0"></span>
+                        <span class="sidebar-text">水质指数</span>
+                    </a>
+                </div>
+            </div>
+
+            <div class="mb-2 px-2">
+                <button class="nav-item w-full flex items-center justify-between px-4 py-3 text-[16px] font-medium text-slate-600 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg group transition-colors">
+                    <div class="flex items-center">
+                        <span class="material-symbols-outlined mr-3 text-slate-400 group-hover:text-primary">account_balance</span>
+                        <span class="sidebar-text">省级分析</span>
+                    </div>
+                    <span class="material-symbols-outlined text-sm text-slate-400 sidebar-chevron">chevron_right</span>
+                </button>
+            </div>
+        </div>
+
+        <button id="toggleSidebarBtn" class="h-12 border-t border-slate-200 dark:border-slate-800 flex items-center justify-center space-x-2 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all text-slate-500 hover:text-primary group">
+            <span id="toggleIcon" class="material-symbols-outlined text-xl transition-transform duration-300">chevron_left</span>
+            <span class="sidebar-text text-sm font-medium tracking-wide">收起侧栏</span>
+        </button>
+    </aside>
+
+    <main class="flex-1 overflow-y-auto custom-scrollbar p-6">
+        <div class="h-16 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl flex items-center justify-between px-6 shrink-0 shadow-sm mb-6">
+            <div class="flex items-center gap-3">
+                <div class="flex items-center gap-3">
+                    <span class="relative flex h-3 w-3">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-3 w-3 bg-blue-500"></span>
+                    </span>
+                    <h2 class="text-lg font-bold text-slate-800 dark:text-white tracking-tight">水质指数</h2>
+                </div>
+            </div>
+
+            <div class="flex items-center space-x-4">
+                <div class="relative">
+                    <select class="appearance-none bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 pr-8 py-1 text-sm text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all cursor-pointer hover:bg-white h-8">
+                        <option>2025年</option>
+                        <option>2024年</option>
+                    </select>
+                </div>
+                <div class="relative">
+                    <select id="month-select" class="appearance-none bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 pr-8 py-1 text-sm text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all cursor-pointer hover:bg-white h-8">
+                        <option>1-1月</option>
+                        <option>1-2月</option>
+                        <option>1-3月</option>
+                        <option>1-4月</option>
+                        <option>1-5月</option>
+                        <option>1-6月</option>
+                        <option>1-7月</option>
+                        <option>1-8月</option>
+                        <option>1-9月</option>
+                        <option>1-10月</option>
+                        <option>1-11月</option>
+                        <option selected>1-12月</option>
+                    </select>
+                </div>
+                <div class="flex bg-slate-100 dark:bg-slate-800 p-0 rounded-lg border border-slate-200 dark:border-slate-700 ml-2 h-8">
+                    <button id="btn-current" class="toggle-btn inactive" onclick="setMonthMode('current')">当前月</button>
+                    <button id="btn-cumulative" class="toggle-btn active" onclick="setMonthMode('cumulative')">累计月</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="space-y-6">
+
+            <section class="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 card-shadow transition-shadow duration-300 p-6 h-[340px] flex flex-col">
+                <div class="flex items-center justify-between mb-2">
+                    <div class="flex items-center space-x-2">
+                        <div class="section-title-bar m-0"></div>
+                        <h3 class="font-bold text-slate-800 dark:text-slate-200 text-[15px]">断面水质指数同比变化</h3>
+                    </div>
+                    <div class="flex gap-2">
+                        <i class="ri-table-2 chart-action-icon" title="查看数据表" onclick="showChartData('chartYoy', '断面水质指数同比变化')"></i>
+                        <i class="ri-download-2-line chart-action-icon" title="下载图表" onclick="downloadChart('chartYoy')"></i>
+                    </div>
+                </div>
+                <div id="chart-yoy" class="flex-1 w-full"></div>
+            </section>
+
+            <section class="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 card-shadow transition-shadow duration-300 p-6 h-[380px] flex flex-col">
+                <div class="flex items-center justify-between mb-2">
+                    <div class="flex items-center space-x-2">
+                        <div class="section-title-bar m-0"></div>
+                        <h3 class="font-bold text-slate-800 dark:text-slate-200 text-[15px]">各地市水质指数排名统计</h3>
+                    </div>
+                    <div class="flex gap-2">
+                        <i class="ri-table-2 chart-action-icon" title="查看数据表" onclick="showChartData('chartCityRank', '各地市水质指数排名统计')"></i>
+                        <i class="ri-download-2-line chart-action-icon" title="下载图表" onclick="downloadChart('chartCityRank')"></i>
+                    </div>
+                </div>
+                <div id="chart-city-rank" class="flex-1 w-full"></div>
+            </section>
+
+            <section class="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 card-shadow transition-shadow duration-300 p-6 h-[380px] flex flex-col">
+                <div class="flex items-center justify-between mb-2">
+                    <div class="flex items-center space-x-2">
+                        <div class="section-title-bar m-0"></div>
+                        <h3 class="font-bold text-slate-800 dark:text-slate-200 text-[15px]">断面水质指数排名统计</h3>
+                    </div>
+                    <div class="flex gap-2">
+                        <i class="ri-table-2 chart-action-icon" title="查看数据表" onclick="showChartData('chartSectionRank', '断面水质指数排名统计')"></i>
+                        <i class="ri-download-2-line chart-action-icon" title="下载图表" onclick="downloadChart('chartSectionRank')"></i>
+                    </div>
+                </div>
+                <div id="chart-section-rank" class="flex-1 w-full"></div>
+            </section>
+
+        </div>
+
+        <footer class="mt-8 pt-4 border-t border-slate-200 dark:border-slate-800 text-center text-xs text-slate-400 pb-2">
+            <p>&copy; 2026 湖北省生态环境厅 · 版权所有</p>
+        </footer>
+    </main>
+</div>
+
+<div id="data-table-modal" class="fixed inset-0 z-[100] hidden bg-slate-900/50 backdrop-blur-sm flex items-center justify-center transition-opacity opacity-0 duration-300">
+    <div class="bg-white dark:bg-slate-800 rounded shadow-2xl w-11/12 max-w-6xl flex flex-col max-h-[85vh] transform transition-transform scale-95 duration-300">
+        <div class="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-slate-700 shrink-0">
+            <div class="flex items-center space-x-2">
+                <div class="section-title-bar m-0"></div>
+                <h3 id="modal-title" class="text-base font-bold text-slate-800 dark:text-white"></h3>
+            </div>
+            <button onclick="closeModal()" class="text-slate-400 hover:text-red-500 transition-colors flex items-center justify-center">
+                <i class="ri-close-line text-2xl"></i>
+            </button>
+        </div>
+        <div class="overflow-auto flex-1 custom-scrollbar">
+            <table class="w-full text-sm text-center text-slate-600 dark:text-slate-300 border-collapse">
+                <thead class="text-slate-700 bg-slate-100 dark:bg-slate-700 dark:text-slate-200 sticky top-0 z-10" id="modal-thead">
+                </thead>
+                <tbody id="modal-tbody">
+                </tbody>
+            </table>
+        </div>
+        <div class="px-6 py-4 border-t border-slate-100 dark:border-slate-700 bg-white dark:bg-slate-800 shrink-0 flex justify-center space-x-4">
+            <button onclick="closeModal()" class="px-6 py-1.5 bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded text-sm text-slate-600 dark:text-slate-200 hover:bg-slate-50 transition-colors">
+                取消
+            </button>
+            <button onclick="exportExcel()" class="px-6 py-1.5 bg-blue-500 text-white border border-blue-500 rounded text-sm hover:bg-blue-600 transition-colors">
+                导出
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const sidebar = document.getElementById('sidebar');
+    const toggleBtn = document.getElementById('toggleSidebarBtn');
+    const toggleIcon = document.getElementById('toggleIcon');
+    let isCollapsed = false;
+
+    const chartInstances = {};
+    const charts = [];
+
+    // 侧边栏折叠逻辑
+    toggleBtn.addEventListener('click', () => {
+        isCollapsed = !isCollapsed;
+        if (isCollapsed) {
+            sidebar.classList.remove('w-[270px]');
+            sidebar.classList.add('w-[80px]', 'hide-text', 'collapsed-sidebar');
+            toggleIcon.style.transform = 'rotate(180deg)';
+        } else {
+            sidebar.classList.remove('w-[80px]', 'hide-text', 'collapsed-sidebar');
+            sidebar.classList.add('w-[270px]');
+            toggleIcon.style.transform = 'rotate(0deg)';
+        }
+        setTimeout(() => resizeAllCharts(), 300);
+    });
+
+    // 菜单展开/收起
+    function toggleSubmenu(id) {
+        if (isCollapsed) return;
+        const submenu = document.getElementById(id);
+        const btn = submenu.previousElementSibling;
+        const chevron = btn.querySelector('.sidebar-chevron');
+        if (submenu.style.maxHeight) {
+            submenu.style.maxHeight = null;
+            chevron.style.transform = 'rotate(0deg)';
+        } else {
+            submenu.style.maxHeight = submenu.scrollHeight + "px";
+            chevron.style.transform = 'rotate(180deg)';
+        }
+    }
+
+    // 初始化展开指定菜单
+    window.addEventListener('load', () => {
+        const ministrySubmenu = document.getElementById('submenu-ministry');
+        ministrySubmenu.style.maxHeight = ministrySubmenu.scrollHeight + "px";
+    });
+
+    // 切换 累计月/当前月
+    function setMonthMode(mode) {
+        const btnCurrent = document.getElementById('btn-current');
+        const btnCumulative = document.getElementById('btn-cumulative');
+        const monthSelect = document.getElementById('month-select');
+
+        if (mode === 'current') {
+            btnCurrent.classList.remove('inactive'); btnCurrent.classList.add('active');
+            btnCumulative.classList.remove('active'); btnCumulative.classList.add('inactive');
+            Array.from(monthSelect.options).forEach(opt => { opt.text = opt.text.replace('1-', ''); });
+        } else {
+            btnCumulative.classList.remove('inactive'); btnCumulative.classList.add('active');
+            btnCurrent.classList.remove('active'); btnCurrent.classList.add('inactive');
+            Array.from(monthSelect.options).forEach(opt => {
+                if (!opt.text.startsWith('1-')) opt.text = '1-' + opt.text;
+            });
+        }
+    }
+
+    // 通用图表 Tooltip 样式配置
+    const getTooltipConfig = () => ({
+        trigger: 'axis',
+        axisPointer: { type: 'shadow' },
+        backgroundColor: 'rgba(255, 255, 255, 0.95)',
+        borderColor: '#e2e8f0',
+        textStyle: { color: '#334155' },
+        extraCssText: 'box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); border-radius: 6px;'
+    });
+
+    // 初始化图表
+    function initCharts() {
+        const textCol = document.documentElement.classList.contains('dark') ? '#94a3b8' : '#64748b';
+        const color2025 = '#3b82f6'; // 蓝色
+        const color2024 = '#06b6d4'; // 青色
+        const colorLine = '#fbbf24'; // 黄色线
+
+        // 1. 断面水质指数同比变化
+        const domYoy = document.getElementById('chart-yoy');
+        const chartYoy = echarts.init(domYoy);
+        chartInstances['chartYoy'] = chartYoy;
+        charts.push(chartYoy);
+        chartYoy.setOption({
+            tooltip: getTooltipConfig(),
+            legend: { top: 0, right: '2%', icon: 'roundRect', itemWidth: 12, itemHeight: 8, textStyle: { fontSize: 11, color: textCol } },
+            grid: { top: '15%', left: '1%', right: '2%', bottom: '2%', containLabel: true },
+            xAxis: {
+                type: 'category',
+                data: ['1月', '1-2月', '1-3月', '1-4月', '1-5月', '1-6月', '1-7月', '1-8月', '1-9月', '1-10月', '1-11月', '1-12月'],
+                axisLabel: { color: textCol, fontSize: 11 }
+            },
+            yAxis: {
+                type: 'value',
+                min: 0,
+                max: 4,
+                interval: 1,
+                axisLabel: { color: textCol },
+                splitLine: { lineStyle: { type: 'dashed', color: '#e2e8f0' } }
+            },
+            series: [
+                { name: '2025', type: 'bar', barWidth: '15%', data: [3.7, 3.65, 3.65, 3.7, 3.75, 3.8, 3.9, 3.95, 3.9, 3.9, 3.85, 3.85], itemStyle: { color: color2025, borderRadius: [2, 2, 0, 0] } },
+                { name: '2024', type: 'bar', barWidth: '15%', data: [3.7, 3.7, 3.75, 3.8, 3.8, 3.8, 3.85, 3.9, 3.95, 3.9, 3.9, 3.85], itemStyle: { color: color2024, borderRadius: [2, 2, 0, 0] } }
+            ]
+        });
+
+        // 2. 各地市水质指数排名统计 (双轴: 柱状图 + 折线图)
+        const domCityRank = document.getElementById('chart-city-rank');
+        const chartCityRank = echarts.init(domCityRank);
+        chartInstances['chartCityRank'] = chartCityRank;
+        charts.push(chartCityRank);
+        chartCityRank.setOption({
+            tooltip: {
+                ...getTooltipConfig(),
+                formatter: function (params) {
+                    let relVal = params[0].name + '<br/>';
+                    for (let i = 0, l = params.length; i < l; i++) {
+                        let val = params[i].value;
+                        let unit = params[i].seriesName === 'ΔCWQI' ? '%' : '';
+                        relVal += params[i].marker + params[i].seriesName + ' : ' + val + unit + '<br/>';
+                    }
+                    return relVal;
+                }
+            },
+            legend: { top: 0, right: '2%', itemWidth: 12, itemHeight: 8, textStyle: { fontSize: 11, color: textCol } },
+            grid: { top: '15%', left: '1%', right: '1%', bottom: '18%', containLabel: true },
+            dataZoom: [
+                {
+                    type: 'slider',
+                    show: true,
+                    // 2. 将滑动条固定在最底部，稍微留几个像素的边距
+                    bottom: 5,
+                    height: 12,
+                    borderColor: 'transparent',
+                    backgroundColor: '#f1f5f9',
+                    fillerColor: '#cbd5e1',
+                    handleSize: '100%',
+                    handleStyle: { color: '#94a3b8' },
+                    realtime: true,
+                    throttle: 40,
+                    start: 0,
+                    end: 100
+                },
+                {
+                    type: 'inside',
+                    realtime: true,
+                    throttle: 40
+                }
+            ],
+            xAxis: {
+                type: 'category',
+                data: ['恩施', '十堰', '宜昌', '襄阳', '咸宁', '荆门', '鄂州', '黄石', '黄冈'],
+                axisLabel: { color: textCol, fontSize: 11, interval: 0 }
+            },
+            yAxis: [
+                {
+                    type: 'value',
+                    name: '',
+                    min: 0,
+                    max: 5,
+                    interval: 1,
+                    axisLabel: { color: textCol },
+                    splitLine: { lineStyle: { type: 'dashed', color: '#e2e8f0' } }
+                },
+                {
+                    type: 'value',
+                    name: 'CWQI 变化率',
+                    nameTextStyle: { color: 'transparent' }, // 隐藏多余文本保持整洁
+                    min: -12,
+                    max: 3,
+                    interval: 3,
+                    axisLabel: { color: textCol, formatter: '{value} %' },
+                    splitLine: { show: false }
+                }
+            ],
+            series: [
+                { name: '2024年CWQI', type: 'bar', barWidth: '20%', data: [2.8, 2.9, 3.3, 3.3, 3.9, 4.3, 3.8, 3.9, 4.1], itemStyle: { color: color2025, borderRadius: [2, 2, 0, 0] } },
+                { name: '2025年CWQI', type: 'bar', barWidth: '20%', data: [2.8, 2.9, 3.1, 3.35, 3.5, 3.8, 3.85, 3.95, 4.0], itemStyle: { color: color2024, borderRadius: [2, 2, 0, 0] } },
+                { name: 'ΔCWQI', type: 'line', yAxisIndex: 1, symbol: 'circle', symbolSize: 6, data: [-2, -1, -5, 2, -8, -12, 1, 1, -2], itemStyle: { color: colorLine }, lineStyle: { width: 2 } }
+            ]
+        });
+
+        // 3. 断面水质指数排名统计 (双轴: 柱状图 + 折线图)
+        const domSectionRank = document.getElementById('chart-section-rank');
+        const chartSectionRank = echarts.init(domSectionRank);
+        chartInstances['chartSectionRank'] = chartSectionRank;
+        charts.push(chartSectionRank);
+        chartSectionRank.setOption({
+            tooltip: {
+                ...getTooltipConfig(),
+                formatter: function (params) {
+                    let relVal = params[0].name + '<br/>';
+                    for (let i = 0, l = params.length; i < l; i++) {
+                        let val = params[i].value;
+                        let unit = params[i].seriesName === 'ΔCWQI' ? '%' : '';
+                        relVal += params[i].marker + params[i].seriesName + ' : ' + val + unit + '<br/>';
+                    }
+                    return relVal;
+                }
+            },
+            legend: { top: 0, right: '2%', itemWidth: 12, itemHeight: 8, textStyle: { fontSize: 11, color: textCol } },
+            grid: { top: '15%', left: '1%', right: '1%', bottom: '18%', containLabel: true },
+
+            dataZoom: [
+                {
+                    type: 'slider',
+                    show: true,
+                    // 2. 将滑动条固定在最底部，稍微留几个像素的边距
+                    bottom: 5,
+                    height: 12,
+                    borderColor: 'transparent',
+                    backgroundColor: '#f1f5f9',
+                    fillerColor: '#cbd5e1',
+                    handleSize: '100%',
+                    handleStyle: { color: '#94a3b8' },
+                    realtime: true,
+                    throttle: 40,
+                    start: 0,
+                    end: 100
+                },
+                {
+                    type: 'inside',
+                    realtime: true,
+                    throttle: 40
+                }
+            ],
+            xAxis: {
+                type: 'category',
+                data: ['石矶头大桥上', '汉川新堰', '南里渡桥', '梁子湖七星站', '金水闸', '杨林尾', '土门大桥'],
+                axisLabel: { color: textCol, fontSize: 11, interval: 0 }
+            },
+            yAxis: [
+                {
+                    type: 'value',
+                    name: '',
+                    min: 0,
+                    max: 8,
+                    interval: 1,
+                    axisLabel: { color: textCol },
+                    splitLine: { lineStyle: { type: 'dashed', color: '#e2e8f0' } }
+                },
+                {
+                    type: 'value',
+                    name: '',
+                    min: -50,
+                    max: 0,
+                    interval: 10,
+                    axisLabel: { color: textCol, formatter: '{value} %' },
+                    splitLine: { show: false }
+                }
+            ],
+            series: [
+                { name: '2024年CWQI', type: 'bar', barWidth: '20%', data: [6.8, 6.7, 7.0, 4.2, 3.2, 3.7, 4.3], itemStyle: { color: color2025, borderRadius: [2, 2, 0, 0] } },
+                { name: '2025年CWQI', type: 'bar', barWidth: '20%', data: [3.5, 3.7, 4.3, 2.7, 2.1, 2.5, 2.9], itemStyle: { color: color2024, borderRadius: [2, 2, 0, 0] } },
+                { name: 'ΔCWQI', type: 'line', yAxisIndex: 1, symbol: 'circle', symbolSize: 6, data: [-45, -42, -35, -30, -28, -27, -25], itemStyle: { color: colorLine }, lineStyle: { width: 2 } }
+            ]
+        });
+    }
+
+    // 下载图表
+    function downloadChart(chartKey) {
+        const chart = chartInstances[chartKey];
+        if (!chart) return;
+        const url = chart.getDataURL({ type: 'png', pixelRatio: 2, backgroundColor: '#ffffff' });
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = chartKey + '.png';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+    }
+
+    // 展现图表对应的表格数据
+    function showChartData(chartKey, titleText) {
+        const chart = chartInstances[chartKey];
+        if (!chart) return;
+        const option = chart.getOption();
+        const series = option.series;
+
+        let categories = [];
+        if (option.xAxis && option.xAxis[0] && option.xAxis[0].data) {
+            categories = option.xAxis[0].data;
+        }
+
+        document.getElementById('modal-title').innerText = titleText;
+
+        let rowHeaderName = '类目';
+        if (chartKey === 'chartYoy') rowHeaderName = '月份';
+        else if (chartKey === 'chartCityRank') rowHeaderName = '地市名称';
+        else if (chartKey === 'chartSectionRank') rowHeaderName = '断面名称';
+
+        const thead = document.getElementById('modal-thead');
+        let theadHTML = `<tr>
+            <th class="px-6 py-4 font-bold whitespace-nowrap w-16">序号</th>
+            <th class="px-6 py-4 font-bold w-48">${rowHeaderName}</th>`;
+        series.forEach(s => {
+            theadHTML += `<th class="px-6 py-4 font-bold">${s.name}</th>`;
+        });
+        theadHTML += '</tr>';
+        thead.innerHTML = theadHTML;
+
+        const tbody = document.getElementById('modal-tbody');
+        let tbodyHTML = '';
+        if(categories && categories.length > 0) {
+            categories.forEach((cat, idx) => {
+                const bgClass = idx % 2 === 0 ? 'bg-white dark:bg-slate-800' : 'bg-[#fcfcfc] dark:bg-slate-800/50';
+                tbodyHTML += `<tr class="${bgClass} hover:bg-blue-50/50 dark:hover:bg-slate-700/50 transition-colors">
+                    <td class="px-6 py-4 text-slate-500">${idx + 1}</td>
+                    <td class="px-6 py-4 text-slate-700 dark:text-slate-300">${cat}</td>`;
+                series.forEach(s => {
+                    let val = (s.data[idx] !== undefined && s.data[idx] !== null) ? s.data[idx] : '-';
+                    // 如果是变化率给加个单位
+                    if(s.name === 'ΔCWQI' && val !== '-') val += '%';
+                    tbodyHTML += `<td class="px-6 py-4">${val}</td>`;
+                });
+                tbodyHTML += '</tr>';
+            });
+        }
+        tbody.innerHTML = tbodyHTML;
+
+        const modal = document.getElementById('data-table-modal');
+        modal.classList.remove('hidden');
+        void modal.offsetWidth;
+        modal.classList.remove('opacity-0');
+        modal.querySelector('div').classList.remove('scale-95');
+    }
+
+    // 导出 Excel (CSV格式)
+    function exportExcel() {
+        const table = document.querySelector('#data-table-modal table');
+        if (!table) return;
+
+        let csv = [];
+        const rows = table.querySelectorAll('tr');
+
+        for (let i = 0; i < rows.length; i++) {
+            let row = [];
+            const cols = rows[i].querySelectorAll('td, th');
+            for (let j = 0; j < cols.length; j++) {
+                let data = cols[j].innerText.trim();
+                if (i === 0 && j === 0 && data === "") data = "序号";
+                data = data.replace(/"/g, '""'); // 转义引号
+                row.push('"' + data + '"');
+            }
+            csv.push(row.join(','));
+        }
+
+        const csvFile = new Blob(['\uFEFF' + csv.join('\n')], {type: 'text/csv;charset=utf-8;'});
+        const downloadLink = document.createElement("a");
+        const title = document.getElementById('modal-title').innerText || '导出数据';
+
+        downloadLink.download = title + ".csv";
+        downloadLink.href = window.URL.createObjectURL(csvFile);
+        downloadLink.style.display = "none";
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        document.body.removeChild(downloadLink);
+    }
+
+    // 关闭数据表模态框
+    function closeModal() {
+        const modal = document.getElementById('data-table-modal');
+        modal.classList.add('opacity-0');
+        modal.querySelector('div').classList.add('scale-95');
+        setTimeout(() => { modal.classList.add('hidden'); }, 300);
+    }
+
+    // 窗口尺寸自适应
+    function resizeAllCharts() { charts.forEach(chart => { if (chart) chart.resize(); }); }
+
+    window.addEventListener('load', initCharts);
+    window.addEventListener('resize', resizeAllCharts);
+</script>
+
+</body>
+</html>

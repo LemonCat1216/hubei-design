@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>水质自动站日报</title>
+    <style>
+        :root {
+            --primary-color: #0056b3;
+            --primary-light: #007bff;
+            --header-bg: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+            --border-color: #e9ecef;
+            --text-main: #333;
+            --text-sub: #666;
+            --text-white: #fff;
+            --danger: #dc3545;
+            --success: #28a745;
+            --warning: #ffc107;
+            --safe-area-bottom: env(safe-area-inset-bottom);
+        }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        /* 增加底部padding，防止内容被加高的底部栏遮挡 (估算高度约140px) */
+        body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: #f5f7fa; color: var(--text-main); }
+
+        /* --- 顶部区域 --- */
+        .top-container { position: sticky; top: 0; z-index: 100; background: #fff; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); }
+        .header { padding: 16px; display: flex; justify-content: center; align-items: center; border-bottom: 1px solid var(--border-color); background: var(--header-bg); position: relative; }
+        .header h1 { margin: 0; font-size: 17px; font-weight: 600; color: var(--text-white); letter-spacing: 0.5px; }
+        .date-picker { position: absolute; right: 16px; top: 50%; transform: translateY(-50%); font-size: 12px; color: var(--text-white); background: rgba(255, 255, 255, 0.2); padding: 6px 12px; border-radius: 16px; font-weight: 500; display: flex; align-items: center; cursor: pointer; transition: background 0.3s; }
+        .date-picker::after { content: ' ▼'; font-size: 10px; margin-left: 4px; }
+
+        /* Tabs */
+        .tabs-wrapper { overflow-x: auto; white-space: nowrap; scrollbar-width: none; padding: 0 8px; border-bottom: 1px solid var(--border-color); background: #fff; }
+        .tabs-wrapper::-webkit-scrollbar { display: none; }
+        .tab-item { display: inline-block; padding: 14px 18px; font-size: 15px; color: var(--text-sub); position: relative; cursor: pointer; transition: all 0.3s; margin: 0 2px; border-radius: 6px 6px 0 0; }
+        .tab-item.active { color: var(--primary-color); font-weight: 600; background: rgba(0, 86, 179, 0.05); }
+        .tab-item.active::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 3px; background: var(--primary-color); border-radius: 3px 3px 0 0; }
+
+        /* --- 表格区域 --- */
+        .content-area { padding: 12px; animation: fadeIn 0.3s ease; }
+        .table-card { background: #fff; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); position: relative; }
+        .table-responsive { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+        table { width: 100%; border-collapse: collapse; font-size: 12px; white-space: nowrap; }
+        th, td { padding: 10px 8px; border-bottom: 1px solid var(--border-color); text-align: center; vertical-align: middle; }
+        th { background-color: #f8f9fc; color: var(--text-sub); font-weight: 600; }
+
+        /* 复杂表头样式 */
+        th[colspan] { border-bottom: 1px solid #dee2e6; background-color: #f8f9fc; color: #495057; }
+
+        /* 固定列 */
+        th.sticky-col, td.sticky-col { position: sticky; left: 0; z-index: 10; background-color: #fff; border-right: 1px solid var(--border-color); text-align: left; font-weight: 600; min-width: 90px; box-shadow: 2px 0 5px -2px rgba(0, 0, 0, 0.1); }
+        th.sticky-col { background-color: #f8f9fc; z-index: 11; }
+        th.sticky-col[rowspan] { z-index: 12; }
+
+        /* --- 水质类别颜色 (参照图片更新) --- */
+        .water-class { display: inline-block; padding: 2px 6px; border-radius: 4px; font-weight: 500; font-size: 11px; min-width: 36px; text-align: center; margin: 0 2px;}
+
+        /* I类 - 浅青色 */
+        .water-1 { background: #E0FFFF; color: #333; border: 1px solid #cceeff; }
+        /* II类 - 亮蓝色 */
+        .water-2 { background: #00CCFF; color: #fff; border: 1px solid #00bbxx; }
+        /* III类 - 绿色 */
+        .water-3 { background: #00FF00; color: #333; border: 1px solid #00ee00; }
+        /* IV类 - 黄色 */
+        .water-4 { background: #FFFF00; color: #333; border: 1px solid #eeee00; }
+        /* V类 - 橙色 */
+        .water-5 { background: #FF9B00; color: #fff; border: 1px solid #ee9000; }
+        /* 劣V类 - 红色 */
+        .water-worse { background: #FF0000; color: white; border: 1px solid #dd0000; }
+
+        /* 趋势变化颜色 */
+        .trend-good { color: var(--success); font-weight: bold; } /* 好转 */
+        .trend-bad { color: var(--danger); font-weight: bold; } /* 下降 */
+
+        /* 1. 图例行 */
+        .legend-bar {
+            padding: 1px 16px;
+            background: #f5f7fa;
+            display: flex;
+            align-items: center;
+            overflow-x: auto;
+            border-bottom: 1px solid #f0f0f0;
+            white-space: nowrap;
+        }
+        .legend-label { font-size: 12px; color: #666; margin-right: 6px; font-weight: 500;}
+
+        /* 2. 备注行 (灰色背景) */
+        .notes-bar {
+            padding: 8px 16px;
+            background: #f5f7fa; /* 灰色背景 */
+            font-size: 12px;
+            color: #888;
+            line-height: 1.5;
+            border-bottom: 1px solid #e9ecef;
+        }
+        .notes-bar p { margin: 2px 0; }
+
+        /* 3. 操作行 */
+        .action-bar {
+            padding: 10px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #fff;
+        }
+
+        .info-text { font-size: 12px; color: var(--text-sub); }
+        .btn-download { background-color: var(--primary-color); color: #fff; border: none; padding: 8px 20px; border-radius: 24px; font-size: 14px; font-weight: 600; display: flex; align-items: center; box-shadow: 0 4px 12px rgba(0, 86, 179, 0.3); }
+        .btn-download svg { margin-right: 6px; width: 18px; height: 18px; }
+
+        /* 动画 */
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+
+<div class="top-container">
+    <div class="header">
+        <h1>统计报告</h1>
+        <div class="date-picker" id="datePickerBtn">2025年12月24日</div>
+    </div>
+
+    <div class="tabs-wrapper">
+        <div class="tab-item active" onclick="switchTab('auto_daily')">国控自动站水质状况</div>
+    </div>
+</div>
+
+<div class="content-area" id="content-container">
+</div>
+
+    <div class="legend-bar">
+        <span class="legend-label">水质类别:</span>
+        <span class="water-class water-1">I 类</span>
+        <span class="water-class water-2">II 类</span>
+        <span class="water-class water-3">III类</span>
+        <span class="water-class water-4">IV类</span>
+        <span class="water-class water-5">V 类</span>
+        <span class="water-class water-worse">劣V类</span>
+    </div>
+
+    <div class="notes-bar">
+        <p>注：数据未经总站最终审核，仅供参考。省控水站监测数据不参与国控断面评价考核。</p>
+    </div>
+
+    <div class="action-bar">
+        <span class="info-text" id="record-count">共统计 0 个断面</span>
+        <button class="btn-download" onclick="alert('导出功能开发中')">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+            导出报表
+        </button>
+    </div>
+
+
+<script>
+    // 数据源
+    const mockData = {
+        auto_daily: {
+            rows: [
+                {
+                    river: '陆水',
+                    type: '国控',
+                    siteName: '洪下水文站',
+                    city: '咸宁市',
+                    county: '崇阳县',
+                    day: { class: 'III', trend: 'good', trendText: '有所好转', items: '氨氮(III)、总磷(II)' },
+                    month: { class: 'II', items: '-' },
+                    target: 'II类'
+                },
+                {
+                    river: '陆水',
+                    type: '国控',
+                    siteName: '陆溪口',
+                    city: '咸宁市',
+                    county: '嘉鱼县',
+                    day: { class: 'III', trend: '', trendText: '', items: '高锰酸盐指数(III)、氨氮(III)' },
+                    month: { class: 'III', items: '氨氮(III)' },
+                    target: 'II类'
+                },
+                {
+                    river: '通顺河',
+                    type: '国控',
+                    siteName: '黄陵大桥',
+                    city: '武汉市',
+                    county: '蔡甸区、汉南区',
+                    day: { class: 'IV', trend: '', trendText: '', items: '高锰酸盐指数(IV)、总磷(IV)' },
+                    month: { class: 'IV', items: '高锰酸盐指数(IV)、总磷(IV)' },
+                    target: 'III类'
+                },
+                {
+                    river: '神定河',
+                    type: '国控',
+                    siteName: '东湾桥',
+                    city: '十堰市',
+                    county: '张湾区',
+                    day: { class: 'IV', trend: 'bad', trendText: '有所下降', items: '总磷(IV)、高锰酸盐指数(IV)' },
+                    month: { class: 'III', items: '-' },
+                    target: 'III类'
+                },
+                {
+                    river: '竹皮河',
+                    type: '国控',
+                    siteName: '马良龚家湾',
+                    city: '荆门市',
+                    county: '沙洋县',
+                    day: { class: 'V', trend: 'good', trendText: '有所好转', items: '氨氮(V)' },
+                    month: { class: 'IV', items: '-' },
+                    target: 'IV类'
+                },
+                {
+                    river: '京山河',
+                    type: '国控',
+                    siteName: '京山河邓李港',
+                    city: '荆门市',
+                    county: '京山市',
+                    day: { class: 'IV', trend: 'bad', trendText: '有所下降', items: '总磷(IV)、氨氮(IV)' },
+                    month: { class: 'II', items: '-' },
+                    target: 'III类'
+                },
+                {
+                    river: '丹江口水库',
+                    type: '国控',
+                    siteName: '坝上中',
+                    city: '十堰市',
+                    county: '丹江口市',
+                    day: { class: 'III', trend: '', trendText: '', items: '总磷(III)' },
+                    month: { class: 'III', items: '总磷(III)' },
+                    target: 'II类'
+                },
+                {
+                    river: '洪湖',
+                    type: '国控',
+                    siteName: '湖心B',
+                    city: '荆州市',
+                    county: '洪湖市',
+                    day: { class: 'V', trend: 'bad', trendText: '有所下降', items: '总磷(V) 0.110mg/L' },
+                    month: { class: 'III', items: '-' },
+                    target: '总磷≤0.08...'
+                },
+                {
+                    river: '斧头湖咸宁',
+                    type: '国控',
+                    siteName: '咸宁湖心',
+                    city: '咸宁市',
+                    county: '咸安区',
+                    day: { class: 'III', trend: '', trendText: '', items: '高锰酸盐指数(III)' },
+                    month: { class: 'III', items: '高锰酸盐指数(III)' },
+                    target: '总磷≤0.05...'
+                }
+            ]
+        }
+    };
+
+    // 辅助函数：根据水质类别返回CSS类
+    function getWaterClass(level) {
+        if (!level) return '';
+        if (level.includes('I') && !level.includes('V')) { // I, II, III
+            if (level === 'I') return 'water-1'; // 新增I类
+            if (level === 'II' || level === 'Ⅱ') return 'water-2';
+            if (level === 'III' || level === 'Ⅲ') return 'water-3';
+        }
+        if (level.includes('IV') || level === 'Ⅳ') return 'water-4';
+        if (level.includes('V') || level === 'Ⅴ') return 'water-5';
+        if (level.includes('劣')) return 'water-worse';
+        return '';
+    }
+
+    // 核心渲染函数
+    function renderTable(type) {
+        const container = document.getElementById('content-container');
+        let html = '';
+
+        if (type === 'auto_daily') {
+            const data = mockData.auto_daily.rows;
+            // 构建表格
+            html = `
+                <div class="table-card">
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th class="sticky-col" rowspan="2" style="text-align:center;">点位名称</th>
+                                    <th rowspan="2">所在河流</th>
+                                    <th rowspan="2">属性</th>
+                                    <th rowspan="2">责任城市/县区</th>
+                                    <th colspan="3">当日水质情况</th>
+                                    <th colspan="2">本月累计情况</th>
+                                    <th rowspan="2">十四五<br>考核目标</th>
+                                </tr>
+                                <tr>
+                                    <th class="th-sub">水质类别</th>
+                                    <th class="th-sub">环比变化</th>
+                                    <th class="th-sub">主要超标项目</th>
+                                    <th class="th-sub">水质类别</th>
+                                    <th class="th-sub">主要超标项目</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${data.map((row, index) => {
+                const dayClass = getWaterClass(row.day.class);
+                const monthClass = getWaterClass(row.month.class);
+
+                let targetClass = '';
+                if(row.target.includes('I') && !row.target.includes('V') && !row.target.includes('II') && !row.target.includes('III')) targetClass = 'water-1';
+                else if(row.target.includes('II') || row.target.includes('Ⅱ')) targetClass = 'water-2';
+                else if(row.target.includes('III') || row.target.includes('Ⅲ')) targetClass = 'water-3';
+                else if(row.target.includes('IV') || row.target.includes('Ⅳ')) targetClass = 'water-4';
+                else if(row.target.includes('V') || row.target.includes('Ⅴ')) targetClass = 'water-5';
+
+                let trendClass = '';
+                if(row.day.trend === 'good') trendClass = 'trend-good';
+                if(row.day.trend === 'bad') trendClass = 'trend-bad';
+
+                return `
+                                    <tr>
+                                        <td class="sticky-col">${row.siteName}</td>
+                                        <td>${row.river}</td>
+                                        <td>${row.type}</td>
+                                        <td>${row.city}<br><span style="font-size:11px;color:#999">${row.county}</span></td>
+
+                                        <td><span class="water-class ${dayClass}">${row.day.class}类</span></td>
+                                        <td class="${trendClass}">${row.day.trendText || '-'}</td>
+                                        <td style="font-size:11px; max-width:120px; white-space:normal;">${row.day.items}</td>
+
+                                        <td><span class="water-class ${monthClass}">${row.month.class}类</span></td>
+                                        <td style="font-size:11px; max-width:120px; white-space:normal;">${row.month.items}</td>
+
+                                        <td><span class="water-class ${targetClass}">${row.target}</span></td>
+                                    </tr>
+                                    `;
+            }).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            `;
+            document.getElementById('record-count').innerText = `共统计出 ${data.length} 个自动站`;
+        }
+
+        container.innerHTML = html;
+    }
+
+    function switchTab(type) {
+        document.querySelectorAll('.tab-item').forEach(el => el.classList.remove('active'));
+        event.target.classList.add('active');
+        renderTable(type);
+    }
+
+    // 初始化
+    window.addEventListener('DOMContentLoaded', () => {
+        renderTable('auto_daily');
+    });
+</script>
+</body>
+</html>

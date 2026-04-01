@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>水质自动监测数据 - 最终版</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #1890FF;
+            --search-btn-color: #00B578; /* 源自文件2的绿色搜索按钮 */
+            --bg-color: #F4F6F8;
+            --card-bg: #FFFFFF;
+            --text-main: #333333;
+            --text-sub: #888888;
+            --border-color: #EEEEEE;
+            --tag-bg: #F0F2F5;
+            --tag-text: #5E6D82;
+        }
+
+        /* 水质等级颜色 (源自文件1标准) */
+        .level-1 { background-color: #C5FFFF; color: #004085; }
+        .level-2 { background-color: #34C3F6; color: white; }
+        .level-3 { background-color: #03FF03; color: #005a00; }
+        .level-4 { background-color: #FCFF7D; color: #856404; }
+        .level-5 { background-color: #FF9000; color: white; }
+        .level-worse { background-color: #FF0101; color: white; }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            padding-bottom: 40px;
+        }
+
+        /* --- 顶部控制区 --- */
+        .control-panel {
+            background: var(--card-bg);
+            padding: 12px 15px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        /* 第一行：搜索框 + 日期 */
+        .row-primary {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .input-box {
+            background-color: var(--tag-bg);
+            border-radius: 6px;
+            padding: 8px 12px;
+            display: flex;
+            align-items: center;
+            font-size: 14px;
+            height: 36px;
+        }
+
+        .search-input { flex: 1; }
+        .search-input input {
+            border: none;
+            background: transparent;
+            width: 100%;
+            outline: none;
+            color: var(--text-main);
+            font-size: 13px;
+        }
+        .search-input i { color: #BBB; margin-right: 8px; font-size: 12px; }
+
+        .date-select {
+            flex: 1.2;
+            justify-content: space-between;
+            color: var(--text-main);
+            font-size: 13px;
+            cursor: pointer;
+        }
+        .date-select i.fa-calendar-alt { margin-right: 6px; color: var(--primary-color); }
+        .date-select i.fa-caret-down { color: #BBB; }
+
+        /* 第二行：筛选标签 + 搜索按钮 */
+        .row-secondary {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* 滚动区域容器 */
+        .filters-scroll {
+            flex: 1;
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding-bottom: 2px; /* 防止滚动条遮挡 */
+            scrollbar-width: none; /* Firefox 隐藏滚动条 */
+        }
+        .filters-scroll::-webkit-scrollbar { display: none; } /* Chrome/Safari 隐藏滚动条 */
+
+        /* 灰色圆角小按钮 */
+        .filter-capsule {
+            background-color: var(--tag-bg);
+            color: var(--tag-text);
+            font-size: 11px;
+            padding: 5px 12px;
+            border-radius: 14px;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .filter-capsule i { margin-left: 3px; font-size: 10px; opacity: 0.6; }
+        .filter-capsule.active { background-color: #E6F7FF; color: var(--primary-color); font-weight: 500; }
+
+        /* 搜索按钮 */
+        .btn-search {
+            background-color: var(--search-btn-color);
+            color: white;
+            padding: 5px 16px;
+            border-radius: 14px;
+            font-size: 12px;
+            font-weight: 500;
+            white-space: nowrap;
+            box-shadow: 0 2px 6px rgba(0, 181, 120, 0.2);
+            margin-left: 4px;
+            cursor: pointer;
+        }
+        .btn-search:active { opacity: 0.9; transform: scale(0.98); }
+
+        /* --- 列表区域 --- */
+        .list-container { padding: 15px 12px; }
+
+        /* --- 卡片样式 (融合版) --- */
+        .issue-card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 0; /* 内部布局自己控制padding */
+            margin-bottom: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            border: 1px solid rgba(0,0,0,0.03);
+            overflow: hidden;
+        }
+
+        /* 卡片头部 */
+        .card-header {
+            padding: 16px 16px 12px 16px;
+            display: flex;
+            align-items: flex-start;
+            border-bottom: 1px dashed var(--border-color);
+        }
+
+        .badge-box {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            flex-shrink: 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .badge-box .idx { font-size: 10px; opacity: 0.9; line-height: 1; margin-bottom: 2px; }
+        .badge-box .lvl { font-size: 13px; font-weight: bold; line-height: 1; }
+
+        .header-info { flex: 1; min-width: 0; }
+
+        .title-line {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+        .station-name {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-main);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .target-label {
+            font-size: 11px;
+            color: #888;
+            background: #F5F5F5;
+            padding: 2px 6px;
+            border-radius: 4px;
+            flex-shrink: 0;
+            margin-left: 8px;
+        }
+
+        .sub-line {
+            font-size: 12px;
+            color: var(--text-sub);
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .sub-line span { display: flex; align-items: center; }
+        .sub-line i { margin-right: 4px; font-size: 11px; }
+
+        /* 卡片内容区 */
+        .card-body { padding: 12px 16px; cursor: pointer; }
+
+        /* 数据网格 */
+        .data-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            column-gap: 20px;
+            row-gap: 12px;
+        }
+
+        .data-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            font-size: 13px;
+        }
+        .d-label { color: var(--text-sub); }
+        .d-value { color: var(--text-main); font-weight: 600; font-family: -apple-system, monospace; text-align: right; }
+        .d-unit { font-weight: 400; color: #999; font-size: 11px; margin-left: 2px; }
+
+        /* 特殊值颜色 */
+        .val-ok { color: #52c41a; } /* 绿色 */
+        .val-warn { color: #faad14; } /* 黄色 */
+
+        /* 折叠区域动画 */
+        .extra-wrapper {
+            display: grid;
+            grid-template-rows: 0fr;
+            transition: grid-template-rows 0.3s ease-out;
+        }
+        .issue-card.expanded .extra-wrapper { grid-template-rows: 1fr; }
+
+        .extra-inner { overflow: hidden; }
+        .extra-content {
+            padding-top: 12px;
+            border-top: 1px dashed #f0f0f0;
+            margin-top: 12px;
+            opacity: 0;
+            transform: translateY(-5px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+        .issue-card.expanded .extra-content {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* 底部按钮 */
+        .card-footer-btn {
+            background: #FAFAFA;
+            border-top: 1px solid #f0f0f0;
+            color: #999;
+            font-size: 11px;
+            text-align: center;
+            padding: 8px 0;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .card-footer-btn:active { background: #F0F0F0; }
+        .arrow { display: inline-block; margin-left: 4px; transition: transform 0.3s; font-size: 10px; }
+        .issue-card.expanded .arrow { transform: rotate(180deg); }
+
+    </style>
+</head>
+<body>
+
+<div class="control-panel">
+    <div class="row-primary">
+        <div class="input-box search-input">
+            <i class="fas fa-search"></i>
+            <input type="text" placeholder="输入自动站名称">
+        </div>
+        <div class="input-box date-select">
+            <span><i class="far fa-calendar-alt"></i> 2025/12/18</span>
+            <i class="fas fa-caret-down"></i>
+        </div>
+    </div>
+
+    <div class="row-secondary">
+        <div class="filters-scroll">
+            <div class="filter-capsule">
+                湖北省 <i class="fas fa-caret-down"></i>
+            </div>
+            <div class="filter-capsule">
+                达标
+            </div>
+            <div class="filter-capsule">
+                不达标
+            </div>
+            <div class="filter-capsule">
+                Ⅰ-Ⅲ类
+            </div>
+            <div class="filter-capsule">
+                劣Ⅴ类
+            </div>
+        </div>
+        <div class="btn-search">
+            <i class="fas fa-search"></i> 搜索
+        </div>
+    </div>
+</div>
+
+<div class="list-container">
+
+    <div class="issue-card" onclick="toggleCard(this)">
+        <div class="card-header">
+            <div class="badge-box level-2">
+<!--                <span class="idx">01</span>-->
+                <span class="lvl">Ⅱ类</span>
+            </div>
+            <div class="header-info">
+                <div class="title-line">
+                    <span class="station-name">云池（白洋）</span>
+                    <span class="target-label">目标: Ⅲ类</span>
+                </div>
+                <div class="sub-line">
+                    <span><i class="fas fa-map-marker-alt"></i> 湖北省 · 宜昌市</span>
+                    <span><i class="far fa-clock"></i> 12-18 13:44</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-body">
+            <div class="data-grid">
+                <div class="data-item">
+                    <span class="d-label">超标因子</span>
+                    <span class="d-value val-ok">无</span>
+                </div>
+                <div class="data-item">
+                    <span class="d-label">pH值</span>
+                    <span class="d-value">7.21</span>
+                </div>
+                <div class="data-item">
+                    <span class="d-label">溶解氧</span>
+                    <span class="d-value">8.4<span class="d-unit">mg/L</span></span>
+                </div>
+                <div class="data-item">
+                    <span class="d-label">氨氮</span>
+                    <span class="d-value">0.15<span class="d-unit">mg/L</span></span>
+                </div>
+                <div class="data-item">
+                    <span class="d-label">高锰酸盐</span>
+                    <span class="d-value">2.1<span class="d-unit">mg/L</span></span>
+                </div>
+                <div class="data-item">
+                    <span class="d-label">总磷</span>
+                    <span class="d-value">0.046<span class="d-unit">mg/L</span></span>
+                </div>
+            </div>
+
+            <div class="extra-wrapper">
+                <div class="extra-inner">
+                    <div class="extra-content">
+                        <div class="data-grid">
+                            <div class="data-item">
+                                <span class="d-label">总氮</span>
+                                <span class="d-value">1.2<span class="d-unit">mg/L</span></span>
+                            </div>
+                            <div class="data-item">
+                                <span class="d-label">水温</span>
+                                <span class="d-value">30.4<span class="d-unit">°C</span></span>
+                            </div>
+                            <div class="data-item">
+                                <span class="d-label">浊度</span>
+                                <span class="d-value">12.5<span class="d-unit">NTU</span></span>
+                            </div>
+                            <div class="data-item">
+                                <span class="d-label">电导率</span>
+                                <span class="d-value">452<span class="d-unit">μS/cm</span></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-footer-btn">
+            <span class="btn-text">查看详情</span> <span class="arrow">▼</span>
+        </div>
+    </div>
+
+    <div class="issue-card" onclick="toggleCard(this)">
+        <div class="card-header">
+            <div class="badge-box level-3">
+                <span class="idx">02</span>
+                <span class="lvl">Ⅲ类</span>
+            </div>
+            <div class="header-info">
+                <div class="title-line">
+                    <span class="station-name">潜江大桥</span>
+                    <span class="target-label">目标: Ⅲ类</span>
+                </div>
+                <div class="sub-line">
+                    <span><i class="fas fa-map-marker-alt"></i> 湖北省 · 潜江市</span>
+                    <span><i class="far fa-clock"></i> 12-18 13:00</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-body">
+            <div class="data-grid">
+                <div class="data-item">
+                    <span class="d-label">超标因子</span>
+                    <span class="d-value val-ok">无</span>
+                </div>
+                <div class="data-item">
+                    <span class="d-label">pH值</span>
+                    <span class="d-value">7.15</span>
+                </div>
+                <div class="data-item">
+                    <span class="d-label">溶解氧</span>
+                    <span class="d-value">10.7<span class="d-unit">mg/L</span></span>
+                </div>
+                <div class="data-item">
+                    <span class="d-label">氨氮</span>
+                    <span class="d-value">0.04<span class="d-unit">mg/L</span></span>
+                </div>
+            </div>
+            <div class="extra-wrapper">
+                <div class="extra-inner">
+                    <div class="extra-content">
+                        <div class="data-grid">
+                            <div class="data-item">
+                                <span class="d-label">总磷</span>
+                                <span class="d-value">0.044<span class="d-unit">mg/L</span></span>
+                            </div>
+                            <div class="data-item">
+                                <span class="d-label">总氮</span>
+                                <span class="d-value">1.58<span class="d-unit">mg/L</span></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-footer-btn">
+            <span class="btn-text">查看详情</span> <span class="arrow">▼</span>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    function toggleCard(card) {
+        // 切换展开状态
+        const isExpanded = card.classList.toggle('expanded');
+
+        // 更新按钮文字
+        const btnText = card.querySelector('.btn-text');
+        if (btnText) {
+            btnText.textContent = isExpanded ? '收起详情' : '查看详情';
+        }
+    }
+</script>
+
+</body>
+</html>

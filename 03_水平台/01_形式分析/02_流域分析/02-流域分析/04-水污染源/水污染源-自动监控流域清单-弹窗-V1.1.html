@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>湖北省水生态环境综合管理 - 水污染源分析 (优化版V1.3)</title>
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography,container-queries"></script>
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#3b82f6",
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                },
+            },
+        };
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .custom-scrollbar::-webkit-scrollbar { width: 4px; height: 4px; }
+            .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+            .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+            .modal-slide-container { transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
+
+            /* 分页按钮基础样式 */
+            .pagination-btn {
+                @apply relative inline-flex items-center justify-center px-3 py-1.5 text-sm font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-700 transition-colors rounded-md min-w-[32px] cursor-pointer select-none;
+            }
+            .pagination-btn.active {
+                @apply bg-blue-600 text-white hover:bg-blue-700 hover:text-white shadow-sm;
+            }
+            .pagination-btn.disabled {
+                @apply opacity-50 cursor-not-allowed hover:bg-transparent hover:text-slate-500;
+            }
+            .section-title-bar {
+                width: 5px;
+                height: 16px;
+                background: linear-gradient(180deg, #60a5fa 0%, #1e40af 100%);
+                border-radius: 99px;
+                margin-right: 10px;
+                flex-shrink: 0;
+            }
+
+            /* 优化日期输入框的图标显示 (针对webkit浏览器) */
+            input[type="date"]::-webkit-calendar-picker-indicator {
+                cursor: pointer;
+                opacity: 0.6;
+            }
+            input[type="date"]::-webkit-calendar-picker-indicator:hover {
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body class="bg-slate-100 dark:bg-slate-900 text-slate-800 h-screen overflow-hidden flex flex-col">
+
+<div class="flex-1 flex items-center justify-center flex-col gap-4">
+    <div class="text-slate-400 font-medium">点击下方按钮查看调整后的弹窗效果</div>
+    <button onclick="openModal('长江流域 - 富水片区')" class="px-6 py-3 bg-blue-600 text-white rounded-lg shadow-lg hover:bg-blue-700 transition font-bold">
+        打开调整后的弹窗 (样式优化版)
+    </button>
+</div>
+
+<div id="detail-modal" class="fixed inset-0 z-[100] hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+    <div class="fixed inset-0 bg-slate-900/40 backdrop-blur-[2px] transition-opacity opacity-0" id="modal-backdrop"></div>
+
+    <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
+        <div class="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
+
+            <div class="relative transform overflow-hidden rounded-xl bg-white dark:bg-slate-900 text-left shadow-2xl transition-all sm:my-8 sm:w-full sm:max-w-[1100px] opacity-0 translate-y-4 scale-95" id="modal-panel">
+
+                <button onclick="closeDetailModal()" class="absolute right-4 top-4 z-20 text-slate-400 hover:text-slate-600 transition-colors focus:outline-none">
+                    <span class="material-symbols-outlined text-xl">close</span>
+                </button>
+
+                <div class="w-full overflow-hidden">
+                    <div id="modal-slider" class="flex w-[200%] modal-slide-container">
+
+                        <div class="w-1/2 shrink-0 p-6 bg-white dark:bg-slate-900 flex flex-col h-[600px]">
+
+                            <div class="mb-5 space-y-4">
+                                <div class="flex items-center gap-1">
+                                    <div class="section-title-bar w-1.5 h-5 bg-slate-900 dark:bg-white rounded"></div>
+                                    <h3 class="text-lg font-bold text-slate-900 dark:text-white select-none">
+                                        长江流域 - 富水片区
+                                    </h3>
+                                </div>
+
+                                <div class="flex items-center gap-3">
+                                    <div class="relative flex-1">
+                                        <div class="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none">
+                                            <i class="ri-search-line text-slate-400"></i>
+                                        </div>
+                                        <input type="text" placeholder="请输入企业名称"
+                                               class="block w-full rounded-md border-slate-200 dark:border-slate-700 pl-9 pr-3 py-1.5 text-sm placeholder-slate-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 bg-white dark:bg-slate-800">
+                                    </div>
+
+                                    <div class="relative w-32 shrink-0">
+                                        <select class="block w-full rounded-md border-slate-200 dark:border-slate-700 py-1.5 pl-3 pr-8 text-sm text-slate-600 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 bg-white dark:bg-slate-800 appearance-none cursor-pointer">
+                                            <option value="" disabled selected>是否超标</option>
+                                            <option value="yes">是</option>
+                                            <option value="no">否</option>
+                                        </select>
+                                    </div>
+                                    <div class="relative w-44 shrink-0">
+                                        <select class="block w-full rounded-md border-slate-200 dark:border-slate-700 py-1.5 pl-3 pr-8 text-sm text-slate-600 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 bg-white dark:bg-slate-800 appearance-none cursor-pointer">
+                                            <option value="" disabled selected>是否为夜猫子企业</option>
+                                            <option value="yes">是</option>
+                                            <option value="no">否</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="flex items-center gap-2 shrink-0">
+                                        <div class="relative">
+                                            <input type="date" class="block w-[130px] rounded-md border-slate-200 dark:border-slate-700 py-1.5 px-2 text-sm text-slate-600 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 bg-white dark:bg-slate-800 shadow-sm">
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+
+                            <div class="flex-1 overflow-hidden flex flex-col border border-slate-200 dark:border-slate-700 rounded-lg">
+                                <div class="flex bg-slate-50 dark:bg-slate-800 border-b border-slate-300 dark:border-slate-600 py-3 text-[13px] font-bold text-slate-600 dark:text-slate-300 items-center">
+                                    <div class="w-[22%] px-4">企业名称</div>
+
+                                    <div class="w-[58%] flex border-l border-slate-200 dark:border-slate-700">
+                                        <div class="w-[25%] px-2 text-center">排口名称</div>
+                                        <div class="w-[15%] text-center border-l border-slate-200 dark:border-slate-700">报警次数</div>
+                                        <div class="w-[60%] px-4 border-l border-slate-200 dark:border-slate-700">污染物比值浓度（夜/日）</div>
+                                    </div>
+
+                                    <div class="w-[10%] text-center border-l border-slate-200 dark:border-slate-700">夜猫子企业</div>
+
+                                    <div class="w-[10%] text-center border-l border-slate-200 dark:border-slate-700">查看详情</div>
+                                </div>
+
+                                <div id="table-list" class="overflow-y-auto custom-scrollbar flex-1 bg-white dark:bg-slate-900 text-sm">
+                                </div>
+                            </div>
+
+                            <div class="mt-4 flex items-center justify-between select-none">
+                                <div id="total-count-display" class="text-sm text-slate-500 pl-1 font-medium">
+                                </div>
+                                <div id="pagination-container" class="flex items-center gap-1">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="w-1/2 shrink-0 p-6 bg-slate-50 dark:bg-slate-900 h-full flex flex-col border-l border-slate-200 dark:border-slate-800">
+                            <div class="flex items-center justify-between mb-2">
+                                <div class="flex items-center gap-3">
+                                    <button onclick="slideBack()" class="flex items-center justify-center w-8 h-8 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-500 hover:text-blue-600 hover:border-blue-500 transition-all shadow-sm">
+                                        <i class="ri-arrow-left-line"></i>
+                                    </button>
+                                    <h2 class="text-lg font-bold text-slate-900 dark:text-white" id="detail-company-name">企业详情</h2>
+                                    <span class="px-2 py-0.5 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-xs border border-blue-200 dark:border-blue-800 rounded">自动监测企业</span>
+                                </div>
+                            </div>
+                            <div class="flex gap-6 border-b border-slate-200 dark:border-slate-700 mb-6 text-sm">
+                                <button class="pb-2 text-blue-600 font-bold border-b-2 border-blue-600">基本信息</button>
+                                <button class="pb-2 text-slate-500 hover:text-slate-700">监测信息</button>
+                                <button class="pb-2 text-slate-500 hover:text-slate-700">超标清单</button>
+                            </div>
+                            <div class="bg-white p-6 rounded-lg border border-slate-200 shadow-sm text-slate-400 text-center">
+                                详情内容区域 (当前选中企业 ID: <span id="debug-id"></span>)
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // --- 状态与数据管理 ---
+    const PAGE_SIZE = 5;
+    let currentPage = 1;
+    let allData = [];
+
+    // --- 模拟数据生成函数 ---
+    function generateMockData() {
+        const data = [];
+        const pollutantTypes = ["COD", "氨氮", "总磷", "总氮"];
+
+        for (let i = 1; i <= 55; i++) {
+            // 随机生成 1 到 3 个排口
+            const outletCount = Math.floor(Math.random() * 3) + 1;
+            const outlets = [];
+
+            for (let j = 1; j <= outletCount; j++) {
+                const count = Math.floor(Math.random() * 5); // 随机报警次数
+
+                // 模拟 1-4 种污染物比值
+                const numFactors = Math.floor(Math.random() * 4) + 1; // 1到4个
+                const selectedFactors = [...pollutantTypes]
+                    .sort(() => 0.5 - Math.random())
+                    .slice(0, numFactors);
+
+                const ratioList = selectedFactors.map(factor => {
+                    // 生成 0.5 ~ 3.5 之间的随机比值
+                    const ratio = (Math.random() * 3 + 0.5).toFixed(2);
+                    return { name: factor, val: ratio };
+                });
+
+                outlets.push({
+                    name: `排口-${j}`,
+                    count: count,
+                    ratios: ratioList,
+                    isOver: count > 0
+                });
+            }
+
+            // 随机决定是否为夜猫子企业
+            const isNightOwl = Math.random() > 0.6;
+
+            data.push({
+                id: i,
+                name: `湖北示例化工企业 NO.${i}`,
+                outlets: outlets,
+                isNightOwl: isNightOwl
+            });
+        }
+        return data;
+    }
+
+    // --- 初始化数据 ---
+    allData = generateMockData();
+
+    // --- 核心渲染逻辑 ---
+    function renderTable() {
+        const container = document.getElementById('table-list');
+        const start = (currentPage - 1) * PAGE_SIZE;
+        const end = start + PAGE_SIZE;
+        const pageData = allData.slice(start, end);
+
+        if (pageData.length === 0) {
+            container.innerHTML = '<div class="p-8 text-center text-slate-400">暂无数据</div>';
+            return;
+        }
+
+        let html = '';
+
+        pageData.forEach(item => {
+            // 1. 构建排口的 HTML
+            let outletsHtml = '';
+            item.outlets.forEach((outlet, index) => {
+                const isLast = index === item.outlets.length - 1;
+                const borderClass = isLast ? '' : 'border-b border-slate-100 dark:border-slate-800';
+                // 确保高度一致，至少50px
+                const heightClass = 'min-h-[50px]';
+                const countColor = outlet.count > 0 ? 'text-red-500' : 'text-emerald-500';
+
+                // --- NEW: 优化后的比值展示逻辑 ---
+                // 使用纯文本+分隔符，去除所有背景色和边框
+                // 只有当数值 > 1.5 时，稍微加粗显示，不使用红色/橙色，保持低调
+                const ratioText = outlet.ratios.map((r, idx) => {
+                    const isHigh = parseFloat(r.val) > 1.5;
+                    const valClass = isHigh ? 'font-bold text-slate-700 dark:text-slate-200' : 'text-slate-600 dark:text-slate-400';
+                    const separator = idx === 0 ? '' : '<span class="mx-2 text-slate-300">|</span>';
+
+                    return `${separator}<span class="inline-flex items-baseline gap-1">
+                                <span class="text-slate-500 text-xs">${r.name}</span>
+                                <span class="${valClass} text-xs font-medium">${r.val}</span>
+                            </span>`;
+                }).join('');
+
+                outletsHtml += `
+                    <div class="flex items-center ${heightClass} ${borderClass} w-full">
+                        <div class="w-[25%] px-1 py-2 text-slate-600 dark:text-slate-400 truncate text-center text-[13px]" title="${item.name}-${outlet.name}">${outlet.name}</div>
+                        <div class="w-[15%] py-2 text-center font-bold ${countColor} text-[13px] border-l border-slate-50 dark:border-slate-800/50">${outlet.count}次</div>
+                        <div class="w-[60%] px-4 py-2 border-l border-slate-50 dark:border-slate-800/50 flex flex-wrap items-center">
+                            ${ratioText}
+                        </div>
+                    </div>
+                `;
+            });
+
+            // 2. 构建夜猫子标签
+            const nightOwlBadge = item.isNightOwl
+                ? `<span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-[#e0e7ff] text-[#3c2e81] ">是</span>`
+                : `<span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-slate-100 text-slate-800 ">否</span>`;
+
+            // 3. 构建整行 HTML (宽度与表头对齐)
+            html += `
+                <div class="flex border-b border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800/20 transition-colors group">
+
+                    <div class="w-[22%] p-4 flex items-center text-slate-800 dark:text-slate-200 font-medium leading-relaxed border-r border-slate-100 dark:border-slate-800 text-sm">
+                        ${item.name}
+                    </div>
+
+                    <div class="w-[58%] flex flex-col border-r border-slate-100 dark:border-slate-800">
+                        ${outletsHtml}
+                    </div>
+
+                    <div class="w-[10%] flex items-center justify-center border-r border-slate-100 dark:border-slate-800">
+                        ${nightOwlBadge}
+                    </div>
+
+                    <div class="w-[10%] flex items-center justify-center">
+                        <button onclick="slideNext('${item.name}', ${item.id})"
+                            class="group/btn relative flex items-center justify-center gap-1 pl-3 pr-2 py-1.5 text-xs font-medium rounded-md
+                            bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700
+                            text-slate-600 dark:text-slate-300
+                            hover:text-blue-600 hover:border-blue-200 hover:bg-blue-50 dark:hover:bg-blue-900/20
+                            transition-all shadow-sm">
+                            <span>详情</span>
+                            <i class="ri-arrow-right-s-line text-slate-400 group-hover/btn:text-blue-500 transition-transform group-hover/btn:translate-x-0.5"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+        });
+
+        container.innerHTML = html;
+        renderPagination();
+    }
+
+    function renderPagination() {
+        const container = document.getElementById('pagination-container');
+        const countDisplay = document.getElementById('total-count-display');
+        const totalPages = Math.ceil(allData.length / PAGE_SIZE);
+
+        countDisplay.innerHTML = `共 <span class="font-bold text-slate-700 dark:text-slate-300 mx-1">${allData.length}</span> 条数据`;
+
+        let btnsHtml = '';
+        const prevDisabled = currentPage === 1 ? 'disabled' : '';
+        const prevClick = currentPage === 1 ? '' : `onclick="changePage(${currentPage - 1})"`;
+        btnsHtml += `<button class="pagination-btn rounded-l-md ${prevDisabled}" ${prevClick}><i class="ri-arrow-left-s-line"></i></button>`;
+
+        const generateBtn = (pageNum) => {
+            const activeClass = pageNum === currentPage ? 'active' : '';
+            return `<button onclick="changePage(${pageNum})" class="pagination-btn ${activeClass}">${pageNum}</button>`;
+        };
+
+        if (totalPages <= 7) {
+            for (let i = 1; i <= totalPages; i++) {
+                btnsHtml += generateBtn(i);
+            }
+        } else {
+            btnsHtml += generateBtn(1);
+            if (currentPage > 4) {
+                btnsHtml += `<span class="text-slate-400 text-xs px-1">...</span>`;
+            }
+            let start = Math.max(2, currentPage - 1);
+            let end = Math.min(totalPages - 1, currentPage + 1);
+            if (currentPage <= 4) { end = 5; }
+            if (currentPage >= totalPages - 3) { start = totalPages - 4; }
+
+            for (let i = start; i <= end; i++) {
+                btnsHtml += generateBtn(i);
+            }
+            if (currentPage < totalPages - 3) {
+                btnsHtml += `<span class="text-slate-400 text-xs px-1">...</span>`;
+            }
+            btnsHtml += generateBtn(totalPages);
+        }
+
+        const nextDisabled = currentPage === totalPages ? 'disabled' : '';
+        const nextClick = currentPage === totalPages ? '' : `onclick="changePage(${currentPage + 1})"`;
+        btnsHtml += `<button class="pagination-btn rounded-r-md ${nextDisabled}" ${nextClick}><i class="ri-arrow-right-s-line"></i></button>`;
+
+        container.innerHTML = btnsHtml;
+    }
+
+    function changePage(page) {
+        if (page < 1 || page > Math.ceil(allData.length / PAGE_SIZE)) return;
+        currentPage = page;
+        renderTable();
+    }
+
+    // --- UI 控制逻辑 ---
+    const modal = document.getElementById('detail-modal');
+    const modalBackdrop = document.getElementById('modal-backdrop');
+    const modalPanel = document.getElementById('modal-panel');
+    const slider = document.getElementById('modal-slider');
+    const detailCompanyName = document.getElementById('detail-company-name');
+    const debugId = document.getElementById('debug-id');
+
+    function openModal() {
+        slideBack();
+        modal.classList.remove('hidden');
+        renderTable();
+        setTimeout(() => {
+            modalBackdrop.classList.remove('opacity-0');
+            modalPanel.classList.remove('opacity-0', 'translate-y-4', 'scale-95');
+        }, 10);
+    }
+
+    function closeDetailModal() {
+        modalBackdrop.classList.add('opacity-0');
+        modalPanel.classList.add('opacity-0', 'translate-y-4', 'scale-95');
+        setTimeout(() => {
+            modal.classList.add('hidden');
+        }, 300);
+    }
+
+    function slideNext(companyName, id) {
+        if(companyName) detailCompanyName.innerText = companyName;
+        if(id) debugId.innerText = id;
+        slider.style.transform = 'translateX(-50%)';
+    }
+
+    function slideBack() {
+        slider.style.transform = 'translateX(0)';
+    }
+
+    window.addEventListener('load', () => { setTimeout(openModal, 300); });
+</script>
+
+</body>
+</html>

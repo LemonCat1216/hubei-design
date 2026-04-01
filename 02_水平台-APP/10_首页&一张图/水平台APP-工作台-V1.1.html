@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>环保工作台</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #1976D2; /* 主题蓝 */
+            --bg-color: #F5F7FA;      /* 背景灰 */
+            --card-bg: #FFFFFF;       /* 卡片白 */
+            --text-main: #333333;     /* 主文字 */
+            --text-sub: #666666;      /* 次级文字 */
+            --border-radius: 12px;
+            --icon-bg-blue: #E3F2FD;
+            --icon-color-blue: #1976D2;
+            --icon-bg-orange: #FFF3E0;
+            --icon-color-orange: #F57C00;
+            --icon-bg-cyan: #E0F7FA;
+            --icon-color-cyan: #00BCD4;
+            --icon-bg-green: #E8F5E9;
+            --icon-color-green: #43A047;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            padding-bottom: 70px; /* 为底部导航留出空间 */
+        }
+
+        /* 顶部标题栏 */
+        .header {
+            background: linear-gradient(135deg, #1565C0, #1E88E5);
+            color: white;
+            text-align: center;
+            padding: 15px 0;
+            font-size: 18px;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        /* 通用卡片样式 */
+        .card {
+            background: var(--card-bg);
+            margin: 15px;
+            border-radius: var(--border-radius);
+            padding: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+        }
+
+        /* 模块标题栏（包含切换开关） */
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+        }
+
+        .section-title i {
+            margin-right: 8px;
+            color: var(--primary-color);
+        }
+
+        /* 切换开关样式 */
+        .toggle-switch {
+            background-color: #f0f0f0;
+            border-radius: 20px;
+            display: flex;
+            padding: 2px;
+            cursor: pointer;
+        }
+
+        .toggle-option {
+            padding: 4px 12px;
+            font-size: 12px;
+            border-radius: 16px;
+            color: var(--text-sub);
+            transition: all 0.3s;
+        }
+
+        .toggle-option.active {
+            background-color: var(--primary-color);
+            color: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        /* 网格布局 */
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr); /* 4列 */
+            gap: 20px 10px;
+        }
+
+        .grid-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .grid-item:active {
+            transform: scale(0.95);
+        }
+
+        /* 图标样式 */
+        .icon-box {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            margin-bottom: 8px;
+        }
+
+        /* 不同颜色的图标背景 */
+        .style-blue { background-color: var(--icon-bg-blue); color: var(--icon-color-blue); }
+        .style-orange { background-color: var(--icon-bg-orange); color: var(--icon-color-orange); }
+        .style-cyan { background-color: var(--icon-bg-cyan); color: var(--icon-color-cyan); }
+        .style-green { background-color: var(--icon-bg-green); color: var(--icon-color-green); }
+
+        .item-text {
+            font-size: 12px;
+            color: var(--text-main);
+            line-height: 1.4;
+        }
+
+        /* 底部导航栏 */
+        .tab-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 60px;
+            background: white;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            border-top: 1px solid #eee;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.03);
+            z-index: 1000;
+        }
+
+        .tab-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #999;
+            text-decoration: none;
+            font-size: 10px;
+            flex: 1;
+        }
+
+        .tab-item i {
+            font-size: 20px;
+            margin-bottom: 4px;
+        }
+
+        .tab-item.active {
+            color: var(--primary-color);
+        }
+
+        /* 隐藏类的样式 */
+        .hidden {
+            display: none !important;
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="header">工作台</div>
+
+<div class="card">
+    <div class="section-header">
+        <div class="section-title">
+            <i class="fas fa-chart-line"></i> 形势分析
+        </div>
+        <div class="toggle-switch" onclick="toggleControl()">
+            <div class="toggle-option active" id="btn-national">国控</div>
+            <div class="toggle-option" id="btn-provincial">省控</div>
+        </div>
+    </div>
+
+    <div class="grid-container" id="analysis-grid">
+        <div class="grid-item">
+            <div class="icon-box style-blue"><i class="fas fa-chart-pie"></i></div>
+            <div class="item-text">总体分析</div>
+        </div>
+        <div class="grid-item">
+            <div class="icon-box style-cyan"><i class="fas fa-water"></i></div>
+            <div class="item-text">流域分析</div>
+        </div>
+        <div class="grid-item dynamic-item">
+            <div class="icon-box style-blue"><i class="fas fa-stream"></i></div>
+            <div class="item-text">河流分析</div>
+        </div>
+        <div class="grid-item dynamic-item">
+            <div class="icon-box style-cyan"><i class="fas fa-database"></i></div>
+            <div class="item-text">湖库分析</div>
+        </div>
+        <div class="grid-item">
+            <div class="icon-box style-orange"><i class="fas fa-chart-bar"></i></div>
+            <div class="item-text">达标分析</div>
+        </div>
+        <div class="grid-item">
+            <div class="icon-box style-orange"><i class="fas fa-city"></i></div>
+            <div class="item-text">地市分析</div>
+        </div>
+        <div class="grid-item">
+            <div class="icon-box style-orange"><i class="fas fa-stopwatch"></i></div>
+            <div class="item-text">实时分析</div>
+        </div>
+        <div class="grid-item">
+            <div class="icon-box style-blue"><i class="fas fa-industry"></i></div>
+            <div class="item-text">监测企业</div>
+        </div>
+        <div class="grid-item">
+            <div class="icon-box style-green"><i class="fas fa-binoculars"></i></div>
+            <div class="item-text">预测分析</div>
+        </div>
+        <div class="grid-item">
+            <div class="icon-box style-orange"><i class="fas fa-folder-open"></i></div>
+            <div class="item-text">断面档案</div>
+        </div>
+        <div class="grid-item">
+            <div class="icon-box style-green"><i class="fas fa-file-lines"></i></div>
+            <div class="item-text">统计报告</div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="section-header">
+        <div class="section-title">
+            <i class="fas fa-bell"></i> 部级问题
+        </div>
+    </div>
+    <div class="grid-container">
+        <div class="grid-item">
+            <div class="icon-box style-blue"><i class="fas fa-list-check"></i></div>
+            <div class="item-text">问题清单</div>
+        </div>
+        <div class="grid-item">
+            <div class="icon-box style-orange"><i class="fas fa-box-archive"></i></div>
+            <div class="item-text">档案库</div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="section-header">
+        <div class="section-title">
+            <i class="fas fa-exclamation-circle"></i> 省级问题
+        </div>
+    </div>
+    <div class="grid-container">
+        <div class="grid-item">
+            <div class="icon-box style-cyan"><i class="fas fa-search"></i></div>
+            <div class="item-text">问题线索</div>
+        </div>
+        <div class="grid-item">
+            <div class="icon-box style-blue"><i class="fas fa-clipboard-list"></i></div>
+            <div class="item-text">总体分析</div>
+        </div>
+    </div>
+</div>
+
+<div class="tab-bar">
+    <a href="#" class="tab-item">
+        <i class="fas fa-home"></i>
+        <span>首页</span>
+    </a>
+    <a href="#" class="tab-item active">
+        <i class="fas fa-th-large"></i>
+        <span>工作台</span>
+    </a>
+    <a href="#" class="tab-item">
+        <i class="fas fa-map-marked-alt"></i>
+        <span>一张图</span>
+    </a>
+</div>
+
+<script>
+    let isNational = true; // 默认为国控
+
+    function toggleControl() {
+        isNational = !isNational;
+
+        // 切换按钮样式
+        const btnNat = document.getElementById('btn-national');
+        const btnPro = document.getElementById('btn-provincial');
+        const dynamicItems = document.querySelectorAll('.dynamic-item');
+
+        if (isNational) {
+            // 切换到国控状态
+            btnNat.classList.add('active');
+            btnPro.classList.remove('active');
+
+            // 显示河流和湖库分析
+            dynamicItems.forEach(item => {
+                item.classList.remove('hidden');
+            });
+        } else {
+            // 切换到省控状态
+            btnPro.classList.add('active');
+            btnNat.classList.remove('active');
+
+            // 隐藏河流和湖库分析
+            dynamicItems.forEach(item => {
+                item.classList.add('hidden');
+            });
+        }
+    }
+</script>
+</body>
+</html>

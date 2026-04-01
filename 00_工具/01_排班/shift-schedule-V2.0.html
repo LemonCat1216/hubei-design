@@ -1,0 +1,1485 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>湖北项目 - 智能排班系统 Pro</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #4361ee;
+            --primary-dark: #3a56d4;
+            --secondary: #7c3aed;
+            --pm-color: #6d28d9;
+            --fe-color: #0891b2;
+            --be-color: #ea580c;
+            --bg-page: #f8fafc;
+            --bg-card: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border-light: #e2e8f0;
+            --border-medium: #cbd5e1;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            --radius-sm: 6px;
+            --radius-md: 10px;
+            --radius-lg: 14px;
+            --radius-xl: 18px;
+            --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', "Microsoft YaHei", sans-serif;
+            margin: 0;
+            padding: 24px;
+            background-color: var(--bg-page);
+            color: var(--text-main);
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        /* --- ✨ 头部吸顶核心样式 --- */
+        .sticky-wrapper {
+            position: sticky;
+            top: 0;
+            z-index: 900;
+            background-color: rgba(248, 250, 252, 0.95);
+            backdrop-filter: blur(8px);
+            border-radius: var(--radius-lg);
+            padding: 16px;
+            margin: -16px -16px 0 -16px;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+        }
+
+        .sticky-wrapper.scrolled {
+            box-shadow: var(--shadow-md);
+            background-color: rgba(255, 255, 255, 0.98);
+        }
+
+        /* --- 顶部 Header --- */
+        .header-card {
+            background: linear-gradient(135deg, #fff 0%, #f8fafc 100%);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+            border: 1px solid var(--border-light);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .project-info h1 {
+            margin: 0 0 8px 0;
+            font-size: 24px;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .project-info p {
+            color: var(--text-muted);
+            font-size: 14px;
+            margin-top: 4px;
+        }
+
+        /* 角色图例 */
+        .role-legend {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .legend-tag {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            padding: 6px 12px;
+            border-radius: 999px;
+            background: #f1f5f9;
+            border: 1px solid var(--border-light);
+            transition: var(--transition);
+        }
+
+        .legend-tag:hover {
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .dot-pm {
+            color: var(--pm-color);
+            background: rgba(109, 40, 217, 0.1);
+            padding: 4px;
+            border-radius: 50%;
+        }
+
+        .dot-fe {
+            color: var(--fe-color);
+            background: rgba(8, 145, 178, 0.1);
+            padding: 4px;
+            border-radius: 50%;
+        }
+
+        .dot-be {
+            color: var(--be-color);
+            background: rgba(234, 88, 12, 0.1);
+            padding: 4px;
+            border-radius: 50%;
+        }
+
+        /* --- 交互控制栏 --- */
+        .toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+            background: var(--bg-card);
+            padding: 16px;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-light);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .view-switcher {
+            background: #e2e8f0;
+            padding: 4px;
+            border-radius: 12px;
+            display: flex;
+            gap: 4px;
+            align-items: center;
+        }
+
+        .switch-btn {
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--text-muted);
+            background: transparent;
+            transition: var(--transition);
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .switch-btn.active {
+            background: #fff;
+            color: var(--primary);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .switch-btn:hover:not(.active) {
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        .date-nav {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #f1f5f9;
+            padding: 6px;
+            border-radius: var(--radius-md);
+        }
+
+        .btn {
+            padding: 10px 16px;
+            border-radius: 10px;
+            border: 1px solid var(--border-light);
+            background: #fff;
+            cursor: pointer;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: var(--transition);
+            font-size: 14px;
+            color: var(--text-main);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .btn:hover {
+            background: #f8fafc;
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: #fff;
+            border: 1px solid var(--primary-dark);
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-success {
+            background: #10b981;
+            color: white;
+            border-color: #059669;
+        }
+
+        .btn-success:hover {
+            background: #059669;
+        }
+
+        .btn-danger {
+            background: #ef4444;
+            color: white;
+            border-color: #dc2626;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+
+        .btn-icon {
+            padding: 8px;
+            width: 36px;
+            height: 36px;
+            justify-content: center;
+        }
+
+        .date-display {
+            font-size: 18px;
+            font-weight: 700;
+            min-width: 160px;
+            text-align: center;
+            color: var(--text-main);
+            padding: 4px 12px;
+            border-radius: 8px;
+            background: white;
+            border: 1px solid var(--border-light);
+        }
+
+        .actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        /* --- 日历核心区域 --- */
+        .calendar-wrap {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            border: 1px solid var(--border-light);
+            box-shadow: var(--shadow-md);
+            display: flex;
+            flex-direction: column;
+            min-height: 600px;
+        }
+
+        .week-bar {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            background: #f8fafc;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .week-label {
+            padding: 16px 12px;
+            text-align: center;
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            background: #f1f5f9;
+        }
+
+        .grid-body {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            flex: 1;
+        }
+
+        .cell {
+            min-height: 140px;
+            border-right: 1px solid var(--border-light);
+            border-bottom: 1px solid var(--border-light);
+            padding: 10px;
+            position: relative;
+            transition: var(--transition);
+            background: #fff;
+        }
+
+        .cell.week-mode {
+            min-height: 500px;
+            background: #fff;
+        }
+
+        .cell:nth-child(7n) {
+            border-right: none;
+        }
+
+        .cell.today {
+            background: #f0f7ff;
+            box-shadow: inset 0 0 0 2px var(--primary);
+        }
+
+        .cell.other-month {
+            opacity: 0.5;
+            background: #fdfdfd;
+        }
+
+        .cell.drag-over {
+            background: #eff6ff;
+            outline: 2px dashed var(--primary);
+            outline-offset: -4px;
+        }
+
+        .cell:hover:not(.other-month) {
+            background: #f8fafc;
+        }
+
+        .cell.today:hover {
+            background: #e0efff;
+        }
+
+        .date-num {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            display: block;
+            position: absolute;
+            top: 8px;
+            right: 8px;
+        }
+
+        .today .date-num {
+            color: var(--primary);
+            background: rgba(67, 97, 238, 0.1);
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        /* 人员卡片 */
+        .member-list {
+            margin-top: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .member-card {
+            display: flex;
+            align-items: center;
+            padding: 8px 10px;
+            background: #fff;
+            border: 1px solid #f1f5f9;
+            border-radius: 8px;
+            box-shadow: var(--shadow-sm);
+            cursor: grab;
+            transition: var(--transition);
+            user-select: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(4px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .member-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--border-medium);
+        }
+
+        .member-card.pm {
+            border-left: 4px solid var(--pm-color);
+        }
+
+        .member-card.fe {
+            border-left: 4px solid var(--fe-color);
+        }
+
+        .member-card.be {
+            border-left: 4px solid var(--be-color);
+        }
+
+        .member-card:active {
+            cursor: grabbing;
+            transform: scale(0.98);
+        }
+
+        .member-card.dragging {
+            opacity: 0.5;
+            transform: scale(0.95);
+        }
+
+        .role-icon {
+            width: 20px;
+            font-size: 12px;
+            margin-right: 8px;
+            text-align: center;
+            background: #f1f5f9;
+            padding: 4px;
+            border-radius: 4px;
+        }
+
+        .name-txt {
+            font-size: 13px;
+            font-weight: 600;
+            flex-grow: 1;
+        }
+
+        /* 标签样式 (高级配色) */
+        .tags-container {
+            display: flex;
+            gap: 4px;
+            flex-wrap: wrap;
+        }
+
+        .tag-pill {
+            font-size: 11px;
+            padding: 3px 8px;
+            border-radius: 999px;
+            font-weight: 600;
+            line-height: 1.2;
+            border: 1px solid transparent;
+            transition: var(--transition);
+            white-space: nowrap;
+        }
+
+        .tag-normal {
+            background-color: #ecfdf5;
+            color: #047857;
+            border-color: #a7f3d0;
+        }
+
+        .tag-remote {
+            background-color: #e0e7ff;
+            color: #4338ca;
+            border-color: #c7d2fe;
+        }
+
+        .tag-leave {
+            background-color: #fffbeb;
+            color: #b45309;
+            border-color: #fde68a;
+        }
+
+        .tag-overtime {
+            background-color: #ffe4e6;
+            color: #e11d48;
+            border-color: #fecdd3;
+        }
+
+        /* 弹窗样式 */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 20px;
+            animation: fadeInOverlay 0.2s ease;
+        }
+
+        @keyframes fadeInOverlay {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        .modal-box {
+            background: #fff;
+            width: 100%;
+            max-width: 700px;
+            border-radius: var(--radius-xl);
+            overflow: hidden;
+            box-shadow: var(--shadow-xl);
+            transform: translateY(0);
+            animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            padding: 20px 24px;
+            background: #f8fafc;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .modal-header h3 {
+            font-size: 18px;
+            color: var(--text-main);
+        }
+
+        .modal-content {
+            padding: 24px;
+            display: grid;
+            grid-template-columns: 200px 1fr;
+            gap: 24px;
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+
+        .modal-actions {
+            padding: 16px 24px;
+            border-top: 1px solid #f1f5f9;
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            background: #fff;
+        }
+
+        .user-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            border-right: 1px solid var(--border-light);
+            padding-right: 16px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .user-btn {
+            justify-content: flex-start;
+            width: 100%;
+            text-align: left;
+            border: 1px solid var(--border-light);
+        }
+
+        .user-btn .fas {
+            width: 20px;
+            text-align: center;
+            margin-right: 8px;
+        }
+
+        .tag-options {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 12px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 32px;
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        /* Toast 通知 */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: #1e293b;
+            color: white;
+            padding: 12px 20px;
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-lg);
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .toast.success {
+            background: #10b981;
+        }
+
+        .toast.error {
+            background: #ef4444;
+        }
+
+        .toast.info {
+            background: #3b82f6;
+        }
+
+        /* 响应式调整 */
+        @media (max-width: 1024px) {
+            .modal-content {
+                grid-template-columns: 1fr;
+            }
+
+            .user-list {
+                border-right: none;
+                border-bottom: 1px solid var(--border-light);
+                padding-right: 0;
+                padding-bottom: 16px;
+                max-height: 150px;
+            }
+
+            .header-card {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .toolbar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .actions {
+                justify-content: center;
+            }
+
+            .date-nav {
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 12px;
+            }
+
+            .sticky-wrapper {
+                padding: 8px;
+                margin-top: -12px;
+                padding-top: 12px;
+            }
+
+            .header-card {
+                padding: 16px;
+            }
+
+            .calendar-wrap {
+                overflow-x: auto;
+            }
+
+            .grid-body {
+                min-width: 700px; /* 保证移动端横向滚动 */
+            }
+
+            .week-label {
+                font-size: 11px;
+                padding: 10px 6px;
+            }
+
+            .cell {
+                min-height: 100px;
+                padding: 6px;
+            }
+
+            .member-card {
+                padding: 6px;
+            }
+
+            .name-txt {
+                font-size: 12px;
+            }
+
+            .date-num {
+                font-size: 12px;
+            }
+
+            .btn {
+                padding: 8px 12px;
+                font-size: 13px;
+            }
+
+            .date-display {
+                min-width: auto;
+                font-size: 16px;
+            }
+        }
+
+        /* 简单加载动画 */
+        .loading {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* 辅助类 */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        .text-sm {
+            font-size: 12px;
+        }
+
+        .text-muted {
+            color: var(--text-muted);
+        }
+
+        .mt-2 {
+            margin-top: 8px;
+        }
+
+        .mb-2 {
+            margin-bottom: 8px;
+        }
+
+        .flex {
+            display: flex;
+        }
+
+        .items-center {
+            align-items: center;
+        }
+
+        .gap-2 {
+            gap: 8px;
+        }
+    </style>
+</head>
+<body>
+
+<div id="app" class="container">
+    <input type="file" ref="fileInput" @change="handleImportFile" accept=".json" style="display: none;">
+
+    <!-- 吸顶头部 -->
+    <div class="sticky-wrapper" :class="{ scrolled: isScrolled }">
+        <header class="header-card">
+            <div class="project-info">
+                <h1><i class="fas fa-chart-area"></i> 湖北项目 - 智能排班系统 Pro</h1>
+                <!--                <p>全球顶级排班解决方案 | 实时同步 | 智能拖拽 | 数据安全</p>-->
+                <div class="role-legend" style="margin-top: 12px;">
+                    <div class="legend-tag">
+                        <div class="dot-pm"><i class="fas fa-user-tie"></i></div>
+                        项目经理 (PM)
+                    </div>
+                    <div class="legend-tag">
+                        <div class="dot-fe"><i class="fas fa-laptop-code"></i></div>
+                        前端开发 (FE)
+                    </div>
+                    <div class="legend-tag">
+                        <div class="dot-be"><i class="fas fa-database"></i></div>
+                        后端开发 (BE)
+                    </div>
+                </div>
+            </div>
+            <div class="view-switcher" role="group" aria-label="视图切换">
+                <button
+                        class="switch-btn"
+                        :class="{active: viewMode === 'month'}"
+                        @click="setViewMode('month')"
+                        aria-pressed="viewMode === 'month'"
+                >
+                    <i class="fas fa-calendar"></i> 月视图
+                </button>
+                <button
+                        class="switch-btn"
+                        :class="{active: viewMode === 'week'}"
+                        @click="setViewMode('week')"
+                        aria-pressed="viewMode === 'week'"
+                >
+                    <i class="fas fa-calendar-week"></i> 周视图
+                </button>
+            </div>
+        </header>
+
+        <div class="toolbar">
+            <div class="date-nav">
+                <button class="btn btn-icon" @click="navigate(-1)" aria-label="上一页">
+                    <i class="fas fa-angle-left"></i>
+                </button>
+                <div class="date-display" tabindex="0" @keydown="handleKeyNav">
+                    {{ dateLabel }}
+                </div>
+                <button class="btn btn-icon" @click="navigate(1)" aria-label="下一页">
+                    <i class="fas fa-angle-right"></i>
+                </button>
+                <button class="btn" @click="goToday" style="margin-left: 8px;">今天</button>
+            </div>
+            <div class="actions">
+                <button class="btn" @click="triggerImport" title="从JSON文件导入排班">
+                    <i class="fas fa-file-upload"></i> 导入
+                </button>
+                <button class="btn" @click="exportJSON" title="导出排班数据为JSON">
+                    <i class="fas fa-file-download"></i> 导出
+                </button>
+                <button class="btn btn-success" @click="saveLocal(true)" title="保存到本地存储">
+                    <i class="fas fa-save"></i> 保存
+                </button>
+                <button class="btn btn-danger" @click="clearAllData" title="清空所有数据">
+                    <i class="fas fa-trash-alt"></i> 清空
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 日历主体 -->
+    <div class="calendar-wrap" @dragover.prevent @drop="onGlobalDrop">
+        <div class="week-bar" aria-hidden="true">
+            <div class="week-label" v-for="w in weekLabels" :key="w">{{ w }}</div>
+        </div>
+        <div class="grid-body" role="grid" aria-label="日历网格">
+            <div
+                    v-for="dateObj in visibleDays"
+                    :key="dateObj.dateStr"
+                    class="cell"
+                    :class="{
+                    today: isToday(dateObj.date), 
+                    'other-month': !dateObj.isCurrentMonth, 
+                    'week-mode': viewMode === 'week', 
+                    'drag-over': dragTarget === dateObj.dateStr
+                }"
+                    @click="openModal(dateObj)"
+                    @dragover.prevent="onCellDragOver(dateObj.dateStr)"
+                    @dragleave="dragTarget = null"
+                    @drop.prevent="onDrop(dateObj.dateStr)"
+                    role="gridcell"
+                    :aria-label="getCellAriaLabel(dateObj)"
+                    tabindex="0"
+                    @keydown.enter="openModal(dateObj)"
+            >
+                <span class="date-num">{{ dateObj.date.getDate() }}</span>
+
+                <div class="member-list" v-if="getShifts(dateObj.dateStr).length > 0">
+                    <div
+                            v-for="item in getShifts(dateObj.dateStr)"
+                            :key="item.name"
+                            class="member-card"
+                            :class="[getRole(item.name), { 'dragging': isDraggingItem(item, dateObj.dateStr) }]"
+                            draggable="true"
+                            @dragstart="onDragStart($event, dateObj.dateStr, item)"
+                            @dragend="onDragEnd"
+                            @click.stop="openModal(dateObj, item.name)"
+                            :title="`${item.name} - ${item.tags.join(', ')}`"
+                    >
+                        <i class="role-icon fas" :class="getRoleIcon(item.name)"></i>
+                        <span class="name-txt">{{ item.name }}</span>
+                        <div class="tags-container">
+                            <span v-for="tag in item.tags" :key="tag"
+                                  class="tag-pill"
+                                  :class="getTagClass(tag)">
+                                {{ tag }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div v-else class="empty-state text-sm">
+                    无排班
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 编辑模态框 -->
+    <div class="modal-overlay" v-if="showModal" @click.self="closeModal" role="dialog" aria-modal="true"
+         aria-labelledby="modal-title">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3 id="modal-title">编辑排班：{{ editingDateStr }}</h3>
+                <button @click="closeModal" class="btn btn-icon" aria-label="关闭">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-content">
+                <div class="user-list">
+                    <button v-for="m in teamMembers"
+                            :key="m.name"
+                            @click="currEditUser = m.name"
+                            class="btn user-btn"
+                            :class="{'btn-primary': currEditUser === m.name}"
+                    >
+                        <i class="fas" :class="getRoleIcon(m.name)"></i> {{ m.name }}
+                    </button>
+                </div>
+                <div>
+                    <p class="text-main font-weight-bold mb-2">状态标记 ({{ currEditUser }})</p>
+                    <div class="tag-options">
+                        <button v-for="tag in tagOptions"
+                                :key="tag"
+                                class="btn"
+                                :style="hasTag(tag) ? getTagStyle(tag) : {}"
+                                @click="toggleTag(tag)"
+                        >
+                            {{ tag }}
+                        </button>
+                    </div>
+                    <div class="mt-2 text-sm text-muted">
+                        <i class="fas fa-info-circle"></i> 提示：点击人员后选择状态，支持多选。
+                    </div>
+                    <div class="mt-2" v-if="currEditUser">
+                        <p class="text-sm font-weight-bold">当前预览:</p>
+                        <div class="member-card" :class="getRole(currEditUser)" style="margin-top: 4px;">
+                            <i class="role-icon fas" :class="getRoleIcon(currEditUser)"></i>
+                            <span class="name-txt">{{ currEditUser }}</span>
+                            <div class="tags-container">
+                                <span v-for="tag in (tempTags[currEditUser] || [])"
+                                      class="tag-pill"
+                                      :class="getTagClass(tag)">
+                                    {{ tag }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn" @click="removeUserFromDay" v-if="hasAnyTags" class="btn btn-danger">
+                    <i class="fas fa-user-minus"></i> 移除人员
+                </button>
+                <button class="btn" @click="closeModal">取消</button>
+                <button class="btn btn-primary" @click="confirmEdit">
+                    <span v-if="isSaving" class="loading"></span>
+                    <span v-else><i class="fas fa-check"></i> 确定保存</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast 通知 -->
+    <div class="toast" :class="[toast.type, { show: toast.visible }]">
+        <i class="fas" :class="toastIcon"></i>
+        {{ toast.message }}
+    </div>
+</div>
+
+<script>
+    const {createApp, ref, computed, onMounted, onUnmounted, watch, nextTick} = Vue;
+
+    createApp({
+        setup() {
+            // --- 状态定义 ---
+            const teamMembers = ref([
+                {name: "马天宇", role: "fe"}, {name: "谷思佳", role: "be"},
+                {name: "夏宇", role: "be"}, {name: "马依卓", role: "fe"},
+                {name: "林煜翔", role: "pm"}, {name: "徐金哲", role: "fe"},
+                {name: "任建华", role: "pm"}, {name: "王昀鹏", role: "pm"},
+                {name: "陈莹", role: "fe"}, {name: "程立强", role: "be"}, {name: "高天宇", role: "be"},
+            ]);
+
+            const tagOptions = ["正常", "远程", "请假", "加班"];
+            const viewMode = ref('month');
+            const anchorDate = ref(new Date());
+            const scheduleData = ref({});
+            const weekLabels = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
+            const isScrolled = ref(false);
+
+            // 模态框相关
+            const fileInput = ref(null);
+            const showModal = ref(false);
+            const editingDateStr = ref('');
+            const currEditUser = ref('');
+            const tempTags = ref({});
+            const isSaving = ref(false);
+
+            // 拖拽相关
+            const dragSource = ref(null);
+            const dragTarget = ref(null);
+
+            // Toast通知
+            const toast = ref({
+                visible: false,
+                message: '',
+                type: 'info'
+            });
+
+            // --- 计算属性 ---
+            const dateLabel = computed(() => {
+                const y = anchorDate.value.getFullYear();
+                const m = anchorDate.value.getMonth() + 1;
+                return viewMode.value === 'month' ? `${y}年 ${m}月` : `第${getWeekNum(anchorDate.value)}周`;
+            });
+
+            const visibleDays = computed(() => {
+                const days = [];
+                const d = new Date(anchorDate.value);
+                if (viewMode.value === 'month') {
+                    d.setDate(1);
+                    const startDay = d.getDay();
+                    d.setDate(d.getDate() - startDay);
+                    for (let i = 0; i < 42; i++) {
+                        const current = new Date(d);
+                        days.push({
+                            date: current,
+                            dateStr: formatDate(current),
+                            isCurrentMonth: current.getMonth() === anchorDate.value.getMonth()
+                        });
+                        d.setDate(d.getDate() + 1);
+                    }
+                } else {
+                    const day = d.getDay();
+                    d.setDate(d.getDate() - day);
+                    for (let i = 0; i < 7; i++) {
+                        const current = new Date(d);
+                        days.push({
+                            date: current,
+                            dateStr: formatDate(current),
+                            isCurrentMonth: true
+                        });
+                        d.setDate(d.getDate() + 1);
+                    }
+                }
+                return days;
+            });
+
+            const hasAnyTags = computed(() => {
+                return currEditUser.value && tempTags.value[currEditUser.value]?.length > 0;
+            });
+
+            const toastIcon = computed(() => {
+                switch (toast.value.type) {
+                    case 'success':
+                        return 'fa-check-circle';
+                    case 'error':
+                        return 'fa-exclamation-circle';
+                    default:
+                        return 'fa-info-circle';
+                }
+            });
+
+            // --- 核心方法 ---
+
+            // 数据操作
+            const getShifts = (dateStr) => scheduleData.value[dateStr] || [];
+
+            const saveLocal = (showFeedback = false) => {
+                try {
+                    localStorage.setItem('hubei_v7_data', JSON.stringify(scheduleData.value));
+                    if (showFeedback) showToast('排班数据已保存到本地', 'success');
+                } catch (e) {
+                    showToast('保存失败：可能是存储空间不足', 'error');
+                }
+            };
+
+            const loadFromLocal = () => {
+                try {
+                    const saved = localStorage.getItem('hubei_v7_data');
+                    if (saved) {
+                        scheduleData.value = JSON.parse(saved);
+                        showToast('数据已恢复', 'info');
+                    }
+                } catch (e) {
+                    console.error('数据加载失败', e);
+                    showToast('数据加载失败，已重置', 'error');
+                    scheduleData.value = {};
+                }
+            };
+
+            const clearAllData = () => {
+                if (confirm('确定要清空所有排班数据吗？此操作不可撤销。')) {
+                    scheduleData.value = {};
+                    saveLocal();
+                    showToast('所有数据已清空', 'info');
+                }
+            };
+
+            // 视图导航
+            const navigate = (dir) => {
+                const d = new Date(anchorDate.value);
+                if (viewMode.value === 'month') {
+                    d.setMonth(d.getMonth() + dir);
+                } else {
+                    d.setDate(d.getDate() + dir * 7);
+                }
+                anchorDate.value = d;
+            };
+
+            const goToday = () => {
+                anchorDate.value = new Date();
+                showToast('已回到今天', 'info');
+            };
+
+            const setViewMode = (mode) => {
+                viewMode.value = mode;
+                // 导航到当前视图的起始日期
+                if (mode === 'week') {
+                    const d = new Date(anchorDate.value);
+                    const day = d.getDay();
+                    d.setDate(d.getDate() - day);
+                    anchorDate.value = d;
+                }
+            };
+
+            // 模态框操作
+            const openModal = (dateObj, name = null) => {
+                if (dateObj.otherMonth) return; // 防止点击其他月份日期
+
+                editingDateStr.value = dateObj.dateStr;
+                currEditUser.value = name || (teamMembers.value[0]?.name || '');
+
+                // 初始化临时标签状态
+                tempTags.value = {};
+                const existing = scheduleData.value[dateObj.dateStr] || [];
+                existing.forEach(s => {
+                    tempTags.value[s.name] = [...s.tags];
+                });
+
+                showModal.value = true;
+            };
+
+            const closeModal = () => {
+                showModal.value = false;
+                tempTags.value = {};
+                currEditUser.value = '';
+            };
+
+            const toggleTag = (tag) => {
+                if (!currEditUser.value) return;
+                if (!tempTags.value[currEditUser.value]) {
+                    tempTags.value[currEditUser.value] = [];
+                }
+                const tags = tempTags.value[currEditUser.value];
+                const idx = tags.indexOf(tag);
+                if (idx > -1) tags.splice(idx, 1);
+                else tags.push(tag);
+            };
+
+            const hasTag = (tag) => {
+                return currEditUser.value && tempTags.value[currEditUser.value]?.includes(tag);
+            };
+
+            const confirmEdit = async () => {
+                if (!currEditUser.value) return;
+
+                isSaving.value = true;
+                await new Promise(resolve => setTimeout(resolve, 300)); // 模拟API延迟
+
+                const tags = tempTags.value[currEditUser.value] || [];
+                if (tags.length === 0) {
+                    // 如果没有标签，从当天移除该人员
+                    removeUserFromDay();
+                } else {
+                    if (!scheduleData.value[editingDateStr.value]) {
+                        scheduleData.value[editingDateStr.value] = [];
+                    }
+
+                    const existingIndex = scheduleData.value[editingDateStr.value].findIndex(u => u.name === currEditUser.value);
+                    if (existingIndex > -1) {
+                        scheduleData.value[editingDateStr.value][existingIndex].tags = tags;
+                    } else {
+                        scheduleData.value[editingDateStr.value].push({
+                            name: currEditUser.value,
+                            tags: [...tags]
+                        });
+                    }
+                }
+
+                saveLocal();
+                isSaving.value = false;
+                closeModal();
+                showToast('排班已更新', 'success');
+            };
+
+            const removeUserFromDay = () => {
+                if (!currEditUser.value || !editingDateStr.value) return;
+
+                if (scheduleData.value[editingDateStr.value]) {
+                    scheduleData.value[editingDateStr.value] =
+                        scheduleData.value[editingDateStr.value].filter(u => u.name !== currEditUser.value);
+                    saveLocal();
+                    showToast(`已从 ${editingDateStr.value} 移除 ${currEditUser.value}`, 'info');
+                }
+            };
+
+            // 拖拽操作
+            const onDragStart = (e, dateStr, item) => {
+                dragSource.value = {dateStr, item: JSON.parse(JSON.stringify(item))};
+                e.dataTransfer.effectAllowed = 'move';
+                e.dataTransfer.setData('text/plain', JSON.stringify({dateStr, item}));
+
+                // 添加拖拽视觉反馈
+                nextTick(() => {
+                    e.target.classList.add('dragging');
+                });
+            };
+
+            const onDragEnd = (e) => {
+                e.target.classList.remove('dragging');
+                dragSource.value = null;
+                dragTarget.value = null;
+            };
+
+            const onCellDragOver = (dateStr) => {
+                if (dragSource.value?.dateStr !== dateStr) {
+                    dragTarget.value = dateStr;
+                }
+            };
+
+            const onDrop = (targetDate) => {
+                dragTarget.value = null;
+                if (!dragSource.value) return;
+
+                const {dateStr: sourceDate, item} = dragSource.value;
+                if (sourceDate === targetDate) return;
+
+                // 检查目标日期是否已存在该人员
+                const targetShifts = scheduleData.value[targetDate] || [];
+                if (targetShifts.some(existing => existing.name === item.name)) {
+                    showToast(`人员 [${item.name}] 在目标日期已存在`, 'error');
+                    return;
+                }
+
+                // 从源日期移除
+                if (scheduleData.value[sourceDate]) {
+                    scheduleData.value[sourceDate] = scheduleData.value[sourceDate].filter(i => i.name !== item.name);
+                    if (scheduleData.value[sourceDate].length === 0) {
+                        delete scheduleData.value[sourceDate];
+                    }
+                }
+
+                // 添加到目标日期
+                if (!scheduleData.value[targetDate]) scheduleData.value[targetDate] = [];
+                scheduleData.value[targetDate].push(item);
+
+                saveLocal();
+                showToast(`已将 ${item.name} 移动到 ${targetDate}`, 'success');
+            };
+
+            const onGlobalDrop = (e) => {
+                // 处理拖放到非日历区域的情况
+                dragTarget.value = null;
+            };
+
+            // 导入导出
+            const exportJSON = () => {
+                if (Object.keys(scheduleData.value).length === 0) {
+                    showToast('没有数据可导出', 'info');
+                    return;
+                }
+                const blob = new Blob([JSON.stringify(scheduleData.value, null, 2)], {type: 'application/json'});
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(blob);
+                a.download = `湖北排班_${new Date().toISOString().split('T')[0]}.json`;
+                a.click();
+                showToast('排班数据导出成功', 'success');
+            };
+
+            const triggerImport = () => fileInput.value.click();
+
+            const handleImportFile = (event) => {
+                const file = event.target.files[0];
+                if (!file) return;
+
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    try {
+                        const imported = JSON.parse(e.target.result);
+                        if (typeof imported !== 'object' || Array.isArray(imported)) {
+                            throw new Error('格式不正确');
+                        }
+
+                        // 简单验证数据结构
+                        if (confirm('导入将覆盖当前数据，是否继续？')) {
+                            scheduleData.value = imported;
+                            saveLocal();
+                            showToast('排班数据导入成功', 'success');
+                        }
+                    } catch (error) {
+                        showToast('导入失败：文件格式错误', 'error');
+                    } finally {
+                        event.target.value = '';
+                    }
+                };
+                reader.onerror = () => {
+                    showToast('读取文件失败', 'error');
+                    event.target.value = '';
+                };
+                reader.readAsText(file);
+            };
+
+            // 辅助方法
+            const getRole = (name) => teamMembers.value.find(m => m.name === name)?.role || 'be';
+
+            const getRoleIcon = (name) => {
+                const r = getRole(name);
+                return r === 'pm' ? 'fa-user-tie' : (r === 'fe' ? 'fa-laptop-code' : 'fa-database');
+            };
+
+            const getTagClass = (tagName) => {
+                switch (tagName) {
+                    case '正常':
+                        return 'tag-normal';
+                    case '远程':
+                        return 'tag-remote';
+                    case '请假':
+                        return 'tag-leave';
+                    case '加班':
+                        return 'tag-overtime';
+                    default:
+                        return '';
+                }
+            };
+
+            const getTagStyle = (tag) => {
+                const styles = {
+                    '正常': {background: '#4361ee', color: '#fff', borderColor: '#3a56d4'},
+                    '远程': {background: '#7c3aed', color: '#fff', borderColor: '#6d28d9'},
+                    '请假': {background: '#f59e0b', color: '#fff', borderColor: '#d97706'},
+                    '加班': {background: '#ef4444', color: '#fff', borderColor: '#dc2626'}
+                };
+                return styles[tag] || {};
+            };
+
+            const isToday = (d) => d.toDateString() === new Date().toDateString();
+
+            const getWeekNum = (d) => {
+                const firstDay = new Date(d.getFullYear(), d.getMonth(), 1);
+                const offset = firstDay.getDay();
+                return Math.ceil((d.getDate() + offset) / 7);
+            };
+
+            const formatDate = (d) => d.toISOString().split('T')[0];
+
+            const getCellAriaLabel = (dateObj) => {
+                const base = `${dateObj.date.getFullYear()}年${dateObj.date.getMonth() + 1}月${dateObj.date.getDate()}日`;
+                const shifts = getShifts(dateObj.dateStr);
+                if (shifts.length === 0) return `${base}，无排班`;
+                const names = shifts.map(s => `${s.name}(${s.tags.join('、')})`).join('、');
+                return `${base}，排班人员：${names}`;
+            };
+
+            const isDraggingItem = (item, dateStr) => {
+                return dragSource.value?.dateStr === dateStr && dragSource.value?.item.name === item.name;
+            };
+
+            // Toast通知
+            const showToast = (message, type = 'info', duration = 3000) => {
+                toast.value = {visible: true, message, type};
+                setTimeout(() => {
+                    toast.value.visible = false;
+                }, duration);
+            };
+
+            // 键盘导航
+            const handleKeyNav = (e) => {
+                if (e.key === 'ArrowLeft') {
+                    navigate(-1);
+                    e.preventDefault();
+                } else if (e.key === 'ArrowRight') {
+                    navigate(1);
+                    e.preventDefault();
+                }
+            };
+
+            // 滚动监听
+            const handleScroll = () => {
+                isScrolled.value = window.scrollY > 50;
+            };
+
+            // --- 生命周期 ---
+            onMounted(() => {
+                loadFromLocal();
+                window.addEventListener('scroll', handleScroll);
+
+                // 欢迎提示
+                setTimeout(() => {
+                    showToast('欢迎使用智能排班系统 Pro', 'info', 4000);
+                }, 500);
+            });
+
+            onUnmounted(() => {
+                window.removeEventListener('scroll', handleScroll);
+            });
+
+            // 自动保存（防抖）
+            let saveTimeout;
+            watch(scheduleData, () => {
+                clearTimeout(saveTimeout);
+                saveTimeout = setTimeout(() => {
+                    saveLocal();
+                }, 2000);
+            }, {deep: true});
+
+            return {
+                // 状态
+                teamMembers, tagOptions, viewMode, anchorDate, weekLabels, visibleDays, dateLabel,
+                showModal, editingDateStr, currEditUser, dragTarget, fileInput, isScrolled, isSaving,
+                tempTags, toast, toastIcon, hasAnyTags,
+
+                // 核心方法
+                setViewMode, navigate, goToday, getShifts, isToday,
+                onDragStart, onDragEnd, onCellDragOver, onDrop, onGlobalDrop,
+                openModal, closeModal, toggleTag, hasTag, confirmEdit, removeUserFromDay,
+                exportJSON, triggerImport, handleImportFile, saveLocal, clearAllData,
+
+                // 辅助方法
+                getRole, getRoleIcon, getTagClass, getTagStyle, getCellAriaLabel, isDraggingItem,
+                handleKeyNav
+            };
+        }
+    }).mount('#app');
+</script>
+</body>
+</html>

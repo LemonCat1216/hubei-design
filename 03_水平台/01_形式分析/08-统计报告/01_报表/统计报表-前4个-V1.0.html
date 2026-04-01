@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>湖北省水生态环境综合管理平台 - 复刻版</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* 自定义滚动条样式，模拟原生体验 */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8;
+        }
+        /* 特殊字体样式：未达标数据加粗倾斜 */
+        .data-warning {
+            font-weight: 800;
+            font-style: italic;
+            color: #333;
+        }
+        body {
+            font-family: "Microsoft YaHei", "Heiti SC", sans-serif;
+            background-color: #f0f2f5;
+        }
+    </style>
+</head>
+<body class="h-screen flex flex-col overflow-hidden">
+
+<header class="h-16 bg-gradient-to-r from-blue-700 via-blue-600 to-blue-500 text-white flex items-center justify-between px-4 shadow-md z-20">
+    <div class="flex items-center gap-3">
+        <div class="w-8 h-8 rounded-full border-2 border-white flex items-center justify-center bg-blue-800">
+            <i class="fas fa-water text-sm"></i>
+        </div>
+        <h1 class="text-xl font-bold tracking-wide">湖北省水生态环境综合管理</h1>
+    </div>
+
+    <nav class="flex h-full items-end gap-1">
+        <a href="#" class="px-6 py-3 text-blue-100 hover:text-white opacity-80 text-sm">总体概览</a>
+        <div class="relative bg-white text-blue-600 px-6 py-3 rounded-t-lg font-bold text-sm shadow-[0_-2px_10px_rgba(0,0,0,0.1)]">
+            <i class="fas fa-chart-area mr-1"></i> 形势分析
+            <div class="absolute bottom-[-5px] left-0 w-full h-[5px] bg-white"></div>
+        </div>
+        <a href="#" class="px-6 py-3 text-blue-100 hover:text-white opacity-80 text-sm">空间分析</a>
+        <a href="#" class="px-6 py-3 text-blue-100 hover:text-white opacity-80 text-sm">水污染源</a>
+        <a href="#" class="px-6 py-3 text-blue-100 hover:text-white opacity-80 text-sm">问题聚焦</a>
+        <a href="#" class="px-6 py-3 text-blue-100 hover:text-white opacity-80 text-sm">专题应用</a>
+    </nav>
+
+    <div class="flex items-center gap-4 text-sm">
+        <div class="flex items-center gap-2 cursor-pointer">
+            <div class="w-8 h-8 rounded-full bg-blue-400 flex items-center justify-center border border-blue-300">
+                <i class="fas fa-user text-white"></i>
+            </div>
+            <span>碧水荆灵 <span class="mx-1">|</span> wangyunpeng</span>
+            <i class="fas fa-caret-down opacity-70"></i>
+        </div>
+    </div>
+</header>
+
+<div class="flex flex-1 overflow-hidden">
+
+    <aside class="w-64 bg-white shadow-lg flex flex-col z-10 border-r border-gray-200">
+        <div class="border-b border-gray-100">
+            <div class="flex items-center justify-between px-4 py-4 text-gray-700 font-bold cursor-pointer hover:bg-gray-50">
+                <span class="flex items-center gap-2"><i class="far fa-file-alt text-gray-500"></i> 业务基础表单</span>
+                <i class="fas fa-chevron-down text-xs text-gray-400"></i>
+            </div>
+            <div class="flex flex-col pb-2">
+                <a href="#" class="relative px-10 py-2.5 text-sm text-blue-600 bg-blue-50 border-r-4 border-blue-600 font-medium">
+                    <span class="w-1.5 h-1.5 rounded-full bg-blue-600 inline-block mr-2"></span>
+                    省控考核进展表
+                </a>
+                <a href="#" class="px-10 py-2.5 text-sm text-gray-600 hover:text-blue-600 hover:bg-gray-50 transition-colors">国控考核进展表</a>
+                <a href="#" class="px-10 py-2.5 text-sm text-gray-600 hover:text-blue-600 hover:bg-gray-50 transition-colors">未达III类目标析...</a>
+                <a href="#" class="px-10 py-2.5 text-sm text-gray-600 hover:text-blue-600 hover:bg-gray-50 transition-colors">国控风险断面清单</a>
+                <a href="#" class="px-10 py-2.5 text-sm text-gray-600 hover:text-blue-600 hover:bg-gray-50 transition-colors">水质类别统计</a>
+                <a href="#" class="px-10 py-2.5 text-sm text-gray-600 hover:text-blue-600 hover:bg-gray-50 transition-colors">污染物统计</a>
+                <a href="#" class="px-10 py-2.5 text-sm text-gray-600 hover:text-blue-600 hover:bg-gray-50 transition-colors">优良劣 V 统计</a>
+            </div>
+        </div>
+
+        <div>
+            <div class="flex items-center justify-between px-4 py-4 text-gray-600 cursor-pointer hover:bg-gray-50">
+                <span class="flex items-center gap-2"><i class="fas fa-chart-pie text-gray-400"></i> 智能分析报告</span>
+                <i class="fas fa-chevron-right text-xs text-gray-400"></i>
+            </div>
+        </div>
+
+        <div class="mt-auto p-2 flex justify-center border-t border-gray-200">
+            <button class="text-gray-400 hover:text-blue-600"><i class="fas fa-indent"></i></button>
+        </div>
+    </aside>
+
+    <main class="flex-1 overflow-auto bg-[#f5f7fa] p-4 relative">
+
+        <div class="bg-white rounded-lg shadow-sm min-h-full flex flex-col relative">
+
+            <div class="flex items-center justify-between p-5 border-b border-gray-100">
+
+                <div class="flex items-center gap-3">
+                    <div class="w-1 h-6 bg-blue-600 rounded-full"></div>
+                    <h2 class="text-lg font-bold text-gray-800">省控断面水质目标考核情况统计表</h2>
+                </div>
+
+                <div class="flex gap-2">
+                    <div class="border border-blue-300 rounded px-3 py-1.5 flex items-center gap-2 bg-blue-50 text-blue-700 text-sm cursor-pointer">
+                        <span>2025年</span>
+                        <i class="fas fa-chevron-down text-xs"></i>
+                    </div>
+                    <div class="border border-blue-300 rounded px-3 py-1.5 flex items-center gap-2 bg-blue-50 text-blue-700 text-sm cursor-pointer">
+                        <span>9月</span>
+                        <i class="fas fa-chevron-down text-xs"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-5 flex-1">
+                <table class="w-full text-sm text-gray-700 border-collapse">
+                    <thead>
+                    <tr class="bg-gray-50 text-gray-600 font-medium">
+                        <th class="py-3 px-4 text-left w-24">城市</th>
+                        <th class="py-3 px-4 text-center">断面总数</th>
+                        <th class="py-3 px-4 text-center">目标</th>
+                        <th class="py-3 px-4 text-center">1-09月优良(%)</th>
+                        <th class="py-3 px-4 text-center">差距(个)</th>
+                        <th class="py-3 px-4 text-center">09月优良(%)</th>
+                        <th class="py-3 px-4 text-center">环比</th>
+                    </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-100">
+                    <tr class="hover:bg-blue-50 transition-colors">
+                        <td class="py-3 px-4 font-bold">武汉市</td>
+                        <td class="py-3 px-4 text-center">25</td>
+                        <td class="py-3 px-4 text-center">88</td>
+                        <td class="py-3 px-4 text-center font-bold">80</td>
+                        <td class="py-3 px-4 text-center text-red-500 font-bold">2</td>
+                        <td class="py-3 px-4 text-center">64</td>
+                        <td class="py-3 px-4 text-center">64</td>
+                    </tr>
+                    <tr class="hover:bg-blue-50 transition-colors">
+                        <td class="py-3 px-4 font-bold">黄石市</td>
+                        <td class="py-3 px-4 text-center">11</td>
+                        <td class="py-3 px-4 text-center">90.9</td>
+                        <td class="py-3 px-4 text-center">90.9</td>
+                        <td class="py-3 px-4 text-center">-</td>
+                        <td class="py-3 px-4 text-center">72.7</td>
+                        <td class="py-3 px-4 text-center">72.7</td>
+                    </tr>
+                    <tr class="hover:bg-blue-50 transition-colors">
+                        <td class="py-3 px-4 font-bold">十堰市</td>
+                        <td class="py-3 px-4 text-center">27</td>
+                        <td class="py-3 px-4 text-center">92.6</td>
+                        <td class="py-3 px-4 text-center">100</td>
+                        <td class="py-3 px-4 text-center">-</td>
+                        <td class="py-3 px-4 text-center">100</td>
+                        <td class="py-3 px-4 text-center">100</td>
+                    </tr>
+                    <tr class="hover:bg-blue-50 transition-colors">
+                        <td class="py-3 px-4 font-bold">襄阳市</td>
+                        <td class="py-3 px-4 text-center">28</td>
+                        <td class="py-3 px-4 text-center">96.4</td>
+                        <td class="py-3 px-4 text-center">96.4</td>
+                        <td class="py-3 px-4 text-center">-</td>
+                        <td class="py-3 px-4 text-center">89.3</td>
+                        <td class="py-3 px-4 text-center">89.3</td>
+                    </tr>
+                    <tr class="hover:bg-blue-50 transition-colors">
+                        <td class="py-3 px-4 font-bold">荆门市</td>
+                        <td class="py-3 px-4 text-center">22</td>
+                        <td class="py-3 px-4 text-center">90.9</td>
+                        <td class="py-3 px-4 text-center data-warning">86.4</td>
+                        <td class="py-3 px-4 text-center text-red-500 font-bold">1</td>
+                        <td class="py-3 px-4 text-center data-warning">86.4</td>
+                        <td class="py-3 px-4 text-center data-warning">86.4</td>
+                    </tr>
+                    <tr class="hover:bg-blue-50 transition-colors">
+                        <td class="py-3 px-4 font-bold">孝感市</td>
+                        <td class="py-3 px-4 text-center">23</td>
+                        <td class="py-3 px-4 text-center">87</td>
+                        <td class="py-3 px-4 text-center data-warning">78.3</td>
+                        <td class="py-3 px-4 text-center text-red-500 font-bold">2</td>
+                        <td class="py-3 px-4 text-center">52.2</td>
+                        <td class="py-3 px-4 text-center">52.2</td>
+                    </tr>
+                    <tr class="hover:bg-blue-50 transition-colors">
+                        <td class="py-3 px-4 font-bold">黄冈市</td>
+                        <td class="py-3 px-4 text-center">26</td>
+                        <td class="py-3 px-4 text-center">96.2</td>
+                        <td class="py-3 px-4 text-center data-warning">88.5</td>
+                        <td class="py-3 px-4 text-center text-red-500 font-bold">2</td>
+                        <td class="py-3 px-4 text-center">84.6</td>
+                        <td class="py-3 px-4 text-center">84.6</td>
+                    </tr>
+                    <tr class="hover:bg-blue-50 transition-colors">
+                        <td class="py-3 px-4 font-bold">随州市</td>
+                        <td class="py-3 px-4 text-center">19</td>
+                        <td class="py-3 px-4 text-center">100</td>
+                        <td class="py-3 px-4 text-center data-warning">88.9</td>
+                        <td class="py-3 px-4 text-center text-red-500 font-bold">2</td>
+                        <td class="py-3 px-4 text-center">94.4</td>
+                        <td class="py-3 px-4 text-center">94.4</td>
+                    </tr>
+                    <tr class="hover:bg-blue-50 transition-colors">
+                        <td class="py-3 px-4 font-bold">恩施州</td>
+                        <td class="py-3 px-4 text-center">25</td>
+                        <td class="py-3 px-4 text-center">100</td>
+                        <td class="py-3 px-4 text-center">100</td>
+                        <td class="py-3 px-4 text-center">-</td>
+                        <td class="py-3 px-4 text-center">100</td>
+                        <td class="py-3 px-4 text-center">100</td>
+                    </tr>
+                    <tr class="bg-gray-50 font-bold border-t-2 border-gray-200">
+                        <td class="py-4 px-4">全省</td>
+                        <td class="py-4 px-4 text-center">326 (实测325)</td>
+                        <td class="py-4 px-4 text-center">91.7</td>
+                        <td class="py-4 px-4 text-center data-warning">91.4</td>
+                        <td class="py-4 px-4 text-center"></td>
+                        <td class="py-4 px-4 text-center">81.5</td>
+                        <td class="py-4 px-4 text-center">81.5</td>
+                    </tr>
+                    </tbody>
+                </table>
+
+                <div class="mt-6 flex justify-between items-end">
+                    <div class="text-xs text-gray-400 space-y-1">
+                        <p>注：加粗倾斜数据表示未达标，正数表示改善，负数表示下降。</p>
+                        <p>共统计 326 (实测325) 个断面</p>
+                    </div>
+                    <button class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded text-sm shadow-md transition-all flex items-center gap-2">
+                        <i class="fas fa-file-export"></i> 导出报表
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+</body>
+</html>

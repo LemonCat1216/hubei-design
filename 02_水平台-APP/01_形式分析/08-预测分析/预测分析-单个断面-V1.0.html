@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>预测分析 - 单个断面</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography,container-queries"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#3b82f6",
+                        "background-light": "#f4f7f9",
+                    }
+                }
+            }
+        };
+    </script>
+    <style type="text/tailwindcss">
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+        body { font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif; background: #f4f7f9; }
+
+        .section-title-bar {
+            width: 4px;
+            height: 16px;
+            background: linear-gradient(to bottom, #93c5fd, #3b82f6);
+            border-radius: 4px;
+            margin-right: 8px;
+        }
+
+        .card-shadow { box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+
+        .quality-badge {
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .badge-1 { background: #C5FFFF; color: #004085; }
+        .badge-2 { background: #34C3F6; color: white; }
+        .badge-3 { background: #03FF03; color: #005a00; }
+        .badge-4 { background: #FCFF7D; color: #856404; }
+        .badge-5 { background: #FF9000; color: white; }
+        .badge-worse { background: #FF0101; color: white; }
+
+        /* 底部导航 */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            display: flex;
+            justify-content: space-around;
+            padding: 8px 0;
+            border-top: 1px solid #e2e8f0;
+            z-index: 100;
+        }
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-size: 11px;
+            color: #94a3b8;
+            cursor: pointer;
+        }
+        .nav-item.active { color: #3b82f6; }
+        .nav-item i { font-size: 20px; margin-bottom: 2px; }
+
+        /* 统计卡片 */
+        .metric-card {
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 14px 12px;
+            text-align: center;
+        }
+        .metric-value {
+            font-size: 20px;
+            font-weight: 700;
+            color: #3b82f6;
+        }
+        .metric-label {
+            font-size: 11px;
+            color: #64748b;
+            margin-top: 4px;
+        }
+
+        /* 预测结果卡片 */
+        .result-card {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .factor-tab {
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: #f1f5f9;
+            color: #64748b;
+        }
+        .factor-tab.active {
+            background: #3b82f6;
+            color: white;
+        }
+    </style>
+</head>
+<body class="pb-16">
+
+<!-- Header -->
+<header class="bg-primary text-white sticky top-0 z-50 shadow-md">
+    <div class="flex items-center justify-between px-4 py-3">
+        <div class="flex items-center gap-3">
+            <span class="material-symbols-outlined cursor-pointer" onclick="goBack()">arrow_back</span>
+            <span class="text-lg font-medium">断面预测分析</span>
+        </div>
+        <div class="flex items-center gap-2">
+            <span class="material-symbols-outlined text-lg">more_vert</span>
+        </div>
+    </div>
+</header>
+
+<!-- 筛选栏 -->
+<div class="bg-white border-b border-slate-200 px-4 py-3">
+    <div class="flex items-center gap-3 mb-3">
+        <div class="flex-1 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 flex items-center justify-between">
+            <span class="text-sm text-slate-700"><i class="fas fa-map-marker-alt text-primary mr-2"></i>云池（白洋）</span>
+            <span class="material-symbols-outlined text-slate-400 text-sm">expand_more</span>
+        </div>
+        <div class="w-32 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 flex items-center justify-between">
+            <span class="text-sm text-slate-700">未来7天</span>
+            <span class="material-symbols-outlined text-slate-400 text-sm">expand_more</span>
+        </div>
+    </div>
+
+    <div class="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
+        <div class="factor-tab active" data-factor="tp">总磷</div>
+        <div class="factor-tab" data-factor="nh3n">氨氮</div>
+        <div class="factor-tab" data-factor="codmn">高锰酸盐指数</div>
+        <div class="factor-tab" data-factor="do">溶解氧</div>
+    </div>
+</div>
+
+<!-- 主内容 -->
+<main class="p-4">
+
+    <!-- 预测图表 -->
+    <div class="bg-white rounded-xl border border-slate-200 card-shadow p-4 mb-4">
+        <div class="flex items-center justify-between mb-3">
+            <div class="flex items-center">
+                <div class="section-title-bar"></div>
+                <h3 class="font-bold text-slate-800 text-sm">浓度预测趋势</h3>
+            </div>
+            <div class="flex gap-3 text-xs">
+                <div class="flex items-center gap-1">
+                    <div class="w-3 h-0.5 bg-blue-500"></div>
+                    <span class="text-slate-600">实测</span>
+                </div>
+                <div class="flex items-center gap-1">
+                    <div class="w-3 h-0.5 bg-green-500 border-dashed border-t-2 border-green-500"></div>
+                    <span class="text-slate-600">预测</span>
+                </div>
+            </div>
+        </div>
+        <div id="prediction-chart" style="height: 240px;"></div>
+    </div>
+
+    <!-- 评价指标 -->
+    <div class="bg-white rounded-xl border border-slate-200 card-shadow p-4 mb-4">
+        <div class="flex items-center mb-3">
+            <div class="section-title-bar"></div>
+            <h3 class="font-bold text-slate-800 text-sm">模型评价指标</h3>
+        </div>
+        <div class="grid grid-cols-4 gap-3">
+            <div class="metric-card">
+                <div class="metric-value" id="mse-value">0.0023</div>
+                <div class="metric-label">MSE</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value" id="mae-value">0.038</div>
+                <div class="metric-label">MAE</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value" id="rmse-value">0.048</div>
+                <div class="metric-label">RMSE</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value" id="r2-value">0.94</div>
+                <div class="metric-label">R²</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 预测结果 -->
+    <div class="bg-white rounded-xl border border-slate-200 card-shadow p-4 mb-4">
+        <div class="flex items-center mb-3">
+            <div class="section-title-bar"></div>
+            <h3 class="font-bold text-slate-800 text-sm">预测结果</h3>
+        </div>
+
+        <!-- 主要断面 -->
+        <div class="result-card mb-3">
+            <div class="p-4 border-b border-slate-100">
+                <div class="flex items-center justify-between mb-3">
+                    <div class="flex items-center gap-2">
+                        <span class="quality-badge badge-2">Ⅱ类</span>
+                        <span class="font-semibold text-slate-800">云池（白洋）</span>
+                    </div>
+                    <span class="px-3 py-1 bg-emerald-50 text-emerald-600 rounded-full text-xs font-medium">预测达标</span>
+                </div>
+                <div class="flex items-center gap-2 text-xs text-slate-500 mb-3">
+                    <span><i class="fas fa-map-marker-alt mr-1"></i>湖北省·宜昌市</span>
+                    <span><i class="fas fa-water mr-1"></i>长江流域</span>
+                </div>
+            </div>
+            <div class="p-4 grid grid-cols-3 gap-3">
+                <div class="text-center">
+                    <div class="text-xs text-slate-500 mb-1">当前值</div>
+                    <div class="text-lg font-bold text-slate-800">0.046<span class="text-xs font-normal text-slate-400">mg/L</span></div>
+                </div>
+                <div class="text-center">
+                    <div class="text-xs text-slate-500 mb-1">明日预测</div>
+                    <div class="text-lg font-bold text-slate-800">0.048<span class="text-xs font-normal text-slate-400">mg/L</span></div>
+                    <div class="text-xs text-orange-500 mt-1"><i class="fas fa-arrow-up"></i> 4.3%</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-xs text-slate-500 mb-1">7天均值</div>
+                    <div class="text-lg font-bold text-slate-800">0.051<span class="text-xs font-normal text-slate-400">mg/L</span></div>
+                    <div class="text-xs text-orange-500 mt-1"><i class="fas fa-arrow-up"></i> 10.9%</div>
+                </div>
+            </div>
+            <div class="px-4 pb-4">
+                <div class="text-xs text-slate-500 mb-2">未来7天预测详情</div>
+                <div class="space-y-2">
+                    <div class="flex items-center justify-between text-sm py-2 border-b border-dashed border-slate-100">
+                        <span class="text-slate-600">12-19</span>
+                        <span class="font-medium text-slate-800">0.048 <span class="text-xs text-slate-400">[0.042-0.054]</span></span>
+                    </div>
+                    <div class="flex items-center justify-between text-sm py-2 border-b border-dashed border-slate-100">
+                        <span class="text-slate-600">12-20</span>
+                        <span class="font-medium text-slate-800">0.049 <span class="text-xs text-slate-400">[0.043-0.055]</span></span>
+                    </div>
+                    <div class="flex items-center justify-between text-sm py-2 border-b border-dashed border-slate-100">
+                        <span class="text-slate-600">12-21</span>
+                        <span class="font-medium text-slate-800">0.051 <span class="text-xs text-slate-400">[0.045-0.057]</span></span>
+                    </div>
+                    <div class="flex items-center justify-between text-sm py-2 border-b border-dashed border-slate-100">
+                        <span class="text-slate-600">12-22</span>
+                        <span class="font-medium text-slate-800">0.052 <span class="text-xs text-slate-400">[0.046-0.058]</span></span>
+                    </div>
+                    <div class="flex items-center justify-between text-sm py-2">
+                        <span class="text-slate-600">12-23</span>
+                        <span class="font-medium text-slate-800">0.053 <span class="text-xs text-slate-400">[0.047-0.059]</span></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 风险断面 -->
+        <div class="result-card">
+            <div class="p-4 border-b border-slate-100">
+                <div class="flex items-center justify-between mb-3">
+                    <div class="flex items-center gap-2">
+                        <span class="quality-badge badge-4">Ⅳ类</span>
+                        <span class="font-semibold text-slate-800">潜江大桥</span>
+                    </div>
+                    <span class="px-3 py-1 bg-amber-50 text-amber-600 rounded-full text-xs font-medium">风险预警</span>
+                </div>
+                <div class="flex items-center gap-2 text-xs text-slate-500">
+                    <span><i class="fas fa-map-marker-alt mr-1"></i>湖北省·潜江市</span>
+                    <span><i class="fas fa-water mr-1"></i>长江流域</span>
+                </div>
+            </div>
+            <div class="p-4 grid grid-cols-3 gap-3">
+                <div class="text-center">
+                    <div class="text-xs text-slate-500 mb-1">当前值</div>
+                    <div class="text-lg font-bold text-slate-800">0.12<span class="text-xs font-normal text-slate-400">mg/L</span></div>
+                </div>
+                <div class="text-center">
+                    <div class="text-xs text-slate-500 mb-1">明日预测</div>
+                    <div class="text-lg font-bold text-red-500">0.15<span class="text-xs font-normal text-slate-400">mg/L</span></div>
+                </div>
+                <div class="text-center">
+                    <div class="text-xs text-slate-500 mb-1">7天均值</div>
+                    <div class="text-lg font-bold text-red-500">0.18<span class="text-xs font-normal text-slate-400">mg/L</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 说明 -->
+    <div class="text-center text-xs text-slate-400 py-4">
+        <i class="fas fa-info-circle mr-1"></i>预测结果基于历史水质数据与气象水文条件计算<br>仅供参考，实际水质请以监测数据为准
+    </div>
+
+</main>
+
+<!-- 底部导航 -->
+<div class="bottom-nav">
+    <div class="nav-item" onclick="switchPage('overall')">
+        <i class="fas fa-chart-pie"></i>
+        <span>整体情况</span>
+    </div>
+    <div class="nav-item active">
+        <i class="fas fa-chart-line"></i>
+        <span>断面预测</span>
+    </div>
+    <div class="nav-item">
+        <i class="fas fa-cog"></i>
+        <span>设置</span>
+    </div>
+</div>
+
+<script>
+    // 各因子数据和评价指标
+    const factorData = {
+        tp: {
+            name: '总磷浓度预测',
+            unit: 'mg/L',
+            historyData: [0.038, 0.041, 0.039, 0.043, 0.045, 0.042, 0.046],
+            predictData: [null, null, null, null, null, null, 0.046, 0.048, 0.049, 0.051, 0.052, 0.053, 0.051, 0.050],
+            predictLower: [null, null, null, null, null, null, 0.042, 0.042, 0.043, 0.045, 0.046, 0.047, 0.045, 0.044],
+            predictUpper: [null, null, null, null, null, null, 0.050, 0.054, 0.055, 0.057, 0.058, 0.059, 0.057, 0.056],
+            dates: ['12-12', '12-13', '12-14', '12-15', '12-16', '12-17', '12-18', '12-19', '12-20', '12-21', '12-22', '12-23', '12-24', '12-25'],
+            metrics: { mse: '0.0023', mae: '0.038', rmse: '0.048', r2: '0.94' }
+        },
+        nh3n: {
+            name: '氨氮浓度预测',
+            unit: 'mg/L',
+            historyData: [0.12, 0.14, 0.13, 0.15, 0.16, 0.14, 0.15],
+            predictData: [null, null, null, null, null, null, 0.15, 0.16, 0.17, 0.18, 0.19, 0.18, 0.17, 0.16],
+            predictLower: [null, null, null, null, null, null, 0.13, 0.14, 0.15, 0.16, 0.17, 0.16, 0.15, 0.14],
+            predictUpper: [null, null, null, null, null, null, 0.17, 0.18, 0.19, 0.20, 0.21, 0.20, 0.19, 0.18],
+            dates: ['12-12', '12-13', '12-14', '12-15', '12-16', '12-17', '12-18', '12-19', '12-20', '12-21', '12-22', '12-23', '12-24', '12-25'],
+            metrics: { mse: '0.0045', mae: '0.052', rmse: '0.067', r2: '0.91' }
+        },
+        codmn: {
+            name: '高锰酸盐指数预测',
+            unit: 'mg/L',
+            historyData: [2.0, 2.1, 2.0, 2.2, 2.3, 2.1, 2.1],
+            predictData: [null, null, null, null, null, null, 2.1, 2.2, 2.3, 2.4, 2.5, 2.4, 2.3, 2.2],
+            predictLower: [null, null, null, null, null, null, 1.9, 2.0, 2.1, 2.2, 2.3, 2.2, 2.1, 2.0],
+            predictUpper: [null, null, null, null, null, null, 2.3, 2.4, 2.5, 2.6, 2.7, 2.6, 2.5, 2.4],
+            dates: ['12-12', '12-13', '12-14', '12-15', '12-16', '12-17', '12-18', '12-19', '12-20', '12-21', '12-22', '12-23', '12-24', '12-25'],
+            metrics: { mse: '0.12', mae: '0.28', rmse: '0.35', r2: '0.88' }
+        },
+        do: {
+            name: '溶解氧预测',
+            unit: 'mg/L',
+            historyData: [8.5, 8.2, 8.4, 8.0, 7.8, 8.1, 8.4],
+            predictData: [null, null, null, null, null, null, 8.4, 8.2, 8.0, 7.9, 7.8, 7.9, 8.0, 8.1],
+            predictLower: [null, null, null, null, null, null, 8.0, 7.8, 7.6, 7.5, 7.4, 7.5, 7.6, 7.7],
+            predictUpper: [null, null, null, null, null, null, 8.8, 8.6, 8.4, 8.3, 8.2, 8.3, 8.4, 8.5],
+            dates: ['12-12', '12-13', '12-14', '12-15', '12-16', '12-17', '12-18', '12-19', '12-20', '12-21', '12-22', '12-23', '12-24', '12-25'],
+            metrics: { mse: '0.35', mae: '0.48', rmse: '0.59', r2: '0.86' }
+        }
+    };
+
+    let currentFactor = 'tp';
+    let chart = null;
+
+    function initChart() {
+        chart = echarts.init(document.getElementById('prediction-chart'));
+        updateChart(currentFactor);
+        window.addEventListener('resize', () => chart.resize());
+    }
+
+    function updateChart(factor) {
+        const data = factorData[factor];
+        const option = {
+            grid: { left: '10%', right: '5%', top: '10%', bottom: '12%' },
+            tooltip: {
+                trigger: 'axis',
+                formatter: function(params) {
+                    let result = params[0].name + '<br/>';
+                    params.forEach(p => {
+                        if (p.value !== null) {
+                            result += p.marker + p.seriesName + ': ' + p.value + ' ' + data.unit + '<br/>';
+                        }
+                    });
+                    return result;
+                }
+            },
+            xAxis: {
+                type: 'category',
+                data: data.dates,
+                axisLine: { lineStyle: { color: '#e2e8f0' } },
+                axisLabel: { fontSize: 10, color: '#64748b' },
+                axisTick: { show: false }
+            },
+            yAxis: {
+                type: 'value',
+                axisLine: { show: false },
+                axisLabel: { fontSize: 10, color: '#64748b' },
+                splitLine: { lineStyle: { color: '#f1f5f9', type: 'dashed' } }
+            },
+            series: [
+                {
+                    name: '实测值',
+                    type: 'line',
+                    data: data.historyData,
+                    smooth: true,
+                    symbol: 'circle',
+                    symbolSize: 6,
+                    lineStyle: { color: '#3b82f6', width: 2 },
+                    itemStyle: { color: '#3b82f6' }
+                },
+                {
+                    name: '预测值',
+                    type: 'line',
+                    data: data.predictData,
+                    smooth: true,
+                    symbol: 'circle',
+                    symbolSize: 6,
+                    lineStyle: { color: '#22c55e', width: 2, type: 'dashed' },
+                    itemStyle: { color: '#22c55e' }
+                },
+                {
+                    name: '置信区间',
+                    type: 'line',
+                    data: data.predictUpper,
+                    lineStyle: { opacity: 0 },
+                    itemStyle: { opacity: 0 },
+                    areaStyle: { color: '#22c55e', opacity: 0.15 },
+                    stack: 'confidence'
+                },
+                {
+                    name: '置信区间下限',
+                    type: 'line',
+                    data: data.predictLower,
+                    lineStyle: { opacity: 0 },
+                    itemStyle: { opacity: 0 },
+                    areaStyle: { color: '#22c55e', opacity: 0.15 },
+                    stack: 'confidence'
+                }
+            ]
+        };
+        chart.setOption(option);
+
+        // 更新评价指标
+        document.getElementById('mse-value').textContent = data.metrics.mse;
+        document.getElementById('mae-value').textContent = data.metrics.mae;
+        document.getElementById('rmse-value').textContent = data.metrics.rmse;
+        document.getElementById('r2-value').textContent = data.metrics.r2;
+    }
+
+    // 因子切换
+    document.querySelectorAll('.factor-tab').forEach(tab => {
+        tab.addEventListener('click', function() {
+            document.querySelectorAll('.factor-tab').forEach(t => t.classList.remove('active'));
+            this.classList.add('active');
+            currentFactor = this.dataset.factor;
+            updateChart(currentFactor);
+        });
+    });
+
+    function switchPage(page) {
+        if (page === 'overall') {
+            window.location.href = '预测分析-整体情况-V1.0.html';
+        }
+    }
+
+    function goBack() {
+        window.history.back();
+    }
+
+    document.addEventListener('DOMContentLoaded', initChart);
+</script>
+
+</body>
+</html>

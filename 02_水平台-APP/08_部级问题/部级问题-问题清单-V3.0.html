@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>问题清单</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body {
+            background-color: #f3f4f6;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        .custom-placeholder::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .fade-in {
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* 表格线样式 */
+        .calendar-table {
+            border-collapse: separate;
+            border-spacing: 2px;
+        }
+
+        .calendar-cell {
+            font-size: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 24px;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel">
+    const {useState, useEffect, useMemo} = React;
+
+    // --- 1. 列表数据 (保持不变) ---
+    const MOCK_DATA = [
+        {
+            id: 4,
+            name: "柳口",
+            city: "荆州市",
+            category: "污染物峰值",
+            year: 2022,
+            events: [{month: 3, type: "warning", label: "预警函"}, {
+                month: 3,
+                type: "feedback",
+                label: "地方反馈"
+            }, {month: 4, type: "warning", label: "预警函"}]
+        },
+        {
+            id: 1,
+            name: "后港",
+            city: "荆门市",
+            category: "水质恶化",
+            year: 2022,
+            events: [{month: 7, type: "warning", label: "预警函"}]
+        },
+        {
+            id: 2,
+            name: "运粮湖同心队",
+            city: "荆州市",
+            category: "汛期",
+            year: 2022,
+            events: [{month: 6, type: "warning", label: "预警函"}]
+        },
+        {
+            id: 3,
+            name: "麻城许家湾",
+            city: "黄冈市",
+            category: "水质恶化",
+            year: 2022,
+            events: [{month: 6, type: "warning", label: "预警函"}]
+        },
+        {
+            id: 5,
+            name: "冯集",
+            city: "黄冈市",
+            category: "水质恶化",
+            year: 2022,
+            events: [{month: 4, type: "warning", label: "预警函"}, {month: 11, type: "closed", label: "销号"}]
+        },
+        {
+            id: 8,
+            name: "石矶头大桥上",
+            city: "咸宁市",
+            category: "水质恶化",
+            year: 2022,
+            events: [{month: 2, type: "warning", label: "预警函"}, {month: 7, type: "closed", label: "销号"}]
+        }
+    ];
+
+    // --- 2. 详情页数据 ---
+    const MOCK_DETAIL = {
+        baseInfo: {
+            province: "湖北省 荆州市",
+            basin: "长江流域",
+            type: "水环境",
+            pollutant: "总磷",
+            target: "II类",
+            current: "III类",
+            warningCount: 3,
+            rule: "对干流设有5个及以上国控断面的河流，干流断面主要污染物浓度存在峰值时，将沿程变化斜率由大到小排序，将排名前20%的断面识别为干流污染物峰值断面。"
+        },
+        processNodes: [
+            {role: "水司", time: "2022-10-09 15:32:14"},
+            {role: "2023-02", time: ""},
+            {role: "水司", time: "2023-04-03 14:00:06"},
+            {role: "系统管理员", time: "2023-11-06 16:03:56"}
+        ],
+        alerts: [
+            "2022年8月: 在较大河流干流形成污染物峰值 (预警)",
+            "2022年9月: 在较大河流干流形成污染物峰值 (预警)"
+        ],
+        // 5年水质数据 (表格展示用)
+        waterCalendar: [
+            {year: 2025, months: ['II', 'II', 'II', 'II', 'II', 'II', '-', '-', '-', '-', '-', '-']},
+            {year: 2024, months: ['II', 'II', 'II', 'II', 'II', 'II', 'III', 'II', 'II', 'II', 'II', 'II']},
+            {year: 2023, months: ['II', 'II', 'II', 'III', 'II', 'II', 'II', 'II', 'II', 'II', 'II', 'II']},
+            {year: 2022, months: ['II', 'II', 'II', 'II', 'II', 'II', 'III', 'II', 'II', 'II', 'III', 'III']},
+            {year: 2021, months: ['II', 'II', 'II', 'II', 'II', 'II', 'III', 'III', 'III', 'III', 'III', 'III']}
+        ],
+        // 历史达标柱状图数据 (模拟)
+        historyCompliance: [
+            {date: '2024-01', value: 2, status: 'ok'},
+            {date: '2024-02', value: 2, status: 'ok'},
+            {date: '2024-03', value: 2, status: 'ok'},
+            {date: '2024-04', value: 3, status: 'ok'}, // III类达标
+            {date: '2024-05', value: 2, status: 'ok'},
+            {date: '2024-06', value: 2, status: 'ok'},
+            {date: '2024-07', value: 5, status: 'bad'}, // 劣V类 超标
+            {date: '2024-08', value: 2, status: 'ok'},
+            {date: '2024-09', value: 2, status: 'ok'},
+            {date: '2024-10', value: 2, status: 'ok'},
+            {date: '2024-11', value: 4, status: 'bad'}, // IV类 超标
+            {date: '2024-12', value: 2, status: 'ok'}
+        ],
+        timeline: [
+            {
+                month: "2022/09",
+                tabs: {
+                    expert: {content: "建议预警：该断面总磷指标出现异常波动，建议关注。", file: "专家研判报告_202209.pdf"},
+                    warning: {
+                        content: "关于2022年9月水环境目标任务完成情况的函",
+                        time: "2022-10-31 15:37:48",
+                        file: "预警函_0931.pdf"
+                    },
+                    feedback: {
+                        content: "一是建立断面监测点位责任制...二是开展问题排查整治...三是推进环境治理...",
+                        time: "2022-09",
+                        file: "整改方案.docx"
+                    }
+                }
+            },
+            {
+                month: "2022/06",
+                tabs: {
+                    expert: {content: "建议预警", file: null},
+                    warning: {content: "预警函", time: "2022-07-24 19:16:27", file: "预警函_0724.pdf"},
+                    feedback: null
+                }
+            }
+        ]
+    };
+
+    // --- Icons ---
+    const IconChevronLeft = () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                       fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"
+                                       strokeLinejoin="round">
+        <polyline points="15 18 9 12 15 6"></polyline>
+    </svg>;
+    const IconFileText = ({size = 20}) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size}
+                                               viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
+                                               strokeLinecap="round" strokeLinejoin="round">
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+        <polyline points="14 2 14 8 20 8"></polyline>
+        <line x1="16" y1="13" x2="8" y2="13"></line>
+        <line x1="16" y1="17" x2="8" y2="17"></line>
+        <polyline points="10 9 9 9 8 9"></polyline>
+    </svg>;
+    const IconSearch = () => <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                                  fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"
+                                  strokeLinejoin="round">
+        <circle cx="11" cy="11" r="8"></circle>
+        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+    </svg>;
+    const IconFilter = ({size = 20, className}) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size}
+                                                        viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                        strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+                                                        className={className}>
+        <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+    </svg>;
+    const IconDownload = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"
+                                    strokeLinejoin="round">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+        <polyline points="7 10 12 15 17 10"></polyline>
+        <line x1="12" y1="15" x2="12" y2="3"></line>
+    </svg>;
+    const IconMapPin = () => <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+                                  fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"
+                                  strokeLinejoin="round">
+        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+        <circle cx="12" cy="10" r="3"></circle>
+    </svg>;
+    const IconX = () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                             stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <line x1="18" y1="6" x2="6" y2="18"></line>
+        <line x1="6" y1="6" x2="18" y2="18"></line>
+    </svg>;
+    const IconChevronRight = () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                                        fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"
+                                        strokeLinejoin="round">
+        <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>;
+
+    // --- Common Components ---
+    const Badge = ({type, text}) => {
+        let colors = "";
+        switch (type) {
+            case "warning":
+                colors = "bg-red-100 text-red-600 border border-red-200";
+                break;
+            case "feedback":
+                colors = "bg-orange-100 text-orange-600 border border-orange-200";
+                break;
+            case "closed":
+                colors = "bg-blue-100 text-blue-600 border border-blue-200";
+                break;
+            case "category":
+                colors = "bg-blue-50 text-blue-600";
+                break;
+            case "city":
+                colors = "bg-gray-100 text-gray-600";
+                break;
+            default:
+                colors = "bg-gray-100 text-gray-600";
+        }
+        return <span
+            className={`text-xs px-2 py-0.5 rounded-md font-medium ${colors} inline-flex items-center gap-1`}>{text}</span>;
+    };
+
+    // --- 1. Basic Info Module ---
+    const BasicInfoModule = ({data, nodes}) => (
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 mb-4">
+            <div className="flex items-center gap-2 mb-4 border-l-4 border-blue-600 pl-2">
+                <h2 className="text-lg font-bold text-gray-800">{data.name}问题基本信息</h2>
+            </div>
+            <div className="flex gap-4 mb-4">
+                <div className="w-20 shrink-0 flex flex-col items-center justify-center bg-blue-50 rounded-xl py-4">
+                    <div className="bg-blue-500 p-2 rounded-full text-white mb-2"><IconFileText/></div>
+                    <span className="text-blue-600 font-bold text-sm">基本信息</span>
+                </div>
+                <div className="flex-1 grid grid-cols-2 gap-x-2 gap-y-3 text-xs sm:text-sm">
+                    <div className="text-gray-500 col-span-2">所在省市: <span
+                        className="text-gray-800 font-medium">{data.province}</span></div>
+                    <div className="text-gray-500">所在流域: <span
+                        className="text-gray-800 font-medium">{data.basin}</span></div>
+                    <div className="text-gray-500">预警次数: <span
+                        className="text-red-500 font-medium">{data.warningCount}</span></div>
+                    <div className="text-gray-500">问题类型: <span
+                        className="text-gray-800 font-medium">{data.type}</span></div>
+                    <div className="text-gray-500">首要污染物: <span
+                        className="text-gray-800 font-medium">{data.pollutant || '-'}</span></div>
+                    <div className="text-gray-500">水质目标: <span
+                        className="text-gray-800 font-medium">{data.target}</span></div>
+                    <div className="text-gray-500">水质类别: <span
+                        className="text-gray-800 font-medium">{data.current}</span></div>
+                </div>
+            </div>
+            <div className="bg-gray-50 rounded-lg p-3 text-xs text-gray-600 leading-relaxed mb-6">
+                <span className="font-bold text-gray-700 block mb-1">识别规则：</span>{data.rule}
+            </div>
+            <div className="border-t border-gray-100 pt-4">
+                <h3 className="text-sm font-bold text-blue-800 mb-4">问题处理节点</h3>
+                <div className="pl-2">
+                    {nodes.map((node, idx) => (
+                        <div key={idx} className="relative pl-6 pb-6 last:pb-0">
+                            {idx !== nodes.length - 1 &&
+                                <div className="absolute left-[5px] top-2 bottom-0 w-0.5 bg-blue-400"></div>}
+                            <div
+                                className="absolute left-0 top-1.5 w-3 h-3 rounded-full bg-blue-500 border-2 border-white shadow-sm"></div>
+                            <div>
+                                <div className="text-sm font-bold text-gray-700">{node.role}</div>
+                                {node.time && <div className="text-xs text-gray-400 mt-0.5">{node.time}</div>}
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        </div>
+    );
+
+    // --- 2. Charts & Identification Module (Updated) ---
+
+    // 历史达标柱状图 - 正常展示
+    const ComplianceChart = ({data}) => (
+        <div className="mt-4">
+            <div className="flex justify-between items-center mb-2">
+                <h4 className="text-xs font-bold text-gray-600 flex items-center gap-1"><span
+                    className="w-1 h-3 bg-blue-500 rounded-sm"></span>历史达标/超标情况</h4>
+                <div className="flex gap-2 text-[10px] text-gray-400">
+                    <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-blue-400"></span>达标</span>
+                    <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-red-400"></span>超标</span>
+                </div>
+            </div>
+
+            {/* Chart Container */}
+            <div className="bg-white rounded-lg border border-gray-100 p-2">
+                <div className="h-40 flex items-end justify-between gap-1 sm:gap-2 px-1 relative">
+                    {/* Y-Axis Grid Lines */}
+                    <div className="absolute inset-0 flex flex-col justify-between pointer-events-none z-0 px-1">
+                        {[5, 4, 3, 2, 1].map(l => (
+                            <div key={l} className="border-t border-dashed border-gray-100 w-full h-0 relative">
+                                <span className="absolute -top-2 -left-0 text-[9px] text-gray-300 hidden">L{l}</span>
+                            </div>
+                        ))}
+                    </div>
+
+                    {data.map((item, i) => {
+                        // 简单的柱状图逻辑：达标为蓝色，超标为红色
+                        // 高度根据水质类别模拟: II类=20%, III类=40%, IV类=60%, V类=80%, 劣V=100%
+                        const heightPercent = item.value * 18;
+                        const isExceed = item.status === 'bad';
+                        const bgColor = isExceed ? 'bg-red-400' : 'bg-blue-400';
+
+                        return (
+                            <div key={i} className="flex-1 flex flex-col items-center z-10 group h-full justify-end">
+                                {/* Tooltip hint could go here */}
+                                <div
+                                    className={`w-full max-w-[12px] sm:max-w-[16px] rounded-t-sm transition-all duration-500 ${bgColor} relative hover:opacity-80`}
+                                    style={{height: `${heightPercent}%`}}
+                                >
+                                    {/* Value Label on hover/top */}
+                                    {isExceed && <div
+                                        className="absolute -top-3 left-1/2 -translate-x-1/2 text-[8px] text-red-500 font-bold">!</div>}
+                                </div>
+                                <div
+                                    className="text-[9px] text-gray-400 mt-1 scale-90 origin-top transform whitespace-nowrap overflow-hidden text-center w-full">
+                                    {item.date.split('-')[1]}
+                                </div>
+                            </div>
+                        );
+                    })}
+                </div>
+                <div
+                    className="flex justify-between text-[10px] text-gray-400 mt-1 px-1 font-mono border-t border-gray-100 pt-1">
+                    <span>{data[0].date}</span>
+                    <span>{data[data.length - 1].date}</span>
+                </div>
+            </div>
+        </div>
+    );
+
+    // 污染物趋势图 (保持之前的SVG)
+    const PollutantTrendChart = () => (
+        <div className="mt-6">
+            <div className="flex justify-between items-center mb-2">
+                <h4 className="text-xs font-bold text-gray-600 flex items-center gap-1"><span
+                    className="w-1 h-3 bg-purple-500 rounded-sm"></span>各污染物历史变化情况</h4>
+                <div className="bg-gray-100 rounded px-2 py-0.5 text-[10px] text-gray-600 flex items-center gap-1">
+                    化学需氧量 <span className="text-[8px]">▼</span>
+                </div>
+            </div>
+
+            <div className="relative h-32 border-b border-gray-200">
+                <div
+                    className="absolute top-[20%] left-0 right-0 border-t border-red-300 border-dashed flex items-center justify-end">
+                    <span className="text-[10px] text-red-400 bg-white px-1 -mt-2">目标值</span>
+                </div>
+
+                <svg className="w-full h-full overflow-visible" viewBox="0 0 300 100" preserveAspectRatio="none">
+                    <defs>
+                        <linearGradient id="gradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" stopColor="#8b5cf6"/>
+                            <stop offset="100%" stopColor="white" stopOpacity="0"/>
+                        </linearGradient>
+                    </defs>
+                    <path d="M0,70 C20,80 40,40 60,60 S100,20 120,40 S160,80 180,60 S220,10 240,30 S280,50 300,40"
+                          fill="none" stroke="#8b5cf6" strokeWidth="2"/>
+                    <path
+                        d="M0,70 C20,80 40,40 60,60 S100,20 120,40 S160,80 180,60 S220,10 240,30 S280,50 300,40 V100 H0 Z"
+                        fill="url(#gradient)" opacity="0.2"/>
+                    {[
+                        [0, 70], [30, 60], [60, 60], [90, 30], [120, 40], [150, 55], [180, 60], [210, 25], [240, 30], [270, 45], [300, 40]
+                    ].map((p, i) => (
+                        <circle key={i} cx={p[0]} cy={p[1]} r="3" fill="white" stroke="#8b5cf6" strokeWidth="2"/>
+                    ))}
+                </svg>
+            </div>
+            <div className="flex justify-between text-[10px] text-gray-400 mt-1 px-1 font-mono">
+                <span>2023-05</span>
+                <span>2024-02</span>
+                <span>2024-07</span>
+                <span>2024-12</span>
+            </div>
+        </div>
+    );
+
+    const IdentificationModule = ({alerts, calendarData, historyData}) => {
+        return (
+            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 mb-4">
+                <div className="flex items-center gap-2 mb-4 border-l-4 border-blue-600 pl-2">
+                    <h2 className="text-lg font-bold text-gray-800">问题识别情况</h2>
+                </div>
+
+                {/* Alerts */}
+                <div className="space-y-2 mb-6">
+                    {alerts.map((alert, i) => (
+                        <div key={i}
+                             className="bg-red-50 border border-red-100 text-red-700 px-3 py-2 rounded-lg text-xs font-medium flex items-start gap-2">
+                            <span className="mt-1.5 w-1 h-1 rounded-full bg-red-500 shrink-0"></span>
+                            {alert}
+                        </div>
+                    ))}
+                </div>
+
+                {/* Water Calendar - Table Style */}
+                <div className="mb-6">
+                    <h3 className="text-sm font-bold text-gray-700 mb-3 flex justify-between items-center">
+                        断面水质月历
+                        <span className="text-[10px] font-normal text-gray-400">*红色角标标识未达标</span>
+                    </h3>
+
+                    {/* Table Container with Horizontal Scroll */}
+                    <div className="border border-gray-200 rounded-lg overflow-hidden bg-white">
+                        <div className="overflow-x-auto no-scrollbar">
+                            <div className="min-w-[400px]"> {/* Ensure min width for table feel */}
+                                {/* Table Header */}
+                                <div className="flex bg-gray-50 border-b border-gray-200">
+                                    <div
+                                        className="w-12 shrink-0 py-2 text-center text-[10px] font-bold text-gray-500 border-r border-gray-200 bg-gray-100 sticky left-0 z-10">
+                                        年份
+                                    </div>
+                                    {[...Array(12)].map((_, i) => (
+                                        <div key={i}
+                                             className="flex-1 py-2 text-center text-[10px] text-gray-500 border-r border-gray-100 last:border-0">
+                                            {i + 1}月
+                                        </div>
+                                    ))}
+                                </div>
+
+                                {/* Table Body */}
+                                {calendarData.map((row, idx) => (
+                                    <div key={idx}
+                                         className="flex border-b border-gray-100 last:border-0 h-8 items-center">
+                                        {/* Fixed Year Column */}
+                                        <div
+                                            className="w-12 shrink-0 h-full flex items-center justify-center text-[10px] font-bold text-blue-600 bg-gray-50 border-r border-gray-200 sticky left-0 z-10">
+                                            {row.year}
+                                        </div>
+                                        {/* Months Columns */}
+                                        {row.months.map((level, mIdx) => {
+                                            const isBad = level === 'III' || level === 'IV' || level === 'V';
+                                            const isNoData = level === '-';
+                                            let cellClass = "text-gray-300 bg-white";
+                                            if (!isNoData) {
+                                                cellClass = level === 'III' ? "text-green-600 font-bold" : "text-blue-500 font-bold";
+                                            }
+
+                                            return (
+                                                <div key={mIdx}
+                                                     className="flex-1 h-full flex items-center justify-center border-r border-gray-100 last:border-0 relative">
+                                                        <span className={`text-[10px] ${cellClass}`}>
+                                                            {level === '-' ? '' : level}
+                                                        </span>
+                                                    {isBad && !isNoData && (
+                                                        <div
+                                                            className="absolute top-1 right-1 w-1.5 h-1.5 bg-red-500 rounded-full border border-white"></div>
+                                                    )}
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Charts */}
+                <ComplianceChart data={historyData}/>
+                <PollutantTrendChart/>
+            </div>
+        );
+    };
+
+    // --- 3. Timeline Node Module (Updated Button) ---
+    const TimelineCard = ({monthData}) => {
+        const [activeTab, setActiveTab] = useState('warning');
+
+        const renderContent = () => {
+            const data = monthData.tabs[activeTab];
+            if (!data) return <div className="p-4 text-center text-gray-400 text-xs">暂无数据</div>;
+
+            return (
+                <div
+                    className="bg-gray-50 rounded-b-lg rounded-tr-lg animate-fade-in border border-gray-100 flex flex-col">
+                    <div className="p-3">
+                        <div className="flex justify-between items-center mb-1">
+                            <span
+                                className="text-xs font-bold text-gray-700 px-2 py-0.5 bg-white rounded border border-gray-200 shadow-sm">水司</span>
+                            {data.time && <span className="text-[10px] text-gray-400 font-mono">{data.time}</span>}
+                        </div>
+
+                        {data.title &&
+                            <div className="font-bold text-sm text-gray-800 mb-2 mt-2 leading-tight">{data.title}</div>}
+
+                        {data.content && (
+                            <div
+                                className="text-xs text-gray-600 leading-relaxed text-justify bg-white/50 p-2 rounded border border-gray-100">
+                                {data.content}
+                            </div>
+                        )}
+                    </div>
+
+                    {/* 修改点：改为简单的查看详情按钮 */}
+                    <div className="px-3 pb-3 pt-0 flex justify-end">
+                        <button
+                            className="flex items-center gap-1 bg-white border border-blue-500 text-blue-600 text-xs px-3 py-1.5 rounded-full hover:bg-blue-50 active:scale-95 transition-all shadow-sm">
+                            <span>查看详情</span>
+                            <IconChevronRight/>
+                        </button>
+                    </div>
+                </div>
+            );
+        };
+
+        return (
+            <div className="relative pl-6 pb-8 last:pb-0">
+                <div
+                    className="absolute left-[7px] top-6 bottom-0 w-0.5 bg-gray-200 border-l border-dashed border-gray-300"></div>
+                <div
+                    className="absolute left-0 top-1 w-4 h-4 rounded-full border-2 border-blue-500 bg-white z-10 shadow-sm"></div>
+                <div className="text-blue-600 font-bold text-lg mb-2 leading-none font-mono">{monthData.month}</div>
+                <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                    <div className="flex border-b border-gray-100">
+                        {[
+                            {id: 'expert', label: '专家研判'},
+                            {id: 'warning', label: '预警函'},
+                            {id: 'feedback', label: '地方反馈'}
+                        ].map(tab => (
+                            <button
+                                key={tab.id}
+                                onClick={() => setActiveTab(tab.id)}
+                                className={`flex-1 py-2.5 text-xs font-bold transition-colors relative
+                                        ${activeTab === tab.id ? 'text-blue-600 bg-blue-50/30' : 'text-gray-500 hover:bg-gray-50'}
+                                    `}
+                            >
+                                {tab.label}
+                                {activeTab === tab.id &&
+                                    <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-500"></div>}
+                            </button>
+                        ))}
+                    </div>
+                    {renderContent()}
+                </div>
+            </div>
+        );
+    };
+
+    const App = () => {
+        const [selectedItem, setSelectedItem] = useState(null);
+        const [searchQuery, setSearchQuery] = useState("");
+        const [isFilterOpen, setIsFilterOpen] = useState(false);
+        const [filters, setFilters] = useState({year: "2022", category: "", status: "全部"});
+        const [activeFiltersCount, setActiveFiltersCount] = useState(0);
+
+        // Filter Logic
+        const filteredData = useMemo(() => {
+            return MOCK_DATA.filter(item => {
+                const matchName = item.name.includes(searchQuery);
+                const matchCategory = filters.category ? item.category === filters.category : true;
+                const matchYear = item.year.toString() === filters.year;
+                const isClosed = item.events.some(e => e.type === 'closed');
+                const matchStatus = filters.status === '全部' ? true : filters.status === '已销号' ? isClosed : !isClosed;
+                return matchName && matchCategory && matchYear && matchStatus;
+            });
+        }, [searchQuery, filters]);
+
+        useEffect(() => {
+            let count = 0;
+            if (filters.category) count++;
+            if (filters.status !== '全部') count++;
+            setActiveFiltersCount(count);
+        }, [filters]);
+
+        // --- 详情页渲染 ---
+        if (selectedItem) {
+            return (
+                <div className="min-h-screen bg-gray-100 pb-10 fade-in max-w-md mx-auto relative shadow-2xl">
+                    <div
+                        className="bg-white sticky top-0 z-20 px-4 py-2 border-b border-gray-200 shadow-sm flex items-center justify-between">
+                        <button onClick={() => setSelectedItem(null)}
+                                className="p-2 -ml-2 rounded-xl text-gray-600 hover:bg-gray-100 transition">
+                            <IconChevronLeft/></button>
+                        <h1 className="text-base font-bold text-gray-800">{selectedItem.name}问题详情</h1>
+                        <div className="w-8"></div>
+                    </div>
+                    <div className="p-4">
+                        <BasicInfoModule data={MOCK_DETAIL.baseInfo} nodes={MOCK_DETAIL.processNodes}/>
+                        <IdentificationModule alerts={MOCK_DETAIL.alerts} calendarData={MOCK_DETAIL.waterCalendar}
+                                              historyData={MOCK_DETAIL.historyCompliance}/>
+                        <div className="mt-6">
+                            <div className="flex items-center gap-2 mb-4 border-l-4 border-blue-600 pl-2">
+                                <h2 className="text-lg font-bold text-gray-800">问题节点</h2>
+                            </div>
+                            <div>
+                                {MOCK_DETAIL.timeline.map((t, i) => <TimelineCard key={i} monthData={t}/>)}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        // --- 列表页渲染 ---
+        return (
+            <div
+                className="min-h-screen pb-20 max-w-md mx-auto bg-gray-50 shadow-2xl overflow-hidden relative flex flex-col">
+
+                {/* 顶部固定区域：标题 + 全局搜索/下载 */}
+                <div className="sticky top-0 z-30 bg-blue-600 shadow-md">
+                    {/* 1. 蓝色标题行 */}
+                    <header className="text-white px-4 py-3 relative z-20">
+                        <div className="flex items-center justify-between">
+                            <button className="p-1 rounded-lg hover:bg-white/10 transition active:scale-90">
+                                <IconChevronLeft/>
+                            </button>
+                            <h1 className="text-lg font-bold tracking-wide">问题清单</h1>
+                            <div className="w-8"></div>
+                        </div>
+                    </header>
+
+                    {/* 2. 核心操作区：输入框 + 两个实体按钮 (已改为蓝底) */}
+                    <div className="px-3 pb-3 bg-blue-600 relative z-10">
+                        <div className="flex items-center gap-2">
+
+                            {/* 左侧：输入框 (半透明白色背景) */}
+                            <div
+                                className="flex-1 bg-white/95 rounded-lg flex items-center px-3 py-2 transition-all focus-within:ring-2 focus-within:ring-white/50">
+                                <span className="text-gray-400 shrink-0"><IconSearch size={16}/></span>
+                                <input
+                                    type="text"
+                                    placeholder="输入名称..."
+                                    className="w-full bg-transparent border-none outline-none text-gray-700 text-sm ml-2 placeholder-gray-400 min-w-0"
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                />
+                            </div>
+
+                            {/* 搜索按钮 (白底蓝字) */}
+                            <button
+                                className="bg-white text-blue-600 text-sm font-bold px-4 py-2 rounded-lg shadow-sm active:scale-95 transition whitespace-nowrap">
+                                搜索
+                            </button>
+
+                            {/* 下载按钮 (浅色半透明) */}
+                            <button
+                                className="bg-white/10 text-white p-2 rounded-lg border border-white/20 active:scale-95 transition hover:bg-white/20">
+                                <IconDownload size={20}/>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <main className="px-4 mt-2 pb-8 flex-1">
+                    {/* 3. 统计 + 筛选行 (移到这里) */}
+                    <div className="flex justify-between items-center mb-3 mt-1">
+                        {/* 左侧：统计信息 */}
+                        <div className="text-xs text-gray-500">
+                            共找到 <span
+                            className="text-gray-900 font-bold text-sm mx-0.5">{filteredData.length}</span> 条记录
+                        </div>
+
+                        {/* 右侧：筛选按钮 (带红点状态) */}
+                        <button
+                            onClick={() => setIsFilterOpen(true)}
+                            className={`
+                                flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border transition-all active:scale-95
+                                ${activeFiltersCount > 0
+                                ? 'bg-blue-50 text-blue-600 border-blue-200'
+                                : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300'}
+                            `}
+                        >
+                            <span>筛选</span>
+                            <IconFilter size={14}
+                                        className={activeFiltersCount > 0 ? "text-blue-600" : "text-gray-400"}/>
+                            {activeFiltersCount > 0 && <span className="w-1.5 h-1.5 bg-red-500 rounded-full"></span>}
+                        </button>
+                    </div>
+
+                    <div className="space-y-4">
+                        {filteredData.map(item => (
+                            <div key={item.id} onClick={() => setSelectedItem(item)}
+                                 className="bg-white rounded-xl p-4 shadow-sm border border-gray-100 transition active:scale-[0.99] cursor-pointer hover:shadow-md group">
+                                <div className="flex justify-between items-start mb-3">
+                                    <h3 className="text-base font-bold text-gray-800 leading-tight pr-2 group-hover:text-blue-600 transition-colors">{item.name}</h3>
+                                    {item.events.some(e => e.type === 'closed') ?
+                                        <span className="shrink-0"><Badge type="closed" text="已销号"/></span> : <span
+                                            className="shrink-0 w-2 h-2 rounded-full bg-red-500 mt-1.5 ring-4 ring-red-50 animate-pulse"></span>}
+                                </div>
+                                <div className="flex flex-wrap gap-2 mb-4">
+                                    <Badge type="city"
+                                           text={<><IconMapPin size={10} className="mr-0.5"/> {item.city}</>}/>
+                                    <Badge type="category" text={item.category}/>
+                                    <span
+                                        className="text-xs text-gray-400 flex items-center bg-gray-50 px-2 rounded-md font-mono">{item.year}</span>
+                                </div>
+                                <div className="bg-gray-50/80 rounded-lg p-3 border border-gray-100/50">
+                                    <div
+                                        className="text-[10px] text-gray-400 uppercase tracking-wider mb-2 font-bold flex items-center gap-1">
+                                        <div className="w-1 h-1 bg-gray-300 rounded-full"></div>
+                                        时间进度
+                                    </div>
+                                    {item.events.map((event, idx) => (
+                                        <div key={idx} className="flex items-start mb-3 last:mb-0 relative pl-4">
+
+                                            {idx !== item.events.length - 1 && (
+                                                <div className="absolute left-0 top-1.5 bottom-[-12px] w-0.5 bg-gray-200"></div>
+                                            )}
+
+                                            <div
+                                                className={`absolute left-[-2px] top-1.5 w-1.5 h-1.5 rounded-full ring-2 ring-white ${event.type === 'warning' ? 'bg-red-500' : event.type === 'feedback' ? 'bg-orange-400' : 'bg-blue-500'}`}>
+                                            </div>
+
+                                            <div className="flex-1 flex justify-between items-center text-sm">
+                                                <span className="text-gray-500 font-mono text-xs">{event.month}月</span>
+                                                <Badge type={event.type} text={event.label}/>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </main>
+
+                {/* Filter Drawer (保持不变) */}
+                {isFilterOpen && (
+                    <div className="fixed inset-0 z-50 flex flex-col justify-end sm:items-center sm:justify-center">
+                        <div className="absolute inset-0 bg-black/50 backdrop-blur-sm transition-opacity"
+                             onClick={() => setIsFilterOpen(false)}></div>
+                        <div
+                            className="relative w-full sm:w-[400px] bg-white rounded-t-2xl sm:rounded-2xl p-5 shadow-2xl animate-fade-in max-h-[90vh] overflow-y-auto">
+                            <div className="flex justify-between items-center mb-6">
+                                <h3 className="text-lg font-bold text-gray-800">筛选条件</h3>
+                                <button onClick={() => setIsFilterOpen(false)}
+                                        className="p-1 rounded-lg hover:bg-gray-100 text-gray-500"><IconX/></button>
+                            </div>
+                            <div className="space-y-5">
+                                {/* Year */}
+                                <div>
+                                    <label
+                                        className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">年份</label>
+                                    <select
+                                        className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all"
+                                        value={filters.year}
+                                        onChange={(e) => setFilters({...filters, year: e.target.value})}
+                                    >
+                                        <option value="2022">2022年</option>
+                                        <option value="2023">2023年</option>
+                                    </select>
+                                </div>
+
+                                {/* Category */}
+                                <div>
+                                    <label
+                                        className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">问题类别</label>
+                                    <select
+                                        className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all"
+                                        value={filters.category}
+                                        onChange={(e) => setFilters({...filters, category: e.target.value})}
+                                    >
+                                        <option value="">全部类别</option>
+                                        <option value="水质恶化">水质恶化</option>
+                                        <option value="汛期">汛期</option>
+                                        <option value="污染物峰值">污染物峰值</option>
+                                    </select>
+                                </div>
+
+                                {/* Basin Filters */}
+                                <div>
+                                    <label
+                                        className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">流域范围</label>
+                                    <div className="grid grid-cols-2 gap-3">
+                                        <select
+                                            className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-sm outline-none">
+                                            <option>长江干流流域</option>
+                                        </select>
+                                        <select
+                                            className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-sm outline-none">
+                                            <option>选择二级流域</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                {/* Warning Count */}
+                                <div>
+                                    <label
+                                        className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">预警次数</label>
+                                    <select
+                                        className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-sm outline-none">
+                                        <option value="">不限</option>
+                                        <option value="1">1次</option>
+                                        <option value="2">2次</option>
+                                        <option value="3">3次及以上</option>
+                                    </select>
+                                </div>
+
+                                {/* Is Closed */}
+                                <div>
+                                    <label
+                                        className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">状态</label>
+                                    <div className="flex gap-3">
+                                        {['全部', '未销号', '已销号'].map(status => (
+                                            <button
+                                                key={status}
+                                                className={`flex-1 py-2.5 text-sm rounded-xl border transition-all ${filters.status === status ? 'bg-blue-600 border-blue-600 text-white font-bold shadow-md shadow-blue-200' : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'}`}
+                                                onClick={() => setFilters({...filters, status})}
+                                            >
+                                                {status}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="flex gap-3 mt-8 pt-4 border-t border-gray-100">
+                                <button onClick={() => setFilters({year: "2022", category: "", status: "全部"})}
+                                        className="flex-1 px-4 py-3 rounded-xl border border-gray-200 text-gray-700 font-bold hover:bg-gray-50 transition-colors">重置
+                                </button>
+                                <button onClick={() => setIsFilterOpen(false)}
+                                        className="flex-1 px-4 py-3 rounded-xl bg-blue-600 text-white font-bold hover:bg-blue-700 shadow-lg shadow-blue-200 active:scale-95 transition-all">确认
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+            </div>
+        );
+    };
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App/>);
+</script>
+</body>
+</html>

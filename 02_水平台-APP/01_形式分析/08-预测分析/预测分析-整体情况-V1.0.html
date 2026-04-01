@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>预测分析 - 整体情况</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography,container-queries"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#3b82f6",
+                        "background-light": "#f4f7f9",
+                    }
+                }
+            }
+        };
+    </script>
+    <style type="text/tailwindcss">
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+        body { font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif; background: #f4f7f9; }
+
+        .section-title-bar {
+            width: 4px;
+            height: 16px;
+            background: linear-gradient(to bottom, #93c5fd, #3b82f6);
+            border-radius: 4px;
+            margin-right: 8px;
+        }
+
+        .card-shadow { box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+
+        /* 底部导航 */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            display: flex;
+            justify-content: space-around;
+            padding: 8px 0;
+            border-top: 1px solid #e2e8f0;
+            z-index: 100;
+        }
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-size: 11px;
+            color: #94a3b8;
+            cursor: pointer;
+        }
+        .nav-item.active { color: #3b82f6; }
+        .nav-item i { font-size: 20px; margin-bottom: 2px; }
+
+        /* 统计卡片 */
+        .stat-card {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+            color: white;
+        }
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+        }
+        .stat-label {
+            font-size: 11px;
+            opacity: 0.9;
+            margin-top: 4px;
+        }
+
+        /* Tab切换 */
+        .tab-btn {
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: #f1f5f9;
+            color: #64748b;
+        }
+        .tab-btn.active {
+            background: #3b82f6;
+            color: white;
+        }
+
+        /* 进度条 */
+        .progress-item { margin-bottom: 12px; }
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            margin-bottom: 6px;
+        }
+        .progress-bar {
+            height: 24px;
+            border-radius: 12px;
+            background: #f1f5f9;
+            overflow: hidden;
+            position: relative;
+        }
+        .progress-fill {
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 600;
+            transition: width 0.3s;
+        }
+        .fill-1 { background: #C5FFFF; color: #004085; }
+        .fill-2 { background: #34C3F6; }
+        .fill-3 { background: #03FF03; color: #005a00; }
+        .fill-4 { background: #FCFF7D; color: #856404; }
+        .fill-5 { background: #FF9000; }
+        .fill-worse { background: #FF0101; }
+
+        /* 地市卡片 */
+        .city-card {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 12px;
+        }
+        .city-stat-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+        }
+        .city-stat-item {
+            background: white;
+            border-radius: 8px;
+            padding: 10px 6px;
+            text-align: center;
+        }
+
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+    </style>
+</head>
+<body class="pb-16">
+
+<!-- Header -->
+<header class="bg-primary text-white sticky top-0 z-50 shadow-md">
+    <div class="flex items-center justify-between px-4 py-3">
+        <div class="flex items-center gap-3">
+            <span class="material-symbols-outlined cursor-pointer" onclick="goBack()">arrow_back</span>
+            <span class="text-lg font-medium">预测分析 - 整体情况</span>
+        </div>
+        <div class="flex items-center gap-2">
+            <span class="material-symbols-outlined text-lg">more_vert</span>
+        </div>
+    </div>
+</header>
+
+<!-- 主筛选栏 -->
+<div class="bg-white border-b border-slate-200 px-4 py-3">
+    <div class="flex items-center gap-3">
+        <div class="flex-1 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 flex items-center justify-between">
+            <span class="text-sm text-slate-700"><i class="fas fa-flask text-primary mr-2"></i>评价指标: 总磷</span>
+            <span class="material-symbols-outlined text-slate-400 text-sm">expand_more</span>
+        </div>
+        <div class="flex-1 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 flex items-center justify-between">
+            <span class="text-sm text-slate-700"><i class="far fa-calendar text-primary mr-2"></i>当前日期</span>
+            <span class="material-symbols-outlined text-slate-400 text-sm">expand_more</span>
+        </div>
+    </div>
+</div>
+
+<!-- 主内容 -->
+<main class="p-4">
+
+    <!-- 统计概览 -->
+    <div class="grid grid-cols-4 gap-3 mb-4">
+        <div class="stat-card">
+            <div class="stat-value">268</div>
+            <div class="stat-label">预测断面</div>
+        </div>
+        <div class="stat-card" style="background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);">
+            <div class="stat-value">234</div>
+            <div class="stat-label">预测达标</div>
+        </div>
+        <div class="stat-card" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">
+            <div class="stat-value">34</div>
+            <div class="stat-label">风险预警</div>
+        </div>
+        <div class="stat-card" style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);">
+            <div class="stat-value">12</div>
+            <div class="stat-label">可能超标</div>
+        </div>
+    </div>
+
+    <!-- 未来十五天水质占比分析 -->
+    <div class="bg-white rounded-xl border border-slate-200 card-shadow p-4 mb-4">
+        <div class="flex items-center justify-between mb-3">
+            <div class="flex items-center">
+                <div class="section-title-bar"></div>
+                <h3 class="font-bold text-slate-800 text-sm">未来十五天水质占比分析</h3>
+            </div>
+        </div>
+        <div id="trend-chart" style="height: 200px;"></div>
+    </div>
+
+    <!-- 未来十五天断面达标情况 -->
+    <div class="bg-white rounded-xl border border-slate-200 card-shadow p-4 mb-4">
+        <div class="flex items-center justify-between mb-3">
+            <div class="flex items-center">
+                <div class="section-title-bar"></div>
+                <h3 class="font-bold text-slate-800 text-sm">未来十五天断面达标情况</h3>
+            </div>
+        </div>
+        <div id="compliance-chart" style="height: 200px;"></div>
+    </div>
+
+    <!-- 各地市水质分析 - 带独立时间筛选器 -->
+    <div class="bg-white rounded-xl border border-slate-200 card-shadow p-4 mb-4">
+        <div class="flex items-center justify-between mb-3">
+            <div class="flex items-center">
+                <div class="section-title-bar"></div>
+                <h3 class="font-bold text-slate-800 text-sm">各地市水质分析</h3>
+            </div>
+        </div>
+
+        <!-- 独立时间筛选器 -->
+        <div class="bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 flex items-center justify-between mb-4">
+            <span class="text-sm text-slate-700"><i class="far fa-calendar-alt text-primary mr-2"></i>选择预测日期: <span class="font-medium">12-19(明日)</span></span>
+            <span class="material-symbols-outlined text-slate-400 text-sm">expand_more</span>
+        </div>
+
+        <!-- Tab切换 -->
+        <div class="flex gap-2 mb-4">
+            <div class="tab-btn active" onclick="switchCityTab('ratio')">水质占比</div>
+            <div class="tab-btn" onclick="switchCityTab('count')">断面数量</div>
+        </div>
+
+        <!-- 水质占比视图 -->
+        <div id="city-ratio-view" class="tab-content active">
+            <div id="city-ratio-chart" style="height: 220px;"></div>
+        </div>
+
+        <!-- 断面数量视图 -->
+        <div id="city-count-view" class="tab-content">
+            <div class="grid grid-cols-2 gap-3">
+                <div class="city-card">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="font-semibold text-sm">武汉市</span>
+                        <span class="text-xs text-slate-500">45个断面</span>
+                    </div>
+                    <div class="city-stat-grid">
+                        <div class="city-stat-item">
+                            <div class="text-xs text-slate-500">Ⅰ-Ⅲ类</div>
+                            <div class="text-base font-bold text-emerald-500">88.9%</div>
+                        </div>
+                        <div class="city-stat-item">
+                            <div class="text-xs text-slate-500">Ⅳ-Ⅴ类</div>
+                            <div class="text-base font-bold text-amber-500">8.9%</div>
+                        </div>
+                        <div class="city-stat-item">
+                            <div class="text-xs text-slate-500">劣Ⅴ类</div>
+                            <div class="text-base font-bold text-red-500">2.2%</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="city-card">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="font-semibold text-sm">宜昌市</span>
+                        <span class="text-xs text-slate-500">32个断面</span>
+                    </div>
+                    <div class="city-stat-grid">
+                        <div class="city-stat-item">
+                            <div class="text-xs text-slate-500">Ⅰ-Ⅲ类</div>
+                            <div class="text-base font-bold text-emerald-500">93.8%</div>
+                        </div>
+                        <div class="city-stat-item">
+                            <div class="text-xs text-slate-500">Ⅳ-Ⅴ类</div>
+                            <div class="text-base font-bold text-amber-500">6.2%</div>
+                        </div>
+                        <div class="city-stat-item">
+                            <div class="text-xs text-slate-500">劣Ⅴ类</div>
+                            <div class="text-base font-bold text-red-500">0%</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="city-card">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="font-semibold text-sm">襄阳市</span>
+                        <span class="text-xs text-slate-500">28个断面</span>
+                    </div>
+                    <div class="city-stat-grid">
+                        <div class="city-stat-item">
+                            <div class="text-xs text-slate-500">Ⅰ-Ⅲ类</div>
+                            <div class="text-base font-bold text-emerald-500">85.7%</div>
+                        </div>
+                        <div class="city-stat-item">
+                            <div class="text-xs text-slate-500">Ⅳ-Ⅴ类</div>
+                            <div class="text-base font-bold text-amber-500">10.7%</div>
+                        </div>
+                        <div class="city-stat-item">
+                            <div class="text-xs text-slate-500">劣Ⅴ类</div>
+                            <div class="text-base font-bold text-red-500">3.6%</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="city-card">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="font-semibold text-sm">荆州市</span>
+                        <span class="text-xs text-slate-500">35个断面</span>
+                    </div>
+                    <div class="city-stat-grid">
+                        <div class="city-stat-item">
+                            <div class="text-xs text-slate-500">Ⅰ-Ⅲ类</div>
+                            <div class="text-base font-bold text-emerald-500">82.9%</div>
+                        </div>
+                        <div class="city-stat-item">
+                            <div class="text-xs text-slate-500">Ⅳ-Ⅴ类</div>
+                            <div class="text-base font-bold text-amber-500">11.4%</div>
+                        </div>
+                        <div class="city-stat-item">
+                            <div class="text-xs text-slate-500">劣Ⅴ类</div>
+                            <div class="text-base font-bold text-red-500">5.7%</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="city-card">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="font-semibold text-sm">十堰市</span>
+                        <span class="text-xs text-slate-500">25个断面</span>
+                    </div>
+                    <div class="city-stat-grid">
+                        <div class="city-stat-item">
+                            <div class="text-xs text-slate-500">Ⅰ-Ⅲ类</div>
+                            <div class="text-base font-bold text-emerald-500">96.0%</div>
+                        </div>
+                        <div class="city-stat-item">
+                            <div class="text-xs text-slate-500">Ⅳ-Ⅴ类</div>
+                            <div class="text-base font-bold text-amber-500">4.0%</div>
+                        </div>
+                        <div class="city-stat-item">
+                            <div class="text-xs text-slate-500">劣Ⅴ类</div>
+                            <div class="text-base font-bold text-red-500">0%</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="city-card">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="font-semibold text-sm">黄冈市</span>
+                        <span class="text-xs text-slate-500">30个断面</span>
+                    </div>
+                    <div class="city-stat-grid">
+                        <div class="city-stat-item">
+                            <div class="text-xs text-slate-500">Ⅰ-Ⅲ类</div>
+                            <div class="text-base font-bold text-emerald-500">90.0%</div>
+                        </div>
+                        <div class="city-stat-item">
+                            <div class="text-xs text-slate-500">Ⅳ-Ⅴ类</div>
+                            <div class="text-base font-bold text-amber-500">6.7%</div>
+                        </div>
+                        <div class="city-stat-item">
+                            <div class="text-xs text-slate-500">劣Ⅴ类</div>
+                            <div class="text-base font-bold text-red-500">3.3%</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 全省水质占比汇总 - 带独立时间筛选器 -->
+    <div class="bg-white rounded-xl border border-slate-200 card-shadow p-4 mb-4">
+        <div class="flex items-center justify-between mb-3">
+            <div class="flex items-center">
+                <div class="section-title-bar"></div>
+                <h3 class="font-bold text-slate-800 text-sm">全省水质占比汇总</h3>
+            </div>
+        </div>
+
+        <!-- 独立时间筛选器 -->
+        <div class="bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 flex items-center justify-between mb-4">
+            <span class="text-sm text-slate-700"><i class="far fa-calendar-alt text-primary mr-2"></i>选择预测日期: <span class="font-medium">12-19(明日)</span></span>
+            <span class="material-symbols-outlined text-slate-400 text-sm">expand_more</span>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+            <div class="bg-gradient-to-br from-emerald-50 to-emerald-100/50 border border-emerald-200 rounded-xl p-4 text-center">
+                <div class="text-xs text-slate-600 mb-2">Ⅰ-Ⅲ类水质占比</div>
+                <div class="text-3xl font-bold text-emerald-500 mb-1">87.3%</div>
+                <div class="text-xs text-slate-500">234个断面</div>
+            </div>
+            <div class="bg-gradient-to-br from-red-50 to-red-100/50 border border-red-200 rounded-xl p-4 text-center">
+                <div class="text-xs text-slate-600 mb-2">劣Ⅴ类水质占比</div>
+                <div class="text-3xl font-bold text-red-500 mb-1">4.5%</div>
+                <div class="text-xs text-slate-500">12个断面</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 水体类型水质占比 - 带独立时间筛选器 -->
+    <div class="bg-white rounded-xl border border-slate-200 card-shadow p-4 mb-4">
+        <div class="flex items-center justify-between mb-3">
+            <div class="flex items-center">
+                <div class="section-title-bar"></div>
+                <h3 class="font-bold text-slate-800 text-sm">水体类型水质占比</h3>
+            </div>
+        </div>
+
+        <!-- 独立时间筛选器 -->
+        <div class="bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 flex items-center justify-between mb-4">
+            <span class="text-sm text-slate-700"><i class="far fa-calendar-alt text-primary mr-2"></i>选择预测日期: <span class="font-medium">12-19(明日)</span></span>
+            <span class="material-symbols-outlined text-slate-400 text-sm">expand_more</span>
+        </div>
+
+        <!-- Tab切换 -->
+        <div class="flex gap-2 mb-4">
+            <div class="tab-btn active" onclick="switchWaterType('river')">河流水质</div>
+            <div class="tab-btn" onclick="switchWaterType('lake')">湖库水质</div>
+        </div>
+
+        <!-- 河流水质 -->
+        <div id="river-view" class="tab-content active">
+            <div class="progress-item">
+                <div class="progress-header"><span>Ⅰ类</span><span>8.2% (15个)</span></div>
+                <div class="progress-bar"><div class="progress-fill fill-1" style="width: 8.2%;">8.2%</div></div>
+            </div>
+            <div class="progress-item">
+                <div class="progress-header"><span>Ⅱ类</span><span>42.5% (78个)</span></div>
+                <div class="progress-bar"><div class="progress-fill fill-2" style="width: 42.5%;">42.5%</div></div>
+            </div>
+            <div class="progress-item">
+                <div class="progress-header"><span>Ⅲ类</span><span>35.5% (65个)</span></div>
+                <div class="progress-bar"><div class="progress-fill fill-3" style="width: 35.5%;">35.5%</div></div>
+            </div>
+            <div class="progress-item">
+                <div class="progress-header"><span>Ⅳ类</span><span>9.3% (17个)</span></div>
+                <div class="progress-bar"><div class="progress-fill fill-4" style="width: 9.3%;">9.3%</div></div>
+            </div>
+            <div class="progress-item">
+                <div class="progress-header"><span>Ⅴ类</span><span>2.2% (4个)</span></div>
+                <div class="progress-bar"><div class="progress-fill fill-5" style="width: 2.2%;">2.2%</div></div>
+            </div>
+            <div class="progress-item">
+                <div class="progress-header"><span>劣Ⅴ类</span><span>2.2% (4个)</span></div>
+                <div class="progress-bar"><div class="progress-fill fill-worse" style="width: 2.2%;">2.2%</div></div>
+            </div>
+        </div>
+
+        <!-- 湖库水质 -->
+        <div id="lake-view" class="tab-content">
+            <div class="progress-item">
+                <div class="progress-header"><span>Ⅰ类</span><span>5.0% (4个)</span></div>
+                <div class="progress-bar"><div class="progress-fill fill-1" style="width: 5%;">5.0%</div></div>
+            </div>
+            <div class="progress-item">
+                <div class="progress-header"><span>Ⅱ类</span><span>35.0% (28个)</span></div>
+                <div class="progress-bar"><div class="progress-fill fill-2" style="width: 35%;">35.0%</div></div>
+            </div>
+            <div class="progress-item">
+                <div class="progress-header"><span>Ⅲ类</span><span>42.5% (34个)</span></div>
+                <div class="progress-bar"><div class="progress-fill fill-3" style="width: 42.5%;">42.5%</div></div>
+            </div>
+            <div class="progress-item">
+                <div class="progress-header"><span>Ⅳ类</span><span>12.5% (10个)</span></div>
+                <div class="progress-bar"><div class="progress-fill fill-4" style="width: 12.5%;">12.5%</div></div>
+            </div>
+            <div class="progress-item">
+                <div class="progress-header"><span>Ⅴ类</span><span>3.75% (3个)</span></div>
+                <div class="progress-bar"><div class="progress-fill fill-5" style="width: 3.75%;">3.75%</div></div>
+            </div>
+            <div class="progress-item">
+                <div class="progress-header"><span>劣Ⅴ类</span><span>1.25% (1个)</span></div>
+                <div class="progress-bar"><div class="progress-fill fill-worse" style="width: 1.25%;">1.25%</div></div>
+            </div>
+        </div>
+    </div>
+
+</main>
+
+<!-- 底部导航 -->
+<div class="bottom-nav">
+    <div class="nav-item active">
+        <i class="fas fa-chart-pie"></i>
+        <span>整体情况</span>
+    </div>
+    <div class="nav-item" onclick="switchPage('single')">
+        <i class="fas fa-chart-line"></i>
+        <span>断面预测</span>
+    </div>
+    <div class="nav-item">
+        <i class="fas fa-cog"></i>
+        <span>设置</span>
+    </div>
+</div>
+
+<script>
+    let trendChart, complianceChart, cityRatioChart;
+
+    // 初始化趋势图
+    function initTrendChart() {
+        trendChart = echarts.init(document.getElementById('trend-chart'));
+        const dates = [];
+        for (let i = 1; i <= 15; i++) {
+            const d = new Date(2025, 11, 18 + i);
+            dates.push((d.getMonth() + 1) + '-' + d.getDate());
+        }
+        const option = {
+            grid: { top: 35, right: 15, bottom: 25, left: 40 },
+            legend: { data: ['Ⅰ-Ⅲ类', 'Ⅳ-Ⅴ类', '劣Ⅴ类'], top: 0, textStyle: { fontSize: 11 } },
+            xAxis: {
+                type: 'category',
+                data: dates,
+                axisLine: { lineStyle: { color: '#e2e8f0' } },
+                axisLabel: { fontSize: 10, color: '#64748b' },
+                axisTick: { show: false }
+            },
+            yAxis: {
+                type: 'value',
+                max: 100,
+                axisLine: { show: false },
+                axisLabel: { fontSize: 10, color: '#64748b', formatter: '{value}%' },
+                splitLine: { lineStyle: { color: '#f1f5f9', type: 'dashed' } }
+            },
+            series: [
+                { name: 'Ⅰ-Ⅲ类', type: 'line', data: [87.3, 87.5, 87.2, 86.8, 87.0, 87.4, 87.6, 87.3, 87.1, 86.9, 87.2, 87.5, 87.8, 87.4, 87.3], smooth: true, symbolSize: 5, lineStyle: { color: '#22c55e', width: 2 }, itemStyle: { color: '#22c55e' } },
+                { name: 'Ⅳ-Ⅴ类', type: 'line', data: [8.2, 8.0, 8.5, 8.8, 8.5, 8.3, 8.0, 8.2, 8.4, 8.6, 8.3, 8.0, 7.7, 8.1, 8.2], smooth: true, symbolSize: 5, lineStyle: { color: '#f59e0b', width: 2 }, itemStyle: { color: '#f59e0b' } },
+                { name: '劣Ⅴ类', type: 'line', data: [4.5, 4.5, 4.3, 4.4, 4.5, 4.3, 4.4, 4.5, 4.5, 4.5, 4.5, 4.5, 4.5, 4.5, 4.5], smooth: true, symbolSize: 5, lineStyle: { color: '#ef4444', width: 2 }, itemStyle: { color: '#ef4444' } }
+            ]
+        };
+        trendChart.setOption(option);
+    }
+
+    // 初始化达标图
+    function initComplianceChart() {
+        complianceChart = echarts.init(document.getElementById('compliance-chart'));
+        const dates = [];
+        for (let i = 1; i <= 15; i++) {
+            const d = new Date(2025, 11, 18 + i);
+            dates.push((d.getMonth() + 1) + '-' + d.getDate());
+        }
+        const option = {
+            grid: { top: 35, right: 15, bottom: 25, left: 40 },
+            legend: { data: ['达标', '不达标'], top: 0, textStyle: { fontSize: 11 } },
+            xAxis: { type: 'category', data: dates, axisLine: { lineStyle: { color: '#e2e8f0' } }, axisLabel: { fontSize: 10, color: '#64748b' }, axisTick: { show: false } },
+            yAxis: { type: 'value', axisLine: { show: false }, axisLabel: { fontSize: 10, color: '#64748b' }, splitLine: { lineStyle: { color: '#f1f5f9', type: 'dashed' } } },
+            series: [
+                { name: '达标', type: 'bar', data: [234, 235, 233, 232, 233, 234, 235, 234, 233, 232, 233, 235, 236, 234, 234], itemStyle: { color: '#22c55e', borderRadius: [4, 4, 0, 0] } },
+                { name: '不达标', type: 'bar', data: [34, 33, 35, 36, 35, 34, 33, 34, 35, 36, 35, 33, 32, 34, 34], itemStyle: { color: '#ef4444', borderRadius: [4, 4, 0, 0] } }
+            ]
+        };
+        complianceChart.setOption(option);
+    }
+
+    // 初始化各地市占比图
+    function initCityRatioChart() {
+        cityRatioChart = echarts.init(document.getElementById('city-ratio-chart'));
+        const option = {
+            grid: { top: 10, right: 10, bottom: 20, left: 10 },
+            xAxis: { type: 'value', max: 100, axisLine: { show: false }, axisLabel: { show: false }, splitLine: { show: false } },
+            yAxis: { type: 'category', data: ['潜江市', '荆州市', '孝感市', '襄阳市', '武汉市', '宜昌市', '十堰市', '恩施州'], axisLine: { show: false }, axisTick: { show: false }, axisLabel: { fontSize: 11, color: '#334155' } },
+            series: [
+                { name: 'Ⅰ-Ⅲ类', type: 'bar', stack: 'total', data: [75.0, 82.9, 84.0, 85.7, 88.9, 93.8, 96.0, 91.2], itemStyle: { color: '#22c55e' } },
+                { name: 'Ⅳ-Ⅴ类', type: 'bar', stack: 'total', data: [20.0, 11.4, 12.0, 10.7, 8.9, 6.2, 4.0, 7.4], itemStyle: { color: '#f59e0b' } },
+                { name: '劣Ⅴ类', type: 'bar', stack: 'total', data: [5.0, 5.7, 4.0, 3.6, 2.2, 0, 0, 1.4], itemStyle: { color: '#ef4444' } }
+            ],
+            legend: { orient: 'horizontal', top: 0, left: 'center', textStyle: { fontSize: 11 } }
+        };
+        cityRatioChart.setOption(option);
+    }
+
+    function switchCityTab(tab) {
+        document.querySelectorAll('.tab-btn').forEach(t => t.classList.remove('active'));
+        event.target.classList.add('active');
+        document.getElementById('city-ratio-view').classList.remove('active');
+        document.getElementById('city-count-view').classList.remove('active');
+        if (tab === 'ratio') {
+            document.getElementById('city-ratio-view').classList.add('active');
+            setTimeout(() => cityRatioChart && cityRatioChart.resize(), 100);
+        } else {
+            document.getElementById('city-count-view').classList.add('active');
+        }
+    }
+
+    function switchWaterType(type) {
+        const btns = event.target.parentElement.querySelectorAll('.tab-btn');
+        btns.forEach(b => b.classList.remove('active'));
+        event.target.classList.add('active');
+        document.getElementById('river-view').classList.remove('active');
+        document.getElementById('lake-view').classList.remove('active');
+        document.getElementById(type + '-view').classList.add('active');
+    }
+
+    function switchPage(page) {
+        if (page === 'single') window.location.href = '预测分析-单个断面-V1.0.html';
+    }
+
+    function goBack() { window.history.back(); }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        initTrendChart();
+        initComplianceChart();
+        initCityRatioChart();
+        window.addEventListener('resize', () => {
+            trendChart && trendChart.resize();
+            complianceChart && complianceChart.resize();
+            cityRatioChart && cityRatioChart.resize();
+        });
+    });
+</script>
+
+</body>
+</html>

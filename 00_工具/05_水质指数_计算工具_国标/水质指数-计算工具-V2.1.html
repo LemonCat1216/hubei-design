@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>湖北省水质排名分析系统 Pro</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        /* Apple System Fonts */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif;
+            background-color: #F5F5F7;
+            color: #1d1d1f;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        [v-cloak] { display: none; }
+
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #d1d1d6; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #aeaeb2; }
+
+        .glass-nav {
+            background: rgba(255, 255, 255, 0.72);
+            backdrop-filter: saturate(180%) blur(20px);
+            -webkit-backdrop-filter: saturate(180%) blur(20px);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .apple-card {
+            background: #FFFFFF;
+            border-radius: 20px;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04);
+            border: 1px solid rgba(0, 0, 0, 0.02);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .apple-card:hover { box-shadow: 0 8px 32px rgba(0, 0, 0, 0.06); }
+
+        .btn-primary {
+            background-color: #0071e3; color: white; border-radius: 9999px;
+            font-weight: 500; transition: all 0.2s;
+        }
+        .btn-primary:hover { background-color: #0077ED; transform: scale(1.02); }
+
+        .btn-secondary {
+            background-color: rgba(0,0,0,0.05); color: #0071e3; border-radius: 9999px;
+            font-weight: 500; transition: all 0.2s;
+        }
+        .btn-secondary:hover { background-color: rgba(0,0,0,0.08); }
+
+        .btn-success {
+            background-color: #34c759; color: white; border-radius: 9999px;
+            font-weight: 500; transition: all 0.2s;
+        }
+        .btn-success:hover { background-color: #30b753; transform: scale(1.02); }
+
+        .sticky-header {
+            position: sticky; top: 0; background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(8px); z-index: 10;
+        }
+
+        /* Toggle Switch Animation */
+        .toggle-transition {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+<div id="app" v-cloak class="flex flex-col min-h-screen">
+
+    <header class="glass-nav fixed top-0 w-full z-50">
+        <div class="max-w-7xl mx-auto px-6 h-16 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 bg-gradient-to-tr from-blue-500 to-cyan-400 rounded-lg flex items-center justify-center text-white shadow-md">
+                    <i class="fa-solid fa-water"></i>
+                </div>
+                <div>
+                    <h1 class="text-lg font-semibold tracking-tight text-gray-900">湖北省水质分析 <span class="text-xs bg-blue-100 text-blue-600 px-2 py-0.5 rounded ml-2">V2.4 红烧牛肉面版</span></h1>
+                </div>
+            </div>
+            <div class="flex gap-3">
+                <button @click="downloadTemplate" class="btn-secondary px-5 py-1.5 text-sm flex items-center gap-2">
+                    <i class="fa-regular fa-file-excel"></i> 下载模板
+                </button>
+                <label class="btn-primary px-5 py-1.5 text-sm cursor-pointer flex items-center gap-2">
+                    <i class="fa-solid fa-cloud-arrow-up"></i> 导入数据
+                    <input type="file" @change="handleFileUpload" class="hidden" accept=".xlsx, .xls, .csv">
+                </label>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow pt-24 pb-12 w-full max-w-7xl mx-auto px-6">
+
+        <div v-if="!hasData" class="flex flex-col items-center justify-center min-h-[60vh] text-center animate-fade-in">
+            <div class="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mb-6 shadow-inner">
+                <i class="fa-solid fa-map-location-dot text-4xl text-gray-300"></i>
+            </div>
+            <h2 class="text-2xl font-semibold text-gray-900 mb-2">准备开始排名分析</h2>
+            <p class="text-gray-500 max-w-md">支持一键切换“13个地级市”或“全省所有行政区”排名，并自动计算全省水质指数。</p>
+        </div>
+
+        <div v-else class="space-y-10 animate-fade-in">
+
+            <section>
+                <h2 class="text-2xl font-semibold mb-6 text-gray-900 tracking-tight">
+                    全省概览
+                    <span class="text-sm font-normal text-gray-400 ml-2">
+                        (基于 <span class="text-blue-600 font-medium">{{ isLimit13 ? '13个地级市' : '所有上传城市' }}</span> 考核断面)
+                    </span>
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                    <div class="apple-card p-6 flex flex-col justify-between">
+                        <div>
+                            <div class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">湖北省全省水质指数 (CWQI)</div>
+                            <div class="text-4xl font-bold text-gray-900">{{ provinceStats.cwqi }}</div>
+                        </div>
+                        <div class="mt-4 flex items-center gap-2 text-sm text-gray-500 bg-gray-50 p-2 rounded-lg">
+                            <i class="fa-solid fa-calculator text-blue-500"></i>
+                            <span class="text-xs">算法：{{ provinceStats.totalSections }}个断面指数均值</span>
+                        </div>
+                    </div>
+
+                    <div class="apple-card p-6 flex flex-col justify-between">
+                        <div>
+                            <div class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">河流平均指数</div>
+                            <div class="text-4xl font-bold text-gray-900">{{ provinceStats.riverCwqi }}</div>
+                        </div>
+                        <div class="mt-4 w-full bg-gray-100 rounded-full h-1.5 overflow-hidden">
+                            <div class="bg-cyan-500 h-full rounded-full" :style="{width: provinceStats.totalSections ? (provinceStats.riverCount/provinceStats.totalSections*100) + '%' : '0%'}"></div>
+                        </div>
+                        <div class="mt-2 text-xs text-gray-400 text-right">{{ provinceStats.riverCount }} 个有效断面</div>
+                    </div>
+
+                    <div class="apple-card p-6 flex flex-col justify-between">
+                        <div>
+                            <div class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">湖库平均指数</div>
+                            <div class="text-4xl font-bold text-gray-900">{{ provinceStats.lakeCwqi }}</div>
+                        </div>
+                        <div class="mt-4 w-full bg-gray-100 rounded-full h-1.5 overflow-hidden">
+                            <div class="bg-teal-500 h-full rounded-full" :style="{width: provinceStats.totalSections ? (provinceStats.lakeCount/provinceStats.totalSections*100) + '%' : '0%'}"></div>
+                        </div>
+                        <div class="mt-2 text-xs text-gray-400 text-right">{{ provinceStats.lakeCount }} 个有效点位</div>
+                    </div>
+
+                    <div class="apple-card p-6 relative overflow-hidden">
+                        <div class="absolute -right-4 -top-4 text-9xl text-yellow-400 opacity-10 rotate-12">
+                            <i class="fa-solid fa-trophy"></i>
+                        </div>
+                        <div>
+                            <div class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">排名第一城市</div>
+                            <div class="text-3xl font-bold text-gray-900 truncate">{{ provinceStats.bestCity || '-' }}</div>
+                            <div class="text-sm font-medium text-green-600 mt-1" v-if="provinceStats.bestCity">CWQI {{ provinceStats.bestCwqi }}</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <div class="flex justify-between items-end mb-6">
+                    <h2 class="text-2xl font-semibold text-gray-900 tracking-tight">城市水质排名</h2>
+
+                    <button
+                            @click="toggleFilter"
+                            class="flex items-center gap-3 bg-white border border-gray-200 rounded-full p-1 pl-4 pr-1 shadow-sm hover:shadow-md transition-all cursor-pointer group"
+                    >
+                        <span class="text-xs text-gray-500 group-hover:text-gray-700 font-medium">统计范围</span>
+                        <div class="flex bg-gray-100 rounded-full p-0.5 relative">
+                            <div
+                                    class="absolute top-0.5 bottom-0.5 w-[70px] bg-white rounded-full shadow-sm border border-gray-200 transition-all duration-300 ease-out"
+                                    :style="{ left: isLimit13 ? '2px' : '74px' }"
+                            ></div>
+                            <span
+                                    class="relative z-10 px-3 py-1 text-xs font-bold rounded-full transition-colors w-[72px] text-center"
+                                    :class="isLimit13 ? 'text-blue-600' : 'text-gray-400'"
+                            >13地市</span>
+                            <span
+                                    class="relative z-10 px-3 py-1 text-xs font-bold rounded-full transition-colors w-[72px] text-center"
+                                    :class="!isLimit13 ? 'text-blue-600' : 'text-gray-400'"
+                            >全部城市</span>
+                        </div>
+                    </button>
+                </div>
+
+                <div class="apple-card overflow-hidden">
+                    <table class="w-full text-sm text-left">
+                        <thead class="bg-gray-50/50 text-gray-500 font-medium border-b border-gray-100">
+                        <tr>
+                            <th class="px-6 py-4 w-20 pl-8">排名</th>
+                            <th class="px-6 py-4">城市名称</th>
+                            <th class="px-6 py-4 text-right cursor-pointer group" @click="sortKey='cwqi'">
+                                <div class="flex items-center justify-end gap-1 group-hover:text-blue-600 transition">
+                                    CWQI 指数 <i class="fa-solid fa-sort text-xs opacity-30"></i>
+                                </div>
+                            </th>
+                            <th class="px-6 py-4 text-right text-gray-400 font-normal">河流指数</th>
+                            <th class="px-6 py-4 text-right text-gray-400 font-normal">湖库指数</th>
+                            <th class="px-6 py-4 text-right text-gray-400 font-mono text-xs">断面 (河/湖)</th>
+                            <th class="px-6 py-4 text-center">明细</th>
+                        </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-50">
+                        <tr v-for="(city, index) in sortedCities" :key="city.name" class="hover:bg-gray-50 transition-colors duration-150">
+                            <td class="px-6 py-5 pl-8">
+                                <span v-if="index < 3"
+                                      :class="{'bg-yellow-100 text-yellow-700': index===0, 'bg-gray-200 text-gray-700': index===1, 'bg-orange-100 text-orange-800': index===2}"
+                                      class="w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold">
+                                    {{ index + 1 }}
+                                </span>
+                                <span v-else class="text-gray-400 font-medium ml-1.5">{{ index + 1 }}</span>
+                            </td>
+                            <td class="px-6 py-5 font-semibold text-gray-900">{{ city.name }}</td>
+                            <td class="px-6 py-5 text-right font-bold text-gray-900 text-lg">{{ city.cwqi }}</td>
+                            <td class="px-6 py-5 text-right text-gray-500">{{ city.riverCwqi }}</td>
+                            <td class="px-6 py-5 text-right text-gray-500">{{ city.lakeCwqi }}</td>
+                            <td class="px-6 py-5 text-right text-gray-400 font-mono text-xs">{{ city.riverCount }} / {{ city.lakeCount }}</td>
+                            <td class="px-6 py-5 text-center">
+                                <button @click="showCityDetails(city)" class="text-gray-400 hover:text-blue-600 hover:bg-blue-50 w-8 h-8 rounded-full transition-all">
+                                    <i class="fa-solid fa-chevron-right"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        <tr v-if="sortedCities.length === 0">
+                            <td colspan="7" class="py-8 text-center text-gray-400 italic">
+                                当前筛选条件下无数据，请尝试切换统计范围
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section>
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-semibold text-gray-900 tracking-tight">所有导入断面明细</h2>
+                    <button @click="exportDetailedData" class="btn-success px-4 py-1.5 text-sm flex items-center gap-2">
+                        <i class="fa-solid fa-file-export"></i> 导出详细数据
+                    </button>
+                </div>
+                <div class="apple-card overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-xs text-left whitespace-nowrap">
+                            <thead class="text-gray-500 border-b border-gray-100">
+                            <tr>
+                                <th class="sticky-header px-4 py-3 left-0 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)] z-20">城市</th>
+                                <th class="sticky-header px-4 py-3 left-[60px] shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)] z-20">断面名称</th>
+                                <th class="sticky-header px-4 py-3 bg-white/95">类型</th>
+                                <th class="sticky-header px-4 py-3 bg-blue-50/50 text-blue-600 font-bold border-r border-blue-100">CWQI</th>
+                                <th class="sticky-header px-3 py-3 text-center min-w-[60px]" v-for="param in paramKeys" :key="param">{{ param }}</th>
+                            </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-50">
+                            <tr v-for="section in allSections" :key="section.id" class="hover:bg-gray-50">
+                                <td class="px-4 py-3 sticky left-0 bg-white z-10 font-medium text-gray-900 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.02)]">
+                                    <span :class="{'text-gray-400 italic': !isHubeiPrefecture(section.city)}">{{ section.city }}</span>
+                                </td>
+                                <td class="px-4 py-3 sticky left-[60px] bg-white z-10 text-gray-600 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.02)]">{{ section.name }}</td>
+                                <td class="px-4 py-3">
+                                    <span :class="section.type === '河流' ? 'bg-cyan-50 text-cyan-600 border-cyan-100' : 'bg-teal-50 text-teal-600 border-teal-100'"
+                                          class="px-2 py-0.5 rounded text-[10px] border font-medium">
+                                        {{ section.type }}
+                                    </span>
+                                </td>
+                                <td class="px-4 py-3 font-bold text-blue-600 bg-blue-50/30 border-r border-blue-50 text-right">{{ section.cwqi }}</td>
+                                <td class="px-3 py-3 text-center text-gray-400" v-for="key in paramKeys" :key="key">
+                                    <span :class="{'text-red-500 font-bold bg-red-50 px-1 rounded': section.indices[key] > 1}"
+                                          :title="'实测浓度: ' + section.rawValues[key]">
+                                        {{ section.indices[key]?.toFixed(2) || '-' }}
+                                    </span>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <div v-if="selectedCity" class="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6" @click.self="selectedCity = null">
+        <div class="absolute inset-0 bg-gray-900/20 backdrop-blur-sm transition-opacity" @click="selectedCity = null"></div>
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[85vh] overflow-hidden flex flex-col relative z-10 transform transition-all scale-100">
+
+            <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-white/80 backdrop-blur-md sticky top-0 z-10">
+                <h3 class="text-lg font-bold text-gray-900">{{ selectedCity.name }} <span class="text-gray-400 font-normal text-sm ml-2">构成明细</span></h3>
+                <button @click="selectedCity = null" class="w-8 h-8 rounded-full bg-gray-100 text-gray-500 hover:bg-gray-200 flex items-center justify-center transition">
+                    <i class="fa-solid fa-times"></i>
+                </button>
+            </div>
+
+            <div class="overflow-y-auto p-6 space-y-8">
+                <div>
+                    <div class="flex items-center gap-2 mb-3">
+                        <span class="w-1 h-4 bg-cyan-500 rounded-full"></span>
+                        <h4 class="font-semibold text-gray-900">河流断面</h4>
+                        <span class="text-xs bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full">{{ selectedCity.riverCount }}</span>
+                    </div>
+
+                    <div v-if="selectedCity.riverCount > 0" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div v-for="s in selectedCity.sections.filter(x => x.type === '河流')"
+                             class="flex justify-between items-center p-3 bg-gray-50 rounded-xl border border-gray-100 hover:border-cyan-200 transition-colors">
+                            <span class="text-sm text-gray-700">{{ s.name }}</span>
+                            <span class="text-sm font-bold text-gray-900 bg-white px-2 py-1 rounded shadow-sm border border-gray-100">{{ s.cwqi }}</span>
+                        </div>
+                    </div>
+                    <div v-else class="text-sm text-gray-400 italic bg-gray-50 p-4 rounded-xl text-center">该城市无河流监测断面</div>
+                </div>
+
+                <div>
+                    <div class="flex items-center gap-2 mb-3">
+                        <span class="w-1 h-4 bg-teal-500 rounded-full"></span>
+                        <h4 class="font-semibold text-gray-900">湖库点位</h4>
+                        <span class="text-xs bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full">{{ selectedCity.lakeCount }}</span>
+                    </div>
+
+                    <div v-if="selectedCity.lakeCount > 0" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div v-for="s in selectedCity.sections.filter(x => x.type === '湖库')"
+                             class="flex justify-between items-center p-3 bg-gray-50 rounded-xl border border-gray-100 hover:border-teal-200 transition-colors">
+                            <span class="text-sm text-gray-700">{{ s.name }}</span>
+                            <span class="text-sm font-bold text-gray-900 bg-white px-2 py-1 rounded shadow-sm border border-gray-100">{{ s.cwqi }}</span>
+                        </div>
+                    </div>
+                    <div v-else class="text-sm text-gray-400 italic bg-gray-50 p-4 rounded-xl text-center">该城市无湖库监测点位</div>
+                </div>
+            </div>
+
+            <div class="p-4 border-t border-gray-100 bg-gray-50 text-center">
+                <span class="text-xs text-gray-400">数据仅供参考，具体以官方发布为准</span>
+            </div>
+        </div>
+    </div>
+
+    <footer class="mt-auto py-8 text-center text-gray-400 text-xs border-t border-gray-200 bg-white">
+        <p>CWQI Calculation Engine Pro - Hubei Edition</p>
+        <p class="mt-1 opacity-60">数据源：{{ isLimit13 ? '限定湖北省13个地级行政区' : '当前文件包含的所有城市' }}</p>
+    </footer>
+</div>
+
+<script>
+    const { createApp, ref, computed } = Vue;
+
+    // ---------------- 配置区域 ----------------
+    // 湖北省13个地级行政区白名单（关键词匹配）
+    const HUBEI_PREFECTURE_CITIES = [
+        "武汉", "黄石", "十堰", "宜昌", "襄阳", "鄂州", "荆门",
+        "孝感", "荆州", "黄冈", "咸宁", "随州", "恩施"
+    ];
+
+    // GB 3838-2002 III类标准限值
+    const STANDARDS = {
+        'pH': { min: 6, max: 9 },
+        '溶解氧': 5,
+        '高锰酸盐指数': 6,
+        '生化需氧量': 4,
+        '氨氮': 1.0,
+        '石油类': 0.05,
+        '挥发酚': 0.005,
+        '汞': 0.0001,
+        '铅': 0.05,
+        '总磷': 0.2, // 河流0.2, 湖库0.05
+        '化学需氧量': 20,
+        '铜': 1.0,
+        '锌': 1.0,
+        '氟化物': 1.0,
+        '硒': 0.01,
+        '砷': 0.05,
+        '镉': 0.005,
+        '六价铬': 0.05,
+        '氰化物': 0.2,
+        '阴离子表面活性剂': 0.2,
+        '硫化物': 0.2
+    };
+
+    createApp({
+        setup() {
+            const hasData = ref(false);
+            const allSections = ref([]);
+            const selectedCity = ref(null);
+            const sortKey = ref('cwqi');
+
+            // 新增：是否限制为13地市，默认为 true
+            const isLimit13 = ref(true);
+
+            const paramKeys = Object.keys(STANDARDS);
+
+            // 辅助函数：判断是否为湖北地级市
+            const isHubeiPrefecture = (cityName) => {
+                if (!cityName) return false;
+                return HUBEI_PREFECTURE_CITIES.some(key => cityName.includes(key));
+            };
+
+            const toggleFilter = () => {
+                isLimit13.value = !isLimit13.value;
+            };
+
+            const calcSingleIndex = (param, value, type) => {
+                if (value === undefined || value === null || value === '') return 0;
+                const val = parseFloat(value);
+                if (isNaN(val)) return 0;
+
+                if (param === '溶解氧') {
+                    const std = STANDARDS['溶解氧'];
+                    if (val < 0.01) return std / 0.01;
+                    return std / val;
+                }
+
+                if (param === 'pH') {
+                    if (val <= 7) return (7.0 - val) / (7.0 - 6.0);
+                    return (val - 7.0) / (9.0 - 7.0);
+                }
+
+                if (param === '总磷') {
+                    const std = type === '湖库' ? 0.05 : 0.2;
+                    return val / std;
+                }
+
+                const std = STANDARDS[param];
+                if(typeof std === 'object' && std !== null && param !== 'pH') return 0;
+
+                return val / STANDARDS[param];
+            };
+
+            const handleFileUpload = (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    try {
+                        const data = new Uint8Array(e.target.result);
+                        const workbook = XLSX.read(data, { type: 'array' });
+                        const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+                        const jsonData = XLSX.utils.sheet_to_json(firstSheet);
+                        processData(jsonData);
+                    } catch (err) {
+                        alert("文件读取失败，请确保格式正确");
+                        console.error(err);
+                    }
+                };
+                reader.readAsArrayBuffer(file);
+            };
+
+            const processData = (rawData) => {
+                const sections = rawData.map((row, idx) => {
+                    const section = {
+                        id: idx,
+                        city: row['城市'] || '未知城市',
+                        name: row['断面名称'] || `断面${idx}`,
+                        type: (row['断面属性'] && row['断面属性'].includes('湖')) ? '湖库' : '河流',
+                        rawValues: {},
+                        indices: {},
+                        sumIndex: 0
+                    };
+
+                    let sum = 0;
+                    for (const key of paramKeys) {
+                        let val = row[key];
+                        if (val === undefined) {
+                            const fuzzyKey = Object.keys(row).find(k => k.includes(key));
+                            if (fuzzyKey) val = row[fuzzyKey];
+                        }
+
+                        section.rawValues[key] = val;
+                        const idxVal = calcSingleIndex(key, val, section.type);
+                        section.indices[key] = idxVal;
+                        sum += idxVal;
+                    }
+
+                    section.cwqi = sum.toFixed(4);
+                    section.cwqiNum = sum;
+                    return section;
+                });
+
+                allSections.value = sections;
+                hasData.value = true;
+            };
+
+            const cityStats = computed(() => {
+                const cities = {};
+
+                allSections.value.forEach(sec => {
+                    // 支持分隔符
+                    const cityNames = sec.city.split(/[\/|、,，]/).map(s => s.trim()).filter(s => s);
+
+                    cityNames.forEach(cityName => {
+                        // 逻辑修改：如果 isLimit13 为 true，则检查白名单；否则允许所有城市
+                        const isValid = !isLimit13.value || isHubeiPrefecture(cityName);
+
+                        if (isValid) {
+                            if (!cities[cityName]) {
+                                cities[cityName] = {
+                                    name: cityName, riverSum: 0, riverCount: 0,
+                                    lakeSum: 0, lakeCount: 0, sections: []
+                                };
+                            }
+
+                            cities[cityName].sections.push(sec);
+
+                            if (sec.type === '河流') {
+                                cities[cityName].riverSum += sec.cwqiNum;
+                                cities[cityName].riverCount++;
+                            } else {
+                                cities[cityName].lakeSum += sec.cwqiNum;
+                                cities[cityName].lakeCount++;
+                            }
+                        }
+                    });
+                });
+
+                return Object.values(cities).map(c => {
+                    const riverAvg = c.riverCount > 0 ? (c.riverSum / c.riverCount) : 0;
+                    const lakeAvg = c.lakeCount > 0 ? (c.lakeSum / c.lakeCount) : 0;
+                    const totalCount = c.riverCount + c.lakeCount;
+                    const weightedCwqi = totalCount > 0
+                        ? ((riverAvg * c.riverCount) + (lakeAvg * c.lakeCount)) / totalCount
+                        : 0;
+
+                    return {
+                        name: c.name,
+                        cwqi: weightedCwqi.toFixed(4),
+                        cwqiNum: weightedCwqi,
+                        riverCwqi: c.riverCount > 0 ? riverAvg.toFixed(4) : '-',
+                        lakeCwqi: c.lakeCount > 0 ? lakeAvg.toFixed(4) : '-',
+                        riverCount: c.riverCount,
+                        lakeCount: c.lakeCount,
+                        sections: c.sections
+                    };
+                });
+            });
+
+            const sortedCities = computed(() => {
+                return [...cityStats.value].sort((a, b) => a.cwqiNum - b.cwqiNum);
+            });
+
+            const provinceStats = computed(() => {
+                if (sortedCities.value.length === 0) return {};
+
+                // 1. 收集所有有效城市包含的断面 (利用 Set 自动去重物理断面)
+                const validSections = new Set();
+                sortedCities.value.forEach(city => {
+                    city.sections.forEach(sec => validSections.add(sec));
+                });
+
+                let totalSum = 0;
+                let riverSum = 0, riverCount = 0;
+                let lakeSum = 0, lakeCount = 0;
+                const totalCount = validSections.size;
+
+                // 2. 遍历去重后的断面计算累加和
+                validSections.forEach(s => {
+                    totalSum += s.cwqiNum;
+                    if(s.type === '河流') {
+                        riverSum += s.cwqiNum;
+                        riverCount++;
+                    } else {
+                        lakeSum += s.cwqiNum;
+                        lakeCount++;
+                    }
+                });
+
+                return {
+                    cwqi: totalCount ? (totalSum / totalCount).toFixed(4) : 0,
+                    totalSections: totalCount,
+                    riverCwqi: riverCount ? (riverSum / riverCount).toFixed(4) : '-',
+                    riverCount,
+                    lakeCwqi: lakeCount ? (lakeSum / lakeCount).toFixed(4) : '-',
+                    lakeCount,
+                    bestCity: sortedCities.value[0]?.name,
+                    bestCwqi: sortedCities.value[0]?.cwqi
+                };
+            });
+
+            const downloadTemplate = () => {
+                const headers = ["城市", "断面名称", "断面属性", ...paramKeys];
+                const data = [
+                    headers,
+                    ["武汉市", "宗关", "河流", 7.2, 6.5, 3.2, 2.1, 0.4, 0.01, 0.001, 0.00005, 0.01, 0.1, 15, 0.02, 0.03, 0.5, 0.005, 0.01, 0.001, 0.01, 0.002, 0.05, 0.02],
+                    ["荆州市", "界河断面", "河流", 7.5, 6.8, 3.5, 1.8, 0.35, 0.01, 0.001, 0.00005, 0.01, 0.05, 14, 0.01, 0.02, 0.45, 0.003, 0.008, 0.001, 0.008, 0.001, 0.04, 0.015],
+                    ["仙桃市", "汉江干流", "河流", 7.4, 6.6, 3.3, 2.0, 0.38, 0.01, 0.001, 0.00005, 0.01, 0.08, 14.5, 0.015, 0.025, 0.48, 0.004, 0.009, 0.001, 0.009, 0.0015, 0.045, 0.018]
+                ];
+                const ws = XLSX.utils.aoa_to_sheet(data);
+                const wb = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(wb, ws, "模板");
+                XLSX.writeFile(wb, "水质排名计算模板.xlsx");
+            };
+
+            const exportDetailedData = () => {
+                const headers = ["城市", "断面名称", "断面属性", "是否参与排名", "CWQI(总)", ...paramKeys.map(k => `${k}(指数)`)];
+                const data = allSections.value.map(s => {
+                    // 导出时，"是否参与排名" 栏位根据当前的筛选逻辑动态显示
+                    const isValid = !isLimit13.value || isHubeiPrefecture(s.city);
+                    const isRanked = isValid ? "是" : "否";
+
+                    const row = [
+                        s.city,
+                        s.name,
+                        s.type,
+                        isRanked,
+                        parseFloat(s.cwqi)
+                    ];
+                    paramKeys.forEach(key => {
+                        row.push(parseFloat(s.indices[key]?.toFixed(5) || 0));
+                    });
+                    return row;
+                });
+                data.unshift(headers);
+                const ws = XLSX.utils.aoa_to_sheet(data);
+                const wb = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(wb, ws, "详细计算结果");
+                XLSX.writeFile(wb, "水质分析_详细计算结果.xlsx");
+            };
+
+            const showCityDetails = (city) => {
+                selectedCity.value = city;
+            };
+
+            return {
+                hasData, allSections, sortedCities, provinceStats, paramKeys,
+                selectedCity, handleFileUpload, downloadTemplate, showCityDetails, sortKey,
+                exportDetailedData, isHubeiPrefecture, isLimit13, toggleFilter
+            };
+        }
+    }).mount('#app');
+</script>
+</body>
+</html>

@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>企业详情 - 移动端</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/echarts/dist/echarts.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+    <style>
+        /* --- 全局设置 --- */
+        body {
+            background-color: #F5F7FA;
+            font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+            margin: 0;
+            padding-bottom: 40px;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* 隐藏滚动条 */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        /* 1. 顶部导航 (保持与列表页一致风格) */
+        .nav-header {
+            background: linear-gradient(135deg, #1565C0 0%, #1E88E5 100%);
+            color: white;
+            padding: 12px 16px 20px 16px;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            box-shadow: 0 2px 10px rgba(21, 101, 192, 0.2);
+        }
+
+        /* 2. 吸顶 Tab 栏 */
+        .sticky-tabs {
+            position: sticky;
+            top: 60px; /* 根据header高度调整 */
+            z-index: 40;
+            background: white;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+            display: flex;
+            border-bottom: 1px solid #eee;
+        }
+        .tab-item {
+            flex: 1;
+            text-align: center;
+            padding: 12px 0;
+            font-size: 14px;
+            color: #64748b;
+            font-weight: 500;
+            position: relative;
+            transition: color 0.3s;
+        }
+        .tab-item.active {
+            color: #1E88E5;
+            font-weight: 600;
+        }
+        .tab-item.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 20%;
+            right: 20%;
+            height: 3px;
+            background: #1E88E5;
+            border-radius: 3px 3px 0 0;
+        }
+
+        /* 3. 卡片容器 */
+        .content-card {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            margin: 12px 16px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            border: 1px solid #f3f4f6;
+        }
+        .card-header {
+            font-weight: bold;
+            color: #1f2937;
+            font-size: 14px;
+            margin-bottom: 12px;
+            padding-left: 8px;
+            border-left: 4px solid #3b82f6;
+            display: flex;
+            align-items: center;
+        }
+
+        /* 表格样式适配 */
+        .detail-table { width: 100%; text-align: left; border-collapse: collapse; }
+        .detail-table th { font-weight: 600; color: #64748b; font-size: 11px; padding: 10px 4px; border-bottom: 1px solid #f1f5f9; }
+        .detail-table td { padding: 12px 4px; font-size: 13px; color: #334155; border-bottom: 1px solid #f8fafc; }
+        .font-mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; }
+
+        /* 状态标签 */
+        .badge { display: inline-block; padding: 2px 6px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+        .badge-blue { background: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; }
+        .badge-red { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; }
+        .badge-green { background: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0; }
+        .badge-orange { background: #fff7ed; color: #ea580c; border: 1px solid #fed7aa; }
+    </style>
+</head>
+<body>
+
+<div id="app">
+
+    <header class="nav-header">
+        <div class="flex items-center justify-between mb-3">
+            <i class="fas fa-chevron-left text-lg cursor-pointer" onclick="history.back()"></i>
+            <span class="font-bold text-lg tracking-wide">企业详情</span>
+            <div class="w-5"></div>
+        </div>
+        <div>
+            <div class="flex items-center justify-between">
+                <h1 class="text-lg font-bold truncate pr-2">{{ selectedFeature.name }}</h1>
+                <span class="text-xs bg-white/20 px-2 py-0.5 rounded border border-white/30 whitespace-nowrap">{{ selectedFeature.type }}</span>
+            </div>
+            <div class="flex items-center mt-1 text-xs text-blue-100 opacity-90">
+                <i class="fas fa-map-marker-alt mr-1.5"></i>{{ selectedFeature.cityName }}
+            </div>
+        </div>
+    </header>
+
+    <div class="sticky-tabs" style="top: 0px; position: sticky; z-index: 100;">
+        <div v-for="tab in tabs" :key="tab.key" @click="currentTab = tab.key"
+             class="tab-item" :class="{ 'active': currentTab === tab.key }">
+            <i :class="[tab.icon, 'mr-1 text-xs']"></i>{{ tab.label }}
+        </div>
+    </div>
+
+    <main class="min-h-screen pb-6">
+
+        <div v-show="currentTab === 'basic'" class="animate-fade-in">
+            <div class="content-card">
+                <div class="card-header">企业概况</div>
+                <div class="space-y-4 text-sm">
+                    <div class="flex justify-between items-start">
+                        <span class="text-gray-500 shrink-0 w-20">详细地址</span>
+                        <span class="text-gray-800 text-right flex-1">{{ selectedFeature.cityName }}工业园区高新大道 88 号</span>
+                    </div>
+                    <div class="flex justify-between items-center border-t border-dashed border-gray-100 pt-3">
+                        <span class="text-gray-500">行业类别</span>
+                        <span class="text-gray-800">化学原料和化学制品制造业</span>
+                    </div>
+                    <div class="flex justify-between items-center border-t border-dashed border-gray-100 pt-3">
+                        <span class="text-gray-500">地理位置</span>
+                        <span class="font-mono text-gray-600">{{ selectedFeature.lng.toFixed(5) }}, {{ selectedFeature.lat.toFixed(5) }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-card !p-0 overflow-hidden">
+                <div class="px-4 py-3 bg-gray-50 border-b border-gray-100 font-bold text-gray-800 text-sm flex items-center">
+                    <i class="fas fa-map-marked-alt text-orange-500 mr-2"></i>排口信息
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="detail-table">
+                        <thead class="bg-gray-50/50">
+                        <tr>
+                            <th class="pl-4">排口名称</th>
+                            <th>编号</th>
+                            <th class="text-center">经度</th>
+                            <th class="pr-4 text-center">纬度</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td class="pl-4 font-medium text-gray-700">废水总排放口</td>
+                            <td class="font-mono text-xs text-gray-500">DW001</td>
+                            <td class="text-center font-mono text-xs text-gray-500">{{ selectedFeature.lng.toFixed(4) }}</td>
+                            <td class="pr-4 text-center font-mono text-xs text-gray-500">{{ selectedFeature.lat.toFixed(4) }}</td>
+                        </tr>
+                        <tr>
+                            <td class="pl-4 font-medium text-gray-700">雨水排放口-北</td>
+                            <td class="font-mono text-xs text-gray-500">DW002</td>
+                            <td class="text-center font-mono text-xs text-gray-500">{{ (selectedFeature.lng+0.002).toFixed(4) }}</td>
+                            <td class="pr-4 text-center font-mono text-xs text-gray-500">{{ (selectedFeature.lat+0.001).toFixed(4) }}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div v-show="currentTab === 'monitor'">
+            <div class="content-card">
+                <div class="flex gap-2 mb-3">
+                    <select class="flex-1 bg-gray-50 border border-gray-200 text-xs rounded px-2 py-2 outline-none">
+                        <option>废水总排放口</option>
+                        <option>雨水排放口</option>
+                    </select>
+                    <select class="flex-1 bg-gray-50 border border-gray-200 text-xs rounded px-2 py-2 outline-none font-bold text-gray-700">
+                        <option>化学需氧量</option>
+                        <option>氨氮</option>
+                        <option>总磷</option>
+                        <option>总氮</option>
+                    </select>
+                </div>
+                <div class="flex justify-between items-center mb-2">
+                    <div class="flex bg-gray-100 rounded p-0.5">
+                        <button @click="monitorSubTab='day'" :class="['px-4 py-1.5 text-xs rounded transition', monitorSubTab==='day'?'bg-white text-blue-600 shadow-sm font-bold':'text-gray-500']">日</button>
+                        <button @click="monitorSubTab='hour'" :class="['px-4 py-1.5 text-xs rounded transition', monitorSubTab==='hour'?'bg-white text-blue-600 shadow-sm font-bold':'text-gray-500']">时</button>
+                    </div>
+                    <div class="flex items-center text-xs text-gray-500 bg-gray-50 px-2 py-1 rounded border border-gray-200">
+                        <input type="date" class="bg-transparent w-24 outline-none text-right" value="2025-12-21">
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg border border-gray-100 h-56 mt-3">
+                    <div ref="chartRef" class="w-full h-full"></div>
+                </div>
+            </div>
+
+            <div class="content-card !p-0 overflow-hidden">
+                <div class="overflow-x-auto custom-scroll">
+                    <table class="detail-table text-center">
+                        <thead class="bg-gray-50 border-b border-gray-100">
+                        <tr>
+                            <th class="pl-3 text-left">时间</th>
+                            <th>点位</th>
+                            <th>COD</th>
+                            <th>氨氮</th>
+                            <th>总磷</th>
+                            <th class="pr-3">总氮</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr v-for="(row, idx) in paginatedMonitorData" :key="idx">
+                            <td class="pl-3 text-left text-xs text-gray-500">{{ row.time.split(' ')[0] }}<br><span class="text-[10px]">{{ row.time.split(' ')[1] }}</span></td>
+                            <td class="text-xs">{{ row.point.substring(0,4) }}..</td>
+                            <td class="font-mono">{{ row.cod }}</td>
+                            <td class="font-mono">{{ row.nh3 }}</td>
+                            <td class="pr-3 font-mono text-blue-600 font-bold">{{ row.tp }}</td>
+                            <td class="pr-3 font-mono text-blue-600 font-bold">{{ row.tn }}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="h-10 border-t border-gray-100 flex items-center justify-between px-4 bg-gray-50">
+                    <span class="text-xs text-gray-500">共 {{ totalMonitorData }} 条</span>
+                    <div class="flex space-x-2">
+                        <button @click="monitorPage > 1 ? monitorPage-- : null" :disabled="monitorPage===1" class="text-xs px-2 py-1 bg-white border rounded disabled:opacity-50">上一页</button>
+                        <span class="text-xs py-1">{{ monitorPage }}</span>
+                        <button @click="monitorPage * pageSize < totalMonitorData ? monitorPage++ : null" class="text-xs px-2 py-1 bg-white border rounded">下一页</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div v-if="currentTab === 'alarm'" class="pt-1">
+            <div v-for="(row, idx) in paginatedAlarmData" :key="idx"
+                 class="content-card relative !border-l-4 !border-l-red-500 !pl-4">
+                <div class="flex justify-between items-start mb-2">
+                    <div>
+                        <div class="font-bold text-gray-800 text-sm">{{ row.point }}</div>
+                        <div class="text-xs text-gray-400 mt-0.5"><i class="far fa-clock mr-1"></i>{{ row.time }}</div>
+                    </div>
+                    <span class="badge badge-red">{{ row.pollutant }}超标</span>
+                </div>
+                <div class="flex items-center justify-between bg-gray-50 rounded p-3 text-xs mt-2">
+                    <div class="flex flex-col items-center flex-1 border-r border-gray-200">
+                        <span class="text-gray-500 mb-1">监测值</span>
+                        <span class="text-red-600 font-bold font-mono text-sm">{{ row.value }}</span>
+                    </div>
+                    <div class="flex flex-col items-center flex-1 border-r border-gray-200">
+                        <span class="text-gray-500 mb-1">标准值</span>
+                        <span class="text-gray-800 font-mono text-sm">{{ row.standard }}</span>
+                    </div>
+                    <div class="flex flex-col items-center flex-1">
+                        <span class="text-gray-500 mb-1">排放量</span>
+                        <span class="text-orange-500 font-mono text-sm">{{ row.discharge }}kg</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mx-4 bg-white rounded-lg shadow-sm border border-gray-100 p-2 flex items-center justify-between px-4">
+                <span class="text-xs text-gray-500">共 {{ totalAlarmData }} 条</span>
+                <div class="flex space-x-2">
+                    <button @click="alarmPage > 1 ? alarmPage-- : null" :disabled="alarmPage===1" class="text-xs px-2 py-1 bg-white border rounded disabled:opacity-50">上一页</button>
+                    <span class="text-xs py-1">{{ alarmPage }}</span>
+                    <button @click="alarmPage * pageSize < totalAlarmData ? alarmPage++ : null" class="text-xs px-2 py-1 bg-white border rounded">下一页</button>
+                </div>
+            </div>
+        </div>
+
+        <div v-if="currentTab === 'outlet'" class="pt-1">
+            <div v-for="(outlet, index) in outletList" :key="index"
+                 class="content-card !p-0 overflow-hidden">
+                <div class="bg-gradient-to-r from-blue-50 to-white px-4 py-3 flex items-center justify-between border-b border-blue-100">
+                    <div class="flex items-center space-x-2">
+                        <div class="w-6 h-6 rounded bg-blue-600 text-white flex items-center justify-center text-xs shadow-sm"><i class="fas fa-water"></i></div>
+                        <span class="font-bold text-gray-800 text-sm truncate max-w-[200px]">{{ outlet.name }}</span>
+                    </div>
+                    <span class="badge badge-green">等级 {{ outlet.level }}</span>
+                </div>
+                <div class="p-4 text-xs space-y-3">
+                    <div class="grid grid-cols-2 gap-2">
+                        <div class="text-gray-500">类型: <span class="text-gray-700 ml-1 font-medium">{{ outlet.category }}</span></div>
+                        <div class="text-gray-500">区域: <span class="text-gray-700 ml-1 font-medium">{{ outlet.district }}</span></div>
+                    </div>
+                    <div class="border-t border-gray-50 pt-2">
+                        <div class="text-gray-500">责任主体: <span class="text-gray-700 ml-1">{{outlet.responsibleEntity }}</span></div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3 bg-orange-50/50 p-3 rounded border border-orange-100/50 mt-1">
+                        <div>
+                            <span class="text-gray-500 block mb-1">整治类型</span>
+                            <span class="font-bold text-gray-700">{{ outlet.remediationType }}</span>
+                        </div>
+                        <div class="border-l border-orange-200/50 pl-3">
+                            <span class="text-gray-500 block mb-1">整治阶段</span>
+                            <span class="font-bold text-orange-600">{{ outlet.remediationStage }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+</div>
+
+<script>
+    const { createApp, ref, onMounted, nextTick, watch, computed } = Vue;
+
+    createApp({
+        setup() {
+            // ================= 状态定义 =================
+            // 默认选中 Tab
+            const currentTab = ref('monitor');
+            const monitorSubTab = ref('day');
+
+            const tabs = [
+                {key: 'basic', label: '基本', icon: 'fas fa-info-circle'},
+                {key: 'monitor', label: '监测', icon: 'fas fa-chart-line'},
+                {key: 'alarm', label: '报警', icon: 'fas fa-exclamation-triangle'},
+                {key: 'outlet', label: '排污口', icon: 'fas fa-list'}
+            ];
+
+            // 模拟从上级页面传入的当前选中企业数据
+            const selectedFeature = ref({
+                type: '自动监测企业',
+                name: '襄阳化工新材料有限公司',
+                cityName: '襄阳',
+                lat: 32.0082,
+                lng: 112.1225
+            });
+
+            // 1. 监测数据逻辑 (与原弹窗一致)
+            const monitorPage = ref(1);
+            const pageSize = 8; // 详情页可以展示多一点
+            const chartRef = ref(null);
+            let myChart = null;
+
+            const fullMonitorData = Array.from({length: 45}).map((_, i) => ({
+                time: `2025-12-${25 - (i % 25)}`,
+                point: i % 2 === 0 ? '废水总排口' : '雨水排口',
+                cod: (15 + Math.random() * 10).toFixed(1),
+                nh3: (0.5 + Math.random() * 0.5).toFixed(2),
+                tp: (2.0 + Math.random() * 1.5).toFixed(1),
+                tn: (2.0 + Math.random() * 1.5).toFixed(1)
+            }));
+
+            const paginatedMonitorData = computed(() => {
+                const start = (monitorPage.value - 1) * pageSize;
+                return fullMonitorData.slice(start, start + pageSize);
+            });
+            const totalMonitorData = fullMonitorData.length;
+
+            // 2. 报警数据逻辑 (与原弹窗一致，包含 discharge)
+            const alarmPage = ref(1);
+            const fullAlarmData = Array.from({length: 25}).map((_, i) => ({
+                point: '废水总排放口',
+                pollutant: i % 3 === 0 ? 'COD' : (i % 3 === 1 ? '氨氮' : '总磷'),
+                time: `12-${20 - (i % 10)} 09:30`,
+                standard: i % 3 === 0 ? 50 : 5,
+                value: i % 3 === 0 ? (65 + Math.random() * 10).toFixed(1) : (7 + Math.random() * 2).toFixed(1),
+                discharge: (500 + Math.random() * 200).toFixed(0)
+            }));
+
+            const paginatedAlarmData = computed(() => {
+                const start = (alarmPage.value - 1) * pageSize;
+                return fullAlarmData.slice(start, start + pageSize);
+            });
+            const totalAlarmData = fullAlarmData.length;
+
+            // 3. 排污口数据 (与原弹窗一致，包含 remediation info)
+            const outletList = ref([
+                {
+                    name: '城镇污水处理厂排污口', level: 'B', category: '生活污水',
+                    district: `襄阳新区`, responsibleEntity: '市基础设施投资公司',
+                    remediationType: '需整治', remediationStage: '工程实施中'
+                },
+                {
+                    name: '车间生产废水排放口', level: 'C', category: '工业废水',
+                    district: `襄阳工业园`, responsibleEntity: '园区管理处',
+                    remediationType: '无需整治', remediationStage: '-'
+                },
+                {
+                    name: '雨水排放口', level: 'A', category: '雨水',
+                    district: `襄阳新区`, responsibleEntity: '市基础设施投资公司',
+                    remediationType: '规范整治', remediationStage: '整治中'
+                }
+            ]);
+
+            // ================= 图表逻辑 =================
+            const initChart = () => {
+                if (!chartRef.value) return;
+                if (myChart) myChart.dispose();
+
+                myChart = echarts.init(chartRef.value);
+                const option = {
+                    grid: {top: 30, right: 10, bottom: 20, left: 35},
+                    tooltip: {trigger: 'axis'},
+                    xAxis: {
+                        type: 'category',
+                        data: ['12-15', '16', '17', '18', '19', '20', '21'],
+                        axisLine: {lineStyle: {color: '#94a3b8'}},
+                        axisLabel: {fontSize: 10}
+                    },
+                    yAxis: {
+                        type: 'value',
+                        splitLine: {lineStyle: {type: 'dashed', color: '#e2e8f0'}},
+                        axisLabel: {fontSize: 10}
+                    },
+                    series: [{
+                        name: 'COD', type: 'line', smooth: true, showSymbol: false,
+                        data: [18.5, 22.1, 19.4, 25.6, 21.0, 24.5, 20.8],
+                        itemStyle: {color: '#2563eb'},
+                        lineStyle: {width: 3, color: '#2563eb'},
+                        areaStyle: {
+                            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                                {offset: 0, color: 'rgba(37, 99, 235, 0.2)'},
+                                {offset: 1, color: 'rgba(37, 99, 235, 0)'}
+                            ])
+                        },
+                        markLine: {
+                            data: [{yAxis: 40, name: '标准'}],
+                            lineStyle: {color: '#ef4444', type: 'dashed'},
+                            label: {show: false}
+                        }
+                    }]
+                };
+                myChart.setOption(option);
+            };
+
+            // 监听Tab切换
+            watch(currentTab, async (newTab) => {
+                if (newTab === 'monitor') {
+                    await nextTick();
+                    initChart();
+                }
+            });
+
+            onMounted(() => {
+                if (currentTab.value === 'monitor') {
+                    initChart();
+                }
+                window.addEventListener('resize', () => { if(myChart) myChart.resize(); });
+            });
+
+            return {
+                tabs, currentTab, monitorSubTab,
+                selectedFeature,
+                // Monitor
+                paginatedMonitorData, totalMonitorData, monitorPage, pageSize,
+                chartRef,
+                // Alarm
+                paginatedAlarmData, totalAlarmData, alarmPage,
+                // Outlet
+                outletList
+            };
+        }
+    }).mount('#app');
+</script>
+</body>
+</html>

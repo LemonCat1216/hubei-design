@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>湖北省水环境自动站归因研判系统 V3.0</title>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <style>
+        :root {
+            --bg-body: #f3f5f8;
+            --bg-card: #ffffff;
+            --primary: #2563eb;       /* 主色蓝 */
+            --primary-light: #eff6ff;
+            --text-main: #1f2937;
+            --text-sub: #6b7280;
+            --border: #e5e7eb;
+            --danger: #dc2626;
+            --warning: #d97706;
+            --success: #059669;
+        }
+
+        body {
+            margin: 0;
+            padding: 20px;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+        }
+
+        /* 布局框架 */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            background: #fff;
+            padding: 15px 25px;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .title { font-size: 22px; font-weight: 800; color: #1e3a8a; }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: 280px 1fr 350px; /* 左-中-右 */
+            gap: 20px;
+            height: calc(100vh - 110px);
+        }
+
+        .column {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* 通用卡片 */
+        .card {
+            background: var(--bg-card);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            border: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 700;
+            border-left: 4px solid var(--primary);
+            padding-left: 10px;
+        }
+
+        /* 控件样式 */
+        select, input[type="date"] {
+            padding: 4px 8px;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            font-size: 12px;
+            color: #374151;
+            outline: none;
+        }
+
+        /* 智能报告区域 (核心) */
+        .report-container {
+            flex: 1;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+
+        .report-section {
+            margin-bottom: 20px;
+            background: #f8fafc;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 3px solid #cbd5e1;
+        }
+
+        .report-section.active-warning {
+            border-left-color: var(--danger);
+            background: #fef2f2;
+        }
+
+        .sec-title {
+            font-size: 14px;
+            font-weight: bold;
+            color: #475569;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .sec-content {
+            font-size: 14px;
+            line-height: 1.6;
+            color: #334155;
+            text-align: justify;
+        }
+
+        .highlight-red { color: var(--danger); font-weight: bold; }
+        .highlight-blue { color: var(--primary); font-weight: bold; }
+
+        /* 滚动播报列表 */
+        .scroll-wrapper {
+            flex: 1;
+            overflow: hidden; /* 隐藏溢出，用于滚动 */
+            position: relative;
+        }
+
+        .scroll-list {
+            position: absolute;
+            width: 100%;
+            animation: scrollUp 20s linear infinite; /* CSS动画滚动 */
+        }
+
+        .scroll-list:hover {
+            animation-play-state: paused; /* 鼠标悬停暂停 */
+        }
+
+        @keyframes scrollUp {
+            0% { top: 0; }
+            100% { top: -300px; } /* 根据内容高度调整 */
+        }
+
+        .log-item {
+            padding: 10px;
+            border-bottom: 1px dashed #e2e8f0;
+            font-size: 13px;
+        }
+        .log-time { color: #94a3b8; font-size: 12px; margin-bottom: 4px; }
+        .log-row { display: flex; justify-content: space-between; }
+
+        /* 排名条样式 */
+        .rank-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+            font-size: 13px;
+        }
+        .rank-num {
+            width: 20px;
+            height: 20px;
+            background: #e2e8f0;
+            color: #64748b;
+            text-align: center;
+            line-height: 20px;
+            border-radius: 4px;
+            margin-right: 10px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .rank-num.top1 { background: var(--danger); color: white; }
+        .rank-num.top2 { background: var(--warning); color: white; }
+        .rank-num.top3 { background: var(--primary); color: white; }
+
+        .progress-bg {
+            flex: 1;
+            height: 8px;
+            background: #f1f5f9;
+            border-radius: 4px;
+            margin: 0 10px;
+            overflow: hidden;
+        }
+        .progress-bar { height: 100%; background: var(--primary); border-radius: 4px; }
+
+        /* 基础信息表格 */
+        .info-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        .info-table td { padding: 8px 0; border-bottom: 1px solid #f1f5f9; }
+        .info-label { color: #64748b; }
+        .info-val { text-align: right; font-weight: 600; font-family: monospace; }
+        .tag-ok { color: var(--success); background: #ecfdf5; padding: 2px 6px; border-radius: 4px; }
+        .tag-bad { color: var(--danger); background: #fef2f2; padding: 2px 6px; border-radius: 4px; }
+
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <div class="title">湖北省水环境自动站归因研判系统</div>
+    <div>
+        <select id="stationSelect" onchange="refreshDashboard()" style="padding: 8px; font-size: 14px; border-color: #cbd5e1;">
+            <option value="river_1">汉江某干流断面 (河流类型 - 示例)</option>
+            <option value="lake_1">洪湖中心监测点 (湖库类型 - 示例)</option>
+        </select>
+    </div>
+</div>
+
+<div class="grid-container">
+
+    <div class="column">
+        <div class="card" style="height: auto;">
+            <div class="card-header">
+                <div class="card-title">当前水质概况</div>
+                <div id="qualityBadge" class="tag-ok">III类 达标</div>
+            </div>
+            <table class="info-table" id="basicInfoTable">
+            </table>
+        </div>
+
+        <div class="card" style="flex: 1; overflow: hidden;">
+            <div class="card-header">
+                <div class="card-title" id="relatedTitle">上游关联影响 (24h)</div>
+                <div style="font-size:12px; color:#999">滚动播报</div>
+            </div>
+            <div class="scroll-wrapper" id="scrollContainer">
+                <div class="scroll-list" id="scrollList">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="column">
+        <div class="card" style="flex: 1;">
+            <div class="card-header">
+                <div class="card-title">智能归因研判报告</div>
+                <div style="font-size:12px; color:var(--primary); cursor:pointer;">生成时间: 刚刚</div>
+            </div>
+            <div class="report-container" id="reportContent">
+            </div>
+        </div>
+
+        <div class="card" style="height: 220px;">
+            <div class="card-header">
+                <div class="card-title">未来15天水质预报趋势</div>
+            </div>
+            <div id="forecastChart" style="width: 100%; height: 100%;"></div>
+        </div>
+    </div>
+
+    <div class="column">
+        <div class="card" style="height: 320px;">
+            <div class="card-header">
+                <div class="card-title">面源污染构成</div>
+                <select id="npsFilter" onchange="updateNPSChart()">
+                    <option value="all">全部综合</option>
+                    <option value="总磷">总磷</option>
+                    <option value="氨氮">氨氮</option>
+                    <option value="pH">pH</option>
+                    <option value="高锰酸盐指数">高锰酸盐指数</option>
+                    <option value="溶解氧">溶解氧</option>
+                </select>
+            </div>
+            <div id="npsChart" style="width: 100%; height: 230px;"></div>
+        </div>
+
+        <div class="card" style="flex: 1;">
+            <div class="card-header">
+                <div class="card-title">重点企业贡献 TOP3</div>
+                <div style="display:flex; gap:5px;">
+                    <input type="date" id="psDate" value="2026-01-12" style="width: 90px;">
+                    <select id="psFilter" onchange="updatePointSourceList()" style="width: 70px;">
+                        <option value="总磷">总磷</option>
+                        <option value="氨氮">氨氮</option>
+                        <option value="高锰酸盐指数">高锰</option>
+                        <option value="溶解氧">溶解氧</option>
+                    </select>
+                </div>
+            </div>
+            <div id="psList" style="padding: 10px 0;">
+            </div>
+            <div style="font-size:12px; color:#9ca3af; margin-top:auto;">
+                * 基于点云扩散模型计算贡献占比
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    // --- 模拟数据中心 ---
+    const mockData = {
+        "river_1": {
+            type: "river", // 自动站类型：河流
+            name: "汉江某干流断面",
+            // 1. 基础信息
+            current: {
+                level: "IV类",
+                isExceed: true,
+                exceedFactors: ["总磷"], // 超标因子
+                determinant: "总磷",     // 定类因子
+                values: { "总磷": 0.24, "氨氮": 0.65, "pH": 7.2, "高锰酸盐指数": 4.5, "溶解氧": 6.8 },
+                limits: { "总磷": 0.2, "氨氮": 1.0 }
+            },
+            // 2. 面源数据 (不同因子的面源构成不同)
+            nps: {
+                "all": { "城市面源": 30, "农业面源": 50, "自然面源": 20 },
+                "总磷": { "城市面源": 20, "农业面源": 70, "自然面源": 10 }, // 总磷受农业影响大
+                "氨氮": { "城市面源": 60, "农业面源": 30, "自然面源": 10 },
+                "pH":   { "城市面源": 33, "农业面源": 33, "自然面源": 34 },
+                "高锰酸盐指数": { "城市面源": 40, "农业面源": 40, "自然面源": 20 },
+                "溶解氧": { "城市面源": 10, "农业面源": 20, "自然面源": 70 }
+            },
+            // 3. 点源数据 (企业贡献列表)
+            pointSources: [
+                { name: "XX化肥厂", factor: "总磷", value: 45 },
+                { name: "XX食品加工", factor: "总磷", value: 25 },
+                { name: "市政排口A", factor: "总磷", value: 10 },
+                { name: "XX造纸厂", factor: "总磷", value: 5 },
+                { name: "XX化肥厂", factor: "氨氮", value: 15 },
+                { name: "市政排口A", factor: "氨氮", value: 55 }
+            ],
+            // 4. 气象归因配置 (定性影响)
+            meteoImpact: {
+                "总磷": { temp: "轻微恶化", hum: "无明显影响", press: "显著恶化" },
+                "氨氮": { temp: "改善", hum: "轻微恶化", press: "无明显影响" }
+            },
+            // 5. 关联站点 (河流展示上游)
+            relatedStations: [
+                { name: "上游-丹江口下", time: "10:00", factor: "总磷", value: 0.12, status: "ok" },
+                { name: "上游-襄阳段", time: "10:00", factor: "总磷", value: 0.26, status: "bad" }, // 上游超标
+                { name: "上游-襄阳段", time: "09:00", factor: "总磷", value: 0.25, status: "bad" },
+                { name: "支流-唐白河", time: "10:00", factor: "总磷", value: 0.18, status: "ok" },
+                { name: "上游-丹江口下", time: "09:00", factor: "总磷", value: 0.11, status: "ok" },
+                { name: "支流-唐白河", time: "09:00", factor: "总磷", value: 0.17, status: "ok" }
+            ],
+            // 6. 预测数据
+            forecast: [
+                { day: "1.13", val: 0.23, exceed: true },
+                { day: "1.14", val: 0.21, exceed: true },
+                { day: "1.15", val: 0.19, exceed: false },
+                { day: "1.16", val: 0.18, exceed: false },
+                { day: "1.17", val: 0.15, exceed: false }
+            ]
+        },
+        "lake_1": {
+            type: "lake", // 自动站类型：湖库
+            name: "洪湖中心监测点",
+            current: {
+                level: "III类",
+                isExceed: false,
+                exceedFactors: [],
+                determinant: "无",
+                values: { "总磷": 0.04, "氨氮": 0.35, "pH": 7.8, "高锰酸盐指数": 3.2, "溶解氧": 7.5 },
+                limits: { "总磷": 0.05 }
+            },
+            nps: {
+                "all": { "城市面源": 10, "农业面源": 30, "自然面源": 60 },
+                "总磷": { "城市面源": 10, "农业面源": 20, "自然面源": 70 },
+                "氨氮": { "城市面源": 20, "农业面源": 60, "自然面源": 20 },
+                "pH": { "城市面源": 10, "农业面源": 10, "自然面源": 80 },
+                "高锰酸盐指数": { "城市面源": 10, "农业面源": 40, "自然面源": 50 },
+                "溶解氧": { "城市面源": 5, "农业面源": 15, "自然面源": 80 }
+            },
+            pointSources: [
+                { name: "湖周水产养殖A", factor: "总磷", value: 30 },
+                { name: "湖周水产养殖B", factor: "总磷", value: 20 },
+                { name: "旅游餐饮区", factor: "总磷", value: 15 },
+                { name: "湖周水产养殖A", factor: "氨氮", value: 40 }
+            ],
+            meteoImpact: {
+                "总磷": { temp: "改善", hum: "无明显影响", press: "轻微影响" }
+            },
+            // 湖库展示库内其他站点
+            relatedStations: [
+                { name: "洪湖-东湖区", time: "10:00", factor: "总磷", value: 0.03, status: "ok" },
+                { name: "洪湖-入湖口", time: "10:00", factor: "总磷", value: 0.06, status: "bad" }, // 入湖口超标
+                { name: "洪湖-西岸", time: "10:00", factor: "总磷", value: 0.04, status: "ok" },
+                { name: "洪湖-入湖口", time: "09:00", factor: "总磷", value: 0.07, status: "bad" }
+            ],
+            forecast: [
+                { day: "1.13", val: 0.04, exceed: false },
+                { day: "1.14", val: 0.04, exceed: false },
+                { day: "1.15", val: 0.05, exceed: false },
+                { day: "1.16", val: 0.04, exceed: false },
+                { day: "1.17", val: 0.04, exceed: false }
+            ]
+        }
+    };
+
+    let npsChartInstance = null;
+    let forecastChartInstance = null;
+
+    // --- 初始化与刷新 ---
+    function init() {
+        refreshDashboard();
+    }
+
+    function refreshDashboard() {
+        const id = document.getElementById('stationSelect').value;
+        const data = mockData[id];
+
+        // 1. 基础信息渲染
+        renderBasicInfo(data);
+
+        // 2. 关联数据滚动列表 (Module 5 的一部分)
+        renderRelatedList(data);
+
+        // 3. 面源图表 (支持筛选)
+        updateNPSChart();
+
+        // 4. 点源列表 (支持筛选)
+        updatePointSourceList();
+
+        // 5. 预测图表 (Module 5 的展示部分)
+        renderForecastChart(data.forecast);
+
+        // 6. 生成智能报告 (核心任务 4)
+        generateReport(data);
+    }
+
+    // --- 渲染逻辑 ---
+
+    function renderBasicInfo(data) {
+        const table = document.getElementById('basicInfoTable');
+        const badge = document.getElementById('qualityBadge');
+
+        // 徽章
+        if(data.current.isExceed) {
+            badge.className = "tag-bad";
+            badge.innerText = `${data.current.level} 超标`;
+        } else {
+            badge.className = "tag-ok";
+            badge.innerText = `${data.current.level} 达标`;
+        }
+
+        // 表格
+        let html = '';
+        for(let [k, v] of Object.entries(data.current.values)) {
+            let limit = data.current.limits[k];
+            let isExceed = limit && v > limit;
+            let valClass = isExceed ? 'tag-bad' : (limit ? 'tag-ok' : '');
+
+            html += `<tr>
+                <td class="info-label">${k}</td>
+                <td class="info-val"><span class="${valClass}">${v}</span></td>
+                <td style="font-size:12px; color:#999; text-align:right;">${limit ? '≤'+limit : '-'}</td>
+            </tr>`;
+        }
+        table.innerHTML = html;
+    }
+
+    // 滚动列表逻辑
+    function renderRelatedList(data) {
+        const title = document.getElementById('relatedTitle');
+        const list = document.getElementById('scrollList');
+
+        // 区分标题
+        if (data.type === 'river') {
+            title.innerText = "上游临近自动站 (24h)";
+        } else {
+            title.innerText = "湖库内其他自动站 (24h)";
+        }
+
+        // 生成列表
+        let html = '';
+        data.relatedStations.forEach(item => {
+            const color = item.status === 'bad' ? 'var(--danger)' : 'var(--success)';
+            const icon = item.status === 'bad' ? '⚠️' : '✅';
+            html += `
+                <div class="log-item">
+                    <div class="log-time">${item.time}</div>
+                    <div class="log-row">
+                        <span>${item.name}</span>
+                        <span style="color:${color}; font-weight:bold;">${icon} ${item.factor} ${item.value}</span>
+                    </div>
+                </div>
+            `;
+        });
+
+        // 为了无缝滚动，内容需要复制一份
+        list.innerHTML = html + html;
+    }
+
+    // 面源图表
+    function updateNPSChart() {
+        const id = document.getElementById('stationSelect').value;
+        const filter = document.getElementById('npsFilter').value;
+        const npsData = mockData[id].nps[filter] || mockData[id].nps['all'];
+
+        const dom = document.getElementById('npsChart');
+        if (npsChartInstance) npsChartInstance.dispose();
+        npsChartInstance = echarts.init(dom);
+
+        const chartData = Object.keys(npsData).map(k => ({ value: npsData[k], name: k }));
+
+        const option = {
+            tooltip: { trigger: 'item' },
+            legend: { top: 'bottom', icon: 'circle', itemWidth: 8, itemHeight: 8 },
+            color: ['#3b82f6', '#f59e0b', '#10b981'], // 蓝、橙、绿
+            series: [
+                {
+                    name: '面源占比',
+                    type: 'pie',
+                    radius: ['40%', '65%'],
+                    center: ['50%', '45%'],
+                    itemStyle: { borderRadius: 5, borderColor: '#fff', borderWidth: 2 },
+                    data: chartData,
+                    label: { show: true, formatter: '{b}\n{d}%', fontSize: 11 }
+                }
+            ]
+        };
+        npsChartInstance.setOption(option);
+    }
+
+    // 点源列表 (Top 3)
+    function updatePointSourceList() {
+        const id = document.getElementById('stationSelect').value;
+        const filterFactor = document.getElementById('psFilter').value;
+        // 日期筛选在Mock数据中简化处理，实际项目需根据 input[type=date] 过滤
+
+        const listContainer = document.getElementById('psList');
+        const allSources = mockData[id].pointSources;
+
+        // 筛选 + 排序
+        const filtered = allSources.filter(s => s.factor === filterFactor)
+            .sort((a, b) => b.value - a.value)
+            .slice(0, 3); // 取前三
+
+        let html = '';
+        if (filtered.length === 0) {
+            html = '<div style="text-align:center; color:#999; margin-top:20px;">暂无该因子排污数据</div>';
+        } else {
+            filtered.forEach((item, index) => {
+                html += `
+                    <div class="rank-item">
+                        <div class="rank-num top${index+1}">${index+1}</div>
+                        <div style="flex:1;">
+                            <div style="display:flex; justify-content:space-between;">
+                                <span>${item.name}</span>
+                                <span style="font-weight:bold; color:var(--primary)">${item.value}%</span>
+                            </div>
+                            <div class="progress-bg">
+                                <div class="progress-bar" style="width:${item.value}%"></div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+        listContainer.innerHTML = html;
+    }
+
+    function renderForecastChart(forecastData) {
+        const dom = document.getElementById('forecastChart');
+        if (forecastChartInstance) forecastChartInstance.dispose();
+        forecastChartInstance = echarts.init(dom);
+
+        const days = forecastData.map(d => d.day);
+        const vals = forecastData.map(d => d.val);
+        // 简单的阈值线，假设总磷 0.2
+        const markLine = {
+            data: [{ yAxis: 0.2, name: '标准' }],
+            lineStyle: { color: '#ef4444', type: 'dashed' }
+        };
+
+        const option = {
+            grid: { top: 30, bottom: 20, left: 30, right: 20 },
+            xAxis: { type: 'category', data: days, axisLine: { lineStyle: { color: '#ccc' } } },
+            yAxis: { type: 'value', splitLine: { lineStyle: { type: 'dashed' } } },
+            series: [{
+                data: vals,
+                type: 'line',
+                smooth: true,
+                markLine: markLine,
+                areaStyle: {
+                    color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                        { offset: 0, color: 'rgba(59, 130, 246, 0.3)' },
+                        { offset: 1, color: 'rgba(59, 130, 246, 0.01)' }
+                    ])
+                },
+                itemStyle: { color: '#3b82f6' }
+            }]
+        };
+        forecastChartInstance.setOption(option);
+    }
+
+    // --- 核心：5段式智能研判报告生成 ---
+    function generateReport(data) {
+        const container = document.getElementById('reportContent');
+        let sections = [];
+
+        // 1. 现状描述
+        let sec1Content = `当前自动站水质类别为 <span class="highlight-blue">${data.current.level}</span>。`;
+        if (data.current.isExceed) {
+            sec1Content += ` 状态为 <span class="highlight-red">超标</span>，主要超标因子为 ${data.current.exceedFactors.join('、')}，定类因子为 ${data.current.determinant}。`;
+        } else {
+            sec1Content += ` 各项监测指标均在标准范围内。`;
+        }
+        sections.push({ title: "① 水质现状描述", content: sec1Content });
+
+        // 2. 面源归因 (逻辑：整体 + 超标因子)
+        // 找整体最大面源
+        const overallNPS = data.nps['all'];
+        const maxOverall = Object.keys(overallNPS).reduce((a, b) => overallNPS[a] > overallNPS[b] ? a : b);
+        let sec2Content = `自动站整体受 <span class="highlight-blue">${maxOverall}</span> 为主导 (${overallNPS[maxOverall]}%)。`;
+
+        // 若有超标，补充超标因子的面源
+        if (data.current.isExceed) {
+            data.current.exceedFactors.forEach(factor => {
+                if (data.nps[factor]) {
+                    const factorNPS = data.nps[factor];
+                    const maxFactor = Object.keys(factorNPS).reduce((a, b) => factorNPS[a] > factorNPS[b] ? a : b);
+                    sec2Content += `<br>其中超标因子 <b>${factor}</b> 受到 <span class="highlight-red">${maxFactor}</span> 影响最为显著 (${factorNPS[maxFactor]}%)，需重点关注。`;
+                }
+            });
+        }
+        sections.push({ title: "② 面源主导分析", content: sec2Content });
+
+        // 3. 关联影响 (河流 vs 湖库)
+        let sec3Content = "";
+        const exceedRelated = data.relatedStations.filter(s => s.status === 'bad');
+        if (data.type === 'river') {
+            if (exceedRelated.length > 0) {
+                sec3Content = `上游最近三个自动站（${[...new Set(exceedRelated.map(s=>s.name))].join('、')}）在24小时内出现 <span class="highlight-red">超标数据</span>，推测对下游断面产生输入型影响，建议开展上下游联防联控。`;
+            } else {
+                sec3Content = `上游最近三个自动站24小时内数据正常，未发现明显的上游输入型超标影响。`;
+            }
+        } else {
+            if (exceedRelated.length > 0) {
+                sec3Content = `湖库内其他自动站（${[...new Set(exceedRelated.map(s=>s.name))].join('、')}）在24小时内监测到超标数据，表明湖库整体水质存在区域性波动风险。`;
+            } else {
+                sec3Content = `湖库内其他关联自动站水质平稳，未见明显异常。`;
+            }
+        }
+        // 标记：如果这里有超标，报告框变红
+        const sec3Class = exceedRelated.length > 0 ? "active-warning" : "";
+        sections.push({ title: "③ 关联影响分析", content: sec3Content, css: sec3Class });
+
+        // 4. 气象定性归因 (气温、湿度、气压)
+        let sec4Content = "根据水文气象模型分析：<br>";
+        let hasMeteoWarning = false;
+
+        // 遍历所有因子（这里简化展示，只展示超标的，或者重要的）
+        const factorsToCheck = data.current.isExceed ? data.current.exceedFactors : ["总磷", "氨氮"]; // 没超标就看重点因子
+
+        factorsToCheck.forEach(f => {
+            const effect = data.meteoImpact[f] || { temp: "未知", hum: "未知", press: "未知" };
+            sec4Content += `<b>${f}</b>：受气温影响(${effect.temp})，湿度影响(${effect.hum})，气压影响(${effect.press})。`;
+
+            // 判定是否需要关注 (如果有"恶化"字样)
+            if (data.current.isExceed && (JSON.stringify(effect).includes("恶化"))) {
+                sec4Content += ` <span class="highlight-red">[需特别关注气象叠加效应]</span>`;
+                hasMeteoWarning = true;
+            }
+            sec4Content += "<br>";
+        });
+        sections.push({ title: "④ 气象水文定性归因", content: sec4Content });
+
+        // 5. 未来趋势预判
+        const futureExceed = data.forecast.filter(d => d.exceed);
+        let sec5Content = "";
+        if (futureExceed.length > 0) {
+            sec5Content = `未来15天内，预计在 <span class="highlight-red">${futureExceed.map(d=>d.day).join('、')}</span> 可能出现超标情况，建议提前采取管控措施。`;
+        } else {
+            sec5Content = `模型预测未来15天水质整体平稳，未发现超标风险。`;
+        }
+        sections.push({ title: "⑤ 未来趋势研判", content: sec5Content });
+
+        // 渲染 HTML
+        let html = '';
+        sections.forEach(sec => {
+            html += `
+                <div class="report-section ${sec.css || ''}">
+                    <div class="sec-title">
+                        <span style="width:6px; height:6px; background:#475569; border-radius:50%; display:inline-block;"></span>
+                        ${sec.title}
+                    </div>
+                    <div class="sec-content">${sec.content}</div>
+                </div>
+            `;
+        });
+        container.innerHTML = html;
+    }
+
+    init();
+    window.addEventListener('resize', () => {
+        npsChartInstance && npsChartInstance.resize();
+        forecastChartInstance && forecastChartInstance.resize();
+    });
+</script>
+
+</body>
+</html>

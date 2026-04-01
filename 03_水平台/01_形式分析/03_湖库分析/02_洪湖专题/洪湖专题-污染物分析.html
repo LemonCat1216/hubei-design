@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>湖北省水生态环境综合管理 - 污染物分析</title>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography,container-queries"></script>
+
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#3b82f6",
+                        "background-light": "#f4f7fb",
+                        "background-dark": "#0f172a",
+                    },
+                    fontFamily: {
+                        display: ["Inter", "system-ui", "-apple-system", "sans-serif"],
+                    },
+                },
+            },
+        };
+    </script>
+
+    <style type="text/tailwindcss">
+        body { font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif; }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+        .section-title-bar {
+            width: 4px;
+            height: 16px;
+            background: linear-gradient(to bottom, #93c5fd, #3b82f6);
+            border-radius: 4px;
+            margin-right: 8px;
+        }
+
+        #sidebar { transition: width 0.3s ease; }
+        .sidebar-text { transition: opacity 0.2s ease; white-space: nowrap; }
+        .hide-text .sidebar-text { display: none; opacity: 0; }
+        .collapsed-sidebar .nav-item { justify-content: center; padding-left: 0; padding-right: 0; }
+        .collapsed-sidebar .nav-item i { margin-right: 0; }
+
+        .level-1 { padding-left: 1rem; }
+        .level-2 { padding-left: 2rem; }
+        .level-3 { padding-left: 3rem; }
+        .level-4 { padding-left: 4rem; }
+
+        .card-shadow { box-shadow: 0 2px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05); transition: box-shadow 0.3s ease; }
+        .card-shadow:hover { box-shadow: 0 4px 12px -2px rgb(0 0 0 / 0.08), 0 4px 8px -3px rgb(0 0 0 / 0.08); }
+
+        .chart-action-icon {
+            @apply text-lg cursor-pointer text-slate-400 hover:text-primary transition-colors p-1.5 rounded hover:bg-blue-50 dark:hover:bg-slate-800;
+        }
+
+        .toggle-btn {
+            @apply h-full px-4 flex items-center justify-center text-xs font-bold rounded-md transition-colors cursor-pointer select-none;
+        }
+        .toggle-btn.active { @apply bg-blue-600 text-white shadow-sm; }
+        .toggle-btn.inactive { @apply text-slate-600 hover:text-slate-800 hover:bg-slate-200 dark:text-slate-400 dark:hover:bg-slate-700/50; }
+
+        .data-table { border-spacing: 0; width: 100%; }
+        .data-table th, .data-table td { @apply border border-slate-200 dark:border-slate-700/50 align-middle; background-clip: padding-box; }
+        .data-table th { @apply bg-[#f8fafc] dark:bg-slate-800/80 text-slate-700 dark:text-slate-200 font-bold px-4 py-3 text-center text-[13px] sticky top-0 z-10; }
+        .data-table td { @apply px-4 py-3 text-center text-[13px] text-slate-600 dark:text-slate-300; }
+        .data-table tbody tr:nth-child(even) { @apply bg-[#fbfcfd] dark:bg-slate-800/30; }
+        .data-table tbody tr:hover { @apply bg-blue-50/40 dark:bg-slate-700/50 transition-colors; }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-800 dark:text-slate-100 h-screen overflow-hidden flex flex-col">
+
+<header class="bg-primary h-14 flex items-center justify-between px-4 text-white shrink-0 shadow-md z-50">
+    <div class="flex items-center space-x-3">
+        <div class="w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-inner">
+            <i class="ri-water-flash-fill text-primary text-xl"></i>
+        </div>
+        <h1 class="text-xl font-bold tracking-tight">湖北省水生态环境综合管理</h1>
+    </div>
+    <nav class="flex h-full">
+        <a class="px-6 flex items-center space-x-2 hover:bg-white/10 transition-colors" href="#"><i class="ri-dashboard-line text-[18px]"></i><span class="text-sm">总体概览</span></a>
+        <a class="px-6 flex items-center space-x-2 bg-white/20 border-b-2 border-white transition-colors" href="#"><i class="ri-bar-chart-box-line text-[18px]"></i><span class="text-sm font-bold">形势分析</span></a>
+        <a class="px-6 flex items-center space-x-2 hover:bg-white/10 transition-colors" href="#"><i class="ri-map-pin-line text-[18px]"></i><span class="text-sm">空间分析</span></a>
+        <a class="px-6 flex items-center space-x-2 hover:bg-white/10 transition-colors" href="#"><i class="ri-water-flash-line text-[18px]"></i><span class="text-sm">水污染源</span></a>
+        <a class="px-6 flex items-center space-x-2 hover:bg-white/10 transition-colors" href="#"><i class="ri-error-warning-line text-[18px]"></i><span class="text-sm">问题聚焦</span></a>
+        <a class="px-6 flex items-center space-x-2 hover:bg-white/10 transition-colors" href="#"><i class="ri-apps-line text-[18px]"></i><span class="text-sm">专题应用</span></a>
+    </nav>
+    <div class="flex items-center space-x-6">
+        <div class="flex items-center space-x-2 text-sm opacity-90"><i class="ri-earth-line text-[18px]"></i><span>碧水荆灵</span></div>
+        <div class="flex items-center space-x-2 text-sm"><i class="ri-user-smile-line text-[18px]"></i><span>wangyunpeng</span></div>
+    </div>
+</header>
+
+<div class="flex flex-1 overflow-hidden">
+    <aside id="sidebar" class="w-[270px] bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 flex flex-col shrink-0 transition-all duration-300 z-40">
+        <div class="flex-1 py-4 overflow-y-auto custom-scrollbar flex flex-col gap-1 px-2">
+
+            <a class="nav-item w-full flex items-center level-1 py-2.5 text-[15px] font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg transition-colors group" href="#">
+                <i class="ri-layout-grid-line mr-3 text-lg text-slate-400 group-hover:text-primary"></i>
+                <span class="sidebar-text">湖库概览</span>
+            </a>
+
+            <div class="nav-item w-full flex items-center justify-between level-1 py-2.5 text-[15px] font-bold text-slate-800 dark:text-white bg-slate-50 dark:bg-slate-800/50 rounded-lg transition-colors cursor-pointer" onclick="toggleSubmenu('submenu-honghu', this)">
+                <div class="flex items-center"><i class="ri-landscape-fill mr-3 text-lg text-blue-500"></i><span class="sidebar-text">洪湖专题</span></div>
+                <i class="ri-arrow-down-s-line text-slate-500 sidebar-chevron transition-transform duration-300 rotate-180 mr-2"></i>
+            </div>
+
+            <div id="submenu-honghu" class="overflow-hidden transition-all duration-300">
+                <a class="nav-item w-full flex items-center level-2 py-2 text-[14px] text-slate-600 dark:text-slate-400 hover:text-blue-600 rounded-lg group transition-all" href="#">
+                    <span class="w-1.5 h-1.5 bg-slate-300 dark:bg-slate-600 group-hover:bg-blue-600 rounded-full mr-3 shrink-0"></span><span class="sidebar-text">空间展示</span>
+                </a>
+
+                <div class="nav-item w-full flex items-center justify-between level-2 py-2 text-[14px] font-bold text-slate-700 dark:text-slate-200 cursor-pointer group" onclick="toggleSubmenu('submenu-situation', this)">
+                    <div class="flex items-center"><span class="w-1.5 h-1.5 bg-slate-400 dark:bg-slate-500 rounded-full mr-3 shrink-0"></span><span class="sidebar-text">形势分析</span></div>
+                    <i class="ri-arrow-down-s-line text-slate-400 sidebar-chevron transition-transform duration-300 rotate-180 mr-2"></i>
+                </div>
+
+                <div id="submenu-situation" class="overflow-hidden transition-all duration-300">
+                    <a class="nav-item w-full flex items-center level-3 py-2 text-[13px] text-slate-600 dark:text-slate-400 hover:text-blue-600 rounded-lg group transition-all" href="#">
+                        <span class="w-1 h-1 bg-slate-300 rounded-full mr-3 shrink-0"></span><span class="sidebar-text">总体情况</span>
+                    </a>
+
+                    <div class="nav-item w-full flex items-center justify-between level-3 py-2 text-[13px] font-bold text-slate-700 dark:text-slate-200 cursor-pointer" onclick="toggleSubmenu('submenu-water-env', this)">
+                        <div class="flex items-center"><span class="w-1 h-1 bg-slate-400 rounded-full mr-3 shrink-0"></span><span class="sidebar-text">水环境</span></div>
+                        <i class="ri-arrow-down-s-line text-slate-400 sidebar-chevron transition-transform duration-300 rotate-180 mr-2"></i>
+                    </div>
+
+                    <div id="submenu-water-env" class="overflow-hidden transition-all duration-300">
+                        <a class="nav-item w-full flex items-center level-4 py-2 text-[13px] text-slate-600 dark:text-slate-400 hover:text-blue-600 rounded-lg group transition-all" href="#">
+                            <span class="sidebar-text">水环境分析</span>
+                        </a>
+                        <a class="nav-item w-full flex items-center level-4 py-2 text-[13px] font-bold text-blue-700 bg-blue-50 dark:bg-blue-900/30 rounded-lg transition-all relative shadow-sm" href="#">
+                            <span class="sidebar-text">污染物分析</span>
+                            <div class="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-4 bg-blue-600 rounded-r-full sidebar-text"></div>
+                        </a>
+                    </div>
+
+                    <a class="nav-item w-full flex items-center level-3 py-2 text-[13px] text-slate-600 dark:text-slate-400 hover:text-blue-600 rounded-lg group transition-all" href="#">
+                        <span class="w-1 h-1 bg-slate-300 rounded-full mr-3 shrink-0"></span><span class="sidebar-text">水资源</span>
+                    </a>
+                    <a class="nav-item w-full flex items-center level-3 py-2 text-[13px] text-slate-600 dark:text-slate-400 hover:text-blue-600 rounded-lg group transition-all" href="#">
+                        <span class="w-1 h-1 bg-slate-300 rounded-full mr-3 shrink-0"></span><span class="sidebar-text">水生态</span>
+                    </a>
+                    <a class="nav-item w-full flex items-center level-3 py-2 text-[13px] text-slate-600 dark:text-slate-400 hover:text-blue-600 rounded-lg group transition-all" href="#">
+                        <span class="w-1 h-1 bg-slate-300 rounded-full mr-3 shrink-0"></span><span class="sidebar-text">水污染源</span>
+                    </a>
+                    <a class="nav-item w-full flex items-center justify-between level-3 py-2 text-[13px] text-slate-600 dark:text-slate-400 hover:text-blue-600 rounded-lg group transition-all cursor-pointer">
+                        <div class="flex items-center"><span class="w-1 h-1 bg-slate-300 rounded-full mr-3 shrink-0"></span><span class="sidebar-text">达标超标</span></div>
+                        <i class="ri-arrow-right-s-line text-slate-400 sidebar-chevron mr-2"></i>
+                    </a>
+                </div>
+            </div>
+
+            <a class="nav-item w-full flex items-center level-1 py-2.5 text-[15px] font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg transition-colors group mt-1" href="#">
+                <i class="ri-water-percent-line mr-3 text-lg text-slate-400 group-hover:text-primary"></i><span class="sidebar-text">梁子湖专题</span>
+            </a>
+            <a class="nav-item w-full flex items-center level-1 py-2.5 text-[15px] font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg transition-colors group" href="#">
+                <i class="ri-drop-line mr-3 text-lg text-slate-400 group-hover:text-primary"></i><span class="sidebar-text">斧头湖专题</span>
+            </a>
+            <a class="nav-item w-full flex items-center level-1 py-2.5 text-[15px] font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg transition-colors group" href="#">
+                <i class="ri-anchor-line mr-3 text-lg text-slate-400 group-hover:text-primary"></i><span class="sidebar-text">丹江口水库专题</span>
+            </a>
+            <a class="nav-item w-full flex items-center level-1 py-2.5 text-[15px] font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg transition-colors group" href="#">
+                <i class="ri-sail-line mr-3 text-lg text-slate-400 group-hover:text-primary"></i><span class="sidebar-text">东湖专题</span>
+            </a>
+            <a class="nav-item w-full flex items-center level-1 py-2.5 text-[15px] font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg transition-colors group" href="#">
+                <i class="ri-ship-2-line mr-3 text-lg text-slate-400 group-hover:text-primary"></i><span class="sidebar-text">黄盖湖专题</span>
+            </a>
+        </div>
+        <button id="toggleSidebarBtn" class="h-12 border-t border-slate-200 dark:border-slate-800 flex items-center justify-center space-x-2 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all text-slate-500 hover:text-primary group">
+            <i id="toggleIcon" class="ri-arrow-left-s-line text-xl transition-transform duration-300"></i>
+            <span class="sidebar-text text-sm font-medium tracking-wide">收起侧栏</span>
+        </button>
+    </aside>
+
+    <main class="flex-1 overflow-y-auto custom-scrollbar p-6 relative">
+
+        <div class="h-16 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-6 flex items-center justify-between shrink-0 card-shadow mb-6">
+            <div class="flex items-center gap-3">
+                <span class="relative flex h-3 w-3 shrink-0">
+                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-3 w-3 bg-orange-500 shadow-[0_0_8px_rgba(249,115,22,0.6)]"></span>
+                </span>
+                <h2 class="text-[17px] font-bold text-slate-800 dark:text-white tracking-tight flex items-center">污染物分析</h2>
+            </div>
+            <div class="flex items-center space-x-3">
+                <div class="relative">
+                    <select class="appearance-none bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 pr-10 py-1.5 text-sm font-medium text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all cursor-pointer hover:bg-white min-w-[100px]">
+                        <option selected>2026年</option>
+                        <option>2025年</option>
+                    </select>
+                </div>
+                <div class="relative">
+                    <select id="month-select" class="appearance-none bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 pr-10 py-1.5 text-sm font-medium text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all cursor-pointer hover:bg-white min-w-[90px]">
+                        <option selected>1月</option>
+                        <option>2月</option>
+                        <option>3月</option>
+                    </select>
+                </div>
+                <div class="flex bg-slate-100 dark:bg-slate-800 p-0 rounded-lg border border-slate-200 dark:border-slate-700 h-8 ml-2">
+                    <button id="btn-current" class="toggle-btn active" onclick="setMonthMode('current')">当前月</button>
+                    <button id="btn-cumulative" class="toggle-btn inactive" onclick="setMonthMode('cumulative')">累计月</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+
+            <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 card-shadow p-5 flex flex-col h-[380px]">
+                <div class="flex items-center mb-4 shrink-0">
+                    <div class="section-title-bar m-0"></div>
+                    <h3 class="font-bold text-slate-800 dark:text-slate-200 text-[16px]">首要污染物</h3>
+                </div>
+
+                <div class="flex-1 flex flex-col gap-3 overflow-y-auto custom-scrollbar pr-1 pb-1">
+
+                    <div class="relative overflow-hidden rounded-lg p-4 text-white shadow-sm flex flex-col justify-center min-h-[100px] bg-gradient-to-r from-[#00c6ff] to-[#0072ff] hover:-translate-y-0.5 transition-transform duration-200">
+                        <div class="absolute -right-6 -bottom-6 w-28 h-28 bg-white opacity-[0.08] rounded-full pointer-events-none"></div>
+                        <div class="absolute -right-2 -top-4 w-16 h-16 bg-white opacity-[0.08] rounded-full pointer-events-none"></div>
+
+                        <div class="flex justify-between items-center relative z-10 w-full mb-1">
+                            <span class="text-[15px] font-bold tracking-wide">总磷</span>
+                            <span class="bg-white/20 text-white text-[12px] px-3 py-1 rounded-full font-medium shadow-sm">
+                                同比上升0.038mg/L
+                            </span>
+                        </div>
+                        <div class="relative z-10 w-full">
+                            <div class="text-[28px] font-bold tracking-tight leading-none">
+                                0.115<span class="text-[15px] font-medium ml-1">mg/L</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="relative overflow-hidden rounded-lg p-4 text-white shadow-sm flex flex-col justify-center min-h-[100px] bg-gradient-to-r from-[#20e2d7] to-[#0b9967] hover:-translate-y-0.5 transition-transform duration-200">
+                        <div class="absolute -right-6 -bottom-6 w-28 h-28 bg-white opacity-[0.08] rounded-full pointer-events-none"></div>
+                        <div class="absolute -right-2 -top-4 w-16 h-16 bg-white opacity-[0.08] rounded-full pointer-events-none"></div>
+
+                        <div class="flex justify-between items-center relative z-10 w-full mb-1">
+                            <span class="text-[15px] font-bold tracking-wide">高锰酸盐指数</span>
+                            <span class="bg-white/20 text-white text-[12px] px-3 py-1 rounded-full font-medium shadow-sm">
+                                同比上升0.7mg/L
+                            </span>
+                        </div>
+                        <div class="relative z-10 w-full">
+                            <div class="text-[28px] font-bold tracking-tight leading-none">
+                                6.6<span class="text-[15px] font-medium ml-1">mg/L</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="relative overflow-hidden rounded-lg p-4 text-white shadow-sm flex flex-col justify-center min-h-[100px] bg-gradient-to-r from-orange-400 to-orange-500 hover:-translate-y-0.5 transition-transform duration-200">
+                        <div class="absolute -right-6 -bottom-6 w-28 h-28 bg-white opacity-[0.08] rounded-full pointer-events-none"></div>
+                        <div class="absolute -right-2 -top-4 w-16 h-16 bg-white opacity-[0.08] rounded-full pointer-events-none"></div>
+
+                        <div class="flex justify-between items-center relative z-10 w-full mb-1">
+                            <span class="text-[15px] font-bold tracking-wide">氨氮</span>
+                            <span class="bg-white/20 text-white text-[12px] px-3 py-1 rounded-full font-medium shadow-sm">
+                                同比下降0.05mg/L
+                            </span>
+                        </div>
+                        <div class="relative z-10 w-full">
+                            <div class="text-[28px] font-bold tracking-tight leading-none">
+                                0.24<span class="text-[15px] font-medium ml-1">mg/L</span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="lg:col-span-2 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 card-shadow p-5 flex flex-col h-[380px]">
+                <div class="flex items-center justify-between mb-2">
+                    <div class="flex items-center space-x-2">
+                        <div class="section-title-bar m-0"></div>
+                        <h3 class="font-bold text-slate-800 dark:text-slate-200 text-[16px]">污染物同比变化</h3>
+
+                        <div class="ml-4 flex items-center gap-2">
+                            <div class="relative bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-md hover:border-blue-400 transition-colors">
+                                <select class="appearance-none bg-transparent border-none py-1.5 pl-3 pr-8 text-[13px] text-slate-600 dark:text-slate-300 focus:outline-none focus:ring-0 cursor-pointer min-w-[130px]">
+                                    <option>国控断面情况</option>
+                                    <option>省控断面情况</option>
+                                    <option>市控断面情况</option>
+                                </select>
+                            </div>
+                            <div class="relative bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-md hover:border-blue-400 transition-colors shadow-sm">
+                                <select class="appearance-none bg-transparent border-none py-1.5 pl-3 pr-8 text-[13px] text-slate-600 dark:text-slate-300 focus:outline-none focus:ring-0 cursor-pointer min-w-[110px]">
+                                    <option>总体情况</option>
+                                    <option>洪湖湖心A</option>
+                                    <option>洪湖湖心B</option>
+                                    <option>排水闸</option>
+                                    <option>杨柴湖</option>
+                                </select>
+                            </div>
+                            <div class="relative bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-md hover:border-blue-400 transition-colors shadow-sm">
+                                <select class="appearance-none bg-transparent border-none py-1.5 pl-3 pr-8 text-[13px] text-slate-600 dark:text-slate-300 focus:outline-none focus:ring-0 cursor-pointer min-w-[90px]">
+                                    <option>总磷</option>
+                                    <option>总氮</option>
+                                    <option>高锰酸盐</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex gap-2">
+                        <i class="ri-table-2 chart-action-icon" title="查看数据表" onclick="showChartData('chartTrend', '污染物同比变化')"></i>
+                        <i class="ri-download-2-line chart-action-icon" title="下载图表" onclick="downloadChart('chartTrend')"></i>
+                    </div>
+                </div>
+                <div id="chart-trend" class="flex-1 w-full"></div>
+            </div>
+
+        </div>
+
+        <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 card-shadow p-6 mb-6">
+            <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center space-x-2">
+                    <div class="section-title-bar m-0"></div>
+                    <h3 class="font-bold text-slate-800 dark:text-slate-200 text-[16px]">断面超标情况</h3>
+                </div>
+                <div class="flex gap-2">
+                    <i class="ri-table-2 chart-action-icon" title="查看数据表" onclick="showChartData('chartExceed', '断面超标情况')"></i>
+                    <i class="ri-download-2-line chart-action-icon" title="下载图表" onclick="downloadChart('chartExceed')"></i>
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <p class="text-[14px] text-slate-600 dark:text-slate-300 font-medium pl-2 leading-relaxed tracking-wide">
+                    <span class="text-red-500 font-bold text-[16px] mr-1">2</span>个断面暂未达到目标要求，其中
+                    国控断面 <span class="font-bold text-slate-800 dark:text-white mx-0.5">2</span>个，
+                    省控断面 <span class="font-bold text-slate-800 dark:text-white mx-0.5">0</span>个，
+                    市控断面 <span class="font-bold text-slate-800 dark:text-white mx-0.5">0</span>个，
+                    其他断面 <span class="font-bold text-slate-800 dark:text-white mx-0.5">0</span>个。
+                </p>
+            </div>
+
+            <div id="chart-exceed" class="w-full h-[320px]"></div>
+        </div>
+
+        <footer class="mt-4 border-t border-slate-200 dark:border-slate-800 text-center text-xs text-slate-400 pb-2 pt-4">
+            <p>&copy; 2026 湖北省生态环境厅 · 版权所有</p>
+        </footer>
+    </main>
+</div>
+
+<div id="data-table-modal" class="fixed inset-0 z-[100] hidden bg-slate-900/50 backdrop-blur-sm flex items-center justify-center transition-opacity opacity-0 duration-300">
+    <div class="bg-white dark:bg-slate-800 rounded shadow-2xl w-11/12 max-w-6xl flex flex-col max-h-[85vh] transform transition-transform scale-95 duration-300">
+        <div class="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-slate-700 shrink-0">
+            <div class="flex items-center space-x-2">
+                <div class="section-title-bar m-0"></div>
+                <h3 id="modal-title" class="text-base font-bold text-slate-800 dark:text-white">数据表</h3>
+            </div>
+            <button onclick="closeModal()" class="text-slate-400 hover:text-red-500 transition-colors flex items-center justify-center">
+                <i class="ri-close-line text-2xl"></i>
+            </button>
+        </div>
+        <div class="overflow-auto flex-1 custom-scrollbar">
+            <table class="w-full text-sm text-center text-slate-600 dark:text-slate-300 border-collapse data-table">
+                <thead class="text-slate-700 bg-[#f8fafc] dark:bg-slate-700 dark:text-slate-200 sticky top-0 z-10" id="modal-thead"></thead>
+                <tbody id="modal-tbody"></tbody>
+            </table>
+        </div>
+        <div class="px-6 py-4 border-t border-slate-100 dark:border-slate-700 bg-white dark:bg-slate-800 shrink-0 flex justify-center space-x-4">
+            <button onclick="closeModal()" class="px-6 py-1.5 bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded text-sm text-slate-600 dark:text-slate-200 hover:bg-slate-50 transition-colors">取消</button>
+            <button onclick="exportExcel()" class="px-6 py-1.5 bg-blue-600 text-white border border-blue-600 rounded text-sm hover:bg-blue-700 shadow-sm transition-colors">导出</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // --- 侧边栏交互逻辑 ---
+    const sidebar = document.getElementById('sidebar');
+    const toggleBtn = document.getElementById('toggleSidebarBtn');
+    const toggleIcon = document.getElementById('toggleIcon');
+    let isCollapsed = false;
+
+    toggleBtn.addEventListener('click', () => {
+        isCollapsed = !isCollapsed;
+        if (isCollapsed) {
+            sidebar.classList.remove('w-[270px]');
+            sidebar.classList.add('w-[80px]', 'hide-text', 'collapsed-sidebar');
+            toggleIcon.classList.replace('ri-arrow-left-s-line', 'ri-arrow-right-s-line');
+        } else {
+            sidebar.classList.remove('w-[80px]', 'hide-text', 'collapsed-sidebar');
+            sidebar.classList.add('w-[270px]');
+            toggleIcon.classList.replace('ri-arrow-right-s-line', 'ri-arrow-left-s-line');
+        }
+        setTimeout(() => resizeAllCharts(), 300);
+    });
+
+    // 侧边栏子菜单切换
+    function toggleSubmenu(id, element) {
+        if (isCollapsed) return;
+        const submenu = document.getElementById(id);
+        const chevron = element.querySelector('.sidebar-chevron');
+
+        if (submenu.style.maxHeight && submenu.style.maxHeight !== '0px') {
+            submenu.style.maxHeight = '0px';
+            if(chevron) chevron.classList.remove('rotate-180');
+        } else {
+            submenu.style.maxHeight = submenu.scrollHeight + "px";
+            if(chevron) chevron.classList.add('rotate-180');
+        }
+    }
+
+    // 初始化展开必要菜单
+    window.addEventListener('load', () => {
+        ['submenu-honghu', 'submenu-situation', 'submenu-water-env'].forEach(id => {
+            const el = document.getElementById(id);
+            if(el) el.style.maxHeight = el.scrollHeight + 'px';
+        });
+        initCharts();
+    });
+
+    // --- 月份模式切换 ---
+    function setMonthMode(mode) {
+        const btnCurrent = document.getElementById('btn-current');
+        const btnCumulative = document.getElementById('btn-cumulative');
+        const monthSelect = document.getElementById('month-select');
+
+        if (mode === 'current') {
+            btnCurrent.classList.remove('inactive'); btnCurrent.classList.add('active');
+            btnCumulative.classList.remove('active'); btnCumulative.classList.add('inactive');
+            Array.from(monthSelect.options).forEach(opt => { opt.text = opt.text.replace('1-', ''); });
+        } else {
+            btnCumulative.classList.remove('inactive'); btnCumulative.classList.add('active');
+            btnCurrent.classList.remove('active'); btnCurrent.classList.add('inactive');
+            Array.from(monthSelect.options).forEach(opt => {
+                if (!opt.text.startsWith('1-')) opt.text = '1-' + opt.text;
+            });
+        }
+    }
+
+    // --- ECharts 图表配置与初始化 ---
+    const chartInstances = {};
+    const charts = [];
+    const textCol = document.documentElement.classList.contains('dark') ? '#94a3b8' : '#64748b';
+    const axisLineCol = '#e2e8f0';
+
+    const commonTooltip = {
+        trigger: 'axis',
+        backgroundColor: 'rgba(255, 255, 255, 0.95)',
+        borderColor: '#e2e8f0',
+        textStyle: { color: '#334155' },
+        extraCssText: 'box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); border-radius: 6px;'
+    };
+
+    function initCharts() {
+        // 1. 污染物同比变化折线图
+        const cTrend = echarts.init(document.getElementById('chart-trend'));
+        chartInstances['chartTrend'] = cTrend;
+        charts.push(cTrend);
+
+        cTrend.setOption({
+            tooltip: { ...commonTooltip, axisPointer: { type: 'line' } },
+            legend: { top: 0, right: 0, itemWidth: 16, icon: 'circle', textStyle: { fontSize: 12, color: textCol } },
+            grid: { top: '15%', left: '2%', right: '6%', bottom: '5%', containLabel: true },
+            xAxis: {
+                type: 'category',
+                data: ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'],
+                axisLabel: { color: textCol },
+                axisLine: { lineStyle: { color: axisLineCol } },
+                boundaryGap: false
+            },
+            yAxis: {
+                type: 'value',
+                min: 0,
+                max: 0.1,
+                interval: 0.02,
+                name: 'mg/L',
+                nameTextStyle: { color: textCol, padding: [0, 30, 0, 0] },
+                axisLabel: { color: textCol },
+                splitLine: { lineStyle: { color: '#f1f5f9', type: 'dashed' } }
+            },
+            series: [
+                {
+                    name: '2026年',
+                    type: 'line',
+                    data: [0.051, null, null, null, null, null, null, null, null, null, null, null],
+                    symbol: 'circle',
+                    symbolSize: 8,
+                    itemStyle: { color: '#3b82f6' },
+                    lineStyle: { width: 3 }
+                },
+                {
+                    name: '2025年',
+                    type: 'line',
+                    data: [0.075, 0.065, 0.085, 0.080, 0.090, 0.075, 0.060, 0.072, 0.075, 0.060, 0.042, 0.041],
+                    symbol: 'emptyCircle',
+                    symbolSize: 6,
+                    itemStyle: { color: '#facc15' },
+                    lineStyle: { width: 2 }
+                },
+                {
+                    name: '目标值',
+                    type: 'line',
+                    data: [], // 纯净的红色空数据，仅用于生成图例项
+                    itemStyle: { color: '#ef4444' },
+                    markLine: {
+                        data: [ { yAxis: 0.05, name: '目标值' } ],
+                        lineStyle: { color: '#ef4444', type: 'dashed', width: 2 },
+                        // 改为 insideEndTop 后，标签显示在画框内，永不截断
+                        label: { formatter: '目标值', color: '#ef4444', position: 'insideEndTop', padding: [0, 0, 5, 0] },
+                        symbol: ['none', 'none']
+                    }
+                }
+            ]
+        });
+
+        // 2. 断面超标情况柱状图 (利用多Series Stack完美解决X轴对齐问题，且原生支持图例切换)
+        const cExceed = echarts.init(document.getElementById('chart-exceed'));
+        chartInstances['chartExceed'] = cExceed;
+        charts.push(cExceed);
+
+        const categoryMap = ['无', 'Ⅰ类', 'Ⅱ类', 'Ⅲ类', 'Ⅳ类', 'Ⅴ类', '劣Ⅴ类'];
+        const wqColors = ['#cbd5e1', '#3b82f6', '#06b6d4', '#10b981', '#facc15', '#f97316', '#ef4444'];
+
+        cExceed.setOption({
+            tooltip: {
+                ...commonTooltip,
+                axisPointer: { type: 'shadow' },
+                formatter: function(params) {
+                    // 获取有真实数据的被悬浮项
+                    let validParam = params.find(p => p.value !== null && p.value !== undefined && p.value !== '-');
+                    if(!validParam) return '';
+                    return `<div class="font-bold mb-1">${validParam.name}</div>
+                            <span class="inline-block w-2.5 h-2.5 rounded mr-2" style="background-color: ${validParam.color}"></span>水质: <span class="font-bold" style="color: ${validParam.color}">${validParam.seriesName}</span>`;
+                }
+            },
+            legend: {
+                data: ['Ⅰ类', 'Ⅱ类', 'Ⅲ类', 'Ⅳ类', 'Ⅴ类', '劣Ⅴ类'],
+                top: 0,
+                right: '1%',
+                itemWidth: 12,
+                itemHeight: 12,
+                icon: 'roundRect',
+                textStyle: { color: textCol, fontSize: 12 }
+            },
+            grid: { top: '15%', left: '2%', right: '2%', bottom: '5%', containLabel: true },
+            xAxis: {
+                type: 'category',
+                data: ['洪湖湖心A(国控)', '洪湖湖心B(国控)'],
+                axisLabel: { color: textCol, fontSize: 13, margin: 12 },
+                axisLine: { lineStyle: { color: axisLineCol } },
+                axisTick: { show: false }
+            },
+            yAxis: {
+                type: 'value',
+                min: 0,
+                max: 6,
+                interval: 1,
+                axisLabel: {
+                    formatter: function(val) { return categoryMap[val] || ''; },
+                    color: textCol,
+                    fontSize: 12
+                },
+                splitLine: { lineStyle: { color: '#f1f5f9', type: 'solid' } }
+            },
+            series: [
+                // 巧妙使用 Stack 让分类柱状图强制居中对齐对应的维度，空值设为 null
+                { name: 'Ⅰ类', type: 'bar', stack: 'wq', barWidth: '32px', itemStyle: { color: wqColors[1], borderRadius: [4,4,0,0] }, data: [null, null] },
+                { name: 'Ⅱ类', type: 'bar', stack: 'wq', barWidth: '32px', itemStyle: { color: wqColors[2], borderRadius: [4,4,0,0] }, data: [null, null] },
+                { name: 'Ⅲ类', type: 'bar', stack: 'wq', barWidth: '32px', itemStyle: { color: wqColors[3], borderRadius: [4,4,0,0] }, data: [null, null] },
+                { name: 'Ⅳ类', type: 'bar', stack: 'wq', barWidth: '32px', itemStyle: { color: wqColors[4], borderRadius: [4,4,0,0] }, data: [4, 4] },
+                { name: 'Ⅴ类', type: 'bar', stack: 'wq', barWidth: '32px', itemStyle: { color: wqColors[5], borderRadius: [4,4,0,0] }, data: [null, null] },
+                { name: '劣Ⅴ类', type: 'bar', stack: 'wq', barWidth: '32px', itemStyle: { color: wqColors[6], borderRadius: [4,4,0,0] }, data: [null, null] }
+            ]
+        });
+    }
+
+    // --- 图表工具函数 (查看表格、下载图表) ---
+    function showChartData(chartKey, titleText) {
+        const chart = chartInstances[chartKey];
+        if (!chart) return;
+        const option = chart.getOption();
+
+        let categories = option.xAxis[0].data || [];
+        document.getElementById('modal-title').innerText = titleText;
+
+        const thead = document.getElementById('modal-thead');
+        let theadHTML = `<tr><th class="px-6 py-4 font-bold whitespace-nowrap w-16">序号</th><th class="px-6 py-4 font-bold w-48">${chartKey==='chartExceed'?'断面名称':'时间'}</th>`;
+
+        let seriesToDisplay = option.series.filter(s => (s.type === 'line' && s.data && s.data.length > 0) || (s.type === 'bar' && s.data && s.data.length > 0));
+
+        if (chartKey === 'chartExceed') {
+            theadHTML += `<th class="px-6 py-4 font-bold">水质类别</th>`;
+        } else {
+            seriesToDisplay.forEach(s => {
+                if(s.name && s.name !== '目标值') theadHTML += `<th class="px-6 py-4 font-bold">${s.name}</th>`;
+            });
+        }
+        theadHTML += '</tr>';
+        thead.innerHTML = theadHTML;
+
+        const tbody = document.getElementById('modal-tbody');
+        let tbodyHTML = '';
+
+        categories.forEach((cat, idx) => {
+            const bgClass = idx % 2 === 0 ? 'bg-white dark:bg-slate-800' : 'bg-[#fcfcfc] dark:bg-slate-800/50';
+            tbodyHTML += `<tr class="${bgClass}">
+                            <td class="px-6 py-4 text-slate-500 border-b border-slate-100">${idx + 1}</td>
+                            <td class="px-6 py-4 text-slate-700 dark:text-slate-300 font-medium border-b border-slate-100">${cat}</td>`;
+
+            if (chartKey === 'chartExceed') {
+                // 读取实际触发数值的系列名称
+                let validSeries = option.series.find(s => s.data && s.data[idx] !== null && s.data[idx] !== undefined && s.data[idx] !== '-');
+                let wqText = validSeries ? validSeries.name : '-';
+                tbodyHTML += `<td class="px-6 py-4 border-b border-slate-100 font-bold">${wqText}</td>`;
+            } else {
+                seriesToDisplay.forEach(s => {
+                    if(!s.name || s.name === '目标值') return;
+                    let val = (s.data && s.data[idx] !== undefined && s.data[idx] !== null) ? s.data[idx] : '-';
+                    tbodyHTML += `<td class="px-6 py-4 border-b border-slate-100">${val}</td>`;
+                });
+            }
+            tbodyHTML += '</tr>';
+        });
+        tbody.innerHTML = tbodyHTML;
+
+        const modal = document.getElementById('data-table-modal');
+        modal.classList.remove('hidden');
+        void modal.offsetWidth;
+        modal.classList.remove('opacity-0');
+        modal.querySelector('div').classList.remove('scale-95');
+    }
+
+    function closeModal() {
+        const modal = document.getElementById('data-table-modal');
+        modal.classList.add('opacity-0');
+        modal.querySelector('div').classList.add('scale-95');
+        setTimeout(() => { modal.classList.add('hidden'); }, 300);
+    }
+
+    function downloadChart(chartKey) {
+        const chart = chartInstances[chartKey];
+        if (!chart) return;
+        const url = chart.getDataURL({ type: 'png', pixelRatio: 2, backgroundColor: '#ffffff' });
+        const a = document.createElement('a'); a.href = url; a.download = chartKey + '.png'; a.click();
+    }
+
+    function exportExcel() {
+        const table = document.querySelector('#data-table-modal table');
+        if (!table) return;
+        let csv = [];
+        const rows = table.querySelectorAll('tr');
+        for (let i = 0; i < rows.length; i++) {
+            let row = [];
+            const cols = rows[i].querySelectorAll('td, th');
+            for (let j = 0; j < cols.length; j++) {
+                row.push('"' + cols[j].innerText.trim().replace(/"/g, '""') + '"');
+            }
+            csv.push(row.join(','));
+        }
+        const csvFile = new Blob(['\uFEFF' + csv.join('\n')], {type: 'text/csv;charset=utf-8;'});
+        const downloadLink = document.createElement("a");
+        downloadLink.download = (document.getElementById('modal-title').innerText || '导出数据') + ".csv";
+        downloadLink.href = window.URL.createObjectURL(csvFile);
+        downloadLink.click();
+    }
+
+    function resizeAllCharts() { charts.forEach(chart => { if (chart) chart.resize(); }); }
+    window.addEventListener('resize', resizeAllCharts);
+</script>
+
+</body>
+</html>

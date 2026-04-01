@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>湖北省水生态环境 - 移动融合版</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css"/>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css"/>
+    <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/echarts/dist/echarts.min.js"></script>
+
+    <style>
+        /* ================= 全局样式 ================= */
+        :root {
+            --primary: #2563eb;
+            --bg-glass: rgba(255, 255, 255, 0.95);
+        }
+
+        body, html {
+            height: 100%; width: 100%; margin: 0; padding: 0;
+            overflow: hidden;
+            font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+            background-color: #f0f2f5;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        #app { height: 100%; width: 100%; position: relative; }
+        #map { height: 100%; width: 100%; z-index: 1; }
+
+        /* 隐藏滚动条但保留功能 */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        /* 自定义细滚动条 */
+        .custom-scroll::-webkit-scrollbar { width: 4px; height: 4px; }
+        .custom-scroll::-webkit-scrollbar-track { background: transparent; }
+        .custom-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 2px; }
+
+        /* ================= 地图图标样式 ================= */
+        /* 呼吸气泡 (聚合) */
+        .bubble-body {
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            color: #5c3a00; font-weight: bold; border: 1px solid rgba(255,255,255,0.4);
+            animation: breathe 2.5s infinite ease-in-out;
+            cursor: pointer; box-sizing: border-box;
+        }
+        .cluster-small { background: radial-gradient(circle, rgba(255, 200, 100, 0.9) 0%, rgba(255, 160, 50, 0.7) 100%); box-shadow: 0 0 10px rgba(255, 165, 0, 0.3); }
+        .cluster-large { background: radial-gradient(circle, rgba(255, 140, 0, 1) 0%, rgba(230, 100, 0, 0.9) 100%); box-shadow: 0 0 20px rgba(255, 69, 0, 0.5); color: white; }
+
+        @keyframes breathe {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 165, 0, 0.6); }
+            50% { transform: scale(1.08); box-shadow: 0 0 0 6px rgba(255, 165, 0, 0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 165, 0, 0); }
+        }
+
+        /* 单点 */
+        .single-point-orange { background: #ff8c00; border: 2px solid #fff; border-radius: 50%; width:100%; height:100%; box-shadow: 0 2px 4px rgba(0,0,0,0.3); }
+        .single-point-green { background: #10B981; border: 2px solid #fff; border-radius: 50%; width:100%; height:100%; box-shadow: 0 2px 4px rgba(0,0,0,0.3); }
+
+        /* ================= UI 组件样式 ================= */
+        /* 顶部栏 */
+        .top-container {
+            position: absolute; top: 0; left: 0; right: 0; z-index: 1000; pointer-events: none;
+            background: linear-gradient(180deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.8) 70%, rgba(255,255,255,0) 100%);
+            padding-bottom: 15px;
+        }
+        .header-row { height: 50px; display: flex; align-items: center; justify-content: space-between; padding: 0 16px; pointer-events: auto; }
+
+        /* 筛选按钮 */
+        .filter-btn {
+            display: inline-flex; align-items: center; padding: 6px 12px; margin-right: 8px;
+            background: #fff; border-radius: 16px; font-size: 12px; color: #333;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.08); border: 1px solid transparent;
+        }
+        .filter-btn.active { background: #eff6ff; color: var(--primary); border-color: #bfdbfe; }
+
+        /* 悬浮按钮 */
+        .fab-container { position: absolute; right: 12px; top: 120px; z-index: 900; pointer-events: auto; display: flex; flex-direction: column; gap: 10px; }
+        .fab-btn {
+            width: 40px; height: 40px; border-radius: 50%; background: #fff;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15); color: #555; font-size: 16px;
+        }
+        .fab-btn:active { transform: scale(0.95); background: #f8fafc; }
+
+        /* 底部统计卡片 */
+        .stats-container {
+            position: absolute; bottom: 0; left: 0; right: 0; z-index: 1100; pointer-events: none;
+            display: flex; justify-content: center; padding: 0 10px 10px 10px;
+        }
+        .stats-card {
+            pointer-events: auto; background: var(--bg-glass); backdrop-filter: blur(10px);
+            border-radius: 16px; box-shadow: 0 -4px 20px rgba(0,0,0,0.1); width: 100%;
+            padding: 0 16px 16px 16px; transition: transform 0.3s ease;
+        }
+        .stats-card.collapsed { transform: translateY(calc(100% - 30px)); }
+
+        /* 底部详情弹窗 (Bottom Sheet) */
+        .bottom-sheet {
+            position: fixed; bottom: 0; left: 0; right: 0; background: #fff;
+            border-radius: 20px 20px 0 0; z-index: 2000;
+            transform: translateY(110%); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            height: 85vh; display: flex; flex-direction: column;
+            box-shadow: 0 -5px 30px rgba(0,0,0,0.2);
+        }
+        .bottom-sheet.show { transform: translateY(0); }
+
+        /* 遮罩 */
+        .overlay {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5); z-index: 1500;
+            opacity: 0; pointer-events: none; transition: opacity 0.3s;
+        }
+        .overlay.show { opacity: 1; pointer-events: auto; }
+
+        /* 表格样式适配 */
+        .mobile-table th { font-weight: 600; color: #64748b; font-size: 11px; padding: 10px 4px; white-space: nowrap; }
+        .mobile-table td { padding: 10px 4px; font-size: 12px; color: #334155; white-space: nowrap; }
+
+        /* 标签页 */
+        .tab-item { position: relative; padding: 12px 16px; color: #64748b; font-size: 14px; font-weight: 500; transition: color 0.2s; white-space: nowrap; }
+        .tab-item.active { color: var(--primary); font-weight: 600; }
+        .tab-item.active::after { content: ''; position: absolute; bottom: 0; left: 20%; right: 20%; height: 3px; background: var(--primary); border-radius: 3px 3px 0 0; }
+    </style>
+</head>
+<body>
+
+<div id="app">
+    <div id="map"></div>
+
+    <div class="top-container">
+        <div class="header-row">
+            <div class="w-8 flex items-center justify-center text-gray-600"><i class="fas fa-chevron-left"></i></div>
+            <div class="font-bold text-lg text-gray-800 tracking-wide">水生态环境综合管理</div>
+            <div class="relative bg-white/90 px-3 py-1.5 rounded-full shadow-sm border border-gray-100 flex items-center text-xs font-medium text-blue-600">
+                <i class="far fa-calendar-alt mr-1.5"></i>
+                <span>{{ currentDate }}</span>
+                <input type="date" class="absolute inset-0 opacity-0 z-10" @change="e => currentDate = e.target.value">
+            </div>
+        </div>
+        <div class="flex items-center px-4 overflow-x-auto no-scrollbar pointer-events-auto mt-2">
+            <div class="filter-btn active">湖北省 <i class="fas fa-caret-down ml-1"></i></div>
+        </div>
+    </div>
+
+    <div class="fab-container">
+        <div class="fab-btn" @click="showLayerDrawer = true"><i class="fas fa-layer-group text-blue-600"></i></div>
+        <div class="fab-btn" @click="resetMap"><i class="fas fa-crosshairs text-gray-600"></i></div>
+    </div>
+
+    <div class="stats-container" v-show="!detailPanelOpen">
+        <div class="stats-card" :class="{ 'collapsed': statsCollapsed }">
+            <div class="w-full h-6 flex justify-center items-center -mt-2" @click="statsCollapsed = !statsCollapsed">
+                <div class="w-10 h-1 bg-gray-300 rounded-full"></div>
+            </div>
+            <div class="flex justify-between items-center mb-3">
+                <span class="font-bold text-base text-gray-800">{{ displayStatTitle }}</span>
+                <span class="text-xs text-blue-600 bg-blue-50 px-2 py-0.5 rounded border border-blue-100">实时</span>
+            </div>
+            <div class="grid grid-cols-2 gap-3">
+                <div class="bg-gradient-to-br from-blue-50 to-white p-3 rounded-xl border border-blue-100 text-center">
+                    <div class="text-2xl font-bold text-blue-600 font-mono">{{ displayStatNumber.toLocaleString() }}</div>
+                    <div class="text-xs text-gray-500 mt-1">点位总数</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="overlay" :class="{ 'show': detailPanelOpen || showLayerDrawer }" @click="closeAll"></div>
+
+    <div class="bottom-sheet" :class="{ 'show': detailPanelOpen }">
+
+        <div class="flex items-center justify-between px-4 py-3 border-b border-gray-100 bg-white rounded-t-[20px] shrink-0">
+            <div class="flex flex-col overflow-hidden">
+                <span class="font-bold text-lg text-gray-800 truncate pr-4">{{ selectedFeature?.name }}</span>
+                <div class="flex items-center mt-1 space-x-2">
+                    <span class="text-xs bg-blue-50 text-blue-600 px-1.5 py-0.5 rounded border border-blue-100">{{ selectedFeature?.type }}</span>
+                    <span class="text-xs text-gray-500"><i class="fas fa-map-marker-alt mr-1"></i>{{ selectedFeature?.cityName }}</span>
+                </div>
+            </div>
+            <div class="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center text-gray-500 active:bg-gray-200" @click="closeAll">
+                <i class="fas fa-times"></i>
+            </div>
+        </div>
+
+        <div class="flex border-b border-gray-100 overflow-x-auto no-scrollbar shrink-0 px-2 bg-white">
+            <div v-for="tab in tabs" :key="tab.key" @click="currentTab = tab.key"
+                 class="tab-item" :class="{ 'active': currentTab === tab.key }">
+                <i :class="[tab.icon, 'mr-1 text-xs']"></i>{{ tab.label }}
+            </div>
+        </div>
+
+        <div class="flex-1 overflow-y-auto bg-gray-50 p-4 custom-scroll relative">
+
+            <div v-if="currentTab === 'basic' && selectedFeature" class="space-y-4 pb-6">
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
+                    <h3 class="font-bold text-gray-800 text-sm mb-3 border-l-4 border-blue-500 pl-2">企业概况</h3>
+                    <div class="space-y-3 text-sm">
+                        <div class="flex justify-between">
+                            <span class="text-gray-500">详细地址</span>
+                            <span class="text-gray-800 text-right flex-1 ml-4">{{ selectedFeature.cityName }}工业园区高新大道 88 号</span>
+                        </div>
+                        <div class="flex justify-between border-t border-dashed border-gray-100 pt-2">
+                            <span class="text-gray-500">行业类别</span>
+                            <span class="text-gray-800">化学原料和化学制品制造业</span>
+                        </div>
+                        <div class="flex justify-between border-t border-dashed border-gray-100 pt-2">
+                            <span class="text-gray-500">地理位置</span>
+                            <span class="font-mono text-gray-600">{{ selectedFeature.lng.toFixed(5) }}, {{ selectedFeature.lat.toFixed(5) }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                    <div class="px-4 py-3 bg-gray-50 border-b border-gray-100 font-bold text-gray-800 text-sm flex items-center">
+                        <i class="fas fa-map-marked-alt text-orange-500 mr-2"></i>排口信息
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left mobile-table">
+                            <thead class="bg-gray-50 border-b border-gray-100">
+                            <tr>
+                                <th class="pl-4">排口名称</th>
+                                <th>编号</th>
+                                <th class="text-center">经度</th>
+                                <th class="pr-4 text-center">纬度</th>
+                            </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-100">
+                            <tr>
+                                <td class="pl-4 font-medium text-gray-700">废水总排放口</td>
+                                <td class="font-mono text-xs text-gray-500">DW001</td>
+                                <td class="text-right font-mono text-xs text-gray-500">{{ selectedFeature.lng.toFixed(4) }}</td>
+                                <td class="pr-4 text-right font-mono text-xs text-gray-500">{{ selectedFeature.lat.toFixed(4) }}</td>
+                            </tr>
+                            <tr>
+                                <td class="pl-4 font-medium text-gray-700">雨水排放口-北</td>
+                                <td class="font-mono text-xs text-gray-500">DW002</td>
+                                <td class="text-right font-mono text-xs text-gray-500">{{ (selectedFeature.lng+0.002).toFixed(4) }}</td>
+                                <td class="pr-4 text-right font-mono text-xs text-gray-500">{{ (selectedFeature.lat+0.001).toFixed(4) }}</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div v-show="currentTab === 'monitor'" class="space-y-3 pb-6">
+                <div class="bg-white p-3 rounded-xl shadow-sm border border-gray-100">
+                    <div class="flex gap-2 mb-2">
+                        <select class="flex-1 bg-gray-50 border border-gray-200 text-xs rounded px-2 py-1.5 outline-none">
+                            <option>废水总排放口</option>
+                            <option>雨水排放口</option>
+                        </select>
+                        <select class="flex-1 bg-gray-50 border border-gray-200 text-xs rounded px-2 py-1.5 outline-none font-bold text-gray-700">
+                            <option>化学需氧量</option>
+                            <option>氨氮</option>
+                            <option>总磷</option>
+                            <option>总氮</option>
+                        </select>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <div class="flex bg-gray-100 rounded p-0.5">
+                            <button @click="monitorSubTab='day'" :class="['px-3 py-1 text-xs rounded transition', monitorSubTab==='day'?'bg-white text-blue-600 shadow-sm font-bold':'text-gray-500']">日</button>
+                            <button @click="monitorSubTab='hour'" :class="['px-3 py-1 text-xs rounded transition', monitorSubTab==='hour'?'bg-white text-blue-600 shadow-sm font-bold':'text-gray-500']">时</button>
+                        </div>
+                        <div class="flex items-center text-xs text-gray-500 bg-gray-50 px-2 py-1 rounded border border-gray-200">
+                            <input type="date" class="bg-transparent w-24 outline-none text-right" value="2025-12-21">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white p-2 rounded-xl shadow-sm border border-gray-100 h-52">
+                    <div ref="chartRef" class="w-full h-full"></div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                    <div class="overflow-x-auto custom-scroll">
+                        <table class="w-full text-center mobile-table">
+                            <thead class="bg-gray-50 border-b border-gray-100">
+                            <tr>
+                                <th class="pl-3">时间</th>
+                                <th>点位</th>
+                                <th>COD</th>
+                                <th>氨氮</th>
+                                <th>总磷</th>
+                                <th class="pr-3">总氮</th>
+                            </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-100">
+                            <tr v-for="(row, idx) in paginatedMonitorData" :key="idx">
+                                <td class="pl-3 text-xs text-gray-500">{{ row.time.split(' ')[0] }}<br><span class="text-[10px]">{{ row.time.split(' ')[1] }}</span></td>
+                                <td>{{ row.point.substring(0,4) }}..</td>
+                                <td class="font-mono">{{ row.cod }}</td>
+                                <td class="font-mono">{{ row.nh3 }}</td>
+                                <td class="pr-3 font-mono text-blue-600 font-bold">{{ row.tp }}</td>
+                                <td class="pr-3 font-mono text-blue-600 font-bold">{{ row.tn }}</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="h-10 border-t border-gray-100 flex items-center justify-between px-4 bg-gray-50">
+                        <span class="text-xs text-gray-500">共 {{ totalMonitorData }} 条</span>
+                        <div class="flex space-x-2">
+                            <button @click="monitorPage > 1 ? monitorPage-- : null" :disabled="monitorPage===1" class="text-xs px-2 py-1 bg-white border rounded disabled:opacity-50">上一页</button>
+                            <span class="text-xs py-1">{{ monitorPage }}</span>
+                            <button @click="monitorPage * pageSize < totalMonitorData ? monitorPage++ : null" class="text-xs px-2 py-1 bg-white border rounded">下一页</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div v-if="currentTab === 'alarm'" class="space-y-3 pb-4">
+                <div class="space-y-3">
+                    <div v-for="(row, idx) in paginatedAlarmData" :key="idx"
+                         class="bg-white p-3 rounded-xl shadow-sm border-l-4 border-red-500 flex flex-col relative">
+                        <div class="flex justify-between items-start mb-2">
+                            <div>
+                                <div class="font-bold text-gray-800 text-sm">{{ row.point }}</div>
+                                <div class="text-xs text-gray-400 mt-0.5">{{ row.time }}</div>
+                            </div>
+                            <span class="bg-red-50 text-red-600 px-2 py-0.5 rounded text-xs font-bold border border-red-100">{{ row.pollutant }}超标</span>
+                        </div>
+                        <div class="flex items-center justify-between bg-gray-50 rounded p-2 text-xs">
+                            <div class="flex flex-col items-center flex-1 border-r border-gray-200">
+                                <span class="text-gray-500 mb-1">监测值</span>
+                                <span class="text-red-600 font-bold font-mono text-sm">{{ row.value }}</span>
+                            </div>
+                            <div class="flex flex-col items-center flex-1 border-r border-gray-200">
+                                <span class="text-gray-500 mb-1">标准值</span>
+                                <span class="text-gray-800 font-mono text-sm">{{ row.standard }}</span>
+                            </div>
+                            <div class="flex flex-col items-center flex-1">
+                                <span class="text-gray-500 mb-1">排放量</span>
+                                <span class="text-orange-500 font-mono text-sm">{{ row.discharge }}kg</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-2 flex items-center justify-between px-4 bg-gray-50">
+                    <span class="text-xs text-gray-500">共 {{ totalAlarmData }} 条</span>
+                    <div class="flex space-x-2">
+                        <button @click="alarmPage > 1 ? alarmPage-- : null" :disabled="alarmPage===1" class="text-xs px-2 py-1 bg-white border rounded disabled:opacity-50">上一页</button>
+                        <span class="text-xs py-1">{{ alarmPage }}</span>
+                        <button @click="alarmPage * pageSize < totalAlarmData ? alarmPage++ : null" class="text-xs px-2 py-1 bg-white border rounded">下一页</button>
+                    </div>
+                </div>
+            </div>
+
+            <div v-if="currentTab === 'outlet'" class="space-y-3 pb-6">
+                <div v-for="(outlet, index) in outletList" :key="index"
+                     class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                    <div class="bg-gradient-to-r from-blue-50 to-white px-4 py-2.5 flex items-center justify-between border-b border-blue-100">
+                        <div class="flex items-center space-x-2">
+                            <div class="w-6 h-6 rounded bg-blue-600 text-white flex items-center justify-center text-xs shadow-sm"><i class="fas fa-water"></i></div>
+                            <span class="font-bold text-gray-800 text-sm truncate max-w-[150px]">{{ outlet.name }}</span>
+                        </div>
+                        <span class="text-xs font-bold text-green-600 bg-green-50 border border-green-200 px-1.5 py-0.5 rounded">等级 {{ outlet.level }}</span>
+                    </div>
+                    <div class="p-3 text-xs space-y-2">
+                        <div class="grid grid-cols-2 gap-2">
+                            <div class="text-gray-500">类型: <span class="text-gray-700">{{ outlet.category }}</span></div>
+                            <div class="text-gray-500">区域: <span class="text-gray-700">{{ outlet.district }}</span></div>
+                        </div>
+                        <div class="border-t border-gray-50 pt-2">
+                            <div class="text-gray-500">责任主体: <span class="text-gray-700">{{outlet.responsibleEntity }}</span></div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-3 bg-orange-50/50 p-2 rounded border border-orange-100/50">
+                            <div>
+                                <span class="text-gray-500 block mb-1">整治类型</span>
+                                <span class="font-bold text-gray-700">{{ outlet.remediationType }}</span>
+                            </div>
+                            <div class="border-l border-orange-200/50 pl-3">
+                                <span class="text-gray-500 block mb-1">整治阶段</span>
+                                <span class="font-bold text-orange-600">{{ outlet.remediationStage }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="fixed inset-y-0 right-0 w-64 bg-white shadow-2xl z-[2500] transform transition-transform duration-300 flex flex-col"
+         :class="showLayerDrawer ? 'translate-x-0' : 'translate-x-full'">
+        <div class="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50">
+            <span class="font-bold text-gray-800">图层控制</span>
+            <i class="fas fa-times text-gray-400 p-2" @click="showLayerDrawer = false"></i>
+        </div>
+        <div class="p-4 space-y-4">
+            <div>
+                <div class="text-xs text-gray-400 font-bold mb-2 uppercase">污染源数据</div>
+                <label class="flex items-center p-3 bg-blue-50 rounded-lg border border-blue-100 mb-2">
+                    <input type="checkbox" v-model="layers.selfMonitor" @change="renderLayers" class="w-4 h-4 text-blue-600 rounded">
+                    <div class="ml-3">
+                        <div class="text-sm font-bold text-gray-700">自行监测企业</div>
+                        <div class="text-xs text-orange-500">聚合气泡显示</div>
+                    </div>
+                </label>
+                <label class="flex items-center p-3 bg-green-50 rounded-lg border border-green-100">
+                    <input type="checkbox" v-model="layers.autoMonitor" @change="renderLayers" class="w-4 h-4 text-green-600 rounded">
+                    <div class="ml-3">
+                        <div class="text-sm font-bold text-gray-700">自动检测站点</div>
+                        <div class="text-xs text-green-600">绿色单点显示</div>
+                    </div>
+                </label>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    const { createApp, ref, onMounted, nextTick, watch, computed } = Vue;
+
+    createApp({
+        setup() {
+            // ================= 状态定义 =================
+            const currentDate = ref('2025-12-21');
+            const statsCollapsed = ref(false);
+            const detailPanelOpen = ref(false);
+            const showLayerDrawer = ref(false);
+
+            // Tab设置: 只有4个
+            const tabs = [
+                {key: 'basic', label: '基本', icon: 'fas fa-info-circle'},
+                {key: 'monitor', label: '监测', icon: 'fas fa-chart-line'},
+                {key: 'alarm', label: '报警', icon: 'fas fa-exclamation-triangle'},
+                {key: 'outlet', label: '排污口', icon: 'fas fa-list'}
+            ];
+            const currentTab = ref('basic');
+            const monitorSubTab = ref('day');
+
+            // 数据对象
+            const layers = ref({ selfMonitor: true, autoMonitor: false });
+            const selectedFeature = ref(null);
+            const displayStatNumber = ref(108951);
+            const displayStatTitle = ref('自行监测企业');
+            const outletList = ref([]); // 排污口列表数据
+
+            // 分页相关
+            const monitorPage = ref(1);
+            const alarmPage = ref(1); // 新增报警分页
+            const pageSize = 5; // 手机端每页显示少一点
+
+            // 地图与图表实例
+            const map = ref(null);
+            const clusterLayerGroup = ref(null);
+            const autoMonitorLayerGroup = ref(null);
+            const chartRef = ref(null);
+            let myChart = null;
+
+            // ================= 模拟数据生成 =================
+            const fullMonitorData = Array.from({length: 45}).map((_, i) => ({
+                time: `2025-12-${25 - (i % 25)}`,
+                point: i % 2 === 0 ? '废水总排口' : '雨水排口',
+                cod: (15 + Math.random() * 10).toFixed(1),
+                nh3: (0.5 + Math.random() * 0.5).toFixed(2),
+                tp: (2.0 + Math.random() * 1.5).toFixed(1),
+                tn: (2.0 + Math.random() * 1.5).toFixed(1)
+            }));
+
+            // 修改：增加排放量 (discharge) 数据
+            const fullAlarmData = Array.from({length: 25}).map((_, i) => ({
+                point: '废水总排放口',
+                pollutant: i % 3 === 0 ? 'COD' : (i % 3 === 1 ? '氨氮' : '总磷'),
+                time: `12-${20 - (i % 10)} 09:30`,
+                standard: i % 3 === 0 ? 50 : 5,
+                value: i % 3 === 0 ? (65 + Math.random() * 10).toFixed(1) : (7 + Math.random() * 2).toFixed(1),
+                discharge: (500 + Math.random() * 200).toFixed(0) // 模拟排放量
+            }));
+
+            const cities = [
+                {name: '武汉', lat: 30.5928, lng: 114.3055},
+                {name: '宜昌', lat: 30.6919, lng: 111.2864},
+                {name: '襄阳', lat: 32.0082, lng: 112.1225},
+                {name: '荆州', lat: 30.3342, lng: 112.2393}
+            ];
+
+            // 计算属性：监测分页
+            const paginatedMonitorData = computed(() => {
+                const start = (monitorPage.value - 1) * pageSize;
+                return fullMonitorData.slice(start, start + pageSize);
+            });
+            const totalMonitorData = fullMonitorData.length;
+
+            // 计算属性：报警分页 (修改：增加分页逻辑)
+            const paginatedAlarmData = computed(() => {
+                const start = (alarmPage.value - 1) * pageSize;
+                return fullAlarmData.slice(start, start + pageSize);
+            });
+            const totalAlarmData = fullAlarmData.length;
+
+            // ================= 核心逻辑 =================
+
+            // 1. 生成随机点位
+            const generatePoints = (center, count, spread) => {
+                const arr = [];
+                for (let i = 0; i < count; i++) {
+                    arr.push({
+                        lat: center.lat + (Math.random() - 0.5) * spread,
+                        lng: center.lng + (Math.random() - 0.5) * spread
+                    });
+                }
+                return arr;
+            };
+
+            // 2. 初始化图层数据
+            const initLayerData = () => {
+                // 聚合图层配置
+                clusterLayerGroup.value = L.markerClusterGroup({
+                    showCoverageOnHover: false, maxClusterRadius: 50,
+                    iconCreateFunction: function (cluster) {
+                        const count = cluster.getChildCount();
+                        let size = 40;
+                        let cClass = 'cluster-small';
+                        if (count > 50) { size = 55; cClass = 'cluster-large'; }
+                        return L.divIcon({
+                            html: `<div class="bubble-body ${cClass}" style="width:${size}px; height:${size}px;"><span>${count}</span></div>`,
+                            className: 'custom-cluster-icon', iconSize: [size, size]
+                        });
+                    }
+                });
+
+                // 生成自行监测企业点位
+                cities.forEach(city => {
+                    const points = generatePoints(city, 80, 1.2);
+                    points.forEach(p => {
+                        const marker = L.marker([p.lat, p.lng], {
+                            icon: L.divIcon({className: '', html: `<div class="single-point-orange"></div>`, iconSize: [12, 12]})
+                        });
+                        marker.on('click', () => openDetail(city, p, '自行监测企业'));
+                        clusterLayerGroup.value.addLayer(marker);
+                    });
+                });
+
+                // 生成自动监测站点位
+                autoMonitorLayerGroup.value = L.layerGroup();
+                cities.forEach(city => {
+                    const points = generatePoints(city, 20, 1.5);
+                    points.forEach(p => {
+                        const marker = L.marker([p.lat, p.lng], {
+                            icon: L.divIcon({className: '', html: `<div class="single-point-green"></div>`, iconSize: [10, 10]})
+                        });
+                        marker.on('click', () => openDetail(city, p, '自动检测站点'));
+                        autoMonitorLayerGroup.value.addLayer(marker);
+                    });
+                });
+            };
+
+            // 3. 打开详情页逻辑
+            const openDetail = (city, point, type) => {
+                selectedFeature.value = {
+                    type, name: `${city.name}化工新材料有限公司`,
+                    cityName: city.name, lat: point.lat, lng: point.lng
+                };
+
+                // 生成排污口模拟数据 (修改：拆分整治类型与阶段)
+                outletList.value = [
+                    {
+                        name: '城镇污水处理厂排污口', level: 'B', category: '生活污水',
+                        district: `${city.name}新区`, responsibleEntity: '市基础设施投资公司',
+                        remediationType: '需整治', remediationStage: '工程实施中'
+                    },
+                    {
+                        name: '车间生产废水排放口', level: 'C', category: '工业废水',
+                        district: `${city.name}工业园`, responsibleEntity: '园区管理处',
+                        remediationType: '无需整治', remediationStage: '-'
+                    },
+                    {
+                        name: '雨水排放口', level: 'A', category: '雨水',
+                        district: `${city.name}新区`, responsibleEntity: '市基础设施投资公司',
+                        remediationType: '规范整治', remediationStage: '整治中'
+                    }
+                ];
+
+                currentTab.value = 'basic';
+                detailPanelOpen.value = true;
+                statsCollapsed.value = true; // 自动收起统计条
+            };
+
+            // 4. 图层渲染控制
+            const renderLayers = () => {
+                if (layers.value.selfMonitor) map.value.addLayer(clusterLayerGroup.value);
+                else map.value.removeLayer(clusterLayerGroup.value);
+
+                if (layers.value.autoMonitor) map.value.addLayer(autoMonitorLayerGroup.value);
+                else map.value.removeLayer(autoMonitorLayerGroup.value);
+
+                // 更新统计数字
+                let total = 0;
+                if (layers.value.selfMonitor && layers.value.autoMonitor) {
+                    displayStatTitle.value = "监测点位总览"; total = 110191;
+                } else if (layers.value.selfMonitor) {
+                    displayStatTitle.value = "自行监测企业"; total = 108951;
+                } else if (layers.value.autoMonitor) {
+                    displayStatTitle.value = "自动检测站点"; total = 1240;
+                } else {
+                    displayStatTitle.value = "未选择图层"; total = 0;
+                }
+                displayStatNumber.value = total;
+            };
+
+            // 5. ECharts 图表
+            const initChart = () => {
+                if (!chartRef.value) return;
+                if (myChart) myChart.dispose();
+
+                myChart = echarts.init(chartRef.value);
+                const option = {
+                    grid: {top: 30, right: 10, bottom: 20, left: 35},
+                    tooltip: {trigger: 'axis'},
+                    xAxis: {
+                        type: 'category',
+                        data: ['12-15', '16', '17', '18', '19', '20', '21'],
+                        axisLine: {lineStyle: {color: '#94a3b8'}},
+                        axisLabel: {fontSize: 10}
+                    },
+                    yAxis: {
+                        type: 'value',
+                        splitLine: {lineStyle: {type: 'dashed', color: '#e2e8f0'}},
+                        axisLabel: {fontSize: 10}
+                    },
+                    series: [{
+                        name: 'COD', type: 'line', smooth: true, showSymbol: false,
+                        data: [18.5, 22.1, 19.4, 25.6, 21.0, 24.5, 20.8],
+                        itemStyle: {color: '#2563eb'},
+                        lineStyle: {width: 3, color: '#2563eb'},
+                        areaStyle: {
+                            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                                {offset: 0, color: 'rgba(37, 99, 235, 0.2)'},
+                                {offset: 1, color: 'rgba(37, 99, 235, 0)'}
+                            ])
+                        },
+                        markLine: {
+                            data: [{yAxis: 40, name: '标准'}],
+                            lineStyle: {color: '#ef4444', type: 'dashed'},
+                            label: {show: false}
+                        }
+                    }]
+                };
+                myChart.setOption(option);
+            };
+
+            // 监听Tab切换，重绘图表
+            watch(currentTab, async (newTab) => {
+                if (newTab === 'monitor') {
+                    await nextTick();
+                    initChart();
+                    monitorPage.value = 1;
+                } else if (newTab === 'alarm') {
+                    alarmPage.value = 1; // 重置报警分页
+                }
+            });
+
+            // 监听监测子Tab (日/时)
+            watch(monitorSubTab, () => {
+                if (currentTab.value === 'monitor') initChart();
+            });
+
+            const closeAll = () => {
+                detailPanelOpen.value = false;
+                showLayerDrawer.value = false;
+                statsCollapsed.value = false;
+            };
+
+            const resetMap = () => {
+                map.value.setView([31.2, 112.5], 7);
+                closeAll();
+            };
+
+            onMounted(() => {
+                map.value = L.map('map', {zoomControl: false, attributionControl: false}).setView([31.2, 112.5], 7);
+                L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', { maxZoom: 19 }).addTo(map.value);
+
+                initLayerData();
+                renderLayers();
+
+                window.addEventListener('resize', () => { if(myChart) myChart.resize(); });
+            });
+
+            return {
+                currentDate, statsCollapsed, detailPanelOpen, showLayerDrawer,
+                tabs, currentTab, monitorSubTab,
+                layers, renderLayers,
+                displayStatNumber, displayStatTitle,
+                selectedFeature, outletList,
+                paginatedMonitorData, totalMonitorData, monitorPage, pageSize,
+                paginatedAlarmData, totalAlarmData, alarmPage, // 导出报警分页数据
+                chartRef, closeAll, resetMap
+            };
+        }
+    }).mount('#app');
+</script>
+</body>
+</html>

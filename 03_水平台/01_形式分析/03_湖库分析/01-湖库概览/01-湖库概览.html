@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>湖北省水生态环境综合管理 - 湖库概览</title>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography,container-queries"></script>
+
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#3b82f6",
+                        "background-light": "#f4f7fb",
+                        "background-dark": "#0f172a",
+                    },
+                    fontFamily: {
+                        display: ["Inter", "system-ui", "-apple-system", "sans-serif"],
+                    },
+                },
+            },
+        };
+    </script>
+
+    <style type="text/tailwindcss">
+        body { font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif; }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+        .section-title-bar {
+            width: 4px;
+            height: 16px;
+            background: linear-gradient(to bottom, #93c5fd, #3b82f6);
+            border-radius: 4px;
+            margin-right: 8px;
+        }
+
+        #sidebar { transition: width 0.3s ease; }
+        .sidebar-text { transition: opacity 0.2s ease; white-space: nowrap; }
+        .hide-text .sidebar-text { display: none; opacity: 0; }
+        .collapsed-sidebar .nav-item { justify-content: center; padding-left: 0; padding-right: 0; }
+        .collapsed-sidebar .nav-item i { margin-right: 0; }
+
+        .card-shadow { box-shadow: 0 2px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05); transition: box-shadow 0.3s ease; }
+        .card-shadow:hover { box-shadow: 0 4px 12px -2px rgb(0 0 0 / 0.08), 0 4px 8px -3px rgb(0 0 0 / 0.08); }
+
+        .chart-action-icon {
+            @apply text-lg cursor-pointer text-slate-400 hover:text-primary transition-colors p-1.5 rounded hover:bg-blue-50 dark:hover:bg-slate-800;
+        }
+
+        .toggle-btn {
+            @apply h-full px-4 flex items-center justify-center text-xs font-bold rounded-md transition-colors cursor-pointer select-none;
+        }
+        .toggle-btn.active { @apply bg-blue-600 text-white shadow-sm; }
+        .toggle-btn.inactive { @apply text-slate-600 hover:text-slate-800 hover:bg-slate-200 dark:text-slate-400 dark:hover:bg-slate-700/50; }
+
+        .data-table { border-spacing: 0; width: 100%; }
+        .data-table th, .data-table td {
+            @apply border-b border-slate-200/80 dark:border-slate-700/50 align-middle;
+            background-clip: padding-box;
+        }
+        .data-table th {
+            @apply bg-[#f8fafc] dark:bg-slate-800/80 text-slate-700 dark:text-slate-200 font-bold px-5 py-4 text-center text-[13px] sticky top-0 z-10;
+        }
+        .data-table td {
+            @apply px-5 py-4 text-center text-[13px] text-slate-600 dark:text-slate-300;
+        }
+        .data-table tbody tr:hover { @apply bg-blue-50/40 dark:bg-slate-700/50 transition-colors; }
+
+        .top-metric-card {
+            @apply bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-xl p-5 flex flex-col justify-center relative overflow-hidden card-shadow h-[110px];
+        }
+        .top-metric-card::before {
+            content: '';
+            position: absolute;
+            top: 0; right: 0; bottom: 0; left: 0;
+            background: linear-gradient(135deg, transparent 50%, rgba(59, 130, 246, 0.04) 100%);
+            pointer-events: none;
+        }
+
+        .stat-block {
+            @apply flex flex-col items-center bg-slate-50 dark:bg-slate-800/50 p-3 rounded-lg border border-slate-100 dark:border-slate-700/50 flex-1;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-800 dark:text-slate-100 h-screen overflow-hidden flex flex-col">
+
+<header class="bg-primary h-14 flex items-center justify-between px-4 text-white shrink-0 shadow-md z-50">
+    <div class="flex items-center space-x-3">
+        <div class="w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-inner">
+            <i class="ri-water-flash-fill text-primary text-xl"></i>
+        </div>
+        <h1 class="text-xl font-bold tracking-tight">湖北省水生态环境综合管理</h1>
+    </div>
+    <nav class="flex h-full">
+        <a class="px-6 flex items-center space-x-2 bg-white/20 border-b-2 border-white transition-colors" href="#"><i class="ri-dashboard-line text-[18px]"></i><span class="text-sm font-bold">总体概览</span></a>
+        <a class="px-6 flex items-center space-x-2 hover:bg-white/10 transition-colors" href="#"><i class="ri-bar-chart-box-line text-[18px]"></i><span class="text-sm">形势分析</span></a>
+        <a class="px-6 flex items-center space-x-2 hover:bg-white/10 transition-colors" href="#"><i class="ri-map-pin-line text-[18px]"></i><span class="text-sm">空间分析</span></a>
+        <a class="px-6 flex items-center space-x-2 hover:bg-white/10 transition-colors" href="#"><i class="ri-water-flash-line text-[18px]"></i><span class="text-sm">水污染源</span></a>
+        <a class="px-6 flex items-center space-x-2 hover:bg-white/10 transition-colors" href="#"><i class="ri-error-warning-line text-[18px]"></i><span class="text-sm">问题聚焦</span></a>
+        <a class="px-6 flex items-center space-x-2 hover:bg-white/10 transition-colors" href="#"><i class="ri-apps-line text-[18px]"></i><span class="text-sm">专题应用</span></a>
+    </nav>
+    <div class="flex items-center space-x-6">
+        <div class="flex items-center space-x-2 text-sm opacity-90"><i class="ri-earth-line text-[18px]"></i><span>碧水荆灵</span></div>
+        <div class="flex items-center space-x-2 text-sm"><i class="ri-user-smile-line text-[18px]"></i><span>wangyunpeng</span></div>
+    </div>
+</header>
+
+<div class="flex flex-1 overflow-hidden">
+    <aside id="sidebar" class="w-[270px] bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 flex flex-col shrink-0 transition-all duration-300">
+        <div class="flex-1 py-4 overflow-y-auto custom-scrollbar flex flex-col gap-1 px-3">
+            <a class="nav-item w-full flex items-center px-4 py-3 text-[16px] font-bold text-blue-700 bg-blue-50 dark:bg-blue-900/30 rounded-lg transition-all relative mt-1 shadow-sm group" href="#">
+                <i class="ri-layout-grid-fill mr-3 text-lg text-blue-600"></i>
+                <span class="sidebar-text">湖库概览</span>
+                <div class="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-5 bg-blue-600 rounded-r-full sidebar-text"></div>
+            </a>
+
+            <a class="nav-item w-full flex items-center justify-between px-4 py-2.5 text-[16px] font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg transition-colors group" href="#">
+                <div class="flex items-center"><i class="ri-landscape-line mr-3 text-lg text-slate-400 group-hover:text-primary"></i><span class="sidebar-text">洪湖专题</span></div>
+                <i class="ri-arrow-right-s-line text-slate-400 sidebar-chevron"></i>
+            </a>
+            <a class="nav-item w-full flex items-center px-4 py-2.5 text-[16px] font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg transition-colors group" href="#">
+                <i class="ri-water-percent-line mr-3 text-lg text-slate-400 group-hover:text-primary"></i><span class="sidebar-text">梁子湖专题</span>
+            </a>
+            <a class="nav-item w-full flex items-center px-4 py-2.5 text-[16px] font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg transition-colors group" href="#">
+                <i class="ri-drop-line mr-3 text-lg text-slate-400 group-hover:text-primary"></i><span class="sidebar-text">斧头湖专题</span>
+            </a>
+            <a class="nav-item w-full flex items-center px-4 py-2.5 text-[16px] font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg transition-colors group" href="#">
+                <i class="ri-folder-add-line mr-3 text-lg text-slate-400 group-hover:text-primary"></i><span class="sidebar-text">其他湖库</span>
+            </a>
+        </div>
+        <button id="toggleSidebarBtn" class="h-12 border-t border-slate-200 dark:border-slate-800 flex items-center justify-center space-x-2 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all text-slate-500 hover:text-primary group">
+            <i id="toggleIcon" class="ri-arrow-left-s-line text-xl transition-transform duration-300"></i>
+            <span class="sidebar-text text-sm font-medium tracking-wide">收起侧栏</span>
+        </button>
+    </aside>
+
+    <main class="flex-1 overflow-y-auto custom-scrollbar p-6 relative">
+        <div class="h-[72px] bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-6 flex items-center justify-between shrink-0 card-shadow mb-6">
+            <div class="flex items-center gap-3">
+                <span class="relative flex h-3 w-3 shrink-0">
+                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-3 w-3 bg-blue-500"></span>
+                </span>
+                <h2 class="text-[17px] font-bold text-slate-800 dark:text-white tracking-tight flex items-center mr-4">湖库概览</h2>
+            </div>
+
+            <div class="flex items-center space-x-3">
+                <div class="relative">
+                    <select class="appearance-none bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 pr-10 py-1.5 text-sm font-medium text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all cursor-pointer hover:bg-white min-w-[100px]">
+                        <option selected>国控</option>
+                        <option>省控</option>
+                        <option>市控</option>
+                    </select>
+                </div>
+
+                <div class="relative">
+                    <select class="appearance-none bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 pr-10 py-1.5 text-sm font-medium text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all cursor-pointer hover:bg-white min-w-[100px]">
+                        <option selected>2026年</option>
+                        <option>2025年</option>
+                    </select>
+                </div>
+
+                <div class="relative">
+                    <select id="month-select" class="appearance-none bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 pr-10 py-1.5 text-sm font-medium text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all cursor-pointer hover:bg-white min-w-[90px]">
+                        <option selected>1月</option>
+                        <option>2月</option>
+                    </select>
+                </div>
+
+                <div class="flex bg-slate-100 dark:bg-slate-800 p-0 rounded-lg border border-slate-200 dark:border-slate-700 h-8 ml-2">
+                    <button id="btn-current" class="toggle-btn active" onclick="setMonthMode('current')">当前月</button>
+                    <button id="btn-cumulative" class="toggle-btn inactive" onclick="setMonthMode('cumulative')">累计月</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-2 lg:grid-cols-5 gap-5 mb-6">
+            <div class="top-metric-card">
+                <div class="flex justify-between items-center mb-3">
+                    <div class="text-[14px] font-bold text-slate-600 dark:text-slate-300">问题线索总数</div>
+                    <div class="w-9 h-9 rounded-full bg-blue-50 text-blue-500 flex items-center justify-center"><i class="ri-file-warning-fill text-lg"></i></div>
+                </div>
+                <div class="flex items-baseline space-x-3">
+                    <div class="text-[30px] font-black text-blue-600 leading-none">119<span class="text-sm font-normal text-slate-500 ml-1">个</span></div>
+                    <div class="text-[12px] text-red-500 font-bold bg-red-50 px-1.5 py-0.5 rounded"><i class="ri-arrow-up-line"></i> 100%</div>
+                </div>
+            </div>
+
+            <div class="top-metric-card">
+                <div class="flex justify-between items-center mb-3">
+                    <div class="text-[14px] font-bold text-slate-600 dark:text-slate-300">部级问题</div>
+                    <div class="w-9 h-9 rounded-full bg-emerald-50 text-emerald-500 flex items-center justify-center"><i class="ri-bank-fill text-lg"></i></div>
+                </div>
+                <div class="flex items-baseline space-x-3">
+                    <div class="text-[30px] font-black text-slate-800 dark:text-white leading-none">0<span class="text-sm font-normal text-slate-500 ml-1">个</span></div>
+                    <div class="text-[12px] text-slate-500 font-medium bg-slate-50 px-1.5 py-0.5 rounded">+ 0%</div>
+                </div>
+            </div>
+
+            <div class="top-metric-card">
+                <div class="flex justify-between items-center mb-3">
+                    <div class="text-[14px] font-bold text-slate-600 dark:text-slate-300">省级问题</div>
+                    <div class="w-9 h-9 rounded-full bg-orange-50 text-orange-500 flex items-center justify-center"><i class="ri-building-2-fill text-lg"></i></div>
+                </div>
+                <div class="flex items-baseline space-x-3">
+                    <div class="text-[30px] font-black text-blue-600 leading-none">119<span class="text-sm font-normal text-slate-500 ml-1">个</span></div>
+                    <div class="text-[12px] text-red-500 font-bold bg-red-50 px-1.5 py-0.5 rounded"><i class="ri-arrow-up-line"></i> 100%</div>
+                </div>
+            </div>
+
+            <div class="top-metric-card">
+                <div class="flex justify-between items-center mb-3">
+                    <div class="text-[14px] font-bold text-slate-600 dark:text-slate-300">湖库内断面总数</div>
+                    <div class="w-9 h-9 rounded-full bg-indigo-50 text-indigo-500 flex items-center justify-center"><i class="ri-map-pin-range-fill text-lg"></i></div>
+                </div>
+                <div>
+                    <div class="text-[30px] font-black text-blue-600 leading-none mt-1">287<span class="text-sm font-normal text-slate-500 ml-1">个</span></div>
+                </div>
+            </div>
+
+            <div class="top-metric-card">
+                <div class="flex justify-between items-center mb-3">
+                    <div class="text-[14px] font-bold text-slate-600 dark:text-slate-300">湖库总数</div>
+                    <div class="w-9 h-9 rounded-full bg-cyan-50 text-cyan-500 flex items-center justify-center"><i class="ri-water-flash-fill text-lg"></i></div>
+                </div>
+                <div>
+                    <div class="text-[30px] font-black text-blue-600 leading-none mt-1">13<span class="text-sm font-normal text-slate-500 ml-1">个</span></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 card-shadow p-6 mb-6">
+            <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center space-x-2">
+                    <div class="section-title-bar m-0"></div>
+                    <h3 class="font-bold text-slate-800 dark:text-slate-200 text-[16px]">湖库内断面总体统计</h3>
+                </div>
+            </div>
+
+            <div class="mb-5 border-b border-slate-100 dark:border-slate-800 pb-4">
+                <p class="text-[14px] text-slate-600 dark:text-slate-400 font-medium pl-2 leading-relaxed">
+                    湖库内断面总数量 <span class="font-bold text-blue-600 text-[16px] mx-1">287</span> 个，国控断面 <span class="font-bold text-slate-800 dark:text-white mx-1">26</span> 个，省控断面 <span class="font-bold text-slate-800 dark:text-white mx-1">74</span> 个，市控断面 <span class="font-bold text-slate-800 dark:text-white mx-1">187</span> 个
+                </p>
+            </div>
+
+            <div class="flex flex-col lg:flex-row items-center gap-6">
+                <div class="w-full lg:w-[260px] h-[160px] flex-shrink-0 relative">
+                    <div id="donut-overall" class="w-full h-full"></div>
+                </div>
+
+                <div class="w-full flex-1 grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-4">
+                    <div class="bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-xl p-4 flex flex-col items-center hover:shadow-lg transition-all duration-300 cursor-pointer shadow-sm" onclick="openQualityListModal('Ⅰ类')">
+                        <div class="w-10/12 py-1.5 bg-[#eff6ff] text-[#3b82f6] rounded text-[13px] font-bold text-center mb-3">I 类</div>
+                        <div class="text-[28px] font-black text-[#3b82f6] mb-1 leading-none tracking-tight">11.5%</div>
+                        <div class="text-[13px] text-slate-500 mt-1 flex items-center">3 个 <i class="ri-arrow-up-line text-blue-400 text-xs ml-0.5"></i></div>
+                    </div>
+                    <div class="bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-xl p-4 flex flex-col items-center hover:shadow-lg transition-all duration-300 cursor-pointer shadow-sm" onclick="openQualityListModal('Ⅱ类')">
+                        <div class="w-10/12 py-1.5 bg-[#ecfeff] text-[#06b6d4] rounded text-[13px] font-bold text-center mb-3">II 类</div>
+                        <div class="text-[28px] font-black text-[#06b6d4] mb-1 leading-none tracking-tight">38.5%</div>
+                        <div class="text-[13px] text-slate-500 mt-1 flex items-center">10 个 <i class="ri-arrow-up-line text-cyan-400 text-xs ml-0.5"></i></div>
+                    </div>
+                    <div class="bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-xl p-4 flex flex-col items-center hover:shadow-lg transition-all duration-300 cursor-pointer shadow-sm" onclick="openQualityListModal('Ⅲ类')">
+                        <div class="w-10/12 py-1.5 bg-[#ecfdf5] text-[#10b981] rounded text-[13px] font-bold text-center mb-3">III 类</div>
+                        <div class="text-[28px] font-black text-[#10b981] mb-1 leading-none tracking-tight">38.5%</div>
+                        <div class="text-[13px] text-slate-500 mt-1 flex items-center">10 个 <i class="ri-arrow-up-line text-emerald-400 text-xs ml-0.5"></i></div>
+                    </div>
+                    <div class="bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-xl p-4 flex flex-col items-center hover:shadow-lg transition-all duration-300 cursor-pointer shadow-sm" onclick="openQualityListModal('Ⅳ类')">
+                        <div class="w-10/12 py-1.5 bg-[#fefce8] text-[#eab308] rounded text-[13px] font-bold text-center mb-3">IV 类</div>
+                        <div class="text-[28px] font-black text-[#eab308] mb-1 leading-none tracking-tight">7.7%</div>
+                        <div class="text-[13px] text-slate-500 mt-1 flex items-center">2 个 <i class="ri-arrow-up-line text-yellow-400 text-xs ml-0.5"></i></div>
+                    </div>
+                    <div class="bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-xl p-4 flex flex-col items-center hover:shadow-lg transition-all duration-300 cursor-pointer shadow-sm" onclick="openQualityListModal('Ⅴ类')">
+                        <div class="w-10/12 py-1.5 bg-[#fff7ed] text-[#f97316] rounded text-[13px] font-bold text-center mb-3">V 类</div>
+                        <div class="text-[28px] font-black text-[#f97316] mb-1 leading-none tracking-tight">0%</div>
+                        <div class="text-[13px] text-slate-500 mt-1 flex items-center">0 个</div>
+                    </div>
+                    <div class="bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-xl p-4 flex flex-col items-center hover:shadow-lg transition-all duration-300 cursor-pointer shadow-sm" onclick="openQualityListModal('劣Ⅴ类')">
+                        <div class="w-10/12 py-1.5 bg-[#fef2f2] text-[#ef4444] rounded text-[13px] font-bold text-center mb-3">劣V 类</div>
+                        <div class="text-[28px] font-black text-[#ef4444] mb-1 leading-none tracking-tight">0%</div>
+                        <div class="text-[13px] text-slate-500 mt-1 flex items-center">0 个</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 card-shadow p-5 mb-6">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 h-[340px]">
+                <div class="flex flex-col h-full bg-slate-50/50 dark:bg-slate-800/30 rounded-lg p-3 border border-slate-100 dark:border-slate-700/50">
+                    <div class="flex items-center justify-between mb-2">
+                        <div class="flex items-center space-x-2">
+                            <div class="section-title-bar m-0"></div>
+                            <h3 class="font-bold text-slate-800 dark:text-slate-200 text-[15px]">I-III类水质占比同比变化情况</h3>
+                        </div>
+                        <div class="flex gap-2">
+                            <i class="ri-table-2 chart-action-icon" title="查看数据表" onclick="showChartData('chartLake13', 'I-III类水质占比同比变化情况')"></i>
+                            <i class="ri-download-2-line chart-action-icon" title="下载图表" onclick="downloadChart('chartLake13')"></i>
+                        </div>
+                    </div>
+                    <div id="chart-lake-13" class="flex-1 w-full"></div>
+                </div>
+
+                <div class="flex flex-col h-full bg-slate-50/50 dark:bg-slate-800/30 rounded-lg p-3 border border-slate-100 dark:border-slate-700/50">
+                    <div class="flex items-center justify-between mb-2">
+                        <div class="flex items-center space-x-2">
+                            <div class="section-title-bar m-0"></div>
+                            <h3 class="font-bold text-slate-800 dark:text-slate-200 text-[15px]">劣V类水质占比同比变化情况</h3>
+                        </div>
+                        <div class="flex gap-2">
+                            <i class="ri-table-2 chart-action-icon" title="查看数据表" onclick="showChartData('chartLakeBad', '劣V类水质占比同比变化情况')"></i>
+                            <i class="ri-download-2-line chart-action-icon" title="下载图表" onclick="downloadChart('chartLakeBad')"></i>
+                        </div>
+                    </div>
+                    <div id="chart-lake-bad" class="flex-1 w-full"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 card-shadow p-6 mb-6">
+            <div class="flex items-center justify-between mb-5">
+                <div class="flex items-center space-x-2">
+                    <div class="section-title-bar m-0"></div>
+                    <h3 class="font-bold text-slate-800 dark:text-slate-200 text-[16px]">断面达标情况统计</h3>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+                <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-5 flex flex-col h-full relative overflow-hidden shadow-[0_4px_12px_-4px_rgba(59,130,246,0.08)] hover:shadow-[0_8px_20px_-4px_rgba(59,130,246,0.15)] transition-all duration-300 hover:-translate-y-1 group">
+                    <h4 class="text-center text-[16px] font-bold text-slate-800 dark:text-white mb-5 tracking-wide">国控断面水质总体情况</h4>
+
+                    <div class="flex space-x-2 mb-5">
+                        <div class="stat-block bg-blue-50/60 dark:bg-blue-900/20 border-blue-100 dark:border-blue-800/50">
+                            <span class="text-blue-600 dark:text-blue-400 font-bold text-sm bg-blue-100 dark:bg-blue-900/50 px-3 py-1.5 rounded w-full text-center mb-3">I ~ III类</span>
+                            <div class="text-2xl font-black text-blue-600 dark:text-blue-400 leading-none mb-2">88.46%</div>
+                            <div class="text-xs text-slate-500 dark:text-slate-400">同比: <span class="text-emerald-500 font-bold">30.77%</span></div>
+                        </div>
+                        <div class="stat-block bg-red-50/60 dark:bg-red-900/20 border-red-100 dark:border-red-800/50">
+                            <span class="text-red-500 dark:text-red-400 font-bold text-sm bg-red-100 dark:bg-red-900/50 px-3 py-1.5 rounded w-full text-center mb-3">劣V类</span>
+                            <div class="text-2xl font-black text-red-500 dark:text-red-400 leading-none mb-2">0%</div>
+                            <div class="text-xs text-slate-500 dark:text-slate-400">同比: <span>0%</span></div>
+                        </div>
+                        <div class="stat-block bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700">
+                            <span class="text-slate-700 dark:text-slate-300 font-bold text-sm bg-slate-200/70 dark:bg-slate-700 px-2 py-1.5 rounded w-full text-center mb-2">2025年目标</span>
+                            <div class="text-xs flex flex-col items-center space-y-2 mt-2 w-full text-slate-600 dark:text-slate-400">
+                                <div class="flex justify-between w-full px-2"><span>I~III类</span> <span class="font-bold text-slate-800 dark:text-white">23个</span></div>
+                                <div class="flex justify-between w-full px-2"><span>劣V类</span> <span class="font-bold text-slate-800 dark:text-white">0个</span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between px-5 text-[13px] bg-[#f8fafc] dark:bg-slate-800/50 rounded-lg py-3 mb-5 border border-slate-100 dark:border-slate-700">
+                        <div class="flex flex-col items-center"><span class="text-slate-400 dark:text-slate-500 mb-1 text-xs font-medium">总数</span><span class="font-black text-slate-800 dark:text-white text-[17px] leading-none">26</span></div>
+                        <div class="w-px h-8 bg-slate-200 dark:bg-slate-700"></div>
+                        <div class="flex flex-col items-center"><span class="text-slate-400 dark:text-slate-500 mb-1 text-xs font-medium">实测</span><span class="font-black text-blue-600 dark:text-blue-400 text-[17px] leading-none">26</span></div>
+                        <div class="w-px h-8 bg-slate-200 dark:bg-slate-700"></div>
+                        <div class="flex flex-col items-center"><span class="text-slate-400 dark:text-slate-500 mb-1 text-xs font-medium">超标</span><span class="font-black text-red-500 dark:text-red-400 text-[17px] leading-none">2</span></div>
+                    </div>
+
+                    <div class="flex h-[130px] items-center flex-1">
+                        <div id="donut-nat" class="w-[55%] h-full"></div>
+                        <div class="w-[45%] grid grid-cols-2 gap-y-3 gap-x-1 text-[12px] font-medium text-slate-600 dark:text-slate-300 pl-2">
+                            <div class="flex items-center"><span class="w-2.5 h-2.5 rounded bg-[#3b82f6] mr-1.5 shadow-sm"></span>I类 3</div>
+                            <div class="flex items-center"><span class="w-2.5 h-2.5 rounded bg-[#eab308] mr-1.5 shadow-sm"></span>IV类 2</div>
+                            <div class="flex items-center"><span class="w-2.5 h-2.5 rounded bg-[#06b6d4] mr-1.5 shadow-sm"></span>II类 10</div>
+                            <div class="flex items-center"><span class="w-2.5 h-2.5 rounded bg-[#f97316] mr-1.5 shadow-sm"></span>V类 0</div>
+                            <div class="flex items-center"><span class="w-2.5 h-2.5 rounded bg-[#10b981] mr-1.5 shadow-sm"></span>III类 10</div>
+                            <div class="flex items-center"><span class="w-2.5 h-2.5 rounded bg-[#ef4444] mr-1.5 shadow-sm"></span>劣V类 0</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-5 flex flex-col h-full relative overflow-hidden shadow-[0_4px_12px_-4px_rgba(16,185,129,0.08)] hover:shadow-[0_8px_20px_-4px_rgba(16,185,129,0.15)] transition-all duration-300 hover:-translate-y-1 group">
+                    <h4 class="text-center text-[16px] font-bold text-slate-800 dark:text-white mb-5 tracking-wide">省控断面水质总体情况</h4>
+
+                    <div class="flex space-x-2 mb-5">
+                        <div class="stat-block bg-blue-50/60 dark:bg-blue-900/20 border-blue-100 dark:border-blue-800/50">
+                            <span class="text-blue-600 dark:text-blue-400 font-bold text-sm bg-blue-100 dark:bg-blue-900/50 px-3 py-1.5 rounded w-full text-center mb-3">I ~ III类</span>
+                            <div class="text-2xl font-black text-blue-600 dark:text-blue-400 leading-none mb-2">91.2%</div>
+                            <div class="text-xs text-slate-500 dark:text-slate-400">同比: <span class="text-emerald-500 font-bold">18.4%</span></div>
+                        </div>
+                        <div class="stat-block bg-red-50/60 dark:bg-red-900/20 border-red-100 dark:border-red-800/50">
+                            <span class="text-red-500 dark:text-red-400 font-bold text-sm bg-red-100 dark:bg-red-900/50 px-3 py-1.5 rounded w-full text-center mb-3">劣V类</span>
+                            <div class="text-2xl font-black text-red-500 dark:text-red-400 leading-none mb-2">0%</div>
+                            <div class="text-xs text-slate-500 dark:text-slate-400">同比: <span>0%</span></div>
+                        </div>
+                        <div class="stat-block bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700">
+                            <span class="text-slate-700 dark:text-slate-300 font-bold text-sm bg-slate-200/70 dark:bg-slate-700 px-2 py-1.5 rounded w-full text-center mb-2">2025年目标</span>
+                            <div class="text-xs flex flex-col items-center space-y-2 mt-2 w-full text-slate-600 dark:text-slate-400">
+                                <div class="flex justify-between w-full px-2"><span>I~III类</span> <span class="font-bold text-slate-800 dark:text-white">83个</span></div>
+                                <div class="flex justify-between w-full px-2"><span>劣V类</span> <span class="font-bold text-slate-800 dark:text-white">0个</span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between px-5 text-[13px] bg-[#f8fafc] dark:bg-slate-800/50 rounded-lg py-3 mb-5 border border-slate-100 dark:border-slate-700">
+                        <div class="flex flex-col items-center"><span class="text-slate-400 dark:text-slate-500 mb-1 text-xs font-medium">总数</span><span class="font-black text-slate-800 dark:text-white text-[17px] leading-none">74</span></div>
+                        <div class="w-px h-8 bg-slate-200 dark:bg-slate-700"></div>
+                        <div class="flex flex-col items-center"><span class="text-slate-400 dark:text-slate-500 mb-1 text-xs font-medium">实测</span><span class="font-black text-emerald-600 dark:text-emerald-500 text-[17px] leading-none">91</span></div>
+                        <div class="w-px h-8 bg-slate-200 dark:bg-slate-700"></div>
+                        <div class="flex flex-col items-center"><span class="text-slate-400 dark:text-slate-500 mb-1 text-xs font-medium">超标</span><span class="font-black text-red-500 dark:text-red-400 text-[17px] leading-none">17</span></div>
+                    </div>
+
+                    <div class="flex h-[130px] items-center flex-1">
+                        <div id="donut-prov" class="w-[55%] h-full"></div>
+                        <div class="w-[45%] grid grid-cols-2 gap-y-3 gap-x-1 text-[12px] font-medium text-slate-600 dark:text-slate-300 pl-2">
+                            <div class="flex items-center"><span class="w-2.5 h-2.5 rounded bg-[#3b82f6] mr-1.5 shadow-sm"></span>I类 6</div>
+                            <div class="flex items-center"><span class="w-2.5 h-2.5 rounded bg-[#eab308] mr-1.5 shadow-sm"></span>IV类 7</div>
+                            <div class="flex items-center"><span class="w-2.5 h-2.5 rounded bg-[#06b6d4] mr-1.5 shadow-sm"></span>II类 38</div>
+                            <div class="flex items-center"><span class="w-2.5 h-2.5 rounded bg-[#f97316] mr-1.5 shadow-sm"></span>V类 1</div>
+                            <div class="flex items-center"><span class="w-2.5 h-2.5 rounded bg-[#10b981] mr-1.5 shadow-sm"></span>III类 39</div>
+                            <div class="flex items-center"><span class="w-2.5 h-2.5 rounded bg-[#ef4444] mr-1.5 shadow-sm"></span>劣V类 0</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-5 flex flex-col h-full relative overflow-hidden shadow-[0_4px_12px_-4px_rgba(6,182,212,0.08)] hover:shadow-[0_8px_20px_-4px_rgba(6,182,212,0.15)] transition-all duration-300 hover:-translate-y-1 group">
+                    <h4 class="text-center text-[16px] font-bold text-slate-800 dark:text-white mb-5 tracking-wide">市控断面水质总体情况</h4>
+
+                    <div class="flex space-x-2 mb-5">
+                        <div class="stat-block bg-blue-50/60 dark:bg-blue-900/20 border-blue-100 dark:border-blue-800/50">
+                            <span class="text-blue-600 dark:text-blue-400 font-bold text-sm bg-blue-100 dark:bg-blue-900/50 px-3 py-1.5 rounded w-full text-center mb-3">I ~ III类</span>
+                            <div class="text-2xl font-black text-blue-600 dark:text-blue-400 leading-none mb-2">50.6%</div>
+                            <div class="text-xs text-slate-500 dark:text-slate-400">同比: <span class="text-emerald-500 font-bold">10.6%</span></div>
+                        </div>
+                        <div class="stat-block bg-red-50/60 dark:bg-red-900/20 border-red-100 dark:border-red-800/50">
+                            <span class="text-red-500 dark:text-red-400 font-bold text-sm bg-red-100 dark:bg-red-900/50 px-3 py-1.5 rounded w-full text-center mb-3">劣V类</span>
+                            <div class="text-2xl font-black text-red-500 dark:text-red-400 leading-none mb-2">2.3%</div>
+                            <div class="text-xs text-slate-500 dark:text-slate-400">同比: <span class="text-red-500 font-bold">0.1%</span></div>
+                        </div>
+                        <div class="stat-block bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700">
+                            <span class="text-slate-700 dark:text-slate-300 font-bold text-sm bg-slate-200/70 dark:bg-slate-700 px-2 py-1.5 rounded w-full text-center mb-2">2025年目标</span>
+                            <div class="text-xs flex flex-col items-center space-y-2 mt-2 w-full text-slate-600 dark:text-slate-400">
+                                <div class="flex justify-between w-full px-2"><span>I~III类</span> <span class="font-bold text-slate-800 dark:text-white">44个</span></div>
+                                <div class="flex justify-between w-full px-2"><span>劣V类</span> <span class="font-bold text-slate-800 dark:text-white">2个</span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between px-5 text-[13px] bg-[#f8fafc] dark:bg-slate-800/50 rounded-lg py-3 mb-5 border border-slate-100 dark:border-slate-700">
+                        <div class="flex flex-col items-center"><span class="text-slate-400 dark:text-slate-500 mb-1 text-xs font-medium">总数</span><span class="font-black text-slate-800 dark:text-white text-[17px] leading-none">152</span></div>
+                        <div class="w-px h-8 bg-slate-200 dark:bg-slate-700"></div>
+                        <div class="flex flex-col items-center"><span class="text-slate-400 dark:text-slate-500 mb-1 text-xs font-medium">实测</span><span class="font-black text-cyan-600 dark:text-cyan-500 text-[17px] leading-none">87</span></div>
+                        <div class="w-px h-8 bg-slate-200 dark:bg-slate-700"></div>
+                        <div class="flex flex-col items-center"><span class="text-slate-400 dark:text-slate-500 mb-1 text-xs font-medium">超标</span><span class="font-black text-red-500 dark:text-red-400 text-[17px] leading-none">15</span></div>
+                    </div>
+
+                    <div class="flex h-[130px] items-center flex-1">
+                        <div id="donut-city" class="w-[55%] h-full"></div>
+                        <div class="w-[45%] grid grid-cols-2 gap-y-3 gap-x-1 text-[12px] font-medium text-slate-600 dark:text-slate-300 pl-2">
+                            <div class="flex items-center"><span class="w-2.5 h-2.5 rounded bg-[#3b82f6] mr-1.5 shadow-sm"></span>I类 3</div>
+                            <div class="flex items-center"><span class="w-2.5 h-2.5 rounded bg-[#eab308] mr-1.5 shadow-sm"></span>IV类 34</div>
+                            <div class="flex items-center"><span class="w-2.5 h-2.5 rounded bg-[#06b6d4] mr-1.5 shadow-sm"></span>II类 14</div>
+                            <div class="flex items-center"><span class="w-2.5 h-2.5 rounded bg-[#f97316] mr-1.5 shadow-sm"></span>V类 7</div>
+                            <div class="flex items-center"><span class="w-2.5 h-2.5 rounded bg-[#10b981] mr-1.5 shadow-sm"></span>III类 27</div>
+                            <div class="flex items-center"><span class="w-2.5 h-2.5 rounded bg-[#ef4444] mr-1.5 shadow-sm"></span>劣V类 2</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-8 border border-slate-200 rounded-lg overflow-hidden bg-white">
+                <div class="overflow-x-auto custom-scrollbar">
+                    <table class="w-full data-table table-fixed min-w-[1000px]">
+                        <thead>
+                        <tr>
+                            <th class="w-[15%]">湖库名称</th>
+                            <th class="w-[12%]">监测断面数</th>
+                            <th class="w-[12%]">达标断面数</th>
+                            <th class="w-[12%]">达标率</th>
+                            <th class="w-[25%] text-left pl-8">主要超标污染物</th>
+                            <th class="w-[12%]">同比变化</th>
+                            <th class="w-[12%]">操作</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr><td class="font-bold text-slate-700">东湖</td><td>1</td><td>1</td><td class="text-emerald-500 font-bold">100%</td><td class="text-slate-400 text-left pl-8">-</td><td class="text-slate-400">0%</td><td><button class="text-blue-500 hover:text-blue-700 font-medium">查看详情</button></td></tr>
+                        <tr><td class="font-bold text-slate-700">丹江口水库</td><td>4</td><td>4</td><td class="text-emerald-500 font-bold">100%</td><td class="text-slate-400 text-left pl-8">-</td><td class="text-slate-400">0%</td><td><button class="text-blue-500 hover:text-blue-700 font-medium">查看详情</button></td></tr>
+                        <tr><td class="font-bold text-slate-700">富水水库</td><td>1</td><td>1</td><td class="text-emerald-500 font-bold">100%</td><td class="text-slate-400 text-left pl-8">-</td><td class="text-slate-400">0%</td><td><button class="text-blue-500 hover:text-blue-700 font-medium">查看详情</button></td></tr>
+                        <tr><td class="font-bold text-slate-700">斧头湖</td><td>2</td><td>2</td><td class="text-emerald-500 font-bold">100%</td><td class="text-slate-400 text-left pl-8">-</td><td class="text-slate-400">0%</td><td><button class="text-blue-500 hover:text-blue-700 font-medium">查看详情</button></td></tr>
+                        <tr><td class="font-bold text-slate-700">梁子湖</td><td>6</td><td>6</td><td class="text-emerald-500 font-bold">100%</td><td class="text-slate-400 text-left pl-8">-</td><td class="text-slate-400">0%</td><td><button class="text-blue-500 hover:text-blue-700 font-medium">查看详情</button></td></tr>
+                        <tr class="bg-red-50/20"><td class="font-bold text-slate-700">洪湖</td><td>4</td><td>2</td><td class="text-red-500 font-bold">50%</td><td class="font-bold text-slate-700 text-left pl-8">总磷</td><td class="text-red-500 font-bold"><i class="ri-arrow-up-line"></i> 25%</td><td><button class="text-blue-500 hover:text-blue-700 font-medium">查看详情</button></td></tr>
+                        <tr><td class="font-bold text-slate-700">漳河水库</td><td>1</td><td>1</td><td class="text-emerald-500 font-bold">100%</td><td class="text-slate-400 text-left pl-8">-</td><td class="text-slate-400">0%</td><td><button class="text-blue-500 hover:text-blue-700 font-medium">查看详情</button></td></tr>
+                        <tr><td class="font-bold text-slate-700">白莲河水库</td><td>1</td><td>1</td><td class="text-emerald-500 font-bold">100%</td><td class="text-slate-400 text-left pl-8">-</td><td class="text-slate-400">0%</td><td><button class="text-blue-500 hover:text-blue-700 font-medium">查看详情</button></td></tr>
+                        <tr><td class="font-bold text-slate-700">长湖</td><td>2</td><td>2</td><td class="text-emerald-500 font-bold">100%</td><td class="text-slate-400 text-left pl-8">-</td><td class="text-slate-400">0%</td><td><button class="text-blue-500 hover:text-blue-700 font-medium">查看详情</button></td></tr>
+                        <tr><td class="font-bold text-slate-700">隔河岩水库</td><td>1</td><td>1</td><td class="text-emerald-500 font-bold">100%</td><td class="text-slate-400 text-left pl-8">-</td><td class="text-slate-400">0%</td><td><button class="text-blue-500 hover:text-blue-700 font-medium">查看详情</button></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <footer class="mt-4 border-t border-slate-200 dark:border-slate-800 text-center text-xs text-slate-400 pb-2 pt-4">
+            <p>&copy; 2026 湖北省生态环境厅 · 版权所有</p>
+        </footer>
+    </main>
+</div>
+
+<div id="data-table-modal" class="fixed inset-0 z-[100] hidden bg-slate-900/50 backdrop-blur-sm flex items-center justify-center transition-opacity opacity-0 duration-300">
+    <div class="bg-white dark:bg-slate-800 rounded shadow-2xl w-11/12 max-w-6xl flex flex-col max-h-[85vh] transform transition-transform scale-95 duration-300">
+        <div class="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-slate-700 shrink-0">
+            <div class="flex items-center space-x-2">
+                <div class="section-title-bar m-0"></div>
+                <h3 id="modal-title" class="text-base font-bold text-slate-800 dark:text-white">数据表</h3>
+            </div>
+            <button onclick="closeModal()" class="text-slate-400 hover:text-red-500 transition-colors flex items-center justify-center">
+                <i class="ri-close-line text-2xl"></i>
+            </button>
+        </div>
+        <div class="overflow-auto flex-1 custom-scrollbar">
+            <table class="w-full text-sm text-center text-slate-600 dark:text-slate-300 border-collapse data-table">
+                <thead class="text-slate-700 bg-[#f4f7fb] dark:bg-slate-700 dark:text-slate-200 sticky top-0 z-10" id="modal-thead"></thead>
+                <tbody id="modal-tbody"></tbody>
+            </table>
+        </div>
+        <div class="px-6 py-4 border-t border-slate-100 dark:border-slate-700 bg-white dark:bg-slate-800 shrink-0 flex justify-center space-x-4">
+            <button onclick="closeModal()" class="px-6 py-1.5 bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded text-sm text-slate-600 dark:text-slate-200 hover:bg-slate-50 transition-colors">取消</button>
+            <button onclick="exportExcel()" class="px-6 py-1.5 bg-blue-500 text-white border border-blue-500 rounded text-sm hover:bg-blue-600 transition-colors">导出</button>
+        </div>
+    </div>
+</div>
+
+<div id="quality-list-modal" class="fixed inset-0 z-[100] hidden bg-slate-900/50 backdrop-blur-sm flex items-center justify-center transition-opacity opacity-0 duration-300">
+    <div class="bg-white dark:bg-slate-800 rounded shadow-2xl w-11/12 max-w-6xl flex flex-col max-h-[90vh] h-[80vh] transform transition-transform scale-95 duration-300">
+        <div class="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-slate-700 shrink-0">
+            <h3 id="quality-modal-title" class="text-[15px] font-bold text-slate-800 dark:text-white flex items-center">
+                <div class="w-1 h-4 bg-blue-500 mr-2 rounded"></div>
+                <span id="quality-title-text">I 类 占比清单</span>
+            </h3>
+            <button onclick="closeQualityListModal()" class="text-slate-400 hover:text-red-500 transition-colors">
+                <i class="ri-close-line text-2xl"></i>
+            </button>
+        </div>
+        <div class="px-6 py-4 border-b border-slate-100 dark:border-slate-700 shrink-0 flex space-x-3">
+            <input type="text" placeholder="请输入地市、断面名称" class="border border-slate-200 rounded px-3 py-1.5 text-sm w-64 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
+            <button class="bg-[#3b82f6] hover:bg-blue-600 text-white px-5 py-1.5 rounded text-sm transition-colors">搜索</button>
+            <button class="bg-slate-100 hover:bg-slate-200 text-slate-600 border border-slate-200 px-5 py-1.5 rounded text-sm transition-colors">重置</button>
+        </div>
+        <div class="overflow-auto flex-1 custom-scrollbar">
+            <table class="w-full data-table border-collapse">
+                <thead class="sticky top-0 z-10 shadow-sm bg-[#f4f7fb]">
+                <tr>
+                    <th class="w-16">序号</th>
+                    <th class="cursor-pointer hover:bg-slate-200 transition-colors">地市名称</th>
+                    <th class="cursor-pointer hover:bg-slate-200 transition-colors">断面名称</th>
+                    <th class="cursor-pointer hover:bg-slate-200 transition-colors">流域名称</th>
+                    <th class="cursor-pointer hover:bg-slate-200 transition-colors">所在水体</th>
+                    <th class="cursor-pointer hover:bg-slate-200 transition-colors">水质类别</th>
+                    <th class="cursor-pointer hover:bg-slate-200 transition-colors">水质目标</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody id="quality-modal-tbody">
+                </tbody>
+            </table>
+        </div>
+        <div class="px-6 py-3 border-t border-slate-100 dark:border-slate-700 shrink-0 flex items-center justify-center space-x-4 text-sm text-slate-500">
+            <span>共 4 条</span>
+            <select class="border border-slate-200 rounded px-3 py-1.5 text-sm bg-white outline-none w-[120px] cursor-pointer">
+                <option>15条/页</option>
+                <option>30条/页</option>
+                <option>50条/页</option>
+            </select>
+            <div class="flex items-center space-x-1">
+                <button class="px-2 py-1 text-slate-400 hover:text-blue-500 disabled:opacity-50"><i class="ri-arrow-left-s-line"></i></button>
+                <button class="px-2.5 py-1 text-blue-600 font-bold">1</button>
+                <button class="px-2 py-1 text-slate-400 hover:text-blue-500 disabled:opacity-50"><i class="ri-arrow-right-s-line"></i></button>
+            </div>
+            <div class="flex items-center space-x-2">
+                <span>前往</span>
+                <input type="text" value="1" class="border border-slate-200 rounded w-10 text-center py-1 text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
+                <span>页</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // --- UI交互逻辑 ---
+    const sidebar = document.getElementById('sidebar');
+    const toggleBtn = document.getElementById('toggleSidebarBtn');
+    const toggleIcon = document.getElementById('toggleIcon');
+    let isCollapsed = false;
+
+    toggleBtn.addEventListener('click', () => {
+        isCollapsed = !isCollapsed;
+        if (isCollapsed) {
+            sidebar.classList.remove('w-[240px]');
+            sidebar.classList.add('w-[80px]', 'hide-text', 'collapsed-sidebar');
+            toggleIcon.classList.replace('ri-arrow-left-s-line', 'ri-arrow-right-s-line');
+        } else {
+            sidebar.classList.remove('w-[80px]', 'hide-text', 'collapsed-sidebar');
+            sidebar.classList.add('w-[240px]');
+            toggleIcon.classList.replace('ri-arrow-right-s-line', 'ri-arrow-left-s-line');
+        }
+        setTimeout(() => resizeAllCharts(), 300);
+    });
+
+    // 当前月/累计月切换逻辑
+    function setMonthMode(mode) {
+        const btnCurrent = document.getElementById('btn-current');
+        const btnCumulative = document.getElementById('btn-cumulative');
+        const monthSelect = document.getElementById('month-select');
+
+        if (mode === 'current') {
+            btnCurrent.classList.remove('inactive'); btnCurrent.classList.add('active');
+            btnCumulative.classList.remove('active'); btnCumulative.classList.add('inactive');
+            Array.from(monthSelect.options).forEach(opt => { opt.text = opt.text.replace('1-', ''); });
+        } else {
+            btnCumulative.classList.remove('inactive'); btnCumulative.classList.add('active');
+            btnCurrent.classList.remove('active'); btnCurrent.classList.add('inactive');
+            Array.from(monthSelect.options).forEach(opt => {
+                if (!opt.text.startsWith('1-')) opt.text = '1-' + opt.text;
+            });
+        }
+    }
+
+    // --- 图表实例管理 ---
+    const chartInstances = {};
+    const charts = [];
+    const textCol = '#64748b';
+    const axisLineCol = '#e2e8f0';
+
+    // 湖库名单扩展，支持滑块展示更多数据
+    const lakeNames = ['东湖', '丹江口水库', '富水水库', '斧头湖', '梁子湖', '洪湖', '漳河水库', '白莲河水库', '长湖', '隔河岩水库', '黄盖湖', '龙感湖', '网湖', '野猪湖', '保安湖'];
+
+    // 生成匹配数据的辅助函数
+    const generateData = (length, isHundred) => Array.from({length}, () => isHundred ? 100 : 0);
+
+    // 水质分类饼图配置生成器
+    const getWaterQualityDonut = (dataArr, titleText) => ({
+        tooltip: { trigger: 'item', formatter: '{b}: {c}个 ({d}%)', backgroundColor: 'rgba(255,255,255,0.95)' },
+        series: [{
+            name: '水质分布', type: 'pie', radius: ['55%', '85%'], center: ['50%', '50%'],
+            avoidLabelOverlap: false,
+            label: { show: false },
+            itemStyle: { borderColor: '#fff', borderWidth: 2 },
+            data: [
+                { value: dataArr[0], name: 'Ⅰ类', itemStyle: { color: '#3b82f6' } },
+                { value: dataArr[1], name: 'Ⅱ类', itemStyle: { color: '#06b6d4' } },
+                { value: dataArr[2], name: 'Ⅲ类', itemStyle: { color: '#10b981' } },
+                { value: dataArr[3], name: 'Ⅳ类', itemStyle: { color: '#eab308' } },
+                { value: dataArr[4], name: 'Ⅴ类', itemStyle: { color: '#f97316' } },
+                { value: dataArr[5], name: '劣Ⅴ类', itemStyle: { color: '#ef4444' } }
+            ].filter(item => item.value > 0)
+        }],
+        graphic: {
+            elements: [{
+                type: 'text', left: 'center', top: 'center',
+                style: { text: titleText, textAlign: 'center', fill: '#475569', fontSize: 13, fontWeight: 'bold' }
+            }]
+        }
+    });
+
+    function initCharts() {
+        // --- 1. 总体统计主饼图 (严格按照I至劣V类展示分布) ---
+        const dOverall = echarts.init(document.getElementById('donut-overall'));
+        charts.push(dOverall);
+        dOverall.setOption({
+            tooltip: { trigger: 'item', formatter: '{b}: {c}个 ({d}%)', backgroundColor: 'rgba(255,255,255,0.9)' },
+            series: [{
+                type: 'pie', radius: ['60%', '90%'], center: ['50%', '50%'],
+                avoidLabelOverlap: false, label: { show: false },
+                itemStyle: {
+                    borderRadius: 4, borderColor: '#fff', borderWidth: 2,
+                    shadowBlur: 8, shadowColor: 'rgba(0, 0, 0, 0.05)'
+                },
+                data: [
+                    { value: 33, name: 'Ⅰ类', itemStyle: { color: '#3b82f6' } },
+                    { value: 110, name: 'Ⅱ类', itemStyle: { color: '#06b6d4' } },
+                    { value: 111, name: 'Ⅲ类', itemStyle: { color: '#10b981' } },
+                    { value: 22, name: 'Ⅳ类', itemStyle: { color: '#eab308' } }
+                ]
+            }],
+            graphic: {
+                elements: [{
+                    type: 'text', left: 'center', top: 'center',
+                    style: { text: '287个\n断面总数', textAlign: 'center', fill: '#475569', fontSize: 15, fontWeight: 'bold' }
+                }]
+            }
+        });
+
+        // --- 2. 左侧柱状图 (I-III类占比) 配滑块 ---
+        const c1 = echarts.init(document.getElementById('chart-lake-13'));
+        chartInstances['chartLake13'] = c1;
+        charts.push(c1);
+        c1.setOption({
+            tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' }, backgroundColor: 'rgba(255, 255, 255, 0.95)' },
+            legend: { top: 0, right: 0, itemWidth: 14, itemHeight: 8, icon: 'roundRect', textStyle: { fontSize: 11, color: textCol } },
+            grid: { top: '15%', left: '0%', right: '2%', bottom: '22%', containLabel: true },
+            dataZoom: [
+                {
+                    type: 'slider', show: true, bottom: 5, height: 14, borderColor: 'transparent',
+                    backgroundColor: '#f1f5f9', fillerColor: '#cbd5e1', handleSize: '100%',
+                    handleStyle: { color: '#94a3b8' }, textStyle: { color: textCol, fontSize: 10 },
+                    realtime: true, start: 0, end: 60
+                },
+                { type: 'inside', realtime: true }
+            ],
+            xAxis: { type: 'category', data: lakeNames, axisLabel: { interval: 0, rotate: 30, fontSize: 11, color: textCol }, axisLine: { lineStyle: { color: axisLineCol } } },
+            yAxis: { type: 'value', max: 100, interval: 20, axisLabel: { formatter: '{value}%', color: textCol }, splitLine: { lineStyle: { color: '#f1f5f9', type: 'dashed' } } },
+            series: [
+                { name: '2026年01月', type: 'bar', barWidth: '30%', data: generateData(lakeNames.length, true), itemStyle: { color: '#3b82f6', borderRadius: [2,2,0,0] } },
+                { name: '2025年同期', type: 'bar', barWidth: '30%', data: generateData(lakeNames.length, true), itemStyle: { color: '#06b6d4', borderRadius: [2,2,0,0] } }
+            ]
+        });
+
+        // --- 3. 右侧柱状图 (劣V类占比) 配滑块并对齐颜色 ---
+        const c2 = echarts.init(document.getElementById('chart-lake-bad'));
+        chartInstances['chartLakeBad'] = c2;
+        charts.push(c2);
+        c2.setOption({
+            tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' }, backgroundColor: 'rgba(255, 255, 255, 0.95)' },
+            legend: { top: 0, right: 0, itemWidth: 14, itemHeight: 8, icon: 'roundRect', textStyle: { fontSize: 11, color: textCol } },
+            grid: { top: '15%', left: '0%', right: '2%', bottom: '22%', containLabel: true },
+            dataZoom: [
+                {
+                    type: 'slider', show: true, bottom: 5, height: 14, borderColor: 'transparent',
+                    backgroundColor: '#f1f5f9', fillerColor: '#cbd5e1', handleSize: '100%',
+                    handleStyle: { color: '#94a3b8' }, textStyle: { color: textCol, fontSize: 10 },
+                    realtime: true, start: 0, end: 60
+                },
+                { type: 'inside', realtime: true }
+            ],
+            xAxis: { type: 'category', data: lakeNames, axisLabel: { interval: 0, rotate: 30, fontSize: 11, color: textCol }, axisLine: { lineStyle: { color: axisLineCol } } },
+            yAxis: { type: 'value', max: 100, interval: 20, axisLabel: { formatter: '{value}%', color: textCol }, splitLine: { lineStyle: { color: '#f1f5f9', type: 'dashed' } } },
+            series: [
+                { name: '2026年01月', type: 'bar', barWidth: '30%', data: generateData(lakeNames.length, false), itemStyle: { color: '#3b82f6', borderRadius: [2,2,0,0] } },
+                { name: '2025年同期', type: 'bar', barWidth: '30%', data: generateData(lakeNames.length, false), itemStyle: { color: '#06b6d4', borderRadius: [2,2,0,0] } }
+            ]
+        });
+
+        // --- 4. 三列达标统计的水质分类真实饼图 ---
+        const dNat = echarts.init(document.getElementById('donut-nat'));
+        dNat.setOption(getWaterQualityDonut([3, 10, 10, 2, 0, 0], '26个\n实测'));
+        charts.push(dNat);
+
+        const dProv = echarts.init(document.getElementById('donut-prov'));
+        dProv.setOption(getWaterQualityDonut([6, 38, 39, 7, 1, 0], '91个\n实测'));
+        charts.push(dProv);
+
+        const dCity = echarts.init(document.getElementById('donut-city'));
+        dCity.setOption(getWaterQualityDonut([3, 14, 27, 34, 7, 2], '87个\n实测'));
+        charts.push(dCity);
+    }
+
+    // --- 弹窗表格逻辑 ---
+    function showChartData(chartKey, titleText) {
+        const chart = chartInstances[chartKey];
+        if (!chart) return;
+        const option = chart.getOption();
+        const series = option.series;
+        let categories = option.xAxis[0].data || [];
+
+        document.getElementById('modal-title').innerText = titleText;
+        const thead = document.getElementById('modal-thead');
+        let theadHTML = `<tr><th class="px-6 py-4 font-bold whitespace-nowrap w-16">序号</th><th class="px-6 py-4 font-bold w-48">湖库名称</th>`;
+        series.forEach(s => { theadHTML += `<th class="px-6 py-4 font-bold">${s.name}</th>`; });
+        theadHTML += '</tr>';
+        thead.innerHTML = theadHTML;
+
+        const tbody = document.getElementById('modal-tbody');
+        let tbodyHTML = '';
+        categories.forEach((cat, idx) => {
+            const bgClass = idx % 2 === 0 ? 'bg-white dark:bg-slate-800' : 'bg-[#fcfcfc] dark:bg-slate-800/50';
+            tbodyHTML += `<tr class="${bgClass} hover:bg-blue-50/40 dark:hover:bg-slate-700/50 transition-colors">
+                            <td class="px-6 py-4 text-slate-500">${idx + 1}</td>
+                            <td class="px-6 py-4 text-slate-700 dark:text-slate-300 font-medium">${cat}</td>`;
+            series.forEach(s => {
+                const val = (s.data[idx] !== undefined && s.data[idx] !== null) ? s.data[idx] : '-';
+                tbodyHTML += `<td class="px-6 py-4">${val}</td>`;
+            });
+            tbodyHTML += '</tr>';
+        });
+        tbody.innerHTML = tbodyHTML;
+
+        const modal = document.getElementById('data-table-modal');
+        modal.classList.remove('hidden');
+        void modal.offsetWidth;
+        modal.classList.remove('opacity-0');
+        modal.querySelector('div').classList.remove('scale-95');
+    }
+
+    function closeModal() {
+        const modal = document.getElementById('data-table-modal');
+        modal.classList.add('opacity-0');
+        modal.querySelector('div').classList.add('scale-95');
+        setTimeout(() => { modal.classList.add('hidden'); }, 300);
+    }
+
+    function downloadChart(chartKey) {
+        const chart = chartInstances[chartKey];
+        if (!chart) return;
+        const url = chart.getDataURL({ type: 'png', pixelRatio: 2, backgroundColor: '#ffffff' });
+        const a = document.createElement('a'); a.href = url; a.download = chartKey + '.png'; a.click();
+    }
+
+    function exportExcel() {
+        const table = document.querySelector('#data-table-modal table');
+        if (!table) return;
+        let csv = [];
+        const rows = table.querySelectorAll('tr');
+        for (let i = 0; i < rows.length; i++) {
+            let row = [];
+            const cols = rows[i].querySelectorAll('td, th');
+            for (let j = 0; j < cols.length; j++) {
+                row.push('"' + cols[j].innerText.trim().replace(/"/g, '""') + '"');
+            }
+            csv.push(row.join(','));
+        }
+        const csvFile = new Blob(['\uFEFF' + csv.join('\n')], {type: 'text/csv;charset=utf-8;'});
+        const downloadLink = document.createElement("a");
+        downloadLink.download = (document.getElementById('modal-title').innerText || '导出数据') + ".csv";
+        downloadLink.href = window.URL.createObjectURL(csvFile);
+        downloadLink.click();
+    }
+
+    // --- 水质类清单模态框逻辑 ---
+    function openQualityListModal(qualityType) {
+        document.getElementById('quality-title-text').innerText = qualityType + ' 占比清单';
+        const tbody = document.getElementById('quality-modal-tbody');
+        let html = '';
+        const mockData = ['洪湖湖心A', '洪湖湖心B', '杨柴湖', '排水闸'];
+        for(let i=0; i<4; i++) {
+            html += `<tr>
+                <td class="px-4 py-3.5 text-slate-500 border-b border-slate-100">${i + 1}</td>
+                <td class="px-4 py-3.5 text-slate-700 border-b border-slate-100">荆州市</td>
+                <td class="px-4 py-3.5 text-slate-700 border-b border-slate-100">${mockData[i]}</td>
+                <td class="px-4 py-3.5 text-slate-700 border-b border-slate-100">长江流域</td>
+                <td class="px-4 py-3.5 text-slate-700 border-b border-slate-100">洪湖</td>
+                <td class="px-4 py-3.5 font-bold text-blue-600 border-b border-slate-100">${qualityType}</td>
+                <td class="px-4 py-3.5 text-slate-700 border-b border-slate-100">Ⅲ</td>
+                <td class="px-4 py-3.5 border-b border-slate-100"><button class="bg-[#3b82f6] hover:bg-blue-600 text-white text-xs px-3 py-1.5 rounded transition-colors shadow-sm">断面分析</button></td>
+            </tr>`;
+        }
+        tbody.innerHTML = html;
+
+        const modal = document.getElementById('quality-list-modal');
+        modal.classList.remove('hidden');
+        void modal.offsetWidth;
+        modal.classList.remove('opacity-0');
+        modal.querySelector('div').classList.remove('scale-95');
+    }
+
+    function closeQualityListModal() {
+        const modal = document.getElementById('quality-list-modal');
+        modal.classList.add('opacity-0');
+        modal.querySelector('div').classList.add('scale-95');
+        setTimeout(() => { modal.classList.add('hidden'); }, 300);
+    }
+
+    function resizeAllCharts() { charts.forEach(chart => { if (chart) chart.resize(); }); }
+    window.addEventListener('load', initCharts);
+    window.addEventListener('resize', resizeAllCharts);
+</script>
+
+</body>
+</html>

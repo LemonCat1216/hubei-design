@@ -1,0 +1,1236 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>湖北省水生态环境综合管理 - 最终完整定稿版</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/echarts/dist/echarts.min.js"></script>
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css"/>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css"/>
+    <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* ================= 全局设置 ================= */
+        body, html {
+            height: 100%;
+            margin: 0;
+            overflow: hidden;
+            font-family: 'Microsoft YaHei', sans-serif;
+        }
+
+        #map {
+            height: calc(100vh - 64px);
+            width: 100%;
+            z-index: 0;
+            background: #f5f5f5;
+        }
+
+        /* 新增：断面小地图容器 */
+        #section-map {
+            width: 100%;
+            height: 100%;
+            background: #f0f2f5;
+            z-index: 1;
+        }
+
+        /* ================= 聚合气泡样式 ================= */
+        .custom-cluster-icon {
+            background: transparent;
+        }
+
+        .bubble-body {
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #5c3a00;
+            font-weight: bold;
+            font-family: Arial, sans-serif;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            animation: breathe 2.5s infinite ease-in-out;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-sizing: border-box;
+        }
+
+        .cluster-small {
+            background: radial-gradient(circle, rgba(255, 200, 100, 0.9) 0%, rgba(255, 160, 50, 0.7) 100%);
+            box-shadow: 0 0 10px rgba(255, 165, 0, 0.3);
+        }
+
+        .cluster-medium {
+            background: radial-gradient(circle, rgba(255, 165, 0, 0.95) 0%, rgba(255, 140, 0, 0.8) 100%);
+            box-shadow: 0 0 15px rgba(255, 140, 0, 0.4);
+        }
+
+        .cluster-large {
+            background: radial-gradient(circle, rgba(255, 140, 0, 1) 0%, rgba(230, 100, 0, 0.9) 100%);
+            box-shadow: 0 0 20px rgba(255, 69, 0, 0.5);
+            color: white;
+        }
+
+        @keyframes breathe {
+            0% {
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(255, 165, 0, 0.6);
+            }
+            50% {
+                transform: scale(1.08);
+                box-shadow: 0 0 0 8px rgba(255, 165, 0, 0);
+            }
+            100% {
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(255, 165, 0, 0);
+            }
+        }
+
+        /* ================= 单点样式 ================= */
+        .single-point-orange {
+            background: #ff8c00;
+            border: 2px solid #fff;
+            border-radius: 50%;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            height: 100%;
+        }
+
+        .single-point-orange:hover {
+            transform: scale(1.3);
+            background: #ff4500;
+        }
+
+        .single-point-green {
+            background: #10B981;
+            border: 2px solid #fff;
+            border-radius: 50%;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            height: 100%;
+        }
+
+        /* ================= 断面地图特有图标样式 (来自文件2) ================= */
+        .icon-outlet {
+            background: white;
+            border: 2px solid #3b82f6;
+            border-radius: 50%;
+            color: #3b82f6;
+            display: flex !important;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            font-size: 10px;
+        }
+
+        .icon-factory {
+            color: #f59e0b;
+            font-size: 18px;
+            filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.3));
+        }
+
+        .icon-plant {
+            color: #d97706;
+            font-size: 18px;
+            filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.3));
+        }
+
+        .icon-section {
+            color: #ef4444;
+            font-size: 28px;
+            filter: drop-shadow(0 0 5px rgba(255, 255, 255, 1));
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-8px);
+            }
+        }
+
+        /* ================= UI 组件细节 ================= */
+        .custom-scroll::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        .custom-scroll::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        .custom-scroll::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 3px;
+        }
+
+        .custom-scroll::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        .tree-indent {
+            border-left: 1px solid #e5e7eb;
+            margin-left: 7px;
+            padding-left: 10px;
+        }
+
+        .text-shadow {
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        /* ================= 排污口清单表格样式 ================= */
+        .info-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .info-table td {
+            padding: 9px 12px;
+            border-bottom: 1px solid #f3f4f6;
+            vertical-align: middle;
+        }
+
+        .info-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .info-label {
+            color: #6b7280;
+            font-size: 12px;
+            width: 110px;
+            background-color: #f9fafb;
+            font-weight: 500;
+        }
+
+        .info-value {
+            color: #374151;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        /* ================= 弹窗动画 ================= */
+        .modal-enter-active, .modal-leave-active {
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-enter-from, .modal-leave-to {
+            opacity: 0;
+        }
+
+        .slide-up-enter-active {
+            animation: slideUp 0.4s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .leaflet-pane {
+            z-index: 0 !important;
+        }
+
+        .leaflet-top, .leaflet-bottom {
+            z-index: 100 !important;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+<div id="app" class="flex flex-col h-full relative">
+
+    <header class="h-16 bg-gradient-to-r from-blue-700 via-blue-600 to-blue-500 flex items-center justify-between px-4 shadow-lg z-50 relative text-white shrink-0">
+        <div class="flex items-center space-x-3">
+            <div class="w-9 h-9 bg-white rounded-full flex items-center justify-center p-1">
+                <img src="https://cdn-icons-png.flaticon.com/512/2913/2913520.png"
+                     class="w-full h-full object-contain opacity-80">
+            </div>
+            <h1 class="text-xl font-bold tracking-wide text-shadow">湖北省水生态环境综合管理</h1>
+        </div>
+
+        <nav class="flex space-x-1 h-full items-end pb-0">
+            <a href="#" class="px-5 py-3 hover:bg-blue-700/50 rounded-t-lg text-sm font-medium opacity-80 transition"><i
+                    class="fas fa-home mr-1"></i> 总体概览</a>
+            <a href="#" class="px-5 py-3 hover:bg-blue-700/50 rounded-t-lg text-sm font-medium opacity-80 transition"><i
+                    class="fas fa-chart-area mr-1"></i> 形势分析</a>
+            <a href="#"
+               class="px-5 py-3 bg-white text-blue-700 rounded-t-lg text-sm font-bold shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] transform translate-y-1 relative z-10"><i
+                    class="fas fa-map-marker-alt mr-1"></i> 空间分析</a>
+            <a href="#" class="px-5 py-3 hover:bg-blue-700/50 rounded-t-lg text-sm font-medium opacity-80 transition"><i
+                    class="fas fa-tint mr-1"></i> 水污染源</a>
+            <a href="#" class="px-5 py-3 hover:bg-blue-700/50 rounded-t-lg text-sm font-medium opacity-80 transition"><i
+                    class="fas fa-crosshairs mr-1"></i> 问题聚焦</a>
+        </nav>
+
+        <div class="flex items-center space-x-4">
+            <div class="flex flex-col items-end">
+                <span class="text-xs opacity-80">碧水荆灵</span>
+                <span class="text-sm font-bold">wangyunpeng</span>
+            </div>
+            <div class="w-8 h-8 bg-blue-800 rounded-full flex items-center justify-center border border-blue-400 cursor-pointer hover:bg-blue-700">
+                <i class="fas fa-user"></i>
+            </div>
+        </div>
+    </header>
+
+    <div class="flex-1 relative overflow-hidden">
+        <div id="map"></div>
+
+        <div class="absolute left-0 top-4 bottom-4 w-14 bg-white shadow-md z-[400] flex flex-col items-center py-4 space-y-6 text-gray-500 rounded-r-lg border-r border-gray-200">
+            <div class="flex flex-col items-center space-y-1 cursor-pointer text-blue-600 relative group">
+                <div class="p-2 bg-blue-50 rounded-lg shadow-sm"><i class="fas fa-layer-group text-lg"></i></div>
+                <span class="text-[10px]">图层</span>
+            </div>
+            <div class="flex flex-col items-center space-y-1 cursor-pointer hover:text-blue-600 transition">
+                <div class="p-2 hover:bg-gray-100 rounded-lg"><i class="fas fa-vector-square text-lg"></i></div>
+                <span class="text-[10px]">区域</span>
+            </div>
+            <div class="flex flex-col items-center space-y-1 cursor-pointer hover:text-blue-600 transition">
+                <div class="p-2 hover:bg-gray-100 rounded-lg"><i class="fas fa-tools text-lg"></i></div>
+                <span class="text-[10px]">工具</span>
+            </div>
+        </div>
+
+        <div class="absolute left-16 top-4 bottom-4 w-64 bg-white/95 backdrop-blur-sm shadow-xl z-[400] rounded-lg border border-gray-200 flex flex-col transition-transform duration-300">
+            <div class="p-3 border-b border-gray-100 flex justify-between items-center bg-gray-50 rounded-t-lg">
+                <span class="font-bold text-gray-700">业务专题图层</span>
+                <i class="fas fa-list-ul text-gray-400"></i>
+            </div>
+            <div class="flex-1 overflow-y-auto p-2 custom-scroll select-none">
+                <div class="space-y-1">
+                    <div>
+                        <div class="flex items-center px-2 py-1.5 bg-blue-50 rounded text-blue-700 font-medium text-sm mt-2 cursor-pointer">
+                            <i class="fas fa-caret-down w-4"></i>
+                            <span class="text-blue-500 mr-2 ml-1">▼</span> 水污染源(10)
+                        </div>
+                        <div class="tree-indent mt-2 space-y-2">
+                            <label class="flex items-start p-1.5 hover:bg-gray-50 rounded cursor-pointer group transition bg-orange-50/50 border border-orange-100/50">
+                                <input type="checkbox" v-model="layers.selfMonitor" @change="toggleLayer('selfMonitor')"
+                                       class="mt-1 w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 cursor-pointer">
+                                <div class="ml-2">
+                                    <span class="text-sm text-gray-700 font-medium group-hover:text-blue-600">自行监测企业</span>
+                                    <div class="text-[10px] text-orange-500 mt-0.5">聚合呼吸气泡</div>
+                                </div>
+                            </label>
+                            <label class="flex items-start p-1.5 hover:bg-gray-50 rounded cursor-pointer group transition bg-green-50/50 border border-green-100/50">
+                                <input type="checkbox" v-model="layers.autoMonitor" @change="toggleLayer('autoMonitor')"
+                                       class="mt-1 w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 cursor-pointer">
+                                <div class="ml-2">
+                                    <span class="text-sm text-gray-700 font-medium group-hover:text-blue-600">自动检测企业</span>
+                                    <div class="text-[10px] text-green-600 mt-0.5">直接展示点位</div>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="absolute right-4 top-4 z-[400] w-72 bg-white rounded shadow-lg overflow-hidden border border-gray-100 animate-fade-in">
+            <div class="p-2 border-b border-gray-100 flex justify-between items-center bg-gray-50">
+                <span class="font-bold text-gray-700 text-sm pl-2">湖北省统计</span>
+                <button class="text-gray-400 hover:text-red-500 px-2"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="p-6 text-center">
+                <div class="text-4xl font-bold text-blue-600 mb-2 font-mono tracking-tighter">{{
+                        displayStatNumber
+                    }}
+                </div>
+                <div class="text-sm text-gray-500">{{ displayStatTitle }}</div>
+            </div>
+        </div>
+
+        <transition name="modal">
+            <div v-if="selectedFeature"
+                 class="absolute inset-0 z-[1000] bg-black/40 backdrop-blur-[1px] flex items-center justify-center p-4">
+                <div class="bg-white w-[960px] h-[680px] rounded-lg shadow-2xl flex flex-col overflow-hidden slide-up-enter-active">
+
+                    <div class="h-12 bg-blue-600 flex items-center justify-between px-4 text-white shrink-0">
+                        <div class="flex items-center space-x-2">
+                            <i class="fas fa-building"></i>
+                            <span class="font-bold text-lg">{{ selectedFeature.name }}</span>
+                            <span class="text-xs bg-white/20 px-2 py-0.5 rounded border border-white/30">{{
+                                    selectedFeature.type
+                                }}</span>
+                        </div>
+                        <button @click="closeModal" class="hover:bg-blue-700 p-1 rounded transition">
+                            <i class="fas fa-times text-lg"></i>
+                        </button>
+                    </div>
+
+                    <div class="flex border-b border-gray-200 bg-gray-50 shrink-0">
+                        <button v-for="tab in tabs" :key="tab.key"
+                                @click="currentTab = tab.key"
+                                :class="['px-6 py-3 text-sm font-medium transition-colors border-b-2 outline-none',
+                                currentTab === tab.key ? 'border-blue-600 text-blue-600 bg-white' : 'border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-100']">
+                            <i :class="[tab.icon, 'mr-2']"></i> {{ tab.label }}
+                        </button>
+                    </div>
+
+                    <div class="flex-1 overflow-hidden bg-white p-6 custom-scroll overflow-y-auto relative">
+
+                        <div v-if="currentTab === 'basic'" class="flex flex-col h-full space-y-6">
+                            <div class="shrink-0">
+                                <h3 class="text-sm font-bold text-gray-800 border-l-4 border-blue-500 pl-2 mb-3">
+                                    企业基本信息</h3>
+                                <div class="bg-gray-50 p-4 rounded-lg border border-gray-100">
+                                    <div class="grid grid-cols-2 gap-x-12 gap-y-4">
+                                        <div class="flex justify-between border-b border-gray-200 border-dashed pb-1">
+                                            <span class="text-xs text-gray-500">企业名称</span>
+                                            <span class="text-sm font-medium text-gray-800">{{
+                                                    selectedFeature.name
+                                                }}</span>
+                                        </div>
+                                        <div class="flex justify-between border-b border-gray-200 border-dashed pb-1">
+                                            <span class="text-xs text-gray-500">所属区域</span>
+                                            <span class="text-sm font-medium text-gray-800">湖北省 / {{
+                                                    selectedFeature.cityName
+                                                }}</span>
+                                        </div>
+                                        <div class="flex justify-between border-b border-gray-200 border-dashed pb-1">
+                                            <span class="text-xs text-gray-500">详细地址</span>
+                                            <span class="text-sm font-medium text-gray-800">{{
+                                                    selectedFeature.cityName
+                                                }}工业园区高新大道 88 号</span>
+                                        </div>
+                                        <div class="flex justify-between border-b border-gray-200 border-dashed pb-1">
+                                            <span class="text-xs text-gray-500">行业类别</span>
+                                            <span class="text-sm font-medium text-gray-800">化学原料和化学制品制造业</span>
+                                        </div>
+                                        <div class="flex justify-between border-b border-gray-200 border-dashed pb-1">
+                                            <span class="text-xs text-gray-500">经度</span>
+                                            <span class="text-sm font-medium text-gray-800 font-mono">{{
+                                                    selectedFeature.lng.toFixed(6)
+                                                }}</span>
+                                        </div>
+                                        <div class="flex justify-between border-b border-gray-200 border-dashed pb-1">
+                                            <span class="text-xs text-gray-500">纬度</span>
+                                            <span class="text-sm font-medium text-gray-800 font-mono">{{
+                                                    selectedFeature.lat.toFixed(6)
+                                                }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="shrink-0">
+                                <h3 class="text-sm font-bold text-gray-800 border-l-4 border-orange-500 pl-2 mb-3">
+                                    企业排口基本信息</h3>
+                                <div class="border border-gray-200 rounded-lg overflow-hidden">
+                                    <table class="min-w-full text-sm text-left">
+                                        <thead class="bg-gray-100 text-gray-600 font-medium">
+                                        <tr>
+                                            <th class="py-2.5 px-4 border-b">排口名称</th>
+                                            <th class="py-2.5 px-4 border-b">排口编号</th>
+                                            <th class="py-2.5 px-4 border-b">经度</th>
+                                            <th class="py-2.5 px-4 border-b">纬度</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody class="divide-y divide-gray-100 bg-white">
+                                        <tr class="hover:bg-gray-50 transition">
+                                            <td class="py-3 px-4 font-medium text-gray-800">废水总排放口</td>
+                                            <td class="py-3 px-4 font-mono text-xs text-gray-500">DW001</td>
+                                            <td class="py-3 px-4 font-mono text-xs text-gray-500">
+                                                {{ selectedFeature.lng.toFixed(6) }}
+                                            </td>
+                                            <td class="py-3 px-4 font-mono text-xs text-gray-500">
+                                                {{ selectedFeature.lat.toFixed(6) }}
+                                            </td>
+                                        </tr>
+                                        <tr class="hover:bg-gray-50 transition">
+                                            <td class="py-3 px-4 font-medium text-gray-800">雨水排放口-北</td>
+                                            <td class="py-3 px-4 font-mono text-xs text-gray-500">DW002</td>
+                                            <td class="py-3 px-4 font-mono text-xs text-gray-500">
+                                                {{ (selectedFeature.lng + 0.002).toFixed(6) }}
+                                            </td>
+                                            <td class="py-3 px-4 font-mono text-xs text-gray-500">
+                                                {{ (selectedFeature.lat + 0.001).toFixed(6) }}
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div v-show="currentTab === 'monitor'" class="flex flex-col h-full space-y-3">
+                            <div class="flex flex-wrap gap-2 items-center bg-white p-2 rounded border border-gray-200 shadow-sm shrink-0">
+                                <div class="flex items-center space-x-2">
+                                    <span class="text-xs text-gray-500 font-medium">监测点位：:</span>
+                                    <select class="text-xs border border-gray-300 rounded px-2 py-1 bg-white outline-none focus:border-blue-500">
+                                        <option>废水总排放口</option>
+                                        <option>雨水排放口</option>
+                                    </select>
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <span class="text-xs text-gray-500 font-medium">监测项目:</span>
+                                    <select class="text-xs border border-gray-300 rounded px-2 py-1 bg-white outline-none focus:border-blue-500">
+                                        <option>化学需氧量</option>
+                                        <option>氨氮</option>
+                                        <option>总磷</option>
+                                        <option>总氮</option>
+                                    </select>
+                                </div>
+                                <span class="text-xs text-gray-500 font-medium">监测时间:</span>
+                                <div class="flex items-center space-x-1 border border-gray-300 rounded px-2 py-1 bg-white">
+                                    <input type="date" class="text-xs outline-none w-24 text-gray-600 cursor-pointer">
+                                    <span class="text-xs text-gray-400 mx-1">至</span>
+                                    <input type="date" class="text-xs outline-none w-24 text-gray-600 cursor-pointer">
+                                </div>
+                                <div class="flex-1"></div>
+                                <div class="flex bg-white border border-blue-200 rounded overflow-hidden shrink-0">
+                                    <button @click="monitorSubTab='day'"
+                                            :class="['px-3 py-1 text-xs transition font-medium', monitorSubTab==='day'?'bg-blue-500 text-white':'text-gray-600 hover:bg-gray-50']">
+                                        日
+                                    </button>
+                                    <button @click="monitorSubTab='hour'"
+                                            :class="['px-3 py-1 text-xs transition font-medium', monitorSubTab==='hour'?'bg-blue-500 text-white':'text-gray-600 hover:bg-gray-50']">
+                                        时
+                                    </button>
+                                </div>
+                                <button class="bg-blue-600 text-white px-3 py-1 rounded text-xs hover:bg-blue-700 transition shadow-sm font-medium">
+                                    <i class="fas fa-search mr-1"></i> 查询
+                                </button>
+                            </div>
+
+                            <div class="h-48 w-full relative shrink-0 border border-gray-100 rounded p-1">
+                                <div ref="chartRef" class="w-full h-full"></div>
+                            </div>
+
+                            <div class="flex-1 flex flex-col border border-gray-200 rounded overflow-hidden min-h-0">
+                                <div class="flex-1 overflow-y-auto custom-scroll">
+                                    <table class="min-w-full text-xs text-center">
+                                        <thead class="bg-gray-100 text-gray-700 font-medium sticky top-0 z-10 border-b border-gray-200">
+                                        <tr>
+                                            <th class="py-2.5 border-r border-gray-200/50">监测时间</th>
+                                            <th class="py-2.5 border-r border-gray-200/50">监测点位</th>
+                                            <th class="py-2.5 border-r border-gray-200/50">化学需氧量 (mg/L)</th>
+                                            <th class="py-2.5 border-r border-gray-200/50">氨氮 (mg/L)</th>
+                                            <th class="py-2.5 border-r border-gray-200/50">总磷 (mg/L)</th>
+                                            <th class="py-2.5">总氮 (mg/L)</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody class="divide-y divide-gray-100">
+                                        <tr v-for="(row, idx) in paginatedMonitorData" :key="idx"
+                                            class="hover:bg-blue-50/30 transition">
+                                            <td class="py-2.5">{{ row.time }}</td>
+                                            <td>{{ row.point }}</td>
+                                            <td class="font-mono text-gray-700">{{ row.cod }}</td>
+                                            <td class="font-mono text-gray-700">{{ row.nh3 }}</td>
+                                            <td class="font-mono text-gray-700">{{ row.tp }}</td>
+                                            <td class="font-mono text-gray-700 font-bold text-blue-600">{{
+                                                    row.tn
+                                                }}
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="h-9 bg-gray-50 border-t border-gray-200 flex items-center justify-end px-4 space-x-3 shrink-0">
+                                    <span class="text-xs text-gray-500">共 {{ totalMonitorData }} 条</span>
+                                    <div class="flex items-center space-x-1">
+                                        <button @click="prevPage('monitor')" :disabled="monitorPage === 1"
+                                                class="px-2 py-0.5 bg-white border border-gray-300 rounded text-xs hover:bg-gray-50 disabled:opacity-50 text-gray-600">
+                                            上一页
+                                        </button>
+                                        <span class="text-xs font-medium text-gray-700 w-6 text-center">{{
+                                                monitorPage
+                                            }}</span>
+                                        <button @click="nextPage('monitor')"
+                                                :disabled="monitorPage * pageSize >= totalMonitorData"
+                                                class="px-2 py-0.5 bg-white border border-gray-300 rounded text-xs hover:bg-gray-50 disabled:opacity-50 text-gray-600">
+                                            下一页
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div v-if="currentTab === 'alarm'" class="h-full flex flex-col space-y-2">
+                            <div class="border border-gray-200 rounded overflow-hidden flex-1 flex flex-col">
+                                <div class="overflow-y-auto custom-scroll flex-1">
+                                    <table class="min-w-full text-sm text-center">
+                                        <thead class="bg-red-50 text-gray-700 sticky top-0 border-b border-red-100">
+                                        <tr>
+                                            <th class="py-3 px-2">排口名称</th>
+                                            <th class="py-3 px-2">污染物</th>
+                                            <th class="py-3 px-2">报警时间</th>
+                                            <th class="py-3 px-2">标准值</th>
+                                            <th class="py-3 px-2">日均浓度</th>
+                                            <th class="py-3 px-2">排放总量(kg)</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody class="divide-y divide-gray-100">
+                                        <tr v-for="(row, idx) in paginatedAlarmData" :key="idx"
+                                            class="hover:bg-red-50/10">
+                                            <td class="py-2.5">{{ row.point }}</td>
+                                            <td class="font-bold text-gray-600">{{ row.pollutant }}</td>
+                                            <td class="text-xs text-gray-500 font-mono">{{ row.time }}</td>
+                                            <td class="font-mono text-gray-500">{{ row.standard }}</td>
+                                            <td class="text-red-600 font-bold font-mono">{{ row.value }}</td>
+                                            <td class="font-mono text-gray-700">{{ row.emission }}</td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="h-9 bg-gray-50 border-t border-gray-200 flex items-center justify-end px-4 space-x-3 shrink-0">
+                                    <span class="text-xs text-gray-500">共 {{ totalAlarmData }} 条</span>
+                                    <div class="flex items-center space-x-1">
+                                        <button @click="prevPage('alarm')" :disabled="alarmPage === 1"
+                                                class="px-2 py-0.5 bg-white border border-gray-300 rounded text-xs hover:bg-gray-50 disabled:opacity-50 text-gray-600">
+                                            上一页
+                                        </button>
+                                        <span class="text-xs font-medium text-gray-700 w-6 text-center">{{
+                                                alarmPage
+                                            }}</span>
+                                        <button @click="nextPage('alarm')"
+                                                :disabled="alarmPage * pageSize >= totalAlarmData"
+                                                class="px-2 py-0.5 bg-white border border-gray-300 rounded text-xs hover:bg-gray-50 disabled:opacity-50 text-gray-600">
+                                            下一页
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div v-if="currentTab === 'outlet'" class="h-full flex flex-col space-y-4">
+                            <div v-for="(outlet, index) in outletList" :key="index"
+                                 class="border border-blue-200 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition bg-white">
+                                <div class="bg-gradient-to-r from-blue-50 to-white px-4 py-2 flex items-center justify-between border-b border-blue-100">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="bg-blue-600 text-white rounded p-1.5 w-7 h-7 flex items-center justify-center text-xs shadow-sm">
+                                            <i class="fas fa-water"></i>
+                                        </div>
+                                        <span class="font-bold text-blue-900 text-sm tracking-wide">{{
+                                                outlet.name
+                                            }}</span>
+                                    </div>
+                                    <div class="space-x-2 flex items-center">
+                                        <span class="text-xs bg-white text-gray-600 border border-gray-200 px-2 py-0.5 rounded shadow-sm">水体管理级别: <b
+                                                class="text-green-600">{{ outlet.level }}</b></span>
+                                        <span class="text-xs bg-blue-100 text-blue-700 border border-blue-200 px-2 py-0.5 rounded font-medium">{{
+                                                outlet.category
+                                            }}</span>
+                                    </div>
+                                </div>
+                                <div class="p-0">
+                                    <table class="info-table">
+                                        <tbody>
+                                        <tr>
+                                            <td class="info-label">省市区县</td>
+                                            <td class="info-value">湖北省 / 武汉市 / {{ outlet.district }}</td>
+                                            <td class="info-label">乡镇 (街道)</td>
+                                            <td class="info-value">{{ outlet.street }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="info-label">主要责任主体</td>
+                                            <td class="info-value">{{ outlet.responsibleEntity }}</td>
+                                            <td class="info-label">主体电话</td>
+                                            <td class="info-value font-mono tracking-wide">{{ outlet.phone }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="info-label">整治类型</td>
+                                            <td class="info-value">{{ outlet.remediationType }}</td>
+                                            <td class="info-label"><span class="text-red-500 mr-1">*</span>整治阶段</td>
+                                            <td class="info-value">{{ outlet.remediationStage }}</td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div v-show="currentTab === 'section'"
+                             class="flex h-full border border-gray-200 rounded-lg overflow-hidden">
+                            <div class="w-1/3 bg-white border-r border-gray-200 flex flex-col overflow-y-auto custom-scroll">
+                                <div class="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50 shrink-0">
+                                    <h3 class="font-bold text-lg text-gray-800">{{
+                                            sectionData.name || '未关联断面'
+                                        }}</h3>
+                                    <button class="bg-blue-600 hover:bg-blue-700 text-white text-xs px-3 py-1.5 rounded transition shadow-sm">
+                                        断面分析
+                                    </button>
+                                </div>
+
+                                <div class="p-2 space-y-0">
+                                    <div class="flex items-center justify-between p-3 border-b border-gray-100 hover:bg-blue-50/50 transition">
+                                        <span class="text-blue-600 font-medium text-sm">所属省份</span>
+                                        <span class="text-gray-700 text-sm font-medium">{{
+                                                sectionData.province
+                                            }}</span>
+                                    </div>
+                                    <div class="flex items-center justify-between p-3 border-b border-gray-100 hover:bg-blue-50/50 transition">
+                                        <span class="text-blue-600 font-medium text-sm">所在城市</span>
+                                        <span class="text-gray-700 text-sm font-medium">{{ sectionData.city }}</span>
+                                    </div>
+                                    <div class="flex items-center justify-between p-3 border-b border-gray-100 hover:bg-blue-50/50 transition">
+                                        <span class="text-blue-600 font-medium text-sm">当前水质</span>
+                                        <span class="bg-green-100 text-green-700 border border-green-200 px-2 py-0.5 rounded text-xs font-bold">{{
+                                                sectionData.quality
+                                            }}</span>
+                                    </div>
+                                    <div class="flex items-center justify-between p-3 hover:bg-blue-50/50 transition">
+                                        <span class="text-blue-600 font-medium text-sm">水质目标</span>
+                                        <span class="bg-green-100 text-green-700 border border-green-200 px-2 py-0.5 rounded text-xs font-bold">{{
+                                                sectionData.target
+                                            }}</span>
+                                    </div>
+                                    <div class="flex items-center justify-between p-3 border-b border-gray-100 hover:bg-blue-50/50 transition">
+                                        <span class="text-blue-600 font-medium text-sm">所属流域</span>
+                                        <span class="text-gray-700 text-sm">{{ sectionData.basin }}</span>
+                                    </div>
+                                    <div class="flex items-center justify-between p-3 border-b border-gray-100 hover:bg-blue-50/50 transition">
+                                        <span class="text-blue-600 font-medium text-sm">所在河流/湖库</span>
+                                        <span class="text-gray-700 text-sm font-medium">{{ sectionData.river }}</span>
+                                    </div>
+                                    <div class="flex items-center justify-between p-3 border-b border-gray-100 hover:bg-blue-50/50 transition">
+                                        <span class="text-blue-600 font-medium text-sm">跨界情况</span>
+                                        <span class="text-gray-700 text-sm">{{ sectionData.crossBorder }}</span>
+                                    </div>
+                                    <div class="flex items-center justify-between p-3 border-b border-gray-100 hover:bg-blue-50/50 transition">
+                                        <span class="text-blue-600 font-medium text-sm mb-1">定类因子</span>
+                                        <span class="text-gray-700 text-sm">{{ sectionData.factors }}</span>
+                                    </div>
+
+                                    <div class="flex items-center justify-between p-3 border-b border-gray-100 hover:bg-blue-50/50 transition">
+                                        <span class="text-blue-600 font-medium text-sm mb-1">控制单元</span>
+                                        <span class="text-gray-700 text-sm">{{ sectionData.controlUnit }}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="w-2/3 bg-gray-50 relative">
+                                <div id="section-map" class="w-full h-full"></div>
+
+                                <div class="absolute bottom-4 right-4 z-[400] bg-white/90 p-2 rounded shadow border border-gray-200 text-xs flex flex-col space-y-1">
+                                    <div class="font-bold text-gray-700 mb-1 border-b pb-1">汇水单元图例</div>
+                                    <div class="flex items-center space-x-2"><span
+                                            class="w-3 h-3 border border-indigo-500 bg-indigo-500/20 block"></span><span>汇水范围</span>
+                                    </div>
+                                    <div class="flex items-center space-x-2"><i
+                                            class="fas fa-flag text-red-500"></i><span>关联断面</span>
+                                    </div>
+                                    <div class="flex items-center space-x-2"><span
+                                            class="w-2 h-2 rounded-full border border-blue-500 bg-white block"></span><span>排污口</span>
+                                    </div>
+                                    <div class="flex items-center space-x-2"><i
+                                            class="fas fa-industry text-orange-500"></i><span>工业企业</span></div>
+                                </div>
+
+                                <div class="absolute top-2 left-2 z-[400] bg-white/90 px-3 py-1 rounded shadow border border-gray-200">
+                                    <span class="text-sm font-bold text-blue-700"><i
+                                            class="fas fa-draw-polygon mr-1"></i> {{
+                                            sectionData.name
+                                        }}汇水管控区</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </transition>
+
+    </div>
+</div>
+
+<script>
+    const {createApp, ref, onMounted, nextTick, watch, computed} = Vue;
+
+    createApp({
+        setup() {
+            // ==================== 主地图相关状态 ====================
+            const map = ref(null);
+            const clusterLayerGroup = ref(null);
+            const autoMonitorLayerGroup = ref(null);
+            const layers = ref({selfMonitor: true, autoMonitor: false});
+            const displayStatNumber = ref(108951);
+            const displayStatTitle = ref('自行监测企业总数');
+
+            // ==================== 弹窗与数据相关状态 ====================
+            const selectedFeature = ref(null);
+            const currentTab = ref('basic');
+            const monitorSubTab = ref('day');
+            const sectionData = ref({});
+
+            const monitorPage = ref(1);
+            const alarmPage = ref(1);
+            const pageSize = 5;
+
+            const chartRef = ref(null);
+            let myChart = null;
+
+            // ==================== 断面小地图相关状态 (File 2) ====================
+            const sectionMap = ref(null);
+
+            const tabs = [
+                {key: 'basic', label: '基本信息', icon: 'fas fa-info-circle'},
+                {key: 'monitor', label: '监测信息', icon: 'fas fa-chart-line'},
+                {key: 'alarm', label: '报警清单', icon: 'fas fa-exclamation-triangle'},
+                {key: 'outlet', label: '排污口清单', icon: 'fas fa-list'},
+                {key: 'section', label: '关联断面', icon: 'fas fa-stream'}
+            ];
+
+            const cities = [
+                {name: '武汉', lat: 30.5928, lng: 114.3055},
+                {name: '宜昌', lat: 30.6919, lng: 111.2864},
+                {name: '襄阳', lat: 32.0082, lng: 112.1225},
+                {name: '十堰', lat: 32.6475, lng: 110.7993},
+                {name: '荆州', lat: 30.3342, lng: 112.2393}
+            ];
+
+            // ==================== 数据生成逻辑 (完全保留 File 1) ====================
+            const fullMonitorData = Array.from({length: 45}).map((_, i) => ({
+                time: `2025-12-${25 - (i % 25) < 10 ? '0' + (25 - (i % 25)) : 25 - (i % 25)} ${10 + (i % 5)}:00`,
+                point: i % 2 === 0 ? '废水总排放口' : '雨水排放口',
+                cod: (15 + Math.random() * 10).toFixed(2),
+                nh3: (0.5 + Math.random() * 0.5).toFixed(2),
+                tp: (0.05 + Math.random() * 0.1).toFixed(3),
+                tn: (2.0 + Math.random() * 1.5).toFixed(2)
+            }));
+
+            const fullAlarmData = Array.from({length: 18}).map((_, i) => ({
+                point: '废水总排放口',
+                pollutant: i % 3 === 0 ? 'COD' : (i % 3 === 1 ? '氨氮' : '总磷'),
+                time: `2025-11-${20 - i} 09:30`,
+                standard: i % 3 === 0 ? 50 : 5,
+                value: i % 3 === 0 ? (55 + Math.random() * 20).toFixed(1) : (6 + Math.random() * 2).toFixed(1),
+                emission: (10 + Math.random() * 50).toFixed(1)
+            }));
+
+            const outletList = ref([]);
+
+            const paginatedMonitorData = computed(() => {
+                const start = (monitorPage.value - 1) * pageSize;
+                return fullMonitorData.slice(start, start + pageSize);
+            });
+            const totalMonitorData = fullMonitorData.length;
+
+            const paginatedAlarmData = computed(() => {
+                const start = (alarmPage.value - 1) * pageSize;
+                return fullAlarmData.slice(start, start + pageSize);
+            });
+            const totalAlarmData = fullAlarmData.length;
+
+            const nextPage = (type) => {
+                if (type === 'monitor') monitorPage.value++;
+                if (type === 'alarm') alarmPage.value++;
+            };
+            const prevPage = (type) => {
+                if (type === 'monitor') monitorPage.value--;
+                if (type === 'alarm') alarmPage.value--;
+            };
+
+            // ==================== 核心算法移植 (File 2: 汇水与随机点) ====================
+            const isPointInPolygon = (point, vs) => {
+                const x = point[0], y = point[1];
+                let inside = false;
+                for (let i = 0, j = vs.length - 1; i < vs.length; j = i++) {
+                    const xi = vs[i][0], yi = vs[i][1];
+                    const xj = vs[j][0], yj = vs[j][1];
+                    const intersect = ((yi > y) !== (yj > y)) &&
+                        (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
+                    if (intersect) inside = !inside;
+                }
+                return inside;
+            };
+
+            const generateCatchmentPolygon = (centerLat, centerLng) => {
+                const radius = 0.04; // 调整范围半径适应小地图
+                const numPoints = 12;
+                const coordinates = [];
+                for (let i = 0; i < numPoints; i++) {
+                    const angle = (Math.PI * 2 * i) / numPoints;
+                    const r = radius * (0.7 + Math.random() * 0.6);
+                    const lat = centerLat + r * Math.cos(angle) * 0.8;
+                    const lng = centerLng + r * Math.sin(angle);
+                    coordinates.push([lat, lng]);
+                }
+                return coordinates;
+            };
+
+            const generatePointsInPoly = (polygonCoords, count, type) => {
+                const points = [];
+                let minLat = 90, maxLat = -90, minLng = 180, maxLng = -180;
+                polygonCoords.forEach(p => {
+                    if (p[0] < minLat) minLat = p[0];
+                    if (p[0] > maxLat) maxLat = p[0];
+                    if (p[1] < minLng) minLng = p[1];
+                    if (p[1] > maxLng) maxLng = p[1];
+                });
+
+                let attempts = 0;
+                while (points.length < count && attempts < count * 20) {
+                    attempts++;
+                    const randLat = minLat + Math.random() * (maxLat - minLat);
+                    const randLng = minLng + Math.random() * (maxLng - minLng);
+                    if (isPointInPolygon([randLat, randLng], polygonCoords)) {
+                        points.push({lat: randLat, lng: randLng, type: type});
+                    }
+                }
+                return points;
+            };
+
+            // ==================== 断面地图初始化 (嵌入 File 2 逻辑) ====================
+            const initSectionMap = () => {
+                const container = document.getElementById('section-map');
+                if (!container) return;
+
+                if (sectionMap.value) {
+                    sectionMap.value.remove();
+                    sectionMap.value = null;
+                }
+
+                // 断面中心点逻辑：基于企业坐标偏移
+                const centerLat = selectedFeature.value ? selectedFeature.value.lat + 0.01 : 30.56;
+                const centerLng = selectedFeature.value ? selectedFeature.value.lng + 0.01 : 114.28;
+
+                sectionMap.value = L.map('section-map', {zoomControl: false}).setView([centerLat, centerLng], 13);
+                L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+                    maxZoom: 18
+                }).addTo(sectionMap.value);
+                L.control.zoom({position: 'bottomright'}).addTo(sectionMap.value);
+
+                // 绘制断面Flag
+                const sectionIcon = L.divIcon({
+                    className: 'custom-div-icon',
+                    html: `<i class="fas fa-flag icon-section"></i>`,
+                    iconSize: [30, 42], iconAnchor: [15, 42]
+                });
+                L.marker([centerLat, centerLng], {icon: sectionIcon})
+                    .addTo(sectionMap.value)
+                    .bindPopup(`<b style="color:#ef4444">${sectionData.value.name}</b><br>国考断面`);
+
+                // 绘制汇水区
+                const polyCoords = generateCatchmentPolygon(centerLat, centerLng);
+                L.polygon(polyCoords, {
+                    color: '#4f46e5', weight: 2, dashArray: '5, 10',
+                    fillColor: '#4f46e5', fillOpacity: 0.1
+                }).addTo(sectionMap.value);
+
+                // 随机生成排污口 (蓝色点)
+                const outletPoints = generatePointsInPoly(polyCoords, 20, '排污口');
+                outletPoints.forEach(p => {
+                    L.marker([p.lat, p.lng], {
+                        icon: L.divIcon({
+                            className: 'custom',
+                            html: `<div class="icon-outlet"><i class="fas fa-tint"></i></div>`,
+                            iconSize: [14, 14]
+                        })
+                    }).addTo(sectionMap.value).bindPopup("入河排污口");
+                });
+
+                // 随机生成工业企业 (黄色工厂)
+                const entPoints = generatePointsInPoly(polyCoords, 8, '工业企业');
+                entPoints.forEach(p => {
+                    L.marker([p.lat, p.lng], {
+                        icon: L.divIcon({
+                            className: 'custom',
+                            html: `<i class="fas fa-industry icon-factory"></i>`,
+                            iconSize: [20, 20], iconAnchor: [10, 20]
+                        })
+                    }).addTo(sectionMap.value).bindPopup("关联工业企业");
+                });
+            };
+
+            // ==================== 主地图逻辑 (File 1) ====================
+            const generatePoints = (center, count, spread) => {
+                const arr = [];
+                for (let i = 0; i < count; i++) {
+                    arr.push({
+                        lat: center.lat + (Math.random() - 0.5) * spread,
+                        lng: center.lng + (Math.random() - 0.5) * spread,
+                        id: i
+                    });
+                }
+                return arr;
+            };
+
+            const initLayerData = () => {
+                // 自行监测企业 (聚合)
+                clusterLayerGroup.value = L.markerClusterGroup({
+                    showCoverageOnHover: false,
+                    zoomToBoundsOnClick: true,
+                    spiderfyOnMaxZoom: true,
+                    maxClusterRadius: 60,
+                    iconCreateFunction: function (cluster) {
+                        const count = cluster.getChildCount();
+                        let size = 40;
+                        let cClass = 'cluster-small';
+                        if (count > 100) {
+                            size = 65;
+                            cClass = 'cluster-large';
+                        } else if (count > 20) {
+                            size = 50;
+                            cClass = 'cluster-medium';
+                        }
+                        return L.divIcon({
+                            html: `<div class="bubble-body ${cClass}" style="width:${size}px; height:${size}px;"><span>${count}</span></div>`,
+                            className: 'custom-cluster-icon', iconSize: [size, size]
+                        });
+                    }
+                });
+
+                cities.forEach(city => {
+                    const points = generatePoints(city, 200, 1.5);
+                    points.forEach(p => {
+                        const marker = L.marker([p.lat, p.lng], {
+                            icon: L.divIcon({
+                                className: 'custom-dot',
+                                html: `<div class="single-point-orange"></div>`,
+                                iconSize: [12, 12]
+                            })
+                        });
+
+                        marker.on('click', () => {
+                            selectedFeature.value = {
+                                type: '自行监测企业',
+                                name: `${city.name}化工新材料有限公司`,
+                                cityName: city.name,
+                                lat: p.lat, lng: p.lng
+                            };
+                            currentTab.value = 'basic';
+                            generateOutletList(city.name, p.lat, p.lng);
+
+                            // 关联断面数据模拟
+                            sectionData.value = {
+                                name: `${city.name}皇庄断面`,
+                                province: '湖北省',
+                                city: city.name,
+                                quality: Math.random() > 0.5 ? 'II类' : 'III类',
+                                basin: '长江流域',
+                                river: '汉江',
+                                crossBorder: '否',
+                                factors: '高锰酸盐指数、总磷、氨氮',
+                                station: `${city.name}市环境监测站`,
+                                controlUnit: `汉江${city.name}市皇庄控制单元`,
+                                function: '评价、考核、排名',
+                                target: 'II类'
+                            };
+                        });
+                        clusterLayerGroup.value.addLayer(marker);
+                    });
+                });
+
+                // 自动监测站 (普通)
+                autoMonitorLayerGroup.value = L.layerGroup();
+                cities.forEach(city => {
+                    const points = generatePoints(city, 30, 2.0);
+                    points.forEach(p => {
+                        const marker = L.marker([p.lat, p.lng], {
+                            icon: L.divIcon({
+                                className: 'custom-dot',
+                                html: `<div class="single-point-green"></div>`,
+                                iconSize: [10, 10]
+                            })
+                        });
+
+                        marker.on('click', () => {
+                            selectedFeature.value = {
+                                type: '自动检测站点',
+                                name: `${city.name}国控自动监测站`,
+                                cityName: city.name,
+                                lat: p.lat, lng: p.lng
+                            };
+                            currentTab.value = 'basic';
+                            generateOutletList(city.name, p.lat, p.lng);
+
+                            // 关联断面数据模拟
+                            sectionData.value = {
+                                name: `${city.name}汉江大桥断面`,
+                                province: '湖北省',
+                                city: city.name,
+                                quality: 'II类',
+                                basin: '长江流域',
+                                river: '汉江',
+                                crossBorder: '否',
+                                factors: '总磷、氨氮',
+                                station: `${city.name}市第二监测站`,
+                                controlUnit: `汉江${city.name}市大桥控制单元`,
+                                function: '评价、考核',
+                                target: 'III类'
+                            };
+                        });
+                        autoMonitorLayerGroup.value.addLayer(marker);
+                    });
+                });
+            };
+
+            const renderLayers = () => {
+                if (layers.value.selfMonitor) map.value.addLayer(clusterLayerGroup.value);
+                else map.value.removeLayer(clusterLayerGroup.value);
+
+                if (layers.value.autoMonitor) map.value.addLayer(autoMonitorLayerGroup.value);
+                else map.value.removeLayer(autoMonitorLayerGroup.value);
+
+                let total = 0;
+                let title = "数据统计";
+                if (layers.value.selfMonitor && layers.value.autoMonitor) {
+                    title = "监测企业总数 (混合)";
+                    total = 108951 + 1240;
+                } else if (layers.value.selfMonitor) {
+                    title = "自行监测企业总数";
+                    total = 108951;
+                } else if (layers.value.autoMonitor) {
+                    title = "自动检测站点数";
+                    total = 1240;
+                } else {
+                    title = "未选择图层";
+                    total = 0;
+                }
+                displayStatTitle.value = title;
+                displayStatNumber.value = total;
+            };
+
+            const generateOutletList = (cityName, lat, lng) => {
+                outletList.value = [
+                    {
+                        name: '城镇污水处理厂排污口',
+                        level: 'B',
+                        category: '城镇污水处理厂排污口',
+                        district: '长江新区',
+                        street: '谌家矶街道',
+                        village: '暂无',
+                        isSampling: true,
+                        responsibleEntity: '武汉汉信基础设施投资有限公司',
+                        phone: '13317135888',
+                        remediationType: '无需整治',
+                        remediationStage: '暂无',
+                        lat: lat, lng: lng
+                    },
+                    {
+                        name: '生产废水排放口 (车间)',
+                        level: 'C',
+                        category: '工业排污口',
+                        district: '长江新区',
+                        street: '谌家矶街道',
+                        village: '长江村',
+                        isSampling: true,
+                        responsibleEntity: `${cityName}化工园区管理处`,
+                        phone: '027-86868686',
+                        remediationType: '整治中',
+                        remediationStage: '工程实施',
+                        lat: lat - 0.001, lng: lng + 0.002
+                    }
+                ];
+            };
+
+            const toggleLayer = () => renderLayers();
+            const closeModal = () => selectedFeature.value = null;
+
+            const initChart = () => {
+                if (!chartRef.value) return;
+                if (myChart) myChart.dispose();
+
+                myChart = echarts.init(chartRef.value);
+                const days = ['12-15', '12-16', '12-17', '12-18', '12-19', '12-20', '12-21'];
+                const data = days.map(() => (20 + Math.random() * 20).toFixed(1));
+
+                const option = {
+                    grid: {top: 30, right: 30, bottom: 20, left: 40, containLabel: true},
+                    tooltip: {trigger: 'axis'},
+                    xAxis: {
+                        type: 'category',
+                        boundaryGap: false,
+                        data: days,
+                        axisLine: {lineStyle: {color: '#ccc'}}
+                    },
+                    yAxis: {
+                        type: 'value',
+                        splitLine: {lineStyle: {type: 'dashed'}}
+                    },
+                    series: [{
+                        name: '化学需氧量',
+                        type: 'line',
+                        smooth: true,
+                        symbol: 'circle',
+                        symbolSize: 8,
+                        data: data,
+                        itemStyle: {color: '#3b82f6'},
+                        lineStyle: {width: 3, color: '#3b82f6'},
+                        areaStyle: {
+                            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                                {offset: 0, color: 'rgba(59, 130, 246, 0.3)'},
+                                {offset: 1, color: 'rgba(59, 130, 246, 0.05)'}
+                            ])
+                        },
+                        markLine: {
+                            data: [{yAxis: 50, name: '标准'}],
+                            lineStyle: {color: 'red', type: 'dashed'},
+                            label: {color: 'red'}
+                        }
+                    }]
+                };
+                myChart.setOption(option);
+            };
+
+            watch([currentTab, selectedFeature], async ([newTab, newFeature]) => {
+                if (newFeature && newTab === 'monitor') {
+                    await nextTick();
+                    initChart();
+                    monitorPage.value = 1;
+                }
+                if (newFeature && newTab === 'alarm') {
+                    alarmPage.value = 1;
+                }
+                if (newTab === 'monitor' && monitorSubTab.value) {
+                    if (myChart) myChart.resize();
+                }
+                // 新增：监听 Section Tab 初始化地图
+                if (newTab === 'section') {
+                    await nextTick();
+                    initSectionMap();
+                }
+            });
+
+            watch(monitorSubTab, () => {
+                if (currentTab.value === 'monitor') {
+                    initChart();
+                }
+            });
+
+            onMounted(() => {
+                map.value = L.map('map', {zoomControl: false, attributionControl: false}).setView([31.2, 112.5], 7);
+                L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+                    subdomains: 'abcd',
+                    maxZoom: 19
+                }).addTo(map.value);
+                L.control.zoom({position: 'topright'}).addTo(map.value);
+
+                initLayerData();
+                renderLayers();
+
+                window.addEventListener('resize', () => {
+                    if (myChart) myChart.resize();
+                });
+            });
+
+            return {
+                layers, toggleLayer,
+                displayStatNumber, displayStatTitle,
+                selectedFeature, closeModal,
+                tabs, currentTab, monitorSubTab, chartRef,
+                monitorPage, alarmPage, pageSize, nextPage, prevPage,
+                paginatedMonitorData, totalMonitorData,
+                paginatedAlarmData, totalAlarmData,
+                outletList,
+                sectionData
+            };
+        }
+    }).mount('#app');
+</script>
+</body>
+</html>

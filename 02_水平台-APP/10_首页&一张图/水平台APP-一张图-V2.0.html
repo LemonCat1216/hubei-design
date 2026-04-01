@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>生态环境一张图 - 终极优化版</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --primary: #1890ff;
+            --accent: #0050b3;
+            --text-main: #333;
+            --bg-glass: rgba(255, 255, 255, 0.98);
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            --radius: 16px;
+            --grade-1: #00e400; --grade-2: #00c0ff; --grade-4: #ff4040;
+        }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body, html { margin: 0; padding: 0; height: 100%; width: 100%; font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif; overflow: hidden; background-color: #f0f2f5; }
+
+        #map { height: 100%; width: 100%; z-index: 1; }
+
+        /* --- 顶部区域 --- */
+        .top-container {
+            position: absolute; top: 0; left: 0; right: 0; z-index: 1000; pointer-events: none;
+            display: flex; flex-direction: column;
+            background: linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(255,255,255,0.95) 60%, rgba(255,255,255,0) 100%);
+            padding-bottom: 10px;
+        }
+
+        .app-header {
+            height: 50px; padding: 0 16px; display: flex; align-items: center; justify-content: space-between; pointer-events: auto;
+        }
+        .back-btn { font-size: 18px; color: #333; width: 40px; }
+        .page-title { font-size: 18px; font-weight: 600; flex: 1; text-align: center; margin-right: 40px;} /* 修正居中 */
+
+        /* --- 右上角日期 --- */
+        .date-top-right {
+            position: absolute; top: 12px; right: 16px; z-index: 1001;
+            pointer-events: auto;
+        }
+        .date-btn-top {
+            display: inline-flex; align-items: center; padding: 6px 12px;
+            background: rgba(255,255,255,0.95); border-radius: 12px; font-size: 13px; color: var(--text-main);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1); border: 1px solid transparent;
+            transition: all 0.2s; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+        }
+        .date-btn-top i { margin-right: 6px; color: var(--primary); font-size: 12px; }
+        .date-btn-top:active { background: #e6f7ff; border-color: var(--primary); }
+
+        /* --- 筛选栏 (核心修改) --- */
+        .filter-scroller {
+            pointer-events: auto;
+            display: flex;
+            align-items: center;
+            padding: 0 12px 10px 12px;
+            overflow-x: auto; /* 允许横向滑动 */
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            white-space: nowrap;
+        }
+        .filter-scroller::-webkit-scrollbar { display: none; }
+
+        /* 基础按钮样式 */
+        .filter-btn {
+            position: relative;
+            display: inline-flex; align-items: center; padding: 6px 12px; margin-right: 8px;
+            background: #fff; border-radius: 16px; font-size: 13px; color: var(--text-main);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.08); border: 1px solid transparent;
+            transition: all 0.2s; white-space: nowrap; flex-shrink: 0; /* 防止挤压 */
+        }
+        .filter-btn i { margin-left: 4px; font-size: 10px; color: #999; }
+        .filter-btn.active { border-color: var(--primary); color: var(--primary); background: #e6f7ff; }
+        .filter-btn.active i { color: var(--primary); }
+
+        /* 原生日期选择器覆盖层 */
+        .date-input-wrapper { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; z-index: 10; cursor: pointer; }
+
+        /* 折叠容器 - 展开时支持滑动 */
+        .filter-extras {
+            display: flex;
+            align-items: center;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            max-width: 0;
+            opacity: 0;
+            transition: all 0.4s ease;
+            flex-shrink: 0;
+        }
+        .filter-extras.expanded {
+            max-width: 1000px; /* 足够宽以容纳内容 */
+            opacity: 1;
+        }
+        .filter-extras::-webkit-scrollbar { display: none; }
+
+        /* --- 右侧悬浮工具 --- */
+        .fab-container {
+            position: absolute; right: 16px; top: 120px;
+            display: flex; flex-direction: column; gap: 12px; z-index: 900;
+        }
+        .fab-btn {
+            width: 40px; height: 40px; border-radius: 50%;
+            background: #fff; display: flex; align-items: center; justify-content: center;
+            box-shadow: var(--shadow); color: #555; font-size: 16px; transition: transform 0.2s;
+        }
+        .fab-btn:active { transform: scale(0.95); }
+        .fab-btn.active { color: var(--primary); background: #e6f7ff; }
+
+        /* --- 底部统计卡片 --- */
+        .stats-container {
+            position: absolute; bottom: 0; left: 0; right: 0;
+            z-index: 1100; pointer-events: none;
+            display: flex; justify-content: center;
+            padding: 0 10px 10px 10px;
+        }
+        .stats-card {
+            pointer-events: auto; background: var(--bg-glass); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+            border-radius: 20px; box-shadow: 0 -4px 20px rgba(0,0,0,0.1); width: 100%; max-width: 600px; padding: 0 16px 16px 16px;
+            transform: translateY(0); transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            display: flex; flex-direction: column;
+        }
+        .stats-card.collapsed { transform: translateY(calc(100% - 50px)); }
+
+        .drag-area { width: 100%; height: 30px; display: flex; align-items: center; justify-content: center; cursor: grab; }
+        .drag-handle { width: 40px; height: 5px; background: #ddd; border-radius: 3px; }
+
+        .stats-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; height: 20px; }
+        .stats-title { font-weight: bold; font-size: 16px; display: flex; align-items: center; }
+
+        .stats-grid { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 5px; }
+        .stat-item {
+            flex: 1; background: #f7f9fc; border-radius: 12px; padding: 12px 8px;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            min-width: 90px; border: 1px solid transparent; transition: all 0.2s;
+            cursor: pointer; position: relative;
+        }
+        .stat-item:active { background: #e6f7ff; border-color: var(--primary); }
+        .stat-val { font-size: 20px; font-weight: bold; color: var(--primary); margin-bottom: 4px; }
+        .stat-key { font-size: 12px; color: #666; }
+
+        /* --- 弹窗通用 --- */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.4); z-index: 2000; opacity: 0; visibility: hidden; transition: all 0.3s;
+        }
+        .modal-overlay.show { opacity: 1; visibility: visible; }
+
+        .bottom-modal {
+            position: fixed; bottom: 0; left: 0; right: 0; background: #fff;
+            border-radius: 20px 20px 0 0; z-index: 2001; transform: translateY(100%);
+            transition: transform 0.3s; max-height: 85vh; display: flex; flex-direction: column;
+        }
+        .bottom-modal.show { transform: translateY(0); }
+        .modal-header { padding: 16px; text-align: center; font-weight: bold; border-bottom: 1px solid #eee; position: relative; flex-shrink: 0;}
+        .modal-close { position: absolute; right: 16px; top: 16px; color: #999; padding: 4px; cursor: pointer; }
+        .modal-body { overflow-y: auto; padding: 0; flex: 1; }
+
+        /* --- 修改3：极简版周边查询 --- */
+        .simple-radius-box { padding: 20px; display: flex; flex-direction: column; gap: 20px; }
+
+        /* 胶囊选项组 */
+        .capsule-group { display: flex; gap: 10px; justify-content: center; margin-bottom: 5px; }
+        .capsule-opt {
+            padding: 8px 16px; background: #f5f5f5; border-radius: 20px; font-size: 14px; color: #666; transition: all 0.2s;
+            border: 1px solid transparent; flex-shrink: 0;
+        }
+        .capsule-opt.selected { background: #e6f7ff; color: var(--primary); border-color: var(--primary); font-weight: 500; }
+
+        /* 极简输入行 - 修改：输入框和按钮在一行 */
+        .simple-input-row {
+            display: flex; align-items: center; gap: 10px; padding: 0 5px;
+        }
+        .simple-input {
+            border: 1px solid #eee; border-radius: 12px; flex: 1; font-size: 16px; color: #333;
+            outline: none; padding: 12px 5px; text-align: center; background: #f9f9f9;
+        }
+        .simple-btn {
+            padding: 12px 24px; background: var(--primary); color: #fff; border: none; border-radius: 12px;
+            font-size: 16px; font-weight: 600; white-space: nowrap; flex-shrink: 0;
+        }
+        .simple-btn:active { opacity: 0.9; }
+
+        /* --- 清单表格 --- */
+        .list-search-bar { padding: 10px 16px; border-bottom: 1px solid #f5f5f5; background: #fff; position: sticky; top: 0; z-index: 10; }
+        .search-input-wrap { background: #f0f2f5; border-radius: 8px; padding: 8px 12px; display: flex; align-items: center; }
+        .search-input-wrap input { border: none; background: transparent; margin-left: 8px; flex: 1; outline: none; font-size: 14px; }
+
+        .data-table-container { padding: 0 16px 30px 16px; }
+        .data-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 14px; }
+        .data-table th {
+            text-align: left; color: #888; font-weight: normal; font-size: 12px; padding: 8px 4px;
+            border-bottom: 1px solid #eee; position: sticky; top: 0; background: #fff;
+        }
+        .data-table td { padding: 12px 4px; border-bottom: 1px solid #f9f9f9; color: #333; }
+        .grade-tag { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 4px; }
+        .action-locate { color: var(--primary); padding: 4px 8px; background: #f0f7ff; border-radius: 4px; font-size: 12px; text-align: center; }
+
+        /* 图层抽屉 */
+        .layer-drawer {
+            position: fixed; top: 0; right: -280px; width: 260px; height: 100%;
+            background: #fff; z-index: 3000; transition: right 0.3s; box-shadow: -2px 0 10px rgba(0,0,0,0.1);
+            display: flex; flex-direction: column;
+        }
+        .layer-drawer.open { right: 0; }
+
+        .map-marker { border: 2px solid #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.3); color:#fff; display:flex; justify-content:center; align-items:center; font-size:10px; font-weight:bold; }
+        .marker-circle { border-radius: 50%; }
+
+    </style>
+</head>
+<body>
+
+<div id="map"></div>
+
+<div class="top-container">
+    <div class="app-header">
+        <div class="back-btn"><i class="fas fa-chevron-left"></i></div>
+        <div class="page-title">生态环境一张图</div>
+        <div style="width:40px;"></div>
+    </div>
+
+    <!-- 右上角日期 -->
+    <div class="date-top-right">
+        <div class="date-btn-top">
+            <i class="far fa-calendar-alt"></i>
+            <span id="dateDisplay">2025-10-10</span>
+            <input type="date" class="date-input-wrapper" onchange="handleDateChange(this)">
+        </div>
+    </div>
+
+    <div class="filter-scroller" id="filterBar">
+        <div class="filter-btn active" onclick="openPicker('admin', this)">全省 <i class="fas fa-caret-down"></i></div>
+
+        <div class="filter-extras" id="extraFilters">
+            <div class="filter-btn" onclick="openPicker('scope', this)">当月 <i class="fas fa-caret-down"></i></div>
+            <div class="filter-btn" onclick="openPicker('basin', this)">流域 <i class="fas fa-caret-down"></i></div>
+            <div class="filter-btn" onclick="openPicker('waterbody', this)">重要水体 <i class="fas fa-caret-down"></i></div>
+            <div class="filter-btn" onclick="openPicker('unit', this)">控制单元 <i class="fas fa-caret-down"></i></div>
+            <div class="filter-btn" onclick="openPicker('catchment', this)">汇水范围 <i class="fas fa-caret-down"></i></div>
+        </div>
+    </div>
+</div>
+
+<div class="fab-container">
+    <div class="fab-btn" id="toggleFilterBtn" onclick="toggleExtraFilters()"><i class="fas fa-filter"></i></div>
+    <div class="fab-btn" onclick="toggleLayerDrawer(true)"><i class="fas fa-layer-group" style="color:var(--primary)"></i></div>
+    <div class="fab-btn" onclick="openRadiusModal()"><i class="fas fa-location-dot"></i></div>
+</div>
+
+<div class="stats-container">
+    <div class="stats-card" id="statsCard">
+        <div class="drag-area" id="dragHandle"><div class="drag-handle"></div></div>
+        <div class="stats-header">
+            <div class="stats-title">
+                <span id="locationTitle">全省概况</span>
+            </div>
+        </div>
+        <div class="stats-grid" id="statsGrid"></div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="overlay" onclick="closeAllModals()"></div>
+<div class="bottom-modal" id="pickerModal">
+    <div class="modal-header">
+        <span id="pickerTitle">请选择</span>
+        <i class="fas fa-times modal-close" onclick="closeAllModals()"></i>
+    </div>
+    <div class="modal-body" id="pickerList"></div>
+</div>
+
+<div class="bottom-modal" id="radiusModal">
+    <div class="modal-header">
+        <span>周边查询</span>
+        <i class="fas fa-times modal-close" onclick="closeAllModals()"></i>
+    </div>
+    <div class="modal-body">
+        <div class="simple-radius-box">
+
+            <div class="capsule-group">
+                <div class="capsule-opt" onclick="setRadiusInput(1)">1km</div>
+                <div class="capsule-opt selected" onclick="setRadiusInput(3)">3km</div>
+                <div class="capsule-opt" onclick="setRadiusInput(5)">5km</div>
+                <div class="capsule-opt" onclick="setRadiusInput(10)">10km</div>
+            </div>
+
+            <!-- 修改：输入框和按钮在一行 -->
+            <div class="simple-input-row">
+                <input type="number" id="manualRadiusInput" class="simple-input" placeholder="3" value="3">
+                <span style="font-weight:bold; color:#333; white-space: nowrap; margin-right: 5px;">km</span>
+                <button class="simple-btn" onclick="executeCustomRadius()">查询</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="bottom-modal" id="detailListModal" style="height: 75vh;">
+    <div class="modal-header">
+        <span id="listTitle">点位清单</span>
+        <i class="fas fa-times modal-close" onclick="closeAllModals()"></i>
+    </div>
+    <div class="list-search-bar">
+        <div class="search-input-wrap">
+            <i class="fas fa-search" style="color:#999; font-size:12px;"></i>
+            <input type="text" placeholder="输入名称、编号..." onkeyup="filterTable(this.value)">
+        </div>
+    </div>
+    <div class="modal-body data-table-container">
+        <table class="data-table">
+            <thead>
+            <tr>
+                <th style="width: 45%;">点位名称</th>
+                <th style="width: 25%;">水质类别</th>
+                <th style="width: 30%; text-align:right;">操作</th>
+            </tr>
+            </thead>
+            <tbody id="detailTableBody"></tbody>
+        </table>
+    </div>
+</div>
+
+<div class="layer-drawer" id="layerDrawer">
+    <div style="padding:20px; font-weight:bold; border-bottom:1px solid #eee;">图层控制</div>
+    <div style="padding:15px; flex:1; overflow-y:auto;">
+        <p style="color:#888; font-size:12px; margin-bottom:10px;">点位类型</p>
+        <div style="display:flex; justify-content:space-between; margin-bottom:15px; align-items:center;">
+            <span>国控断面</span>
+            <input type="checkbox" checked onchange="toggleLayer('national', this.checked)">
+        </div>
+        <div style="display:flex; justify-content:space-between; margin-bottom:15px; align-items:center;">
+            <span>省控断面</span>
+            <input type="checkbox" checked onchange="toggleLayer('provincial', this.checked)">
+        </div>
+    </div>
+    <div style="padding:15px; text-align:center; border-top:1px solid #eee; color:#666;" onclick="toggleLayerDrawer(false)">
+        收起面板
+    </div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+    // --- 数据定义 ---
+    const filterData = {
+        admin: { title: "选择行政区域", items: ["全省", "武汉市", "黄石市", "十堰市", "宜昌市", "襄阳市"] },
+        scope: { title: "时间范围", items: ["当月", "累计"] }, // 放回筛选框
+        basin: { title: "选择流域", items: ["全部流域", "长江干流", "汉江流域", "清江流域"] },
+        waterbody: { title: "重要水体", items: ["全部水体", "洪湖", "梁子湖", "斧头湖"] },
+        unit: { title: "控制单元", items: ["单元A01", "单元A02", "单元B05"] },
+        catchment: { title: "汇水范围", items: ["汇水区001", "汇水区002"] }
+    };
+
+    const mockDetailLists = {
+        "国控断面": [
+            { name: "长江武汉段-白沙洲", grade: "II", lat: 30.5, lng: 114.2 },
+            { name: "汉江武汉段-宗关", grade: "III", lat: 30.58, lng: 114.15 },
+            { name: "长江-青山段", grade: "II", lat: 30.65, lng: 114.4 }
+        ],
+        "省控断面": [
+            { name: "府河-东西湖", grade: "IV", lat: 30.7, lng: 114.05 },
+            { name: "通顺河-黄陵", grade: "III", lat: 30.4, lng: 114.1 }
+        ]
+    };
+
+    let currentFilters = { admin: "全省", scope: "当月", date: "2025-10-10" };
+    let activeLayers = { national: true, provincial: true };
+
+    // --- 地图初始化 ---
+    const map = L.map('map', { zoomControl: false, attributionControl: false }).setView([30.9756, 112.2707], 7);
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', { maxZoom: 18, subdomains: 'abcd' }).addTo(map);
+    const layerGroup = L.layerGroup().addTo(map);
+    const nearbyLayer = L.layerGroup().addTo(map);
+
+    function renderMarkers() {
+        layerGroup.clearLayers();
+        let count = 0;
+        if(activeLayers.national) count += 10;
+        if(activeLayers.provincial) count += 15;
+
+        for(let i=0; i<count; i++) {
+            const lat = 30 + Math.random() * 2;
+            const lng = 111 + Math.random() * 4;
+            const color = Math.random() > 0.5 ? 'var(--grade-2)' : 'var(--grade-4)';
+            L.marker([lat, lng], {
+                icon: L.divIcon({
+                    className: '',
+                    html: `<div class="map-marker marker-circle" style="background:${color}; width:20px; height:20px;"></div>`
+                })
+            }).addTo(layerGroup);
+        }
+    }
+    renderMarkers();
+
+    // --- 核心逻辑 ---
+    function updateStats() {
+        const grid = document.getElementById('statsGrid');
+        grid.innerHTML = '';
+        document.getElementById('locationTitle').innerText = `${currentFilters.admin} (${currentFilters.scope})`;
+
+        let hasData = false;
+        if (activeLayers.national) { createStatItem("国控断面", 32, "个", "national"); hasData = true; }
+        if (activeLayers.provincial) { createStatItem("省控断面", 108, "个", "provincial"); hasData = true; }
+
+        if (!hasData) grid.innerHTML = '<div style="color:#999; font-size:12px; width:100%; text-align:center;">请开启图层查看数据</div>';
+    }
+
+    function createStatItem(label, value, unit, typeKey) {
+        const div = document.createElement('div');
+        div.className = 'stat-item';
+        div.innerHTML = `
+                <span class="stat-val">${value}<small style="font-size:12px; margin-left:2px; font-weight:normal; color:#666;">${unit}</small></span>
+                <span class="stat-key">${label}</span>
+            `;
+        div.onclick = () => openDetailTable(label, typeKey);
+        document.getElementById('statsGrid').appendChild(div);
+    }
+    updateStats();
+
+    // --- 日期选择逻辑 ---
+    function handleDateChange(input) {
+        const val = input.value;
+        if(val) {
+            currentFilters.date = val;
+            document.getElementById('dateDisplay').innerText = val;
+            updateStats();
+        }
+    }
+
+    // --- 极简周边查询 ---
+    function openRadiusModal() {
+        document.getElementById('overlay').classList.add('show');
+        document.getElementById('radiusModal').classList.add('show');
+    }
+    function setRadiusInput(km) {
+        document.getElementById('manualRadiusInput').value = km;
+        document.querySelectorAll('.capsule-opt').forEach(b => {
+            if(b.innerText === km+'km') b.classList.add('selected');
+            else b.classList.remove('selected');
+        });
+    }
+    function executeCustomRadius() {
+        const inputVal = document.getElementById('manualRadiusInput').value;
+        if(!inputVal || inputVal <= 0) return;
+        closeAllModals();
+
+        const userLat = 30.5928, userLng = 114.3055;
+        map.flyTo([userLat, userLng], 12);
+        nearbyLayer.clearLayers();
+        L.marker([userLat, userLng]).addTo(nearbyLayer).bindPopup("当前位置").openPopup();
+        L.circle([userLat, userLng], { radius: inputVal * 1000, color: '#1890ff', fillColor: '#1890ff', fillOpacity: 0.1 }).addTo(nearbyLayer);
+
+        currentFilters.admin = `周边 ${inputVal}km`;
+        updateStats();
+        document.getElementById('statsCard').classList.remove('collapsed');
+    }
+
+    // --- 表格清单 ---
+    function openDetailTable(title, typeKey) {
+        document.getElementById('listTitle').innerText = title;
+        const tbody = document.getElementById('detailTableBody');
+        tbody.innerHTML = '';
+
+        let list = mockDetailLists[title] || [];
+        if (list.length === 0) { // 模拟数据
+            for(let i=1; i<=15; i++) {
+                list.push({
+                    name: `${title.substring(0,2)}点位-${i}`,
+                    grade: Math.random()>0.7?"III": (Math.random()>0.5?"II":"IV"),
+                    lat: 30 + Math.random(), lng: 111 + Math.random()
+                });
+            }
+        }
+
+        list.forEach(item => {
+            const tr = document.createElement('tr');
+            const color = item.grade === 'II' ? 'var(--grade-2)' : (item.grade === 'III' ? 'var(--grade-1)' : 'var(--grade-4)');
+            tr.innerHTML = `
+                    <td>
+                        <div style="font-weight:500;">${item.name}</div>
+                        <div style="font-size:10px; color:#999;">E:${item.lng.toFixed(2)} N:${item.lat.toFixed(2)}</div>
+                    </td>
+                    <td><span class="grade-tag" style="background:${color}"></span>${item.grade}类</td>
+                    <td style="text-align:right;">
+                        <span class="action-locate" onclick="locateToPoint(${item.lat}, ${item.lng})">定位</span>
+                    </td>
+                `;
+            tbody.appendChild(tr);
+        });
+
+        document.getElementById('overlay').classList.add('show');
+        document.getElementById('detailListModal').classList.add('show');
+    }
+
+    function filterTable(val) {
+        const filter = val.toLowerCase();
+        const rows = document.getElementById('detailTableBody').getElementsByTagName('tr');
+        for (let i = 0; i < rows.length; i++) {
+            const txt = rows[i].textContent || rows[i].innerText;
+            rows[i].style.display = txt.toLowerCase().indexOf(filter) > -1 ? "" : "none";
+        }
+    }
+    function locateToPoint(lat, lng) {
+        closeAllModals();
+        map.flyTo([lat, lng], 12);
+        L.circleMarker([lat, lng], { radius: 15, color: 'red', fillColor: 'transparent' }).addTo(map);
+        setTimeout(() => { map.eachLayer(l => { if(l instanceof L.CircleMarker) map.removeLayer(l) }); }, 3000);
+    }
+
+    // --- 通用交互 ---
+    function toggleExtraFilters() {
+        document.getElementById('extraFilters').classList.toggle('expanded');
+        document.getElementById('toggleFilterBtn').classList.toggle('active');
+    }
+    function toggleLayerDrawer(open) {
+        const d = document.getElementById('layerDrawer');
+        if(open) d.classList.add('open'); else d.classList.remove('open');
+    }
+    function toggleLayer(k, v) { activeLayers[k] = v; renderMarkers(); updateStats(); }
+
+    function openPicker(type, btn) {
+        const data = filterData[type];
+        document.getElementById('pickerTitle').innerText = data.title;
+        const list = document.getElementById('pickerList');
+        list.innerHTML = '';
+        data.items.forEach(item => {
+            const div = document.createElement('div');
+            div.style.padding = '14px 20px'; div.style.borderBottom = '1px solid #f9f9f9'; div.innerText = item;
+            div.onclick = () => {
+                if(type==='admin') { currentFilters.admin = item; btn.innerHTML = item.substr(0,4)+'... <i class="fas fa-caret-down"></i>'; }
+                if(type==='scope') { currentFilters.scope = item; btn.innerHTML = item + ' <i class="fas fa-caret-down"></i>'; }
+                updateStats();
+                closeAllModals();
+            };
+            list.appendChild(div);
+        });
+        document.getElementById('overlay').classList.add('show');
+        document.getElementById('pickerModal').classList.add('show');
+    }
+    function closeAllModals() {
+        document.getElementById('overlay').classList.remove('show');
+        document.querySelectorAll('.bottom-modal').forEach(m => m.classList.remove('show'));
+    }
+
+    document.getElementById('dragHandle').addEventListener('click', () => {
+        document.getElementById('statsCard').classList.toggle('collapsed');
+    });
+</script>
+</body>
+</html>

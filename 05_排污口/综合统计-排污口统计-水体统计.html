@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>水系排查整治统计表</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: #f5f7fa;
+            padding: 20px;
+        }
+        /* 筛选区域样式 */
+        .filter-container {
+            margin-bottom: 20px;
+            padding: 16px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        .filter-label {
+            font-weight: 600;
+            margin-right: 12px;
+            color: #333;
+        }
+        .filter-select {
+            padding: 8px 12px;
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
+            font-size: 14px;
+            min-width: 120px;
+            cursor: pointer;
+        }
+        .filter-select:focus {
+            outline: none;
+            border-color: #1890ff;
+        }
+        /* 表格样式 */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: #fff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        th, td {
+            padding: 14px 16px;
+            text-align: left;
+            border-bottom: 1px solid #e8e8e8;
+        }
+        th {
+            background-color: #fafafa;
+            font-weight: 600;
+            color: #333;
+        }
+        tr:hover {
+            background-color: #f5faff;
+        }
+        .blue-text {
+            color: #1890ff;
+            cursor: pointer; /* 鼠标悬浮变手型 */
+        }
+        .blue-text:hover {
+            text-decoration: underline; /* 悬浮下划线 */
+        }
+        /* 隐藏行/列的样式 */
+        .hidden {
+            display: none;
+        }
+        /* A/B类隐藏省级列，C类隐藏重点列 */
+        .level-a .province-col, .level-b .province-col {
+            display: none;
+        }
+        .level-c .key-col {
+            display: none;
+        }
+        /* 表头适配：筛选时只显示对应列 */
+        #key-th.hidden, #province-th.hidden {
+            display: none;
+        }
+
+        /* 弹框样式 */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+        .modal-content {
+            background-color: #fff;
+            width: 90%;
+            max-width: 1400px;
+            max-height: 80vh;
+            overflow: auto;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            padding: 20px;
+            position: relative;
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #e8e8e8;
+        }
+        .modal-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+        }
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: #999;
+        }
+        .close-modal:hover {
+            color: #333;
+        }
+        .export-btn {
+            background-color: #1890ff;
+            color: #fff;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .export-btn:hover {
+            background-color: #40a9ff;
+        }
+        /* 弹框内表格样式（匹配截图） */
+        .detail-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+        .detail-table th {
+            background-color: #f8f9fa;
+            padding: 12px 8px;
+            text-align: center;
+            font-weight: 500;
+            color: #666;
+        }
+        .detail-table td {
+            padding: 12px 8px;
+            text-align: center;
+            border-bottom: 1px solid #e8e8e8;
+            color: #333;
+        }
+        .detail-table tr:nth-child(even) {
+            background-color: #fafafa;
+        }
+        .detail-link {
+            color: #1890ff;
+            text-decoration: none;
+        }
+        .detail-link:hover {
+            text-decoration: underline;
+        }
+        /* 分页样式 */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px;
+            gap: 8px;
+            font-size: 14px;
+        }
+        .pagination-btn {
+            padding: 4px 10px;
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
+            background: #fff;
+            cursor: pointer;
+        }
+        .pagination-btn.active {
+            background-color: #1890ff;
+            color: #fff;
+            border-color: #1890ff;
+        }
+        .pagination-btn:disabled {
+            cursor: not-allowed;
+            color: #ccc;
+        }
+    </style>
+</head>
+<body>
+    <!-- 筛选区域 -->
+    <div class="filter-container">
+        <label class="filter-label">水体管理级别：</label>
+        <select id="waterLevelFilter" class="filter-select">
+            <option value="all">全部</option>
+            <option value="A">A类</option>
+            <option value="B">B类</option>
+            <option value="C">C类</option>
+        </select>
+    </div>
+
+    <!-- 表格区域 -->
+    <table id="waterTable">
+        <thead>
+            <tr>
+                <th>水体管理级别</th>
+                <th id="key-th">重点河湖名称</th>
+                <th id="province-th">省级重点河湖名称</th>
+                <th>排查数量</th>
+                <th>监测数量</th>
+                <th>溯源数量</th>
+                <th>整治数量</th>
+                <th>监测率</th>
+                <th>溯源率</th>
+                <th>整治率</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- A类数据 -->
+            <tr data-level="A" class="level-a" data-river="淮河干流">
+                <td>A类</td>
+                <td class="key-col">淮河干流</td>
+                <td class="province-col">淮河（省级重点干流）</td>
+                <td class="blue-text check-count">14</td>
+                <td class="blue-text monitor-count">6</td>
+                <td class="blue-text trace-count">12</td>
+                <td class="blue-text rectify-count">12</td>
+                <td>42.86%</td>
+                <td>85.71%</td>
+                <td>85.71%</td>
+            </tr>
+            <tr data-level="A" class="level-a" data-river="竹竿河">
+                <td>A类</td>
+                <td class="key-col">竹竿河</td>
+                <td class="province-col">竹竿河（豫鄂省级交界河湖）</td>
+                <td class="blue-text check-count">98</td>
+                <td class="blue-text monitor-count">82</td>
+                <td class="blue-text trace-count">98</td>
+                <td class="blue-text rectify-count">96</td>
+                <td>83.67%</td>
+                <td>100.00%</td>
+                <td>97.96%</td>
+            </tr>
+            <!-- B类数据 -->
+            <tr data-level="B" class="level-b" data-river="郁江">
+                <td>B类</td>
+                <td class="key-col">郁江</td>
+                <td class="province-col">郁江（黔渝省级重点河流）</td>
+                <td class="blue-text check-count">12</td>
+                <td class="blue-text monitor-count">12</td>
+                <td class="blue-text trace-count">12</td>
+                <td class="blue-text rectify-count">5</td>
+                <td>100.00%</td>
+                <td>100.00%</td>
+                <td>41.67%</td>
+            </tr>
+            <tr data-level="B" class="level-b" data-river="阿蓬江（唐岩河）">
+                <td>B类</td>
+                <td class="key-col">阿蓬江（唐岩河）</td>
+                <td class="province-col">阿蓬江（渝鄂省级重点河流）</td>
+                <td class="blue-text check-count">34</td>
+                <td class="blue-text monitor-count">34</td>
+                <td class="blue-text trace-count">34</td>
+                <td class="blue-text rectify-count">25</td>
+                <td>100.00%</td>
+                <td>100.00%</td>
+                <td>73.53%</td>
+            </tr>
+            <!-- C类数据：重点河湖名称已去掉括号 -->
+            <tr data-level="C" class="level-c" data-river="东西汊湖">
+                <td>C类</td>
+                <td class="key-col">东西汊湖</td>
+                <td class="province-col">东西汊湖（湖北省省级重点湖泊）</td>
+                <td class="blue-text check-count">17</td>
+                <td class="blue-text monitor-count">17</td>
+                <td class="blue-text trace-count">17</td>
+                <td class="blue-text rectify-count">17</td>
+                <td>100.00%</td>
+                <td>100.00%</td>
+                <td>100.00%</td>
+            </tr>
+            <tr data-level="C" class="level-c" data-river="丹江">
+                <td>C类</td>
+                <td class="key-col">丹江</td>
+                <td class="province-col">丹江（豫鄂陕省级重点河流）</td>
+                <td class="blue-text check-count">12</td>
+                <td class="blue-text monitor-count">11</td>
+                <td class="blue-text trace-count">12</td>
+                <td class="blue-text rectify-count">11</td>
+                <td>91.67%</td>
+                <td>100.00%</td>
+                <td>91.67%</td>
+            </tr>
+            <tr data-level="C" class="level-c" data-river="丹江口水库">
+                <td>C类</td>
+                <td class="key-col">丹江口水库</td>
+                <td class="province-col">丹江口水库（国家级重点水库·省级直管）</td>
+                <td class="blue-text check-count">533</td>
+                <td class="blue-text monitor-count">476</td>
+                <td class="blue-text trace-count">533</td>
+                <td class="blue-text rectify-count">511</td>
+                <td>89.31%</td>
+                <td>100.00%</td>
+                <td>95.87%</td>
+            </tr>
+            <tr data-level="C" class="level-c" data-river="倒水河">
+                <td>C类</td>
+                <td class="key-col">倒水河</td>
+                <td class="province-col">倒水河（湖北省省级重点河流）</td>
+                <td class="blue-text check-count">56</td>
+                <td class="blue-text monitor-count">25</td>
+                <td class="blue-text trace-count">51</td>
+                <td class="blue-text rectify-count">0</td>
+                <td>44.64%</td>
+                <td>91.07%</td>
+                <td>0.00%</td>
+            </tr>
+            <tr data-level="C" class="level-c" data-river="唐白河">
+                <td>C类</td>
+                <td class="key-col">唐白河</td>
+                <td class="province-col">唐白河（豫鄂省级重点河流）</td>
+                <td class="blue-text check-count">27</td>
+                <td class="blue-text monitor-count">23</td>
+                <td class="blue-text trace-count">27</td>
+                <td class="blue-text rectify-count">15</td>
+                <td>85.19%</td>
+                <td>100.00%</td>
+                <td>55.56%</td>
+            </tr>
+            <tr data-level="C" class="level-c" data-river="堵河">
+                <td>C类</td>
+                <td class="key-col">堵河</td>
+                <td class="province-col">堵河（湖北省省级重点河流）</td>
+                <td class="blue-text check-count">241</td>
+                <td class="blue-text monitor-count">119</td>
+                <td class="blue-text trace-count">205</td>
+                <td class="blue-text rectify-count">137</td>
+                <td>49.38%</td>
+                <td>85.06%</td>
+                <td>56.85%</td>
+            </tr>
+            <tr data-level="C" class="level-c" data-river="天门河">
+                <td>C类</td>
+                <td class="key-col">天门河</td>
+                <td class="province-col">天门河（湖北省省级重点河流）</td>
+                <td class="blue-text check-count">611</td>
+                <td class="blue-text monitor-count">240</td>
+                <td class="blue-text trace-count">494</td>
+                <td class="blue-text rectify-count">104</td>
+                <td>39.28%</td>
+                <td>80.85%</td>
+                <td>17.02%</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- 弹框容器 -->
+    <div class="modal" id="detailModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modalTitle">竹竿河 - 排查数量明细</h3>
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <button class="export-btn">导出Excel</button>
+                    <button class="close-modal">&times;</button>
+                </div>
+            </div>
+            <!-- 弹框内明细表格 -->
+            <table class="detail-table">
+                <thead>
+                    <tr>
+                        <th>排污口名称</th>
+                        <th>排污口分类</th>
+                        <th>地市</th>
+                        <th>区县</th>
+                        <th>水体管理级别</th>
+                        <th>是否为重点河湖排污口</th>
+                    </tr>
+                </thead>
+                <tbody id="detailTableBody">
+                    <!-- 动态填充明细数据 -->
+                </tbody>
+            </table>
+            <!-- 分页控件 -->
+            <div class="pagination" id="pagination">
+                <button class="pagination-btn" id="prevBtn" disabled>&lt;</button>
+                <button class="pagination-btn active" data-page="1">1</button>
+                <button class="pagination-btn" data-page="2">2</button>
+                <button class="pagination-btn" data-page="3">3</button>
+                <button class="pagination-btn" data-page="4">4</button>
+                <button class="pagination-btn" data-page="5">5</button>
+                <span>...</span>
+                <button class="pagination-btn" data-page="10">10</button>
+                <button class="pagination-btn" id="nextBtn">&gt;</button>
+                <span>前往 <input type="text" style="width: 30px; text-align: center;" value="1"> 页</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 筛选功能实现 + 列显示控制
+        document.addEventListener('DOMContentLoaded', function() {
+            const filterSelect = document.getElementById('waterLevelFilter');
+            const tableRows = document.querySelectorAll('#waterTable tbody tr');
+            const keyTh = document.getElementById('key-th');
+            const provinceTh = document.getElementById('province-th');
+
+            // 初始化筛选
+            updateTableView('all');
+            filterSelect.addEventListener('change', function() {
+                const selectedLevel = this.value;
+                updateTableView(selectedLevel);
+            });
+
+            // 核心：更新表格显示（行+列）
+            function updateTableView(level) {
+                keyTh.classList.remove('hidden');
+                provinceTh.classList.remove('hidden');
+
+                tableRows.forEach(row => {
+                    const rowLevel = row.getAttribute('data-level');
+                    if (level === 'all' || rowLevel === level) {
+                        row.classList.remove('hidden');
+                    } else {
+                        row.classList.add('hidden');
+                    }
+                });
+
+                if (level === 'A' || level === 'B') {
+                    provinceTh.classList.add('hidden');
+                } else if (level === 'C') {
+                    keyTh.classList.add('hidden');
+                }
+            }
+
+            // ---------------------- 弹框功能实现 ----------------------
+            const modal = document.getElementById('detailModal');
+            const modalTitle = document.getElementById('modalTitle');
+            const detailTableBody = document.getElementById('detailTableBody');
+            const closeModalBtn = document.querySelector('.close-modal');
+            const blueTexts = document.querySelectorAll('.blue-text');
+            
+            // 模拟竹竿河排查数量明细数据（匹配截图）
+            const detailData = [
+                {
+                    name: '孝感市大悟县丰店镇后湾西500米其他排污口',
+                    type: '其他排口',
+                    city: '孝感市',
+                    district: '大悟县',
+                    level: 'B',
+                    isKey: '是'
+                },
+                {
+                    name: '孝感市大悟县王店村南田小学北780米其他排污口',
+                    type: '其他排口',
+                    city: '孝感市',
+                    district: '大悟县',
+                    level: 'B',
+                    isKey: '是'
+                },
+                {
+                    name: '孝感市大悟县丰店水库王家垅西北480米其他排污口',
+                    type: '其他排口',
+                    city: '孝感市',
+                    district: '大悟县',
+                    level: 'B',
+                    isKey: '是'
+                },
+                {
+                    name: '孝感市大悟县丰店水库王家垅南470米其他排污口',
+                    type: '其他排口',
+                    city: '孝感市',
+                    district: '大悟县',
+                    level: 'B',
+                    isKey: '是'
+                },
+                {
+                    name: '孝感市大悟县丰店水库西侧尖山村东南390米沟渠入河排口',
+                    type: '其他排口',
+                    city: '孝感市',
+                    district: '大悟县',
+                    level: 'B',
+                    isKey: '是'
+                },
+                {
+                    name: '孝感市大悟县丰店水库西侧尖山村东南430米沟渠入河排口',
+                    type: '其他排口',
+                    city: '孝感市',
+                    district: '大悟县',
+                    level: 'B',
+                    isKey: '是'
+                },
+                {
+                    name: '孝感市大悟县丰店镇段山村东600米其他排污口',
+                    type: '其他排口',
+                    city: '孝感市',
+                    district: '大悟县',
+                    level: 'B',
+                    isKey: '是'
+                },
+                {
+                    name: '孝感市大悟县丰店镇赵畈村北800米其他排污口',
+                    type: '其他排口',
+                    city: '孝感市',
+                    district: '大悟县',
+                    level: 'B',
+                    isKey: '是'
+                },
+                {
+                    name: '孝感市大悟县丰店镇方湾村南300米其他排污口',
+                    type: '其他排口',
+                    city: '孝感市',
+                    district: '大悟县',
+                    level: 'B',
+                    isKey: '是'
+                },
+                {
+                    name: '孝感市大悟县丰店镇张冲村西500米其他排污口',
+                    type: '其他排口',
+                    city: '孝感市',
+                    district: '大悟县',
+                    level: 'B',
+                    isKey: '是'
+                }
+            ];
+
+            // 填充明细表格数据
+            function fillDetailTable(data) {
+                detailTableBody.innerHTML = '';
+                data.forEach(item => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td><a href="#" class="detail-link">${item.name}</a></td>
+                        <td>${item.type}</td>
+                        <td>${item.city}</td>
+                        <td>${item.district}</td>
+                        <td>${item.level}</td>
+                        <td>${item.isKey}</td>
+                    `;
+                    detailTableBody.appendChild(tr);
+                });
+            }
+
+            // 打开弹框
+            blueTexts.forEach(text => {
+                text.addEventListener('click', function() {
+                    // 获取所属河湖名称和点击的统计类型
+                    const row = this.closest('tr');
+                    // 适配修改后的data-river值（去掉括号）
+                    const riverName = row.getAttribute('data-river');
+                    const countType = this.classList.contains('check-count') ? '排查数量' :
+                                      this.classList.contains('monitor-count') ? '监测数量' :
+                                      this.classList.contains('trace-count') ? '溯源数量' : '整治数量';
+                    
+                    // 更新弹框标题
+                    modalTitle.textContent = `${riverName} - ${countType}明细`;
+                    // 填充明细数据（这里默认用竹竿河数据，可根据实际需求扩展）
+                    fillDetailTable(detailData);
+                    // 显示弹框
+                    modal.style.display = 'flex';
+                });
+            });
+
+            // 关闭弹框
+            closeModalBtn.addEventListener('click', function() {
+                modal.style.display = 'none';
+            });
+
+            // 点击弹框外部关闭
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    modal.style.display = 'none';
+                }
+            });
+
+            // 分页功能（简单模拟）
+            const paginationBtns = document.querySelectorAll('.pagination-btn[data-page]');
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            let currentPage = 1;
+
+            paginationBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    currentPage = parseInt(this.getAttribute('data-page'));
+                    updatePagination();
+                });
+            });
+
+            prevBtn.addEventListener('click', function() {
+                if (currentPage > 1) {
+                    currentPage--;
+                    updatePagination();
+                }
+            });
+
+            nextBtn.addEventListener('click', function() {
+                if (currentPage < 10) {
+                    currentPage++;
+                    updatePagination();
+                }
+            });
+
+            function updatePagination() {
+                // 更新分页按钮激活状态
+                paginationBtns.forEach(btn => {
+                    const page = parseInt(btn.getAttribute('data-page'));
+                    if (page === currentPage) {
+                        btn.classList.add('active');
+                    } else {
+                        btn.classList.remove('active');
+                    }
+                });
+                // 禁用/启用上一页/下一页
+                prevBtn.disabled = currentPage === 1;
+                nextBtn.disabled = currentPage === 10;
+                // 更新输入框值
+                document.querySelector('.pagination input').value = currentPage;
+            }
+
+            // 导出Excel按钮点击事件（模拟）
+            document.querySelector('.export-btn').addEventListener('click', function() {
+                alert('Excel导出功能已触发，实际项目中可结合SheetJS等库实现');
+            });
+        });
+    </script>
+</body>
+</html>

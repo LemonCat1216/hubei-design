@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>地市水质分析 - 湖北省</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        body { font-family: 'Inter', system-ui, -apple-system, sans-serif; background-color: #f1f5f9; }
+        /* 隐藏滚动条但保留功能 */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        /* 图表容器高度 */
+        .chart-container { height: 300px; width: 100%; }
+    </style>
+</head>
+<body class="text-slate-700">
+
+<div class="max-w-md mx-auto bg-slate-50 min-h-screen shadow-2xl relative">
+
+    <header class="bg-blue-600 text-white sticky top-0 z-50 shadow-md">
+        <div class="flex items-center justify-between p-4">
+            <button class="p-1 hover:bg-blue-700 rounded">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+            </button>
+            <h1 class="text-lg font-bold">地市分析-国控</h1>
+            <button class="p-1 hover:bg-blue-700 rounded">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+            </button>
+        </div>
+
+        <div class="bg-blue-500 px-4 py-3 flex justify-between items-center text-sm">
+            <div class="flex items-center space-x-1 cursor-pointer">
+                <span>湖北省</span>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+            </div>
+            <div class="bg-blue-700 bg-opacity-50 px-3 py-1 rounded-full flex items-center space-x-2 cursor-pointer border border-blue-400">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                <span>2025年10月</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="p-4 space-y-4">
+
+        <div class="grid grid-cols-2 gap-4">
+            <div class="bg-white p-4 rounded-xl shadow-sm border-l-4 border-blue-500 relative overflow-hidden">
+                <div class="text-xs text-slate-500 mb-1">I-III类水质优良率</div>
+                <div class="flex items-end space-x-2">
+                    <span class="text-2xl font-bold text-slate-800">88.5%</span>
+                    <span class="text-xs text-red-500 font-medium flex items-center mb-1">
+                            ↓ 0.5%
+                        </span>
+                </div>
+                <div class="absolute -right-2 -bottom-2 opacity-10 text-blue-500">
+                    <svg class="w-16 h-16" fill="currentColor" viewBox="0 0 20 20"><path d="M2 10a8 8 0 018-8v8h8a8 8 0 11-16 0z"></path><path d="M12 2.252A8.014 8.014 0 0117.748 8H12V2.252z"></path></svg>
+                </div>
+            </div>
+
+            <div class="bg-white p-4 rounded-xl shadow-sm border-l-4 border-red-500 relative overflow-hidden">
+                <div class="text-xs text-slate-500 mb-1">劣V类水质占比</div>
+                <div class="flex items-end space-x-2">
+                    <span class="text-2xl font-bold text-slate-800">0.5%</span>
+                    <span class="text-xs text-green-500 font-medium flex items-center mb-1">
+                            持平 0%
+                        </span>
+                </div>
+                <div class="absolute -right-2 -bottom-2 opacity-10 text-red-500">
+                    <svg class="w-16 h-16" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>
+                </div>
+            </div>
+        </div>
+
+        <section class="bg-white rounded-xl shadow-sm p-4">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="font-bold text-slate-800 border-l-4 border-blue-600 pl-3">各地市水质占比</h2>
+                <span class="text-xs text-slate-400 bg-slate-100 px-2 py-1 rounded">单位: %</span>
+            </div>
+            <div id="chart-composition" class="chart-container"></div>
+            <p class="text-xs text-slate-400 mt-2 text-center">Tip: 左右滑动图表查看更多地市</p>
+        </section>
+
+        <section class="bg-white rounded-xl shadow-sm p-4">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="font-bold text-slate-800 border-l-4 border-cyan-500 pl-3">I-III类水质占比排名</h2>
+            </div>
+            <div id="chart-ranking" class="chart-container"></div>
+        </section>
+
+        <section class="bg-white rounded-xl shadow-sm p-4 mb-8">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="font-bold text-slate-800 border-l-4 border-indigo-500 pl-3">各地市水质指数</h2>
+            </div>
+            <div id="chart-index" class="chart-container"></div>
+        </section>
+
+    </main>
+</div>
+
+<script>
+    // 定义颜色系统 (更现代的配色)
+    const colors = {
+        c1: '#34d399', // II类 - Green
+        c2: '#60a5fa', // III类 - Blue
+        c3: '#fbbf24', // IV类 - Yellow
+        c4: '#f87171', // V类 - Orange/Red
+        c5: '#ef4444'  // 劣V类 - Red
+    };
+
+    const cityData = ['武汉', '黄石', '十堰', '宜昌', '襄阳', '鄂州', '荆门', '孝感', '荆州', '黄冈', '咸宁', '随州', '恩施', '仙桃', '天门', '潜江', '神农架'];
+
+    // --- 图表 1: 水质占比 (堆叠柱状图) ---
+    const initCompositionChart = () => {
+        const chart = echarts.init(document.getElementById('chart-composition'));
+
+        // 模拟数据生成
+        const generateData = () => cityData.map(() => Math.floor(Math.random() * 30));
+
+        const option = {
+            tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+            legend: { top: '0%', itemWidth: 10, itemHeight: 10, textStyle: { fontSize: 10 } },
+            grid: { left: '3%', right: '4%', bottom: '10%', top: '15%', containLabel: true },
+            // 关键交互：数据缩放，解决拥挤问题
+            dataZoom: [{ type: 'inside', start: 0, end: 60 }, { start: 0, end: 60, handleSize: '80%' }],
+            xAxis: {
+                type: 'category',
+                data: cityData,
+                axisLabel: { interval: 0, rotate: 0, fontSize: 10, color: '#64748b' }
+            },
+            yAxis: { type: 'value', max: 100, axisLabel: { color: '#94a3b8' } },
+            series: [
+                { name: 'I-II类', type: 'bar', stack: 'total', color: colors.c1, data: cityData.map(() => 40 + Math.random()*20) },
+                { name: 'III类', type: 'bar', stack: 'total', color: colors.c2, data: cityData.map(() => 20 + Math.random()*10) },
+                { name: 'IV类', type: 'bar', stack: 'total', color: colors.c3, data: cityData.map(() => Math.random()*10) },
+                { name: 'V类', type: 'bar', stack: 'total', color: colors.c4, data: cityData.map(() => Math.random()*5) },
+                { name: '劣V类', type: 'bar', stack: 'total', color: colors.c5, data: cityData.map(() => Math.random()*2) }
+            ]
+        };
+        chart.setOption(option);
+        return chart;
+    };
+
+    // --- 图表 2: 排名 (渐变柱状图) ---
+    const initRankingChart = () => {
+        const chart = echarts.init(document.getElementById('chart-ranking'));
+        // 模拟降序数据
+        const data = cityData.map(() => Math.floor(60 + Math.random() * 40)).sort((a, b) => b - a);
+
+        const option = {
+            tooltip: { trigger: 'axis' },
+            grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
+            xAxis: {
+                type: 'category',
+                data: cityData,
+                axisLabel: { interval: 0, rotate: 45, fontSize: 10, color: '#64748b' } // 旋转标签
+            },
+            yAxis: { type: 'value', axisLine: {show: false}, splitLine: { lineStyle: { type: 'dashed' } } },
+            series: [{
+                name: '优良率',
+                type: 'bar',
+                data: data,
+                itemStyle: {
+                    borderRadius: [4, 4, 0, 0],
+                    color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                        { offset: 0, color: '#3b82f6' },
+                        { offset: 1, color: '#93c5fd' }
+                    ])
+                }
+            }]
+        };
+        chart.setOption(option);
+        return chart;
+    };
+
+    // --- 图表 3: 水质指数 (折线图) ---
+    const initIndexChart = () => {
+        const chart = echarts.init(document.getElementById('chart-index'));
+        // 模拟上升后骤降的数据趋势（参考原图）
+        let data = [];
+        for(let i=0; i<12; i++) data.push(2.5 + i * 0.2);
+        for(let i=0; i<5; i++) data.push(0);
+
+        const option = {
+            tooltip: { trigger: 'axis' },
+            grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
+            xAxis: {
+                type: 'category',
+                boundaryGap: false,
+                data: cityData,
+                axisLabel: { interval: 0, rotate: 45, fontSize: 10 }
+            },
+            yAxis: { type: 'value' },
+            series: [{
+                name: '指数',
+                type: 'line',
+                smooth: true,
+                symbol: 'circle',
+                symbolSize: 8,
+                lineStyle: { width: 3, color: '#6366f1' },
+                itemStyle: { color: '#fff', borderColor: '#6366f1', borderWidth: 2 },
+                areaStyle: {
+                    color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                        { offset: 0, color: 'rgba(99, 102, 241, 0.3)' },
+                        { offset: 1, color: 'rgba(99, 102, 241, 0.0)' }
+                    ])
+                },
+                data: data
+            }]
+        };
+        chart.setOption(option);
+        return chart;
+    };
+
+    // 初始化所有图表
+    const charts = [initCompositionChart(), initRankingChart(), initIndexChart()];
+
+    // 响应式调整
+    window.addEventListener('resize', () => {
+        charts.forEach(chart => chart.resize());
+    });
+</script>
+</body>
+</html>

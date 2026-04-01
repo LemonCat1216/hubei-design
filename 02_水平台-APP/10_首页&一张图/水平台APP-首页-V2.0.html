@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>水质监测大屏 - 完整重构版</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        .donut-chart {
+            background: conic-gradient(
+                    #3B82F6 0% 12%,   /* I类 */
+                    #06B6D4 12% 66%,  /* II类 */
+                    #10B981 66% 87%,  /* III类 */
+                    #FBBF24 87% 97%,  /* IV类 */
+                    #F97316 97% 99%,  /* V类 */
+                    #EF4444 99% 100%  /* 劣V类 */
+            );
+            border-radius: 50%;
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        /* 增加平滑滚动 */
+        html { scroll-behavior: smooth; }
+    </style>
+</head>
+<body class="bg-[#F4F7F9] text-slate-800 font-sans antialiased pb-24">
+
+<div class="max-w-md mx-auto bg-[#F4F7F9] min-h-screen relative">
+
+    <header class="bg-gradient-to-b from-blue-700 to-blue-500 rounded-b-[2.5rem] pt-12 pb-12 px-5 text-white relative shadow-md">
+        <div class="flex justify-between items-center mb-6">
+            <h1 class="text-xl font-bold tracking-wide">水环境作战指挥舱</h1>
+            <span class="text-xs bg-black/20 px-3 py-1.5 rounded-full cursor-pointer backdrop-blur-sm">累计月 ▾</span>
+        </div>
+        <div class="flex justify-between items-end relative z-10">
+            <div class="glass rounded-2xl p-3 w-[28%] text-center">
+                <div class="text-[10px] text-blue-100 mb-1 opacity-80">全省各市排名</div>
+                <div class="text-2xl font-bold">21<span class="text-xs font-normal ml-0.5">位</span></div>
+            </div>
+            <div class="w-[40%] text-center flex flex-col items-center transform -translate-y-3">
+                <div class="w-16 h-16 bg-gradient-to-br from-yellow-300 to-yellow-500 rounded-full flex items-center justify-center shadow-xl border-4 border-white/20 mb-2">
+                    <span class="text-2xl drop-shadow-md">🏆</span>
+                </div>
+                <div class="text-xs text-blue-50 font-medium mb-0.5">中省六市排名</div>
+                <div class="text-3xl font-extrabold tracking-tight">第 3 位</div>
+            </div>
+            <div class="glass rounded-2xl p-3 w-[28%] text-center">
+                <div class="text-[10px] text-blue-100 mb-1 opacity-80">长江流域排名</div>
+                <div class="text-2xl font-bold">9<span class="text-xs font-normal ml-0.5">位</span></div>
+            </div>
+        </div>
+    </header>
+
+    <section class="px-4 -mt-6 relative z-20">
+        <div class="bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-4 border border-white">
+            <div class="flex justify-between items-start gap-2">
+                <div class="flex flex-col items-center w-1/5 cursor-pointer">
+                    <div class="w-11 h-11 bg-blue-50 rounded-xl flex items-center justify-center text-lg mb-1.5 text-blue-600">📊</div>
+                    <span class="text-[10px] text-slate-600 text-center font-medium leading-tight">省控考核</span>
+                </div>
+                <div class="flex flex-col items-center w-1/5 cursor-pointer">
+                    <div class="w-11 h-11 bg-indigo-50 rounded-xl flex items-center justify-center text-lg mb-1.5 text-indigo-600">📈</div>
+                    <span class="text-[10px] text-slate-600 text-center font-medium leading-tight">国控考核</span>
+                </div>
+                <div class="flex flex-col items-center w-1/5 cursor-pointer relative">
+                    <div class="absolute top-0 right-1 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white"></div>
+                    <div class="w-11 h-11 bg-red-50 rounded-xl flex items-center justify-center text-lg mb-1.5 text-red-500">🎯</div>
+                    <span class="text-[10px] text-red-600 text-center font-bold leading-tight">未达Ⅲ类</span>
+                </div>
+                <div class="flex flex-col items-center w-1/5 cursor-pointer">
+                    <div class="w-11 h-11 bg-orange-50 rounded-xl flex items-center justify-center text-lg mb-1.5 text-orange-500">⚠️</div>
+                    <span class="text-[10px] text-slate-600 text-center font-medium leading-tight">国控风险</span>
+                </div>
+                <div class="flex flex-col items-center w-1/5 cursor-pointer">
+                    <div class="w-11 h-11 bg-emerald-50 rounded-xl flex items-center justify-center text-lg mb-1.5 text-emerald-600">📡</div>
+                    <span class="text-[10px] text-slate-600 text-center font-medium leading-tight">自动站</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="mt-5 px-4">
+        <div class="bg-white rounded-2xl shadow-sm p-4">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-[15px] font-bold text-slate-800 flex items-center">
+                    <div class="w-1 h-3.5 bg-blue-500 rounded-full mr-2"></div>
+                    国控断面水质监测
+                </h2>
+                <span class="text-xs text-slate-400">更新于 22:00</span>
+            </div>
+
+            <div class="flex items-center justify-between">
+                <div class="relative w-28 h-28 flex-shrink-0">
+                    <div class="w-full h-full donut-chart"></div>
+                    <div class="absolute inset-[8px] bg-white rounded-full flex flex-col items-center justify-center shadow-inner">
+                        <span class="text-[10px] text-slate-500">实测总数</span>
+                        <span class="text-xl font-bold text-slate-800">167</span>
+                    </div>
+                </div>
+                <div class="ml-4 flex-1 space-y-2">
+                    <div class="bg-gradient-to-r from-emerald-50 to-white border border-emerald-100 rounded-lg p-2.5">
+                        <div class="text-[10px] text-emerald-600 mb-0.5">I-III类优良占比 (154个)</div>
+                        <div class="text-lg font-bold text-emerald-700">92.1<span class="text-sm font-normal">%</span></div>
+                    </div>
+                    <div class="bg-gradient-to-r from-red-50 to-white border border-red-100 rounded-lg p-2.5">
+                        <div class="text-[10px] text-red-600 mb-0.5">劣V类高危占比 (3个)</div>
+                        <div class="text-lg font-bold text-red-700">3.0<span class="text-sm font-normal">%</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="mt-4 px-4">
+        <div class="bg-white rounded-2xl shadow-sm p-4">
+            <h2 class="text-[15px] font-bold text-slate-800 flex items-center mb-3">
+                <div class="w-1 h-3.5 bg-red-500 rounded-full mr-2"></div>
+                实时超标清单
+            </h2>
+            <div class="space-y-2.5">
+                <div class="flex items-center justify-between bg-slate-50 p-2.5 rounded-xl border border-slate-100">
+                    <div class="flex items-center gap-3">
+                        <div class="w-9 h-9 rounded-lg bg-yellow-100 text-yellow-600 flex items-center justify-center font-bold text-sm">IV</div>
+                        <div>
+                            <div class="text-sm font-bold text-slate-700">铜陵 - 郊区</div>
+                            <div class="text-[10px] text-slate-400 mt-0.5">周仲市 · 长江流域</div>
+                        </div>
+                    </div>
+                    <button class="text-[10px] px-3 py-1 bg-white border border-slate-200 rounded-full shadow-sm text-slate-600">详情</button>
+                </div>
+                <div class="flex items-center justify-between bg-slate-50 p-2.5 rounded-xl border border-slate-100">
+                    <div class="flex items-center gap-3">
+                        <div class="w-9 h-9 rounded-lg bg-yellow-100 text-yellow-600 flex items-center justify-center font-bold text-sm">IV</div>
+                        <div>
+                            <div class="text-sm font-bold text-slate-700">黄山 - 歙县</div>
+                            <div class="text-[10px] text-slate-400 mt-0.5">周仲市 · 长江流域</div>
+                        </div>
+                    </div>
+                    <button class="text-[10px] px-3 py-1 bg-white border border-slate-200 rounded-full shadow-sm text-slate-600">详情</button>
+                </div>
+                <div class="text-center pt-1">
+                    <span class="text-[11px] text-blue-500 cursor-pointer">查看全部超标断面 ▾</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="mt-4 px-4">
+        <div class="flex gap-3">
+            <div class="flex-1 bg-white rounded-2xl shadow-sm p-4 flex flex-col items-center border border-slate-50">
+                <span class="text-xs text-slate-500 mb-1">超标排放企业</span>
+                <div class="text-2xl font-bold text-blue-500">0<span class="text-xs font-normal text-slate-400 ml-1">家</span></div>
+            </div>
+            <div class="flex-1 bg-white rounded-2xl shadow-sm p-4 flex flex-col items-center border border-slate-50">
+                <span class="text-xs text-slate-500 mb-1">异常报警企业</span>
+                <div class="text-2xl font-bold text-orange-500">120<span class="text-xs font-normal text-slate-400 ml-1">家</span></div>
+            </div>
+        </div>
+    </section>
+
+    <section class="mt-4 px-4">
+        <div class="bg-white rounded-2xl shadow-sm p-4">
+            <div class="flex justify-between items-center mb-3">
+                <h2 class="text-[15px] font-bold text-slate-800 flex items-center">
+                    <div class="w-1 h-3.5 bg-indigo-500 rounded-full mr-2"></div>
+                    省级问题识别
+                </h2>
+                <span class="text-xs bg-slate-100 text-slate-500 px-2 py-1 rounded">2026-03 ▾</span>
+            </div>
+            <div class="grid grid-cols-3 gap-2">
+                <div class="bg-slate-50 rounded-lg p-3 text-center">
+                    <div class="text-lg font-bold text-blue-600 mb-0.5">81</div>
+                    <div class="text-[10px] text-slate-500">水质降级</div>
+                </div>
+                <div class="bg-slate-50 rounded-lg p-3 text-center">
+                    <div class="text-lg font-bold text-blue-600 mb-0.5">6</div>
+                    <div class="text-[10px] text-slate-500">重点工作</div>
+                </div>
+                <div class="bg-slate-50 rounded-lg p-3 text-center">
+                    <div class="text-lg font-bold text-orange-500 mb-0.5">986</div>
+                    <div class="text-[10px] text-slate-500">环保信访</div>
+                </div>
+                <div class="bg-slate-50 rounded-lg p-3 text-center">
+                    <div class="text-lg font-bold text-red-500 mb-0.5">142</div>
+                    <div class="text-[10px] text-slate-500">水质预警</div>
+                </div>
+                <div class="bg-slate-50 rounded-lg p-3 text-center">
+                    <div class="text-lg font-bold text-blue-600 mb-0.5">32</div>
+                    <div class="text-[10px] text-slate-500">任务落实</div>
+                </div>
+                <div class="bg-slate-50 rounded-lg p-3 text-center">
+                    <div class="text-lg font-bold text-slate-400 mb-0.5">0</div>
+                    <div class="text-[10px] text-slate-500">其他问题</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="mt-4 px-4">
+        <div class="bg-white rounded-2xl shadow-sm p-4">
+            <div class="flex justify-between items-center mb-3">
+                <h2 class="text-[15px] font-bold text-slate-800 flex items-center">
+                    <div class="w-1 h-3.5 bg-purple-500 rounded-full mr-2"></div>
+                    断面预测数据
+                </h2>
+                <div class="flex gap-2">
+                    <span class="text-[10px] bg-slate-100 px-2 py-1 rounded">周度 ▾</span>
+                    <span class="text-[10px] bg-slate-100 px-2 py-1 rounded">全部 ▾</span>
+                </div>
+            </div>
+            <div class="flex gap-2 mb-3">
+                <button class="flex-1 bg-blue-500 text-white text-xs py-2 rounded-lg font-medium flex justify-center items-center gap-1 shadow-sm">
+                    <span>■</span> 预测超标 0个
+                </button>
+                <button class="flex-1 bg-red-500 text-white text-xs py-2 rounded-lg font-medium flex justify-center items-center gap-1 shadow-sm">
+                    <span>▲</span> 越线超标 0个
+                </button>
+            </div>
+            <div class="w-full h-40 bg-slate-50 rounded-xl border border-dashed border-slate-200 flex flex-col items-center justify-center relative">
+                <div class="absolute left-4 top-4 bottom-4 w-px bg-slate-200"></div>
+                <div class="absolute left-4 right-4 bottom-4 h-px bg-slate-200"></div>
+                <svg class="w-8 h-8 text-slate-300 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                <span class="text-xs text-slate-400">当前周期暂无预测数据</span>
+            </div>
+        </div>
+    </section>
+
+    <section class="mt-4 px-4 mb-6">
+        <div class="bg-white rounded-2xl shadow-sm p-4">
+            <h2 class="text-[15px] font-bold text-slate-800 flex items-center mb-3">
+                <div class="w-1 h-3.5 bg-teal-500 rounded-full mr-2"></div>
+                环保舆情
+            </h2>
+            <div class="space-y-0 text-sm">
+                <div class="flex text-[11px] text-slate-400 pb-2 border-b border-slate-100 mb-2">
+                    <div class="w-8 text-center">序号</div>
+                    <div class="flex-1">舆情名称</div>
+                    <div class="w-20 text-center">时间</div>
+                    <div class="w-16 text-center">来源</div>
+                </div>
+                <div class="flex items-center py-2.5 border-b border-slate-50 hover:bg-slate-50">
+                    <div class="w-8 text-center text-slate-500 text-xs font-medium">1</div>
+                    <div class="flex-1 truncate text-slate-700 text-xs">江边散步发现排...</div>
+                    <div class="w-20 text-center text-[10px] text-slate-400">03-28</div>
+                    <div class="w-16 text-center text-[10px] text-blue-500 bg-blue-50 py-0.5 rounded">今日头条</div>
+                </div>
+                <div class="flex items-center py-2.5 border-b border-slate-50 hover:bg-slate-50">
+                    <div class="w-8 text-center text-slate-500 text-xs font-medium">2</div>
+                    <div class="flex-1 truncate text-slate-700 text-xs">露营地水质于...</div>
+                    <div class="w-20 text-center text-[10px] text-slate-400">03-28</div>
+                    <div class="w-16 text-center text-[10px] text-orange-500 bg-orange-50 py-0.5 rounded">微博</div>
+                </div>
+                <div class="flex items-center py-2.5 border-b border-slate-50 hover:bg-slate-50">
+                    <div class="w-8 text-center text-slate-500 text-xs font-medium">3</div>
+                    <div class="flex-1 truncate text-slate-700 text-xs">某某企业夜间...</div>
+                    <div class="w-20 text-center text-[10px] text-slate-400">03-28</div>
+                    <div class="w-16 text-center text-[10px] text-blue-500 bg-blue-50 py-0.5 rounded">今日头条</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <nav class="fixed bottom-0 w-full max-w-md bg-white/90 backdrop-blur-md border-t border-slate-200 flex justify-around py-2 pb-safe shadow-[0_-10px_20px_rgba(0,0,0,0.03)] z-50">
+        <div class="flex flex-col items-center p-2 text-blue-600">
+            <span class="text-[22px]">🏠</span>
+            <span class="text-[10px] mt-0.5 font-bold">首页</span>
+        </div>
+        <div class="flex flex-col items-center p-2 text-slate-400 hover:text-blue-500 transition-colors">
+            <span class="text-[22px]">💼</span>
+            <span class="text-[10px] mt-0.5 font-medium">工作台</span>
+        </div>
+        <div class="flex flex-col items-center p-2 text-slate-400 hover:text-blue-500 transition-colors">
+            <span class="text-[22px]">👤</span>
+            <span class="text-[10px] mt-0.5 font-medium">我的</span>
+        </div>
+    </nav>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>水功能区纳污容量智慧监控平台</title>
+    <style>
+        :root {
+            /* Design Tokens */
+            --primary-color: #2563eb;
+            --primary-hover: #1d4ed8;
+            --bg-body: #f1f5f9;
+            --bg-card: #ffffff;
+            --text-main: #1e293b;
+            --text-secondary: #64748b;
+            --border-color: #e2e8f0;
+
+            /* Status Colors */
+            --status-safe: #10b981;
+            --status-safe-bg: #d1fae5;
+            --status-warning: #f59e0b;
+            --status-warning-bg: #fef3c7;
+            --status-danger: #ef4444;
+            --status-danger-bg: #fee2e2;
+
+            /* Spacing & Radius */
+            --radius-md: 8px;
+            --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; outline: none; }
+
+        body {
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.5;
+            padding: 24px;
+        }
+
+        /* 布局容器 */
+        .container {
+            max-width: 1600px; /* 宽屏适配 */
+            margin: 0 auto;
+            background-color: var(--bg-card);
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            min-height: 90vh;
+        }
+
+        /* 头部区域 */
+        .header {
+            padding: 24px 32px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #fff;
+        }
+
+        .header-title h1 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #0f172a;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .header-title h1::before {
+            content: '';
+            display: block;
+            width: 4px;
+            height: 24px;
+            background: var(--primary-color);
+            border-radius: 2px;
+        }
+
+        .header-title p {
+            margin-top: 4px;
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        .date-badge {
+            background: #f8fafc;
+            padding: 6px 12px;
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+            font-size: 13px;
+            color: var(--text-secondary);
+            font-feature-settings: "tnum";
+        }
+
+        /* 统计卡片区 */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 24px;
+            padding: 24px 32px;
+            background-color: #f8fafc;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+            transition: transform 0.2s;
+        }
+
+        .stat-card:hover { transform: translateY(-2px); }
+
+        .stat-label { font-size: 13px; color: var(--text-secondary); margin-bottom: 8px; font-weight: 500;}
+        .stat-value { font-size: 28px; font-weight: 700; color: #0f172a; line-height: 1.2; font-family: 'DIN Alternate', sans-serif;}
+        .stat-sub { font-size: 12px; color: var(--text-secondary); margin-top: 8px; display: flex; justify-content: space-between;}
+
+        .text-safe { color: var(--status-safe); }
+        .text-warning { color: var(--status-warning); }
+        .text-danger { color: var(--status-danger); }
+
+        /* 筛选控制栏 */
+        .toolbar {
+            padding: 20px 32px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            align-items: center;
+            background: white;
+        }
+
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .filter-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .form-select, .form-input {
+            padding: 8px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 14px;
+            color: var(--text-main);
+            background-color: #fff;
+            transition: all 0.2s;
+        }
+
+        .form-select:hover, .form-input:hover { border-color: #cbd5e1; }
+        .form-select:focus, .form-input:focus { border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
+
+        .btn {
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+        }
+
+        .btn-primary { background-color: var(--primary-color); color: white; }
+        .btn-primary:hover { background-color: var(--primary-hover); }
+        .btn-ghost { background-color: transparent; color: var(--text-secondary); border: 1px solid var(--border-color); }
+        .btn-ghost:hover { background-color: #f1f5f9; color: var(--text-main); }
+
+        /* 表格区域 */
+        .table-wrapper {
+            flex: 1;
+            overflow: auto;
+            position: relative;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: separate; /* 允许sticky生效 */
+            border-spacing: 0;
+            min-width: 1200px;
+        }
+
+        thead th {
+            background-color: #f8fafc;
+            color: #475569;
+            font-weight: 600;
+            font-size: 13px;
+            padding: 16px 24px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            white-space: nowrap;
+        }
+
+        tbody td {
+            padding: 16px 24px;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 14px;
+            color: var(--text-main);
+            vertical-align: middle;
+        }
+
+        tbody tr:hover { background-color: #f8fafc; }
+
+        .cell-main { font-weight: 600; color: #334155; }
+        .cell-sub { color: #64748b; font-size: 13px; }
+
+        /* 进度条组件 */
+        .progress-wrapper {
+            min-width: 140px;
+        }
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            margin-bottom: 4px;
+        }
+        .progress-val { font-weight: 700; font-family: 'Monaco', monospace; }
+
+        .progress-track {
+            height: 6px;
+            background-color: #e2e8f0;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        .progress-bar {
+            height: 100%;
+            border-radius: 3px;
+            transition: width 0.5s ease;
+        }
+        .bg-safe { background-color: var(--status-safe); }
+        .bg-warning { background-color: var(--status-warning); }
+        .bg-danger { background-color: var(--status-danger); }
+
+        .data-meta { font-size: 12px; color: #94a3b8; margin-top: 2px;}
+
+        /* 底部 */
+        .footer {
+            padding: 16px 32px;
+            border-top: 1px solid var(--border-color);
+            background: #fff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .legend { display: flex; gap: 16px; }
+        .legend-item { display: flex; align-items: center; gap: 6px; }
+        .dot { width: 8px; height: 8px; border-radius: 50%; }
+
+        /* 响应式调整 */
+        @media (max-width: 1024px) {
+            .stats-grid { grid-template-columns: 1fr 1fr; }
+        }
+        @media (max-width: 768px) {
+            .header { flex-direction: column; align-items: flex-start; gap: 12px; }
+            .stats-grid { grid-template-columns: 1fr; }
+            .toolbar { flex-direction: column; align-items: stretch; }
+            .filter-group { flex-direction: column; align-items: stretch; }
+            .date-badge { align-self: flex-start; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <header class="header">
+        <div class="header-title">
+            <h1>水功能区纳污容量监控系统</h1>
+            <p>实时监测各水功能区氨氮及化学需氧量排放情况</p>
+        </div>
+        <div class="date-badge">
+            更新时间：<span id="current-date">--</span>
+        </div>
+    </header>
+
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-label">监控水功能区</div>
+            <div class="stat-value" id="stat-total">0</div>
+            <div class="stat-sub">
+                <span>一级区: <b id="stat-primary">0</b></span>
+                <span>二级区: <b id="stat-secondary">0</b></span>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-label">氨氮达标率</div>
+            <div class="stat-value" id="stat-nh-rate">0%</div>
+            <div class="stat-sub">
+                <span id="stat-nh-text">安全数量: 0</span>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-label">COD达标率</div>
+            <div class="stat-value" id="stat-cod-rate">0%</div>
+            <div class="stat-sub">
+                <span id="stat-cod-text">安全数量: 0</span>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-label">排污口监测</div>
+            <div class="stat-value" id="stat-outfall">0</div>
+            <div class="stat-sub">
+                <span>覆盖率: <b>100%</b></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="toolbar">
+        <div class="filter-group">
+            <span class="filter-label">氨氮状态</span>
+            <select id="filter-nh" class="form-select">
+                <option value="all">全部</option>
+                <option value="safe">安全 (≤80%)</option>
+                <option value="warning">预警 (80-100%)</option>
+                <option value="danger">超标 (>100%)</option>
+            </select>
+        </div>
+
+        <div class="filter-group">
+            <span class="filter-label">COD状态</span>
+            <select id="filter-cod" class="form-select">
+                <option value="all">全部</option>
+                <option value="safe">安全</option>
+                <option value="warning">预警</option>
+                <option value="danger">超标</option>
+            </select>
+        </div>
+
+        <div class="filter-group" style="flex: 1;">
+            <input type="text" id="search-input" class="form-input" placeholder="输入功能区名称搜索..." style="width: 100%;">
+        </div>
+
+        <button class="btn btn-primary" id="btn-search">查询</button>
+        <button class="btn btn-ghost" id="btn-reset">重置</button>
+    </div>
+
+    <div class="table-wrapper">
+        <table id="main-table">
+            <thead>
+            <tr>
+                <th style="width: 200px;">功能区名称</th>
+                <th style="width: 100px;">排污口</th>
+                <th>氨氮排放情况 (排放量/标准)</th>
+                <th>氨氮纳污状态 (排放量/纳污能力)</th>
+                <th>COD排放情况 (排放量/标准)</th>
+                <th>COD纳污状态 (排放量/纳污能力)</th>
+            </tr>
+            </thead>
+            <tbody id="table-body">
+            </tbody>
+        </table>
+    </div>
+
+    <div class="footer">
+        <div class="legend">
+            <div class="legend-item"><div class="dot bg-safe"></div>安全</div>
+            <div class="legend-item"><div class="dot bg-warning"></div>接近上限</div>
+            <div class="legend-item"><div class="dot bg-danger"></div>超标</div>
+        </div>
+        <div>© 2023 环境监测中心 v2.0</div>
+    </div>
+</div>
+
+<script>
+    // --- Data Layer (Mock) ---
+    const MOCK_DATA = [
+        { id: 1, p_name: "长江南京段饮用水源区", s_name: "", nh: { curr: 620, limit: 800, cap: 1000 }, cod: { curr: 4100, limit: 4500, cap: 5000 }, outfalls: 8 },
+        { id: 2, p_name: "长江南京段饮用水源区", s_name: "长江南京段左岸子区", nh: { curr: 280, limit: 350, cap: 400 }, cod: { curr: 1800, limit: 1800, cap: 2000 }, outfalls: 3 },
+        { id: 3, p_name: "长江南京段饮用水源区", s_name: "长江南京段右岸子区", nh: { curr: 340, limit: 500, cap: 600 }, cod: { curr: 2300, limit: 2800, cap: 3000 }, outfalls: 5 },
+        { id: 4, p_name: "太湖西部工业用水区", s_name: "", nh: { curr: 2450, limit: 2000, cap: 2200 }, cod: { curr: 9800, limit: 9000, cap: 9500 }, outfalls: 12 },
+        { id: 5, p_name: "太湖西部工业用水区", s_name: "太湖西部北区", nh: { curr: 950, limit: 700, cap: 800 }, cod: { curr: 3800, limit: 3200, cap: 3500 }, outfalls: 5 },
+        { id: 6, p_name: "太湖西部工业用水区", s_name: "太湖西部南区", nh: { curr: 1500, limit: 1200, cap: 1400 }, cod: { curr: 6000, limit: 5500, cap: 6000 }, outfalls: 7 },
+        { id: 7, p_name: "滆湖渔业用水区", s_name: "", nh: { curr: 150, limit: 250, cap: 280 }, cod: { curr: 850, limit: 1000, cap: 1200 }, outfalls: 3 },
+        { id: 8, p_name: "运河航运用水区", s_name: "", nh: { curr: 1100, limit: 1600, cap: 1800 }, cod: { curr: 5800, limit: 7000, cap: 7500 }, outfalls: 9 },
+        { id: 9, p_name: "运河航运用水区", s_name: "运河东段", nh: { curr: 400, limit: 600, cap: 700 }, cod: { curr: 2400, limit: 2800, cap: 3000 }, outfalls: 4 },
+        { id: 10, p_name: "运河航运用水区", s_name: "运河西段", nh: { curr: 700, limit: 1000, cap: 1100 }, cod: { curr: 3400, limit: 4000, cap: 4500 }, outfalls: 5 }
+    ];
+
+    // --- Utils ---
+    const formatNum = (n) => n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+
+    const getStatus = (percent) => {
+        if (percent <= 80) return 'safe';
+        if (percent <= 100) return 'warning';
+        return 'danger';
+    };
+
+    const calcPercent = (curr, limit) => Math.round((curr / limit) * 100);
+
+    // --- Components (Functional Approach) ---
+
+    // Progress Bar Component
+    const ProgressBar = (current, limit) => {
+        const percent = calcPercent(current, limit);
+        const status = getStatus(percent);
+        const displayPercent = percent > 100 ? 100 : percent; // Prevent bar overflow
+
+        return `
+                <div class="progress-wrapper">
+                    <div class="progress-header">
+                        <span class="progress-val ${percent > 100 ? 'text-danger' : ''}">${percent}%</span>
+                        <span class="text-safe" style="color: #94a3b8">${formatNum(current)}/${formatNum(limit)}</span>
+                    </div>
+                    <div class="progress-track">
+                        <div class="progress-bar bg-${status}" style="width: ${displayPercent}%"></div>
+                    </div>
+                </div>
+            `;
+    };
+
+    // --- App Logic ---
+
+    class MonitorApp {
+        constructor(data) {
+            this.rawData = data;
+            this.state = {
+                filterNh: 'all',
+                filterCod: 'all',
+                search: ''
+            };
+
+            this.init();
+        }
+
+        init() {
+            // Set Date
+            document.getElementById('current-date').textContent = new Date().toISOString().split('T')[0];
+
+            // Bind Events
+            document.getElementById('btn-search').addEventListener('click', () => this.handleFilter());
+            document.getElementById('btn-reset').addEventListener('click', () => this.reset());
+            document.getElementById('search-input').addEventListener('keyup', (e) => {
+                if(e.key === 'Enter') this.handleFilter();
+            });
+
+            // Initial Render
+            this.render();
+        }
+
+        handleFilter() {
+            this.state.filterNh = document.getElementById('filter-nh').value;
+            this.state.filterCod = document.getElementById('filter-cod').value;
+            this.state.search = document.getElementById('search-input').value.toLowerCase();
+            this.render();
+        }
+
+        reset() {
+            document.getElementById('filter-nh').value = 'all';
+            document.getElementById('filter-cod').value = 'all';
+            document.getElementById('search-input').value = '';
+            this.handleFilter();
+        }
+
+        getFilteredData() {
+            return this.rawData.filter(item => {
+                // Search Logic
+                const matchName = item.p_name.toLowerCase().includes(this.state.search) ||
+                    (item.s_name && item.s_name.toLowerCase().includes(this.state.search));
+                if (!matchName) return false;
+
+                // NH Filter Logic (Check both emission limit & capacity limit for simplicity, or just one)
+                // Here checking Emission Status for filter
+                if (this.state.filterNh !== 'all') {
+                    const s = getStatus(calcPercent(item.nh.curr, item.nh.limit));
+                    if (s !== this.state.filterNh) return false;
+                }
+
+                // COD Filter Logic
+                if (this.state.filterCod !== 'all') {
+                    const s = getStatus(calcPercent(item.cod.curr, item.cod.limit));
+                    if (s !== this.state.filterCod) return false;
+                }
+
+                return true;
+            });
+        }
+
+        updateStats(data) {
+            const total = data.length;
+            const primary = data.filter(d => !d.s_name).length;
+
+            // Calculate Safe Counts based on Emission Limit
+            const nhSafe = data.filter(d => calcPercent(d.nh.curr, d.nh.limit) <= 80).length;
+            const codSafe = data.filter(d => calcPercent(d.cod.curr, d.cod.limit) <= 80).length;
+            const totalOutfall = data.reduce((acc, curr) => acc + curr.outfalls, 0);
+
+            document.getElementById('stat-total').textContent = total;
+            document.getElementById('stat-primary').textContent = primary;
+            document.getElementById('stat-secondary').textContent = total - primary;
+
+            document.getElementById('stat-nh-rate').textContent = total ? Math.round((nhSafe/total)*100) + '%' : '0%';
+            document.getElementById('stat-nh-text').textContent = `安全数量: ${nhSafe}`;
+
+            document.getElementById('stat-cod-rate').textContent = total ? Math.round((codSafe/total)*100) + '%' : '0%';
+            document.getElementById('stat-cod-text').textContent = `安全数量: ${codSafe}`;
+
+            document.getElementById('stat-outfall').textContent = totalOutfall;
+        }
+
+        render() {
+            const data = this.getFilteredData();
+            this.updateStats(data);
+
+            const tbody = document.getElementById('table-body');
+            tbody.innerHTML = '';
+
+            if (data.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding: 40px; color: #94a3b8;">暂无符合条件的数据</td></tr>`;
+                return;
+            }
+
+            const fragment = document.createDocumentFragment();
+
+            data.forEach(row => {
+                const tr = document.createElement('tr');
+
+                const nameCell = row.s_name
+                    ? `<div class="cell-main">${row.s_name}</div><div class="cell-sub">${row.p_name}</div>`
+                    : `<div class="cell-main" style="color:var(--primary-color)">${row.p_name}</div>`;
+
+                tr.innerHTML = `
+                        <td>${nameCell}</td>
+                        <td style="font-family: 'Monaco', monospace; font-weight:600;">${row.outfalls}</td>
+                        <td>${ProgressBar(row.nh.curr, row.nh.limit)}</td>
+                        <td>${ProgressBar(row.nh.curr, row.nh.cap)}</td>
+                        <td>${ProgressBar(row.cod.curr, row.cod.limit)}</td>
+                        <td>${ProgressBar(row.cod.curr, row.cod.cap)}</td>
+                    `;
+                fragment.appendChild(tr);
+            });
+
+            tbody.appendChild(fragment);
+        }
+    }
+
+    // --- Init ---
+    document.addEventListener('DOMContentLoaded', () => {
+        new MonitorApp(MOCK_DATA);
+    });
+</script>
+</body>
+</html>

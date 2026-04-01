@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>监测企业系统 - 整合增强版 V2.1</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/echarts/dist/echarts.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            background-color: #F5F7FA;
+            -webkit-tap-highlight-color: transparent;
+            padding-bottom: 30px;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+
+        /* 顶部导航 */
+        .nav-header {
+            background: linear-gradient(135deg, #1565C0 0%, #1E88E5 100%);
+            padding-bottom: 15px;
+            color: white;
+            box-shadow: 0 2px 10px rgba(25, 118, 210, 0.2);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .top-bar {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        /* 导航 Tab */
+        .nav-tabs {
+            display: flex;
+            justify-content: space-around;
+            padding-top: 5px;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            opacity: 0.7;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .nav-item.active {
+            opacity: 1;
+            transform: translateY(-2px);
+        }
+
+        .nav-item.active::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            width: 20px;
+            height: 3px;
+            background: white;
+            border-radius: 2px;
+        }
+
+        .icon-circle {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            margin-bottom: 4px;
+            backdrop-filter: blur(5px);
+        }
+
+        .nav-text {
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+        /* 筛选容器 */
+        .sticky-filter-container {
+            position: sticky;
+            top: 103px;
+            z-index: 40;
+            background-color: #F5F7FA;
+            padding: 10px 16px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+
+        .search-input-wrapper {
+            position: relative;
+            width: 100%;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 8px 12px 8px 36px;
+            border-radius: 20px;
+            border: 1px solid #E5E7EB;
+            background-color: #FFFFFF;
+            font-size: 13px;
+            outline: none;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #9CA3AF;
+            font-size: 13px;
+        }
+
+        /* 筛选下拉 */
+        .filter-row {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+        }
+        .filter-select {
+            flex: 1;
+            background: #FFFFFF;
+            border: 1px solid #E5E7EB;
+            padding: 5px 8px;
+            border-radius: 6px;
+            font-size: 11px;
+            color: #4B5563;
+            outline: none;
+        }
+
+        /* 卡片样式 */
+        .mobile-card {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            margin: 12px 16px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        .tag {
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 500;
+        }
+        .tag-blue { background: #E3F2FD; color: #1976D2; }
+        .tag-red { background: #FFEBEE; color: #D32F2F; }
+        .tag-orange { background: #FFF3E0; color: #E65100; }
+        .tag-green { background: #E8F5E9; color: #388E3C; }
+
+        .page-btn {
+            padding: 6px 16px;
+            background: white;
+            border: 1px solid #E5E7EB;
+            border-radius: 6px;
+            font-size: 12px;
+            color: #374151;
+        }
+        .page-btn:disabled { opacity: 0.5; }
+
+        /* KPI Grid */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin: 12px 16px;
+        }
+        .kpi-box {
+            background: white;
+            padding: 12px 6px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+        }
+
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+    </style>
+</head>
+<body>
+
+<div id="app">
+    <header class="nav-header">
+        <div class="top-bar">
+            <i class="fas fa-chevron-left mr-4 cursor-pointer" onclick="alert('返回工作台')"></i>
+            <span>监测企业</span>
+        </div>
+
+        <div class="nav-tabs">
+            <div class="nav-item" :class="{active: currentTab === 'enterprises'}" @click="switchTab('enterprises')">
+                <div class="icon-circle"><i class="fas fa-building"></i></div>
+                <span class="nav-text">企业清单</span>
+            </div>
+            <div class="nav-item" :class="{active: currentTab === 'overlimits'}" @click="switchTab('overlimits')">
+                <div class="icon-circle"><i class="fas fa-exclamation-triangle"></i></div>
+                <span class="nav-text">超标清单</span>
+            </div>
+            <div class="nav-item" :class="{active: currentTab === 'alarms'}" @click="switchTab('alarms')">
+                <div class="icon-circle"><i class="fas fa-bell"></i></div>
+                <span class="nav-text">报警清单</span>
+            </div>
+            <div class="nav-item" :class="{active: currentTab === 'dashboard'}" @click="switchTab('dashboard')">
+                <div class="icon-circle"><i class="fas fa-chart-pie"></i></div>
+                <span class="nav-text">统计分析</span>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div v-show="currentTab === 'enterprises'">
+            <div class="sticky-filter-container">
+                <div class="search-input-wrapper">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" v-model="entSearch" placeholder="搜索企业名称、地址..." class="search-input">
+                </div>
+                <div class="filter-row">
+                    <select class="filter-select" v-model="entTypeFilter">
+                        <option value="">全部类型</option>
+                        <option value="工业企业">工业企业</option>
+                        <option value="污水处理厂">污水处理厂</option>
+                    </select>
+                    <select class="filter-select" v-model="entRegionFilter">
+                        <option value="">全部区域</option>
+                        <option v-for="r in regions" :key="r" :value="r">{{r}}</option>
+                    </select>
+                </div>
+            </div>
+            <div class="pb-4 pt-1">
+                <div class="mobile-card" v-for="(item, idx) in paginatedEnts" :key="idx">
+                    <div class="flex justify-between items-start mb-2">
+                        <h4 class="font-bold text-gray-800 text-sm w-3/4 truncate">{{ item.name }}</h4>
+                        <span class="tag" :class="item.type === '污水处理厂' ? 'tag-green' : 'tag-blue'">{{ item.type }}</span>
+                    </div>
+                    <div class="space-y-1 text-xs text-gray-500 mb-2">
+                        <div class="flex items-center"><i class="fas fa-industry w-4 mr-1 text-gray-400"></i>{{ item.industry }}</div>
+                        <div class="flex items-center"><i class="fas fa-map-marker-alt w-4 mr-1 text-gray-400"></i>{{ item.region }} {{ item.address }}</div>
+                    </div>
+                    <div class="pt-2 border-t border-gray-100 flex justify-end">
+                        <button class="text-xs bg-blue-50 text-blue-600 px-4 py-1.5 rounded-full font-medium">查看详情</button>
+                    </div>
+                </div>
+                <div class="flex justify-center items-center mt-4 mb-8 space-x-4">
+                    <button @click="entPage--" :disabled="entPage === 1" class="page-btn">上一页</button>
+                    <span class="text-xs text-gray-500">{{ entPage }} / {{ Math.ceil(filteredEnts.length/pageSize) || 1 }}</span>
+                    <button @click="entPage++" :disabled="entPage * pageSize >= filteredEnts.length" class="page-btn">下一页</button>
+                </div>
+            </div>
+        </div>
+
+        <div v-show="currentTab === 'overlimits'">
+            <div class="sticky-filter-container">
+                <div class="search-input-wrapper">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" v-model="limitSearch" placeholder="搜索超标企业..." class="search-input">
+                </div>
+            </div>
+            <div class="pb-4 pt-1">
+                <div class="mobile-card" v-for="(item, idx) in paginatedLimits" :key="idx">
+                    <div class="flex justify-between items-start mb-1">
+                        <h4 class="font-bold text-gray-800 text-sm w-3/4">{{ item.name }}</h4>
+                        <span class="tag tag-red"><i class="fas fa-exclamation-circle mr-1"></i>超标</span>
+                    </div>
+                    <div class="flex items-center text-[10px] text-gray-400 mb-3">
+                        <span class="mr-3"><i class="far fa-clock mr-1"></i>{{ item.time }}</span>
+                        <span><i class="fas fa-tint mr-1"></i>{{ item.outlet }}</span>
+                    </div>
+                    <div class="bg-gray-50 rounded p-2 grid grid-cols-3 gap-2 text-center mb-2">
+                        <div><div class="text-[10px] text-gray-400">污染物</div><div class="text-xs font-bold">{{ item.pollutant }}</div></div>
+                        <div><div class="text-[10px] text-gray-400">监测值</div><div class="text-xs font-bold text-red-500">{{ item.value }}</div></div>
+                        <div><div class="text-[10px] text-gray-400">标准值</div><div class="text-xs font-bold text-gray-500">{{ item.standard }}</div></div>
+                    </div>
+                    <div class="flex justify-end pt-1">
+                        <button class="text-xs text-blue-600 font-medium">查看详情</button>
+                    </div>
+                </div>
+                <div class="flex justify-center items-center mt-4 mb-8 space-x-4">
+                    <button @click="limitPage--" :disabled="limitPage === 1" class="page-btn">上一页</button>
+                    <span class="text-xs text-gray-500">第 {{ limitPage }} 页</span>
+                    <button @click="limitPage++" :disabled="limitPage * pageSize >= filteredLimits.length" class="page-btn">下一页</button>
+                </div>
+            </div>
+        </div>
+
+        <div v-show="currentTab === 'alarms'">
+            <div class="sticky-filter-container">
+                <div class="search-input-wrapper">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" v-model="alarmSearch" placeholder="搜索企业名称或报警内容..." class="search-input">
+                </div>
+            </div>
+            <div class="pb-4 pt-1">
+                <div class="mobile-card" v-for="(item, idx) in paginatedAlarms" :key="idx">
+                    <div class="flex justify-between items-start mb-1">
+                        <h4 class="font-bold text-gray-800 text-sm w-3/4">{{ item.name }}</h4>
+                        <span class="tag tag-orange"><i class="fas fa-bell mr-1"></i>报警</span>
+                    </div>
+                    <div class="flex items-center text-[10px] text-gray-400 mb-3">
+                        <span class="mr-3"><i class="far fa-clock mr-1"></i>{{ item.time }}</span>
+                        <span><i class="fas fa-broadcast-tower mr-1"></i>{{ item.outlet }}</span>
+                    </div>
+
+                    <div class="bg-orange-50/50 rounded p-3 mb-3 border border-orange-100/50">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-xs text-gray-500">报警内容</span>
+                            <span class="text-xs font-bold text-orange-600 bg-white px-2 py-0.5 rounded">{{ item.content }}</span>
+                        </div>
+                        <div class="text-[11px] text-gray-400">
+                            不属实原因: <span class="text-gray-600">{{ item.reason || '无' }}</span>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-between items-center pt-1 border-t border-gray-50">
+                        <span class="text-[10px] text-gray-400"><i class="fas fa-shield-alt mr-1"></i>监管机构: {{ item.dept }}</span>
+                        <button class="text-xs bg-white border border-blue-200 text-blue-600 px-3 py-1 rounded-full shadow-sm">查看详情</button>
+                    </div>
+                </div>
+                <div class="flex justify-center items-center mt-4 mb-8 space-x-4">
+                    <button @click="alarmPage--" :disabled="alarmPage === 1" class="page-btn">上一页</button>
+                    <span class="text-xs text-gray-500">第 {{ alarmPage }} 页</span>
+                    <button @click="alarmPage++" :disabled="alarmPage * pageSize >= filteredAlarms.length" class="page-btn">下一页</button>
+                </div>
+            </div>
+        </div>
+
+        <div v-show="currentTab === 'dashboard'" class="pt-2">
+            <div class="kpi-grid">
+                <div class="kpi-box"><div class="text-[10px] text-gray-500 mb-1">企业总数</div><div class="text-lg font-bold text-gray-800">1,240</div></div>
+                <div class="kpi-box"><div class="text-[10px] text-gray-500 mb-1">报警总数</div><div class="text-lg font-bold text-orange-500">284</div></div>
+                <div class="kpi-box"><div class="text-[10px] text-gray-500 mb-1">超标总数</div><div class="text-lg font-bold text-red-500">42</div></div>
+            </div>
+
+            <div class="mobile-card">
+                <h3 class="font-bold text-gray-700 text-sm mb-4 border-b pb-2"><i class="fas fa-chart-pie text-blue-500 mr-2"></i>异常类型分布</h3>
+                <div ref="pieChartRef" style="width: 100%; height: 240px;"></div>
+            </div>
+
+            <div class="mobile-card">
+                <h3 class="font-bold text-gray-700 text-sm mb-4 border-b pb-2"><i class="fas fa-chart-line text-blue-500 mr-2"></i>报警趋势 (近七日)</h3>
+                <div ref="lineChartRef" style="width: 100%; height: 200px;"></div>
+            </div>
+
+            <div class="mobile-card">
+                <h3 class="font-bold text-gray-700 text-sm mb-4 border-b pb-2"><i class="fas fa-list-ol text-blue-500 mr-2"></i>地市超标排名</h3>
+                <div class="space-y-3">
+                    <div v-for="(city, index) in rankData" :key="index" class="flex items-center">
+                        <div :class="['w-5 h-5 rounded flex items-center justify-center text-[10px] text-white mr-3 font-bold', index < 3 ? 'bg-blue-500' : 'bg-gray-300']">
+                            {{ index + 1 }}
+                        </div>
+                        <div class="flex-1">
+                            <div class="flex justify-between text-xs mb-1">
+                                <span class="font-medium text-gray-700">{{ city.name }}</span>
+                                <span class="text-gray-500">{{ city.val }}次</span>
+                            </div>
+                            <div class="w-full bg-gray-100 rounded-full h-1.5">
+                                <div class="h-1.5 rounded-full bg-blue-400" :style="{width: (city.val / 170 * 100) + '%'}"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<script>
+    const { createApp, ref, computed, onMounted, nextTick, watch } = Vue;
+
+    createApp({
+        setup() {
+            const currentTab = ref('enterprises');
+            const pageSize = 5;
+            const regions = ['武汉市', '襄阳市', '宜昌市', '荆州市', '黄石市', '孝感市'];
+
+            // --- 数据源 ---
+            const enterprises = ref([
+                { name: '襄阳化工新材料有限公司', region: '襄阳市', industry: '化工制造', type: '工业企业', address: '高新大道88号' },
+                { name: '湖北泽丰化工有限公司', region: '襄阳市', industry: '化学原料', type: '工业企业', address: '樊城区太平店镇' },
+                { name: '武汉汉西污水处理厂', region: '武汉市', industry: '市政污水', type: '污水处理厂', address: '东西湖区' },
+                { name: '宜昌兴发集团股份有限公司', region: '宜昌市', industry: '磷化工', type: '工业企业', address: '猇亭区兴发工业园' },
+                { name: '孝感市孝南区污水处理厂', region: '孝感市', industry: '市政污水', type: '污水处理厂', address: '维达大道' },
+                { name: '武汉钢铁(集团)公司', region: '武汉市', industry: '钢铁冶炼', type: '工业企业', address: '青山区' }
+            ]);
+
+            // 报警数据增加 reason (不属实原因) 字段
+            const alarms = ref([
+                { name: '武汉汉西污水处理厂', outlet: '1号进水口', content: '进水流量突增', time: '01-04 10:20', dept: '武汉市环保局', reason: '由于上游管网突发破损导致瞬时流量计异常' },
+                { name: '湖北泽丰化工有限公司', outlet: '综合排放口', content: '设备离线', time: '01-04 09:15', dept: '襄阳市环保局', reason: '厂区电力检修导致数采仪短时断电' },
+                { name: '荆州沙市纺织印染厂', outlet: '废水出口', content: 'PH值恒定异常', time: '01-04 08:40', dept: '荆州市环保局', reason: '探头表面附着污物，清洗后恢复' },
+                { name: '安琪酵母股份公司', outlet: '排口A', content: '采样器故障', time: '01-03 23:10', dept: '宜昌市环保局', reason: '由于极端寒冷天气导致采样泵冻堵' }
+            ]);
+
+            const limits = ref([
+                { name: '鄂州市葛店污水处理厂', outlet: '总排口', pollutant: '总氮', value: '47.96', standard: '45', time: '01-04 14:00' },
+                { name: '安琪酵母股份有限公司', outlet: '废水出口01', pollutant: '总磷', value: '1.24', standard: '0.5', time: '01-03 09:30' },
+                { name: '黄石市东贝机电集团', outlet: '综合排口', pollutant: '氨氮', value: '5.25', standard: '5.0', time: '01-02 11:20' }
+            ]);
+
+            const rankData = ref([
+                { name: '武汉市', val: 170 }, { name: '宜昌市', val: 55 }, { name: '襄阳市', val: 50 }, { name: '荆州市', val: 32 }
+            ]);
+
+            // --- 搜索与分页逻辑 ---
+            const entSearch = ref("");
+            const entTypeFilter = ref("");
+            const entRegionFilter = ref("");
+            const entPage = ref(1);
+            const filteredEnts = computed(() => {
+                return enterprises.value.filter(e =>
+                    (e.name.includes(entSearch.value) || e.address.includes(entSearch.value)) &&
+                    (entTypeFilter.value === "" || e.type === entTypeFilter.value) &&
+                    (entRegionFilter.value === "" || e.region === entRegionFilter.value)
+                );
+            });
+            const paginatedEnts = computed(() => filteredEnts.value.slice((entPage.value-1)*pageSize, entPage.value*pageSize));
+
+            const alarmSearch = ref("");
+            const alarmPage = ref(1);
+            const filteredAlarms = computed(() => alarms.value.filter(a => a.name.includes(alarmSearch.value) || a.content.includes(alarmSearch.value)));
+            const paginatedAlarms = computed(() => filteredAlarms.value.slice((alarmPage.value-1)*pageSize, alarmPage.value*pageSize));
+
+            const limitSearch = ref("");
+            const limitPage = ref(1);
+            const filteredLimits = computed(() => limits.value.filter(l => l.name.includes(limitSearch.value)));
+            const paginatedLimits = computed(() => filteredLimits.value.slice((limitPage.value-1)*pageSize, limitPage.value*pageSize));
+
+            // --- 图表 ---
+            const pieChartRef = ref(null);
+            const lineChartRef = ref(null);
+            let charts = [];
+
+            const initCharts = () => {
+                if (pieChartRef.value) {
+                    const pie = echarts.init(pieChartRef.value);
+                    pie.setOption({
+                        tooltip: { trigger: 'item' },
+                        legend: { bottom: '0', left: 'center', itemWidth: 10, itemHeight: 10, textStyle: { fontSize: 10 } },
+                        series: [{
+                            type: 'pie', radius: ['40%', '70%'], avoidLabelOverlap: false,
+                            label: { show: false },
+                            data: [
+                                { value: 120, name: '设备离线', itemStyle: { color: '#3B82F6' } },
+                                { value: 84, name: '数据超标', itemStyle: { color: '#EF4444' } },
+                                { value: 50, name: '通讯故障', itemStyle: { color: '#F59E0B' } },
+                                { value: 30, name: '流量异常', itemStyle: { color: '#10B981' } }
+                            ]
+                        }]
+                    });
+                    charts.push(pie);
+                }
+                if (lineChartRef.value) {
+                    const line = echarts.init(lineChartRef.value);
+                    line.setOption({
+                        grid: { top: 20, bottom: 30, left: 35, right: 10 },
+                        xAxis: { type: 'category', data: ['12-29', '12-30', '12-31', '01-01', '01-02', '01-03', '01-04'], axisLabel: { fontSize: 10 } },
+                        yAxis: { type: 'value', axisLabel: { fontSize: 10 } },
+                        series: [{
+                            data: [15, 22, 18, 35, 28, 42, 30], type: 'line', smooth: true,
+                            lineStyle: { color: '#3B82F6', width: 3 },
+                            areaStyle: { color: 'rgba(59, 130, 246, 0.1)' }
+                        }]
+                    });
+                    charts.push(line);
+                }
+            };
+
+            const switchTab = (tab) => {
+                currentTab.value = tab;
+                if (tab === 'dashboard') {
+                    nextTick(() => initCharts());
+                }
+            };
+
+            onMounted(() => {
+                window.addEventListener('resize', () => charts.forEach(c => c.resize()));
+            });
+
+            return {
+                currentTab, switchTab, pageSize, regions,
+                entSearch, entTypeFilter, entRegionFilter, entPage, filteredEnts, paginatedEnts,
+                alarmSearch, alarmPage, filteredAlarms, paginatedAlarms,
+                limitSearch, limitPage, filteredLimits, paginatedLimits,
+                pieChartRef, lineChartRef, rankData
+            };
+        }
+    }).mount('#app');
+</script>
+</body>
+</html>

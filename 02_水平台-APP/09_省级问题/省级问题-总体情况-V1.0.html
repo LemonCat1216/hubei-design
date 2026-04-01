@@ -1,0 +1,1056 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>总体情况 - 旗舰版UI</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #1890FF;
+            --primary-light: #E6F7FF;
+            --bg-color: #F4F6F8;
+            --text-main: #333333;
+            --text-sub: #999999;
+            --warning-color: #FA8C16;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            padding-bottom: 40px;
+        }
+
+        /* --- 导航栏 --- */
+        .navbar {
+            background: linear-gradient(135deg, #1890FF 0%, #0050B3 100%);
+            color: white;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar .back-btn {
+            position: absolute;
+            left: 15px;
+            font-size: 18px;
+            cursor: pointer;
+        }
+
+        .navbar h1 {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        /* --- 筛选栏 --- */
+        .filter-scroll-view {
+            background: white;
+            padding: 12px 15px;
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            white-space: nowrap;
+            border-bottom: 1px solid #eee;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .filter-scroll-view::-webkit-scrollbar {
+            display: none;
+        }
+
+        .filter-pill {
+            display: inline-flex;
+            align-items: center;
+            background: #F5F7FA;
+            padding: 8px 14px;
+            border-radius: 100px;
+            font-size: 13px;
+            color: #555;
+            flex-shrink: 0;
+            border: 1px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .filter-pill i {
+            margin-left: 6px;
+            color: #999;
+            font-size: 12px;
+        }
+
+        .filter-pill.active {
+            background: #E6F7FF;
+            color: var(--primary-color);
+            border-color: #BAE7FF;
+            font-weight: 500;
+        }
+
+        .filter-pill.active i {
+            color: var(--primary-color);
+        }
+
+        /* --- 主内容区 --- */
+        .dashboard-container {
+            padding: 15px;
+        }
+
+        /* 概况卡片 */
+        .overview-card {
+            background: linear-gradient(135deg, #3878F6 0%, #5CABFF 100%);
+            border-radius: 12px;
+            padding: 20px;
+            color: white;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 10px rgba(24, 144, 255, 0.3);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .overview-left h4 {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-bottom: 8px;
+            font-weight: 400;
+        }
+
+        .overview-left .total-num {
+            font-size: 32px;
+            font-weight: 700;
+        }
+
+        .overview-chart-mini {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: conic-gradient(white 0% 90%, rgba(255, 255, 255, 0.3) 90% 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .overview-chart-mini::after {
+            content: '';
+            width: 54px;
+            height: 54px;
+            background: #4A90E2;
+            border-radius: 50%;
+            position: absolute;
+        }
+
+        .chart-icon {
+            z-index: 1;
+            font-size: 20px;
+            color: white;
+        }
+
+        /* Tabs */
+        .module-tabs {
+            display: flex;
+            background: white;
+            padding: 5px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .tab-item {
+            flex: 1;
+            text-align: center;
+            padding: 10px 0;
+            font-size: 13px;
+            color: #666;
+            border-radius: 6px;
+            transition: all 0.3s;
+        }
+
+        .tab-item.active {
+            background: #E6F7FF;
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        /* 统计卡片 */
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+            animation: fadeIn 0.4s ease;
+        }
+
+        .card-header-line {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px dashed #eee;
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+        }
+
+        .data-tag {
+            background: #F0F2F5;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            color: #666;
+            font-weight: 500;
+        }
+
+        /* 环形图 */
+        .chart-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            margin-bottom: 25px;
+        }
+
+        .donut-box {
+            position: relative;
+            width: 120px;
+            height: 120px;
+        }
+
+        .donut {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: conic-gradient(var(--primary-color) 0% 94%, #f0f0f0 94% 100%);
+        }
+
+        .donut::after {
+            content: '';
+            position: absolute;
+            top: 15%;
+            left: 15%;
+            width: 70%;
+            height: 70%;
+            background: white;
+            border-radius: 50%;
+        }
+
+        .donut-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            z-index: 2;
+        }
+
+        .donut-text .num {
+            font-size: 20px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .donut-text .label {
+            font-size: 10px;
+            color: #999;
+        }
+
+        .legend-box {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+        /* 进度列表 */
+        .process-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .process-item {
+            display: flex;
+            align-items: center;
+        }
+
+        .p-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            font-size: 14px;
+        }
+
+        .p-content {
+            flex: 1;
+        }
+
+        .p-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 6px;
+            font-size: 13px;
+        }
+
+        .p-bar-bg {
+            height: 6px;
+            background: #F0F0F0;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .p-bar-fill {
+            height: 100%;
+            border-radius: 3px;
+            width: 0;
+            transition: width 1s ease;
+        }
+
+        .c-blue {
+            color: var(--primary-color);
+            background: #E6F7FF;
+        }
+
+        .bg-blue {
+            background: var(--primary-color);
+        }
+
+        .c-green {
+            color: #00B578;
+            background: #F6FFED;
+        }
+
+        .bg-green {
+            background: #00B578;
+        }
+
+        .c-orange {
+            color: var(--warning-color);
+            background: #FFF7E6;
+        }
+
+        .bg-orange {
+            background: var(--warning-color);
+        }
+
+        .c-cyan {
+            color: #13C2C2;
+            background: #E6FFFB;
+        }
+
+        .bg-cyan {
+            background: #13C2C2;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* --- 弹窗通用 (Bottom Sheet) --- */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 200;
+            display: none;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .modal-overlay.show {
+            display: flex;
+            opacity: 1;
+        }
+
+        .modal-window {
+            background: white;
+            width: 100%;
+            border-radius: 20px 20px 0 0;
+            position: absolute;
+            bottom: 0;
+            transform: translateY(100%);
+            transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .modal-overlay.show .modal-window {
+            transform: translateY(0);
+        }
+
+        .modal-header {
+            padding: 18px 20px;
+            border-bottom: 1px solid #f5f5f5;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .modal-close {
+            font-size: 20px;
+            color: #ccc;
+            cursor: pointer;
+            padding: 5px;
+        }
+
+        .modal-body {
+            overflow-y: auto;
+            padding: 0 0 20px 0;
+        }
+
+        .option-item {
+            padding: 15px 20px;
+            border-bottom: 1px solid #f9f9f9;
+            font-size: 14px;
+            color: #333;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .option-item.selected {
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+
+        .option-item.selected::after {
+            content: '\f00c';
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
+        }
+
+        /* =========================================
+           🚀 旗舰版时间选择器 UI 设计
+           ========================================= */
+        .picker-container {
+            display: flex;
+            flex-direction: column;
+            height: 60vh;
+            background: #fff;
+        }
+
+        /* 1. 顶部 Tab 切换区 */
+        .picker-tabs {
+            display: flex;
+            padding: 10px 20px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .picker-tab-item {
+            flex: 1;
+            padding: 15px 0;
+            text-align: center;
+            font-size: 14px;
+            color: #666;
+            position: relative;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .picker-tab-item.active {
+            color: var(--primary-color);
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .picker-tab-item.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 30px;
+            height: 3px;
+            background: var(--primary-color);
+            border-radius: 3px 3px 0 0;
+        }
+
+        .picker-date-display {
+            font-size: 18px;
+            margin-top: 4px;
+            font-family: 'DIN Alternate', sans-serif;
+        }
+
+        /* 2. 快捷胶囊区 */
+        .quick-select-scroll {
+            display: flex;
+            gap: 10px;
+            padding: 15px 20px;
+            overflow-x: auto;
+            border-bottom: 1px solid #f9f9f9;
+            flex-shrink: 0;
+        }
+
+        .quick-select-scroll::-webkit-scrollbar {
+            display: none;
+        }
+
+        .quick-chip {
+            padding: 6px 14px;
+            background: #F5F7FA;
+            color: #666;
+            border-radius: 100px;
+            font-size: 12px;
+            white-space: nowrap;
+            transition: all 0.2s;
+        }
+
+        .quick-chip.active {
+            background: var(--primary-light);
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+
+        /* 3. 年份滚动区 */
+        .year-scroller {
+            padding: 10px 20px;
+            overflow-x: auto;
+            display: flex;
+            gap: 12px;
+            flex-shrink: 0;
+            border-bottom: 1px solid #f9f9f9;
+        }
+
+        .year-scroller::-webkit-scrollbar {
+            display: none;
+        }
+
+        .year-btn {
+            padding: 6px 16px;
+            border-radius: 6px;
+            font-size: 14px;
+            color: #666;
+            background: white;
+            border: 1px solid #eee;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+
+        .year-btn.active {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+            box-shadow: 0 2px 8px rgba(24, 144, 255, 0.3);
+        }
+
+        /* 4. 月份网格区 */
+        .month-grid {
+            flex: 1;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            align-content: start;
+            overflow-y: auto;
+        }
+
+        .month-cell {
+            aspect-ratio: 1.2;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            font-size: 14px;
+            color: #333;
+            background: #fff;
+            position: relative;
+            transition: all 0.2s;
+            border: 1px solid transparent;
+        }
+
+        .month-cell:active {
+            background: #f5f5f5;
+        }
+
+        /* 选中态 */
+        .month-cell.selected {
+            background: var(--primary-color);
+            color: white;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(24, 144, 255, 0.3);
+        }
+
+        /* 当前月份指示点 */
+        .month-cell.is-current::after {
+            content: '';
+            position: absolute;
+            bottom: 6px;
+            width: 4px;
+            height: 4px;
+            background: var(--primary-color);
+            border-radius: 50%;
+        }
+
+        .month-cell.selected.is-current::after {
+            background: white;
+        }
+
+        /* 5. 底部按钮 */
+        .picker-footer {
+            padding: 15px 20px;
+            border-top: 1px solid #eee;
+            background: white;
+        }
+
+        .btn-confirm-lg {
+            width: 100%;
+            height: 44px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 22px;
+            font-size: 16px;
+            font-weight: 500;
+            box-shadow: 0 4px 15px rgba(24, 144, 255, 0.2);
+        }
+
+        .btn-confirm-lg:active {
+            transform: scale(0.98);
+            opacity: 0.9;
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="navbar">
+    <div class="back-btn"><i class="fas fa-chevron-left"></i></div>
+    <h1>总体情况</h1>
+</div>
+
+<div class="filter-scroll-view">
+    <div class="filter-pill active" id="btn-time" onclick="openTimePicker()">
+        <span id="txt-time">2025-09 ~ 2025-12</span> <i class="fas fa-caret-down"></i>
+    </div>
+    <div class="filter-pill" id="btn-lake" onclick="openListFilter('lake', '请选择湖库')">
+        <span id="txt-lake">请选择湖库</span> <i class="fas fa-caret-down"></i>
+    </div>
+    <div class="filter-pill" id="btn-basin1" onclick="openListFilter('basin1', '选择一级流域')">
+        <span id="txt-basin1">选择一级流域</span> <i class="fas fa-caret-down"></i>
+    </div>
+    <div class="filter-pill" id="btn-basin2" onclick="openListFilter('basin2', '选择二级流域')">
+        <span id="txt-basin2">选择二级流域</span> <i class="fas fa-caret-down"></i>
+    </div>
+</div>
+
+<div class="dashboard-container">
+    <div class="overview-card">
+        <div class="overview-left">
+            <h4>问题线索总览</h4>
+            <div class="total-num">256</div>
+            <div style="font-size:11px; opacity:0.8; margin-top:5px;">统计周期内所有上报数据</div>
+        </div>
+        <div class="overview-chart-mini">
+            <i class="fas fa-chart-pie chart-icon"></i>
+        </div>
+    </div>
+
+    <div class="module-tabs">
+        <div class="tab-item active" onclick="switchTab(this, 'outstanding')">突出问题清单</div>
+        <div class="tab-item" onclick="switchTab(this, 'inspection')">中央环保督察</div>
+        <div class="tab-item" onclick="switchTab(this, 'petition')">信访投诉举报</div>
+    </div>
+
+    <div class="stat-card" id="detailCard">
+        <div class="card-header-line">
+            <div class="card-title" id="cardTitle">
+                <i class="fas fa-chart-bar" style="color: #1890FF; margin-right:8px;"></i> 突出问题清单统计
+            </div>
+            <div class="data-tag" id="display-time-tag">2025-09 ~ 2025-12</div>
+        </div>
+
+        <div class="chart-row">
+            <div class="donut-box">
+                <div class="donut" id="mainDonut"></div>
+                <div class="donut-text">
+                    <div class="num" id="currentTotal">241</div>
+                    <div class="label">总数</div>
+                </div>
+            </div>
+            <div class="legend-box">
+                <div class="legend-item">
+                    <div class="dot" style="background:#1890FF"></div>
+                    <span>总数占比 (100%)</span>
+                </div>
+                <div class="legend-item">
+                    <div class="dot bg-orange"></div>
+                    <span>处理中占比 (<span id="processPercent">1.2</span>%)</span>
+                </div>
+            </div>
+        </div>
+        <div class="process-list" id="processList"></div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="listModal" onclick="closeModal('listModal')">
+    <div class="modal-window" onclick="event.stopPropagation()">
+        <div class="modal-header">
+            <div class="modal-title" id="listModalTitle">选择条件</div>
+            <div class="modal-close" onclick="closeModal('listModal')">&times;</div>
+        </div>
+        <div class="modal-body" id="listModalOptions"></div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="timePickerModal" onclick="closeModal('timePickerModal')">
+    <div class="modal-window" style="height: auto;" onclick="event.stopPropagation()">
+        <div class="modal-header">
+            <div class="modal-title">选择时间范围</div>
+            <div class="modal-close" onclick="closeModal('timePickerModal')">&times;</div>
+        </div>
+
+        <div class="picker-container">
+            <div class="picker-tabs">
+                <div class="picker-tab-item active" id="tabStart" onclick="switchPickerTab('start')">
+                    开始时间
+                    <div class="picker-date-display" id="displayStart">2025-09</div>
+                </div>
+                <div class="picker-tab-item" id="tabEnd" onclick="switchPickerTab('end')">
+                    结束时间
+                    <div class="picker-date-display" id="displayEnd">2025-12</div>
+                </div>
+            </div>
+
+            <div class="quick-select-scroll">
+                <div class="quick-chip" onclick="applyQuickTime('3m')">近三个月</div>
+                <div class="quick-chip" onclick="applyQuickTime('6m')">近半年</div>
+                <div class="quick-chip" onclick="applyQuickTime('ytd')">今年以来</div>
+                <div class="quick-chip" onclick="applyQuickTime('2024')">2024全年</div>
+            </div>
+
+            <div class="year-scroller" id="yearScroller">
+            </div>
+
+            <div class="month-grid" id="monthGrid">
+            </div>
+        </div>
+
+        <div class="picker-footer">
+            <button class="btn-confirm-lg" onclick="confirmTimeSelection()">确认查询</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // --- 全局状态 ---
+    const filterData = {
+        lake: ['不限', '丹江口水库', '洪湖', '梁子湖', '斧头湖', '汈汊湖', '长湖'],
+        basin1: ['不限', '长江干流', '汉江干流', '清江流域'],
+        basin2: ['不限', '府澴河', '举水', '倒水', '通顺河', '东荆河']
+    };
+
+    const mockData = {
+        outstanding: {
+            title: '突出问题清单统计',
+            color: '#1890FF',
+            total: 241,
+            steps: [{label: '现场调查', count: 3, colorClass: 'c-orange', bgClass: 'bg-orange'}, {
+                label: '地方反馈',
+                count: 2,
+                colorClass: 'c-cyan',
+                bgClass: 'bg-cyan'
+            }, {label: '销号归档', count: 1, colorClass: 'c-green', bgClass: 'bg-green'}]
+        },
+        inspection: {
+            title: '中央环保督察问题统计',
+            color: '#F5222D',
+            total: 0,
+            steps: [{label: '现场调查', count: 0, colorClass: 'c-orange', bgClass: 'bg-orange'}, {
+                label: '地方反馈',
+                count: 0,
+                colorClass: 'c-cyan',
+                bgClass: 'bg-cyan'
+            }, {label: '销号归档', count: 0, colorClass: 'c-green', bgClass: 'bg-green'}]
+        },
+        petition: {
+            title: '信访投诉举报统计',
+            color: '#13C2C2',
+            total: 15,
+            steps: [{label: '现场调查', count: 0, colorClass: 'c-orange', bgClass: 'bg-orange'}, {
+                label: '地方反馈',
+                count: 0,
+                colorClass: 'c-cyan',
+                bgClass: 'bg-cyan'
+            }, {label: '销号归档', count: 0, colorClass: 'c-green', bgClass: 'bg-green'}]
+        }
+    };
+
+    // 时间选择器内部状态
+    let pickerState = {
+        mode: 'start', // 'start' or 'end'
+        startYear: 2025, startMonth: 9,
+        endYear: 2025, endMonth: 12,
+        currentViewYear: 2025 // 当前面板显示的年份
+    };
+
+    window.onload = function () {
+        renderData('outstanding');
+    };
+
+    function closeModal(id) {
+        document.getElementById(id).classList.remove('show');
+    }
+
+    // --- 时间选择器核心逻辑 ---
+
+    function openTimePicker() {
+        // 初始化UI
+        renderYearScroller();
+        renderMonthGrid();
+        updatePickerUI();
+        document.getElementById('timePickerModal').classList.add('show');
+    }
+
+    function switchPickerTab(mode) {
+        pickerState.mode = mode;
+        // 切换时，面板跳转到对应选中的年份
+        pickerState.currentViewYear = mode === 'start' ? pickerState.startYear : pickerState.endYear;
+        updatePickerUI();
+        renderYearScroller(); // 刷新高亮年份
+        renderMonthGrid();    // 刷新高亮月份
+    }
+
+    // 渲染年份滚动条
+    function renderYearScroller() {
+        const container = document.getElementById('yearScroller');
+        container.innerHTML = '';
+        const currentYear = new Date().getFullYear();
+        // 生成 前5年 ~ 后2年
+        for (let y = currentYear - 5; y <= currentYear + 2; y++) {
+            const btn = document.createElement('div');
+            btn.className = `year-btn ${y === pickerState.currentViewYear ? 'active' : ''}`;
+            btn.innerText = y + '年';
+            btn.onclick = () => {
+                pickerState.currentViewYear = y;
+                renderYearScroller();
+                renderMonthGrid();
+            };
+            container.appendChild(btn);
+        }
+    }
+
+    // 渲染月份网格
+    function renderMonthGrid() {
+        const container = document.getElementById('monthGrid');
+        container.innerHTML = '';
+
+        // 确定当前正在编辑的值
+        const isEditingStart = pickerState.mode === 'start';
+        const selectedYear = isEditingStart ? pickerState.startYear : pickerState.endYear;
+        const selectedMonth = isEditingStart ? pickerState.startMonth : pickerState.endMonth;
+
+        for (let m = 1; m <= 12; m++) {
+            const cell = document.createElement('div');
+            // 判断是否选中：只有当前面板年份等于选中年份，且月份匹配时才高亮
+            const isSelected = (pickerState.currentViewYear === selectedYear && m === selectedMonth);
+
+            cell.className = `month-cell ${isSelected ? 'selected' : ''}`;
+            cell.innerText = m + '月';
+            cell.onclick = () => selectMonth(m);
+            container.appendChild(cell);
+        }
+    }
+
+    // 用户点击月份
+    function selectMonth(m) {
+        if (pickerState.mode === 'start') {
+            pickerState.startYear = pickerState.currentViewYear;
+            pickerState.startMonth = m;
+            // 可选：选完开始自动跳到结束？这里暂时保持手动，体验更稳
+        } else {
+            pickerState.endYear = pickerState.currentViewYear;
+            pickerState.endMonth = m;
+        }
+        updatePickerUI();
+        renderMonthGrid();
+    }
+
+    // 更新界面 Tab 文字显示
+    function updatePickerUI() {
+        const fmt = (y, m) => `${y}-${String(m).padStart(2, '0')}`;
+
+        document.getElementById('displayStart').innerText = fmt(pickerState.startYear, pickerState.startMonth);
+        document.getElementById('displayEnd').innerText = fmt(pickerState.endYear, pickerState.endMonth);
+
+        // Tab 高亮
+        document.getElementById('tabStart').className = `picker-tab-item ${pickerState.mode === 'start' ? 'active' : ''}`;
+        document.getElementById('tabEnd').className = `picker-tab-item ${pickerState.mode === 'end' ? 'active' : ''}`;
+    }
+
+    // 快捷胶囊逻辑
+    function applyQuickTime(type) {
+        const now = new Date();
+        let sY, sM, eY, eM;
+
+        eY = now.getFullYear();
+        eM = now.getMonth() + 1; // 默认结束为当前月
+
+        if (type === '3m') {
+            const d = new Date();
+            d.setMonth(d.getMonth() - 2);
+            sY = d.getFullYear();
+            sM = d.getMonth() + 1;
+        } else if (type === '6m') {
+            const d = new Date();
+            d.setMonth(d.getMonth() - 5);
+            sY = d.getFullYear();
+            sM = d.getMonth() + 1;
+        } else if (type === 'ytd') {
+            sY = now.getFullYear();
+            sM = 1;
+        } else if (type === '2024') {
+            sY = 2024;
+            sM = 1;
+            eY = 2024;
+            eM = 12;
+        }
+
+        pickerState.startYear = sY;
+        pickerState.startMonth = sM;
+        pickerState.endYear = eY;
+        pickerState.endMonth = eM;
+        // 更新视图到开始年份
+        pickerState.currentViewYear = sY;
+        pickerState.mode = 'start';
+
+        updatePickerUI();
+        renderYearScroller();
+        renderMonthGrid();
+    }
+
+    // 确认按钮
+    function confirmTimeSelection() {
+        // 校验大小
+        const sVal = pickerState.startYear * 100 + pickerState.startMonth;
+        const eVal = pickerState.endYear * 100 + pickerState.endMonth;
+
+        if (sVal > eVal) {
+            alert("开始时间不能晚于结束时间");
+            return;
+        }
+
+        const fmt = (y, m) => `${y}-${String(m).padStart(2, '0')}`;
+        const finalStr = `${fmt(pickerState.startYear, pickerState.startMonth)} ~ ${fmt(pickerState.endYear, pickerState.endMonth)}`;
+
+        document.getElementById('txt-time').innerText = finalStr;
+        document.getElementById('display-time-tag').innerText = finalStr;
+        closeModal('timePickerModal');
+    }
+
+    // --- 列表筛选逻辑 (保持不变) ---
+    function openListFilter(type, title) {
+        document.getElementById('listModalTitle').innerText = title;
+        const list = document.getElementById('listModalOptions');
+        list.innerHTML = '';
+        const options = filterData[type] || [];
+        const currentVal = document.getElementById('txt-' + type).innerText;
+        options.forEach(opt => {
+            const div = document.createElement('div');
+            div.className = 'option-item ' + (opt === currentVal ? 'selected' : '');
+            div.innerText = opt;
+            div.onclick = () => {
+                document.getElementById('txt-' + type).innerText = opt;
+                const btn = document.getElementById('btn-' + type);
+                (opt !== '不限' && !opt.includes('选择')) ? btn.classList.add('active') : btn.classList.remove('active');
+                closeModal('listModal');
+            };
+            list.appendChild(div);
+        });
+        document.getElementById('listModal').classList.add('show');
+    }
+
+    // --- 图表渲染 (保持不变) ---
+    function switchTab(el, type) {
+        document.querySelectorAll('.tab-item').forEach(item => item.classList.remove('active'));
+        el.classList.add('active');
+        const card = document.getElementById('detailCard');
+        card.style.animation = 'none';
+        card.offsetHeight;
+        card.style.animation = 'fadeIn 0.4s ease';
+        renderData(type);
+    }
+
+    function renderData(type) {
+        const data = mockData[type];
+        document.getElementById('cardTitle').innerHTML = `<i class="fas fa-chart-bar" style="color: ${data.color}; margin-right:8px;"></i> ${data.title}`;
+        document.getElementById('currentTotal').innerText = data.total;
+        let processRate = 0;
+        if (data.total > 0) {
+            const activeCount = data.steps[0].count + data.steps[1].count;
+            processRate = Math.round((activeCount / data.total) * 100);
+            if (processRate === 0 && activeCount > 0) processRate = 1;
+        }
+        const donut = document.getElementById('mainDonut');
+        donut.style.background = `conic-gradient(${data.color} 0% ${100 - processRate}%, #eee ${100 - processRate}% 100%)`;
+        document.getElementById('processPercent').innerText = processRate;
+        const listContainer = document.getElementById('processList');
+        listContainer.innerHTML = '';
+        listContainer.innerHTML += createProcessRow('收到总数', data.total, data.total, 'bg-blue', 'c-blue', 'fa-inbox');
+        data.steps.forEach(step => {
+            const icon = getIconForLabel(step.label);
+            listContainer.innerHTML += createProcessRow(step.label, step.count, data.total, step.bgClass, step.colorClass, icon);
+        });
+    }
+
+    function createProcessRow(label, count, total, bgClass, textClass, iconClass) {
+        const percent = total > 0 ? Math.round((count / total) * 100) : 0;
+        return `<div class="process-item"><div class="p-icon ${textClass}"><i class="fas ${iconClass}"></i></div><div class="p-content"><div class="p-header"><span style="color:#555">${label}</span><span style="font-weight:bold; color:#333">${count} <span style="font-weight:normal;color:#999;font-size:11px;">(${percent}%)</span></span></div><div class="p-bar-bg"><div class="p-bar-fill ${bgClass}" style="width: ${percent}%"></div></div></div></div>`;
+    }
+
+    function getIconForLabel(label) {
+        if (label.includes('调查')) return 'fa-search-location';
+        if (label.includes('反馈')) return 'fa-file-signature';
+        if (label.includes('销号')) return 'fa-check-circle';
+        return 'fa-circle';
+    }
+</script>
+</body>
+</html>

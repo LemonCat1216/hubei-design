@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>湖北省水环境与行政区划可视化</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        body, html { margin: 0; padding: 0; height: 100%; width: 100%; overflow: hidden; font-family: "Microsoft YaHei", sans-serif; }
+        #map { width: 100%; height: 100%; background: #f0f3f4; }
+
+        /* 自定义控制面板样式 */
+        .custom-control {
+            background: white;
+            padding: 10px;
+            border-radius: 4px;
+            box-shadow: 0 1px 5px rgba(0,0,0,0.4);
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .file-input-wrapper {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+        }
+        .file-input-wrapper input[type=file] {
+            font-size: 100px;
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
+            cursor: pointer;
+        }
+        .btn {
+            background-color: #007bff;
+            color: white;
+            padding: 8px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .btn:hover { background-color: #0056b3; }
+
+        /* 标签样式 */
+        .city-label {
+            background: transparent;
+            border: none;
+            box-shadow: none;
+            color: #333;
+            font-weight: bold;
+            font-size: 12px;
+            text-shadow: 1px 1px 0 #fff, -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff;
+        }
+
+        /* 湖泊呼吸效果 */
+        @keyframes pulse {
+            0% { fill-opacity: 0.6; }
+            50% { fill-opacity: 0.8; }
+            100% { fill-opacity: 0.6; }
+        }
+        .lake-feature {
+            animation: pulse 3s infinite;
+        }
+    </style>
+</head>
+<body>
+
+<div id="map"></div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+    // 1. 初始化地图
+    // 设置中心点为湖北大概位置，缩放级别适中
+    const map = L.map('map', {
+        center: [31.2, 112.5],
+        zoom: 7,
+        zoomControl: false, // 隐藏默认缩放控件，后面可以加自定义或移动位置
+        attributionControl: false
+    });
+
+    L.control.zoom({ position: 'bottomright' }).addTo(map);
+
+    // 2. 加载 CARTO 底图 (CartoDB Voyager - 无标签版，标签我们自己加)
+    // 选项: Voyager (彩色), Positron (浅色), Dark Matter (深色)
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}{r}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+        subdomains: 'abcd',
+        maxZoom: 20
+    }).addTo(map);
+
+    // 3. 定义样式变量
+    const hubeiStyle = {
+        color: "#666",      // 边界颜色
+        weight: 1,          // 边界宽度
+        opacity: 1,
+        fillColor: "#3388ff",
+        fillOpacity: 0.05,  // 极淡的填充，突出底图
+        dashArray: '3'      // 虚线边界
+    };
+
+    const hubeiHoverStyle = {
+        weight: 3,
+        color: "#0056b3",
+        fillOpacity: 0.2,
+        dashArray: ''
+    };
+
+    const lakeStyle = {
+        color: "#0077be",   // 深蓝色边框
+        weight: 1.5,
+        fillColor: "#00ccff", // 亮蓝色填充
+        fillOpacity: 0.7,
+        className: 'lake-feature' // 用于CSS动画
+    };
+
+    // 4. 加载湖北省地市数据 (使用阿里 DataV GeoAtlas 接口: 420000 代表湖北)
+    fetch('https://geo.datav.aliyun.com/areas_v3/bound/420000_full.json')
+        .then(res => res.json())
+        .then(data => {
+            const geoJsonLayer = L.geoJSON(data, {
+                style: hubeiStyle,
+                onEachFeature: function(feature, layer) {
+                    // 添加交互
+                    layer.on({
+                        mouseover: (e) => {
+                            layer.setStyle(hubeiHoverStyle);
+                            layer.bringToFront();
+                            // 确保湖泊图层总是在最上面
+                            if (window.lakesLayer) window.lakesLayer.bringToFront();
+                        },
+                        mouseout: (e) => {
+                            geoJsonLayer.resetStyle(layer);
+                        }
+                    });
+
+                    // 添加地市名称标签
+                    if (feature.properties && feature.properties.name) {
+                        const center = layer.getBounds().getCenter();
+                        L.marker(center, {
+                            icon: L.divIcon({
+                                className: 'city-label',
+                                html: feature.properties.name,
+                                iconSize: [100, 20],
+                                iconAnchor: [50, 10]
+                            }),
+                            interactive: false // 标签不阻挡鼠标事件
+                        }).addTo(map);
+                    }
+                }
+            }).addTo(map);
+
+            // 调整视野以适应湖北省
+            map.fitBounds(geoJsonLayer.getBounds());
+        })
+        .catch(err => console.error("加载湖北数据失败:", err));
+
+    // 5. 加载用户提供的湖泊数据 (export.geojson)
+    function loadLakes(geojsonData) {
+        // 如果已经存在，先移除
+        if (window.lakesLayer) {
+            map.removeLayer(window.lakesLayer);
+        }
+
+        window.lakesLayer = L.geoJSON(geojsonData, {
+            style: lakeStyle,
+            onEachFeature: function(feature, layer) {
+                if (feature.properties && feature.properties.name) {
+                    layer.bindTooltip(`<strong>${feature.properties.name}</strong>`, {
+                        direction: 'top',
+                        className: 'custom-tooltip'
+                    });
+                }
+            }
+        }).addTo(map);
+
+        // 只有当地图还没包含湖泊时才缩放，避免每次都乱跳
+        // map.fitBounds(window.lakesLayer.getBounds());
+    }
+
+    // 尝试自动加载（需要本地服务器环境）
+    fetch('export.geojson')
+        .then(response => {
+            if (!response.ok) throw new Error("File not found");
+            return response.json();
+        })
+        .then(data => {
+            loadLakes(data);
+            console.log("自动加载 export.geojson 成功");
+        })
+        .catch(error => {
+            console.log("自动加载失败 (可能是跨域问题或文件不存在)，请使用手动上传按钮。");
+        });
+
+    // 6. 添加手动上传控件 (解决本地开发跨域问题)
+    const UploadControl = L.Control.extend({
+        onAdd: function(map) {
+            const div = L.DomUtil.create('div', 'custom-control file-input-wrapper');
+            div.innerHTML = `24个湖库专题.html
+                    <button class="btn">
+                        <span>📂 选择 export.geojson</span>
+                    </button>
+                    <input type="file" id="geojsonInput" accept=".geojson,.json">
+                `;
+
+            // 阻止地图的双击放大等事件穿透
+            L.DomEvent.disableClickPropagation(div);
+
+            return div;
+        }
+    });
+
+    map.addControl(new UploadControl({ position: 'topleft' }));
+
+    // 监听文件选择
+    setTimeout(() => {
+        document.getElementById('geojsonInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const json = JSON.parse(e.target.result);
+                    loadLakes(json);
+                    alert(`成功加载: ${file.name}`);
+                } catch (err) {
+                    alert("JSON 格式错误，请检查文件");
+                }
+            };
+            reader.readAsText(file);
+        });
+    }, 500);
+
+</script>
+</body>
+</html>

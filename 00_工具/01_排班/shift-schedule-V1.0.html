@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>湖北项目 - 智能排班系统</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <style>
+        :root {
+            --primary: #4361ee;
+            --pm-color: #6d28d9;
+            --fe-color: #0891b2;
+            --be-color: #ea580c;
+            --bg-page: #f8fafc;
+            --border-light: #e2e8f0;
+        }
+
+        body {
+            font-family: "Inter", "Microsoft YaHei", sans-serif;
+            margin: 0; padding: 20px;
+            background-color: var(--bg-page);
+            color: #1e293b;
+        }
+
+        .container { max-width: 1500px; margin: 0 auto; }
+
+        /* --- ✨ 头部吸顶核心样式 --- */
+        .sticky-wrapper {
+            position: sticky;
+            top: 0;
+            z-index: 900; /* 保证在日历上方，但低于弹窗(1000) */
+            background-color: var(--bg-page); /* 必须有背景色，否则下方内容会透出来 */
+
+            /* 修正 body padding 带来的视觉空隙，使其紧贴窗口顶部 */
+            margin-top: -20px;
+            padding-top: 20px;
+            padding-bottom: 10px;
+        }
+        /* ------------------------- */
+
+        /* --- 顶部 Header --- */
+        .header-card {
+            background: #fff; padding: 24px; border-radius: 16px;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center;
+        }
+
+        .project-info h1 { margin: 0 0 8px 0; font-size: 24px; color: var(--primary); display: flex; align-items: center; gap: 10px; }
+
+        /* 角色图例 */
+        .role-legend { display: flex; gap: 15px; }
+        .legend-tag {
+            display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 500;
+            padding: 6px 12px; border-radius: 8px; background: #f1f5f9;
+        }
+        .dot-pm { color: var(--pm-color); }
+        .dot-fe { color: var(--fe-color); }
+        .dot-be { color: var(--be-color); }
+
+        /* --- 交互控制栏 --- */
+        .toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; } /* 减少一点底部边距 */
+
+        .view-switcher { background: #e2e8f0; padding: 4px; border-radius: 12px; display: flex; gap: 4px; }
+        .switch-btn {
+            border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer;
+            font-weight: 600; color: #64748b; background: transparent; transition: 0.2s;
+        }
+        .switch-btn.active { background: #fff; color: var(--primary); box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+
+        .btn {
+            padding: 10px 18px; border-radius: 10px; border: 1px solid var(--border-light);
+            background: #fff; cursor: pointer; font-weight: 600; display: inline-flex; align-items: center; gap: 8px;
+            transition: all 0.2s;
+        }
+        .btn:hover { background: #f8fafc; }
+        .btn-primary { background: var(--primary); color: #fff; border: none; }
+        .btn-primary:hover { opacity: 0.9; transform: translateY(-1px); background: var(--primary); }
+
+        /* --- 日历核心区域 --- */
+        .calendar-wrap { background: #fff; border-radius: 16px; overflow: hidden; border: 1px solid var(--border-light); box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .week-bar { display: grid; grid-template-columns: repeat(7, 1fr); background: #f8fafc; border-bottom: 1px solid var(--border-light); }
+        .week-label { padding: 12px; text-align: center; font-size: 12px; font-weight: 700; color: #94a3b8; text-transform: uppercase; }
+
+        .grid-body { display: grid; grid-template-columns: repeat(7, 1fr); }
+        .cell {
+            min-height: 140px; border-right: 1px solid var(--border-light); border-bottom: 1px solid var(--border-light);
+            padding: 10px; position: relative; transition: 0.2s;
+        }
+        .cell.week-mode { min-height: 500px; background: #fff; }
+        .cell:nth-child(7n) { border-right: none; }
+        .cell.today { background: #f0f7ff; }
+        .cell.other-month { opacity: 0.4; background: #fdfdfd; }
+        .cell.drag-over { background: #eff6ff; outline: 2px dashed var(--primary); outline-offset: -4px; }
+
+        .date-num { font-size: 14px; font-weight: 700; color: #64748b; margin-bottom: 8px; display: block; }
+        .today .date-num { color: var(--primary); }
+
+        /* 人员卡片 */
+        .member-card {
+            display: flex; align-items: center; padding: 8px 10px; margin-bottom: 6px;
+            background: #fff; border: 1px solid #f1f5f9; border-radius: 8px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05); cursor: grab; transition: 0.2s;
+            user-select: none;
+        }
+        .member-card:hover { transform: scale(1.02); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+        .member-card.pm { border-left: 4px solid var(--pm-color); }
+        .member-card.fe { border-left: 4px solid var(--fe-color); }
+        .member-card.be { border-left: 4px solid var(--be-color); }
+        .member-card:active { cursor: grabbing; }
+
+        .role-icon { width: 20px; font-size: 12px; margin-right: 8px; text-align: center; }
+        .name-txt { font-size: 13px; font-weight: 600; flex-grow: 1; }
+
+        /* 标签样式 (高级配色) */
+        .tag-pill {
+            font-size: 11px; padding: 2px 6px; border-radius: 6px; font-weight: 600; line-height: 1.4; margin-right: 2px;
+            border: 1px solid transparent; transition: all 0.2s;
+        }
+        .tag-normal { background-color: #ecfdf5; color: #047857; border-color: #a7f3d0; }
+        .tag-remote { background-color: #e0e7ff; color: #4338ca; border-color: #c7d2fe; }
+        .tag-leave { background-color: #fffbeb; color: #b45309; border-color: #fde68a; }
+        .tag-overtime { background-color: #ffe4e6; color: #e11d48; border-color: #fecdd3; }
+
+        /* 弹窗样式 */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(15,23,42,0.6); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; z-index: 1000; }
+        .modal-box { background: #fff; width: 600px; border-radius: 20px; overflow: hidden; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.2); }
+        .modal-header { padding: 20px; background: #f8fafc; display: flex; justify-content: space-between; border-bottom: 1px solid #f1f5f9; }
+        .modal-content { padding: 20px; display: grid; grid-template-columns: 180px 1fr; gap: 20px; }
+    </style>
+</head>
+<body>
+
+<div id="app" class="container">
+    <input type="file" ref="fileInput" @change="handleImportFile" accept=".json" style="display: none;">
+
+    <div class="sticky-wrapper">
+        <header class="header-card">
+            <div class="project-info">
+                <h1><i class="fas fa-chart-area"></i> 湖北项目 - 全球顶级排班系统</h1>
+                <div class="role-legend">
+                    <div class="legend-tag"><i class="fas fa-user-tie dot-pm"></i> 项目经理 (PM)</div>
+                    <div class="legend-tag"><i class="fas fa-laptop-code dot-fe"></i> 前端开发 (FE)</div>
+                    <div class="legend-tag"><i class="fas fa-database dot-be"></i> 后端开发 (BE)</div>
+                </div>
+            </div>
+            <div class="view-switcher">
+                <button class="switch-btn" :class="{active: viewMode === 'month'}" @click="viewMode = 'month'">月视图</button>
+                <button class="switch-btn" :class="{active: viewMode === 'week'}" @click="viewMode = 'week'">周视图</button>
+            </div>
+        </header>
+
+        <div class="toolbar">
+            <div class="date-nav">
+                <button class="btn" @click="navigate(-1)"><i class="fas fa-angle-left"></i></button>
+                <span style="font-size: 20px; font-weight: 800; margin: 0 15px; min-width: 140px; display: inline-block; text-align: center;">{{ dateLabel }}</span>
+                <button class="btn" @click="navigate(1)"><i class="fas fa-angle-right"></i></button>
+                <button class="btn" @click="goToday" style="margin-left: 10px;">回到今天</button>
+            </div>
+            <div class="actions">
+                <button class="btn" @click="triggerImport"><i class="fas fa-file-upload"></i> 导入排班</button>
+                <button class="btn" @click="exportJSON"><i class="fas fa-file-download"></i> 导出排班</button>
+                <button class="btn btn-primary" @click="saveLocal"><i class="fas fa-check"></i> 保存同步</button>
+            </div>
+        </div>
+    </div>
+    <div class="calendar-wrap">
+        <div class="week-bar">
+            <div class="week-label" v-for="w in weekLabels">{{ w }}</div>
+        </div>
+        <div class="grid-body">
+            <div v-for="dateObj in visibleDays"
+                 :key="dateObj.dateStr"
+                 class="cell"
+                 :class="{today: isToday(dateObj.date), 'other-month': !dateObj.isCurrentMonth, 'week-mode': viewMode === 'week', 'drag-over': dragTarget === dateObj.dateStr}"
+                 @click="openModal(dateObj)"
+                 @dragover.prevent="dragTarget = dateObj.dateStr"
+                 @dragleave="dragTarget = null"
+                 @drop="onDrop(dateObj.dateStr)">
+
+                <span class="date-num">{{ dateObj.date.getDate() }}</span>
+
+                <div v-for="item in getShifts(dateObj.dateStr)"
+                     :key="item.name"
+                     class="member-card"
+                     :class="getRole(item.name)"
+                     draggable="true"
+                     @dragstart="onDragStart($event, dateObj.dateStr, item)"
+                     @click.stop="openModal(dateObj, item.name)">
+
+                    <i class="role-icon fas" :class="getRoleIcon(item.name)"></i>
+                    <span class="name-txt">{{ item.name }}</span>
+                    <div style="display:flex; gap:2px">
+                        <span v-for="tag in item.tags"
+                              class="tag-pill"
+                              :class="getTagClass(tag)">
+                            {{ tag }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" v-if="showModal" @click.self="showModal = false">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3>编辑排班：{{ editingDateStr }}</h3>
+                <button @click="showModal = false" style="border:none;background:none;font-size:24px;cursor:pointer;">&times;</button>
+            </div>
+            <div class="modal-content">
+                <div style="display:flex; flex-direction:column; gap:8px; border-right:1px solid #eee; padding-right:15px;">
+                    <button v-for="m in teamMembers"
+                            @click="currEditUser = m.name"
+                            class="btn" :class="{'btn-primary': currEditUser === m.name}"
+                            style="justify-content: flex-start; font-size:13px;">
+                        <i class="fas" :class="getRoleIcon(m.name)"></i> {{ m.name }}
+                    </button>
+                </div>
+                <div>
+                    <p style="font-weight:700; margin-top:0;">状态标记：</p>
+                    <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                        <button v-for="tag in tagOptions"
+                                class="btn"
+                                :style="hasTag(tag) ? {background: '#4361ee', color: '#fff'} : {}"
+                                @click="toggleTag(tag)">
+                            {{ tag }}
+                        </button>
+                    </div>
+                    <p style="font-size:12px; color:#94a3b8; margin-top:30px;">提示：选择人员后勾选对应状态，点击确定保存。</p>
+                </div>
+            </div>
+            <div style="padding:15px; border-top:1px solid #f1f5f9; text-align:right;">
+                <button class="btn btn-primary" @click="confirmEdit">确定并保存</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const { createApp, ref, computed, onMounted } = Vue;
+
+    createApp({
+        setup() {
+            // 人员名单
+            const teamMembers = [
+                { name: "马天宇", role: "fe" }, { name: "谷思佳", role: "be" },
+                { name: "夏宇", role: "be" }, { name: "马依卓", role: "fe" },
+                { name: "林煜翔", role: "pm" }, { name: "徐金哲", role: "fe" },
+                { name: "任建华", role: "pm" }, { name: "王昀鹏", role: "pm" },
+                { name: "陈莹", role: "fe" }, { name: "程立强", role: "be" }
+            ];
+
+            const tagOptions = ["正常", "远程", "请假", "加班"];
+            const getTagClass = (tagName) => {
+                switch (tagName) {
+                    case '正常': return 'tag-normal';
+                    case '远程': return 'tag-remote';
+                    case '请假': return 'tag-leave';
+                    case '加班': return 'tag-overtime';
+                    default: return '';
+                }
+            };
+
+            const viewMode = ref('month');
+            const anchorDate = ref(new Date());
+            const scheduleData = ref({});
+            const weekLabels = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
+
+            const fileInput = ref(null);
+            const showModal = ref(false);
+            const editingDateStr = ref('');
+            const currEditUser = ref('');
+            const tempTags = ref({});
+            const dragSource = ref(null);
+            const dragTarget = ref(null);
+
+            const dateLabel = computed(() => {
+                const y = anchorDate.value.getFullYear();
+                const m = anchorDate.value.getMonth() + 1;
+                return viewMode.value === 'month' ? `${y}年 ${m}月` : `${y}年 ${m}月 (第${getWeekNum(anchorDate.value)}周)`;
+            });
+
+            const visibleDays = computed(() => {
+                const days = [];
+                const d = new Date(anchorDate.value);
+                if (viewMode.value === 'month') {
+                    d.setDate(1);
+                    const startDay = d.getDay();
+                    d.setDate(d.getDate() - startDay);
+                    for (let i = 0; i < 42; i++) {
+                        const current = new Date(d);
+                        days.push({
+                            date: current,
+                            dateStr: current.toISOString().split('T')[0],
+                            isCurrentMonth: current.getMonth() === anchorDate.value.getMonth()
+                        });
+                        d.setDate(d.getDate() + 1);
+                    }
+                } else {
+                    const day = d.getDay();
+                    d.setDate(d.getDate() - day);
+                    for (let i = 0; i < 7; i++) {
+                        const current = new Date(d);
+                        days.push({
+                            date: current,
+                            dateStr: current.toISOString().split('T')[0],
+                            isCurrentMonth: true
+                        });
+                        d.setDate(d.getDate() + 1);
+                    }
+                }
+                return days;
+            });
+
+            const getRole = (name) => teamMembers.find(m => m.name === name)?.role || 'be';
+            const getRoleIcon = (name) => {
+                const r = getRole(name);
+                return r === 'pm' ? 'fa-user-tie' : (r === 'fe' ? 'fa-laptop-code' : 'fa-database');
+            };
+            const getShifts = (dateStr) => scheduleData.value[dateStr] || [];
+            const isToday = (d) => d.toDateString() === new Date().toDateString();
+            const getWeekNum = (d) => Math.ceil(d.getDate() / 7);
+
+            const onDragStart = (e, dateStr, item) => {
+                dragSource.value = { dateStr, item: JSON.parse(JSON.stringify(item)) };
+                e.dataTransfer.effectAllowed = 'move';
+            };
+
+            const onDrop = (targetDate) => {
+                dragTarget.value = null;
+                if(!dragSource.value) return;
+                const { dateStr: sourceDate, item } = dragSource.value;
+                if (sourceDate === targetDate) return;
+
+                if(!scheduleData.value[targetDate]) scheduleData.value[targetDate] = [];
+                const isDuplicate = scheduleData.value[targetDate].some(existing => existing.name === item.name);
+                if (isDuplicate) {
+                    alert(`人员 [${item.name}] 在目标日期已存在，无法移动。`);
+                    return;
+                }
+                if (scheduleData.value[sourceDate]) {
+                    scheduleData.value[sourceDate] = scheduleData.value[sourceDate].filter(i => i.name !== item.name);
+                }
+                scheduleData.value[targetDate].push(item);
+                saveLocal();
+            };
+
+            const exportJSON = () => {
+                const blob = new Blob([JSON.stringify(scheduleData.value, null, 2)], {type: 'application/json'});
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(blob);
+                a.download = `湖北排班_${new Date().toISOString().split('T')[0]}.json`;
+                a.click();
+            };
+            const triggerImport = () => fileInput.value.click();
+            const handleImportFile = (event) => {
+                const file = event.target.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    try {
+                        scheduleData.value = JSON.parse(e.target.result);
+                        saveLocal();
+                        alert("排班数据导入成功！");
+                    } catch (error) { alert("文件格式不正确"); }
+                    event.target.value = '';
+                };
+                reader.readAsText(file);
+            };
+
+            const openModal = (dateObj, name = null) => {
+                editingDateStr.value = dateObj.dateStr;
+                currEditUser.value = name || teamMembers[0].name;
+                tempTags.value = {};
+                const existing = scheduleData.value[dateObj.dateStr] || [];
+                existing.forEach(s => tempTags.value[s.name] = [...s.tags]);
+                showModal.value = true;
+            };
+            const toggleTag = (tag) => {
+                if(!tempTags.value[currEditUser.value]) tempTags.value[currEditUser.value] = [];
+                const tags = tempTags.value[currEditUser.value];
+                const idx = tags.indexOf(tag);
+                idx > -1 ? tags.splice(idx, 1) : tags.push(tag);
+            };
+            const hasTag = (tag) => tempTags.value[currEditUser.value]?.includes(tag);
+            const confirmEdit = () => {
+                const final = [];
+                for (let name in tempTags.value) {
+                    if (tempTags.value[name].length > 0) final.push({ name, tags: tempTags.value[name] });
+                }
+                scheduleData.value[editingDateStr.value] = final;
+                showModal.value = false;
+                saveLocal();
+            };
+
+            const navigate = (dir) => {
+                const d = new Date(anchorDate.value);
+                viewMode.value === 'month' ? d.setMonth(d.getMonth() + dir) : d.setDate(d.getDate() + dir * 7);
+                anchorDate.value = d;
+            };
+            const saveLocal = () => localStorage.setItem('hubei_v7_data', JSON.stringify(scheduleData.value));
+
+            onMounted(() => {
+                const saved = localStorage.getItem('hubei_v7_data');
+                if(saved) scheduleData.value = JSON.parse(saved);
+            });
+
+            return {
+                teamMembers, tagOptions, viewMode, anchorDate, weekLabels, visibleDays, dateLabel,
+                showModal, editingDateStr, currEditUser, dragTarget, fileInput,
+                getRole, getRoleIcon, getShifts, isToday, navigate, goToday: () => anchorDate.value = new Date(),
+                onDragStart, onDrop, openModal, toggleTag, hasTag, confirmEdit,
+                exportJSON, triggerImport, handleImportFile, saveLocal, getTagClass
+            };
+        }
+    }).mount('#app');
+</script>
+</body>
+</html>

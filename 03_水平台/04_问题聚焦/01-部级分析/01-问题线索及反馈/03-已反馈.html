@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>湖北省水生态环境综合管理 - 已反馈</title>
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography,container-queries"></script>
+
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#3b82f6",
+                        "background-light": "#f4f7fb",
+                        "background-dark": "#0f172a",
+                    },
+                    fontFamily: {
+                        display: ["Inter", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "sans-serif"],
+                    },
+                    animation: {
+                        'modal-in': 'modalIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+                    },
+                    keyframes: {
+                        modalIn: {
+                            '0%': { opacity: 0, transform: 'scale(0.95) translateY(10px)' },
+                            '100%': { opacity: 1, transform: 'scale(1) translateY(0)' },
+                        }
+                    }
+                },
+            },
+        };
+    </script>
+
+    <style type="text/tailwindcss">
+        body {
+            font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+        .section-title-bar {
+            width: 4px;
+            height: 16px;
+            background: linear-gradient(to bottom, #93c5fd, #3b82f6);
+            border-radius: 4px;
+            margin-right: 8px;
+        }
+
+        #sidebar { transition: width 0.3s ease; }
+        .sidebar-text { transition: opacity 0.2s ease; white-space: nowrap; }
+        .hide-text .sidebar-text { display: none; opacity: 0; }
+        .collapsed-sidebar .nav-item { justify-content: center; padding-left: 0; padding-right: 0; }
+        .collapsed-sidebar .nav-item span.material-symbols-outlined { margin-right: 0; }
+
+        .card-shadow { box-shadow: 0 2px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05); }
+
+        /* 表格样式优化 - 增加 whitespace-nowrap 保证表头不换行 */
+        .data-table { border-spacing: 0; width: 100%; }
+        .data-table th, .data-table td { @apply border border-slate-200 dark:border-slate-700/50; background-clip: padding-box; }
+        .data-table th { @apply bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-bold px-4 py-3.5 text-center text-[13px] sticky top-0 z-10 whitespace-nowrap; }
+        .data-table td { @apply px-4 py-3.5 text-center text-[13px] text-slate-600 dark:text-slate-300; }
+        .data-table tbody tr:nth-child(even) { @apply bg-[#fbfcfd] dark:bg-slate-800/30; }
+        .data-table tbody tr:hover { @apply bg-blue-50/60 dark:bg-slate-700/50 transition-colors; }
+
+        /* 状态标签样式 */
+        .wq-tag { @apply inline-block px-3 py-1 rounded text-[12px] font-bold leading-tight shadow-sm; }
+        .wq-bad-v { @apply bg-red-100 text-red-600 border border-red-200; }
+        .wq-v { @apply bg-orange-100 text-orange-600 border border-orange-200; }
+        .wq-iv { @apply bg-yellow-100 text-yellow-600 border border-yellow-200; }
+        .wq-iii { @apply bg-emerald-100 text-emerald-600 border border-emerald-200; }
+
+        /* 下拉菜单阴影 */
+        .popover-shadow { box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.1), 0 0 3px rgba(0,0,0,0.05); }
+
+        /* Modal 背景模糊 */
+        .modal-backdrop {
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+        }
+
+        /* 详情内容块连线效果 */
+        .detail-flow-arrow {
+            background: linear-gradient(135deg, #60a5fa, #3b82f6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-800 dark:text-slate-100 h-screen overflow-hidden flex flex-col">
+
+<header class="bg-primary h-14 flex items-center justify-between px-4 text-white shrink-0 shadow-md z-50">
+    <div class="flex items-center space-x-3">
+        <div class="w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-sm">
+            <span class="material-symbols-outlined text-primary text-xl">water_drop</span>
+        </div>
+        <h1 class="text-xl font-bold tracking-tight">全国水生态环境综合管理平台</h1>
+    </div>
+    <div class="flex items-center space-x-4">
+        <button class="flex items-center space-x-1.5 bg-white/20 hover:bg-white/30 px-4 py-1.5 rounded-full transition-colors text-sm font-medium">
+            <i class="ri-function-line"></i><span>功能模块</span>
+        </button>
+        <button class="flex items-center space-x-1.5 bg-white/20 hover:bg-white/30 px-4 py-1.5 rounded-full transition-colors text-sm font-medium">
+            <i class="ri-global-line"></i><span>业务域</span>
+        </button>
+        <div class="flex items-center space-x-2 text-sm pl-4 border-l border-white/20">
+            <span class="material-symbols-outlined text-[18px]">account_circle</span>
+            <span>wangyunpeng</span>
+        </div>
+    </div>
+</header>
+
+<div class="flex flex-1 overflow-hidden">
+    <aside id="sidebar" class="w-[270px] bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 flex flex-col shrink-0 z-40">
+        <div class="flex-1 py-4 overflow-y-auto custom-scrollbar flex flex-col gap-1">
+            <div class="mb-2 px-2">
+                <button class="nav-item w-full flex items-center justify-between px-4 py-3 text-[16px] font-medium text-blue-700 bg-blue-50/50 dark:bg-blue-900/10 rounded-lg group transition-colors"
+                        onclick="toggleSubmenu('submenu-feedback')">
+                    <div class="flex items-center">
+                        <span class="material-symbols-outlined mr-3 text-blue-600">forum</span>
+                        <span class="sidebar-text font-bold text-slate-800 dark:text-white">问题线索及反馈</span>
+                    </div>
+                    <span class="material-symbols-outlined text-sm text-blue-600 sidebar-chevron transition-transform duration-200"
+                          style="transform: rotate(180deg);">expand_more</span>
+                </button>
+                <div id="submenu-feedback" class="mt-1 space-y-1 overflow-hidden transition-all duration-300">
+                    <a class="flex items-center px-12 py-2.5 text-[14px] text-slate-600 dark:text-slate-400 hover:text-blue-600 hover:bg-blue-50/50 dark:hover:bg-blue-900/20 transition-all rounded-lg group"
+                       href="#">
+                        <span class="w-1.5 h-1.5 bg-slate-300 dark:bg-slate-600 group-hover:bg-blue-600 rounded-full mr-3 shrink-0 transition-colors"></span>
+                        <span class="sidebar-text">未反馈</span>
+                    </a>
+                    <a class="flex items-center px-12 py-2.5 text-[14px] text-slate-600 dark:text-slate-400 hover:text-blue-600 hover:bg-blue-50/50 dark:hover:bg-blue-900/20 transition-all rounded-lg group"
+                       href="#">
+                        <span class="w-1.5 h-1.5 bg-slate-300 dark:bg-slate-600 group-hover:bg-blue-600 rounded-full mr-3 shrink-0 transition-colors"></span>
+                        <span class="sidebar-text">反馈中</span>
+                    </a>
+                    <a class="flex items-center px-12 py-2.5 text-[14px] text-blue-700 bg-blue-50 dark:bg-blue-900/30 rounded-lg group transition-all font-bold relative"
+                       href="#">
+                        <span class="w-1.5 h-1.5 bg-blue-600 rounded-full mr-3 shrink-0"></span>
+                        <span class="sidebar-text">已反馈</span>
+                        <div class="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-5 bg-blue-600 rounded-r-full"></div>
+                    </a>
+                    <a class="flex items-center px-12 py-2.5 text-[14px] text-slate-600 dark:text-slate-400 hover:text-blue-600 hover:bg-blue-50/50 dark:hover:bg-blue-900/20 transition-all rounded-lg group"
+                       href="#">
+                        <span class="w-1.5 h-1.5 bg-slate-300 dark:bg-slate-600 group-hover:bg-blue-600 rounded-full mr-3 shrink-0 transition-colors"></span>
+                        <span class="sidebar-text">销号情况</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <button id="toggleSidebarBtn" class="h-12 border-t border-slate-200 dark:border-slate-800 flex items-center justify-center space-x-2 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all text-slate-500 hover:text-primary group">
+            <span id="toggleIcon" class="material-symbols-outlined text-xl transition-transform duration-300">chevron_left</span>
+            <span class="sidebar-text text-sm font-medium tracking-wide">收起侧栏</span>
+        </button>
+    </aside>
+
+    <main class="flex-1 overflow-y-auto custom-scrollbar p-6">
+        <div class="h-16 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-6 flex items-center justify-between shrink-0 card-shadow mb-6 relative z-[60]">
+            <div class="flex items-center gap-3">
+                <span class="relative flex h-3 w-3 ml-1 shrink-0">
+                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-3 w-3 bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.6)]"></span>
+                </span>
+                <h2 class="text-[18px] font-bold text-slate-800 dark:text-white tracking-tight">已反馈</h2>
+            </div>
+
+            <div class="flex items-center space-x-3">
+                <div class="relative group">
+                    <i class="ri-search-line absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 group-hover:text-blue-500 transition-colors"></i>
+                    <input type="text" placeholder="问题名称/具体情况" class="appearance-none bg-white border border-slate-200 rounded-lg pl-9 pr-4 py-1.5 text-[14px] text-slate-700 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-all w-56 placeholder:text-slate-400 shadow-sm hover:border-blue-400">
+                </div>
+
+                <div class="relative" id="custom-cascader">
+                    <button type="button" id="cascader-trigger" class="appearance-none bg-white border border-slate-200 rounded-lg px-3 py-1.5 text-[14px] text-slate-700 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-all cursor-pointer hover:border-blue-400 w-56 shadow-sm flex items-center justify-between group">
+                        <span id="cascader-text" class="truncate text-slate-500">问题类型/工作任务</span>
+                        <i id="cascader-icon" class="ri-arrow-up-s-line text-slate-300 group-hover:text-slate-400 transition-transform rotate-180"></i>
+                    </button>
+                    <div id="cascader-popover" class="hidden absolute top-full left-0 mt-1 bg-white border border-slate-100 rounded shadow-lg popover-shadow z-50 flex overflow-hidden w-[460px]">
+                        <div class="w-2/5 border-r border-slate-100 bg-white py-1" id="cascader-categories"></div>
+                        <div class="w-3/5 bg-slate-50/30 py-1 max-h-[320px] overflow-y-auto custom-scrollbar" id="cascader-options"></div>
+                    </div>
+                </div>
+
+                <div class="relative" id="custom-datepicker">
+                    <button type="button" id="datepicker-trigger" class="appearance-none bg-white border border-slate-200 rounded-lg pl-8 pr-3 py-1.5 text-[14px] text-slate-700 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-all cursor-pointer hover:border-blue-400 shadow-sm w-36 flex items-center justify-between group">
+                        <i class="ri-calendar-line text-slate-300 group-hover:text-slate-400 absolute left-2.5 transition-colors"></i>
+                        <span id="datepicker-text" class="text-slate-700 font-medium">2026-01</span>
+                    </button>
+                    <div id="datepicker-popover" class="hidden absolute top-full right-0 mt-1 bg-white border border-slate-100 rounded shadow-lg popover-shadow z-50 p-4 w-[280px]">
+                        <div class="flex justify-between items-center mb-4 border-b border-slate-100 pb-3">
+                            <button type="button" id="dp-prev-year" class="text-slate-400 hover:text-blue-500 transition-colors px-1"><i class="ri-arrow-left-double-line text-lg"></i></button>
+                            <span id="dp-current-year" class="font-medium text-[15px] text-slate-700 cursor-pointer hover:text-blue-500">2026 年</span>
+                            <button type="button" id="dp-next-year" class="text-slate-400 hover:text-blue-500 transition-colors px-1"><i class="ri-arrow-right-double-line text-lg"></i></button>
+                        </div>
+                        <div class="grid grid-cols-4 gap-y-6 gap-x-2 text-center" id="dp-months-grid"></div>
+                    </div>
+                </div>
+
+                <button class="bg-blue-500 hover:bg-blue-600 text-white px-5 py-1.5 rounded-lg text-[14px] transition-colors shadow-sm font-medium flex items-center space-x-1">
+                    <span>搜 索</span>
+                </button>
+                <button class="bg-slate-100 hover:bg-slate-200 text-slate-600 border border-slate-200 px-4 py-1.5 rounded-lg text-sm transition-colors font-medium flex items-center space-x-1">
+                    <span>重 置</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 card-shadow flex flex-col overflow-hidden mb-6 z-10 relative">
+            <div class="px-6 py-4 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center bg-slate-50/50 dark:bg-slate-800/30">
+                <div class="flex items-center space-x-2">
+                    <div class="section-title-bar m-0"></div>
+                    <h3 class="font-bold text-slate-800 dark:text-white text-[15px]">水生态环境质量问题清单</h3>
+                </div>
+            </div>
+
+            <div class="overflow-x-auto custom-scrollbar">
+                <table class="w-full data-table border-collapse min-w-[1100px]">
+                    <thead>
+                    <tr>
+                        <th>序号</th>
+                        <th>省份</th>
+                        <th>地市</th>
+                        <th>断面名称</th>
+                        <th>所在水体</th>
+                        <th>所属流域</th>
+                        <th>水质目标</th>
+                        <th>当月水质类别</th>
+                        <th>定类(超标)指标</th>
+                        <th class="text-left pl-6">主要问题</th>
+                        <th>时间</th>
+                        <th>整改情况</th>
+                    </tr>
+                    </thead>
+                    <tbody id="quality-table-body">
+                    <tr>
+                        <td class="text-center font-bold text-slate-500">1</td>
+                        <td class="font-medium text-slate-800">湖北省</td>
+                        <td>荆州市</td>
+                        <td class="font-medium text-blue-600">积玉口荷花村</td>
+                        <td>上西荆河</td>
+                        <td>长江流域</td>
+                        <td class="text-slate-400">-</td>
+                        <td><span class="wq-tag wq-bad-v">劣V类</span></td>
+                        <td>挥发酚</td>
+                        <td class="text-left pl-6 text-[13px] leading-relaxed">有毒有害物质超标</td>
+                        <td>2026年01月</td>
+                        <td><button onclick="openModal('water', '整改情况')" class="bg-[#3b82f6] hover:bg-blue-600 text-white px-3.5 py-1.5 rounded shadow-sm text-[13px] font-medium transition-colors w-full">查看详情</button></td>
+                    </tr>
+                    <tr>
+                        <td class="text-center font-bold text-slate-500">2</td>
+                        <td class="font-medium text-slate-800">湖北省</td>
+                        <td>天门市</td>
+                        <td class="font-medium text-blue-600">陆羽大桥</td>
+                        <td>天门河</td>
+                        <td>长江流域</td>
+                        <td class="text-slate-400">-</td>
+                        <td><span class="wq-tag wq-bad-v">劣V类</span></td>
+                        <td>氨氮</td>
+                        <td class="text-left pl-6 text-[13px] leading-relaxed">断面水质明显恶化(劣V类)</td>
+                        <td>2026年01月</td>
+                        <td><button onclick="openModal('water', '整改情况')" class="bg-[#3b82f6] hover:bg-blue-600 text-white px-3.5 py-1.5 rounded shadow-sm text-[13px] font-medium transition-colors w-full">查看详情</button></td>
+                    </tr>
+                    <tr>
+                        <td class="text-center font-bold text-slate-500">3</td>
+                        <td class="font-medium text-slate-800">湖北省</td>
+                        <td>十堰市</td>
+                        <td class="font-medium text-blue-600">丹江口水库坝上中</td>
+                        <td>-</td>
+                        <td>长江流域</td>
+                        <td><span class="wq-tag wq-iii">Ⅲ类</span></td>
+                        <td><span class="wq-tag wq-iii">Ⅲ类</span></td>
+                        <td>总磷</td>
+                        <td class="text-left pl-6 text-[13px] leading-relaxed">南水北调调水水质超标</td>
+                        <td>2026年01月</td>
+                        <td><button onclick="openModal('water', '整改情况')" class="bg-[#3b82f6] hover:bg-blue-600 text-white px-3.5 py-1.5 rounded shadow-sm text-[13px] font-medium transition-colors w-full">查看详情</button></td>
+                    </tr>
+                    <tr style="display: none;">
+                        <td class="text-center font-bold text-slate-500">4</td>
+                        <td class="font-medium text-slate-800">湖北省</td>
+                        <td>荆州市</td>
+                        <td class="font-medium text-blue-600">积玉口荷花村</td>
+                        <td>上西荆河</td>
+                        <td>长江流域</td>
+                        <td class="text-slate-400">-</td>
+                        <td><span class="wq-tag wq-bad-v">劣V类</span></td>
+                        <td>五日生化需氧量</td>
+                        <td class="text-left pl-6 text-[13px] leading-relaxed">断面水质明显恶化(劣V类)</td>
+                        <td>2026年01月</td>
+                        <td><button onclick="openModal('water', '整改情况')" class="bg-[#3b82f6] hover:bg-blue-600 text-white px-3.5 py-1.5 rounded shadow-sm text-[13px] font-medium transition-colors w-full">查看详情</button></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="flex justify-between items-center px-6 py-3 bg-white border-t border-slate-200">
+                <div class="text-[13px] text-slate-500">
+                    共 <span id="quality-total" class="font-bold text-slate-700 mx-1">0</span> 条记录
+                </div>
+                <div class="flex items-center space-x-1" id="quality-pagination"></div>
+            </div>
+        </div>
+
+        <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 card-shadow flex flex-col overflow-hidden mb-6 z-10 relative">
+            <div class="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+                <div class="flex items-center space-x-2">
+                    <div class="section-title-bar m-0"></div>
+                    <h3 class="font-bold text-slate-800 text-[15px]">重点工作任务问题清单</h3>
+                </div>
+            </div>
+
+            <div class="overflow-x-auto custom-scrollbar">
+                <table class="w-full data-table border-collapse min-w-[900px]">
+                    <thead>
+                    <tr>
+                        <th>序号</th>
+                        <th class="w-1/4 text-left pl-6">重点工作任务</th>
+                        <th class="w-1/2 text-left pl-6">具体情况</th>
+                        <th>时间</th>
+                        <th>排查情况</th>
+                    </tr>
+                    </thead>
+                    <tbody id="task-table-body">
+                    <tr>
+                        <td class="text-center font-bold text-slate-500">1</td>
+                        <td class="text-left pl-6 font-medium text-slate-800">饮用水水源保护工作</td>
+                        <td class="text-left pl-6 text-[13px] leading-relaxed text-slate-600">截至2025年6月，你省县级及以上城市水源地规范化建设完成率为88.9%，低于长江经济带平均水平。</td>
+                        <td>2025年06月</td>
+                        <td><button onclick="openModal('task', '排查情况')" class="bg-[#3b82f6] hover:bg-blue-600 text-white px-3.5 py-1.5 rounded shadow-sm text-[13px] font-medium transition-colors w-full">查看详情</button></td>
+                    </tr>
+                    <tr>
+                        <td class="text-center font-bold text-slate-500">2</td>
+                        <td class="text-left pl-6 font-medium text-slate-800">入河排污口排查整治工作</td>
+                        <td class="text-left pl-6 text-[13px] leading-relaxed text-slate-600">遥感监测发现长江、沮漳河入河排污口漏查漏报等问题线索21个，占第五批问题线索总数的17%。</td>
+                        <td>2025年05月</td>
+                        <td><button onclick="openModal('task', '排查情况')" class="bg-[#3b82f6] hover:bg-blue-600 text-white px-3.5 py-1.5 rounded shadow-sm text-[13px] font-medium transition-colors w-full">查看详情</button></td>
+                    </tr>
+                    <tr>
+                        <td class="text-center font-bold text-slate-500">3</td>
+                        <td class="text-left pl-6 font-medium text-slate-800">入河排污口排查整治工作</td>
+                        <td class="text-left pl-6 text-[13px] leading-relaxed text-slate-600">遥感监测发现丹江口库区及上游(丹江口水库、堵河、汉江段)入河排污口漏查漏报、整治不到位等问题线索10个。</td>
+                        <td>2025年03月</td>
+                        <td><button onclick="openModal('task', '排查情况')" class="bg-[#3b82f6] hover:bg-blue-600 text-white px-3.5 py-1.5 rounded shadow-sm text-[13px] font-medium transition-colors w-full">查看详情</button></td>
+                    </tr>
+                    <tr style="display: none;">
+                        <td class="text-center font-bold text-slate-500">4</td>
+                        <td class="text-left pl-6 font-medium text-slate-800">饮用水水源保护工作</td>
+                        <td class="text-left pl-6 text-[13px] leading-relaxed text-slate-600">某地市存在饮用水水源地保护区内违规建设项目未完全拆除的问题，存在潜在水质安全隐患。</td>
+                        <td>2025年02月</td>
+                        <td><button onclick="openModal('task', '排查情况')" class="bg-[#3b82f6] hover:bg-blue-600 text-white px-3.5 py-1.5 rounded shadow-sm text-[13px] font-medium transition-colors w-full">查看详情</button></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="flex justify-between items-center px-6 py-3 bg-white border-t border-slate-200">
+                <div class="text-[13px] text-slate-500">
+                    共 <span id="task-total" class="font-bold text-slate-700 mx-1">0</span> 条记录
+                </div>
+                <div class="flex items-center space-x-1" id="task-pagination"></div>
+            </div>
+        </div>
+
+        <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 card-shadow flex flex-col overflow-hidden mb-10 z-10 relative">
+            <div class="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+                <div class="flex items-center space-x-2">
+                    <div class="section-title-bar m-0"></div>
+                    <h3 class="font-bold text-slate-800 text-[15px]">舆情及投诉举报等问题清单</h3>
+                </div>
+            </div>
+
+            <div class="overflow-x-auto custom-scrollbar">
+                <table class="w-full data-table border-collapse min-w-[900px]">
+                    <thead>
+                    <tr>
+                        <th>序号</th>
+                        <th class="w-1/4 text-left pl-6">问题(线索)来源</th>
+                        <th class="w-1/2 text-left pl-6">具体情况</th>
+                        <th>时间</th>
+                        <th>排查情况</th>
+                    </tr>
+                    </thead>
+                    <tbody id="public-table-body">
+                    <tr>
+                        <td class="text-center font-bold text-slate-500">1</td>
+                        <td class="text-left pl-6 font-medium text-slate-800">日常监管工作发现</td>
+                        <td class="text-left pl-6 text-[13px] leading-relaxed text-slate-600">郧西县城关镇罗家巷天河路旁入河排污口，位于郧西工业园区附近，晴天有异常高浓度浑浊异味污水排放。</td>
+                        <td>2025年09月</td>
+                        <td><button onclick="openModal('task', '排查情况')" class="bg-[#3b82f6] hover:bg-blue-600 text-white px-3.5 py-1.5 rounded shadow-sm text-[13px] font-medium transition-colors w-full">查看详情</button></td>
+                    </tr>
+                    <tr>
+                        <td class="text-center font-bold text-slate-500">2</td>
+                        <td class="text-left pl-6 font-medium text-slate-800">日常监管工作发现</td>
+                        <td class="text-left pl-6 text-[13px] leading-relaxed text-slate-600">云梦县盐化工园区，污水处理厂8月29日下午2时降雨期间，雨水口外排含泥黑水。</td>
+                        <td>2025年09月</td>
+                        <td><button onclick="openModal('task', '排查情况')" class="bg-[#3b82f6] hover:bg-blue-600 text-white px-3.5 py-1.5 rounded shadow-sm text-[13px] font-medium transition-colors w-full">查看详情</button></td>
+                    </tr>
+                    <tr>
+                        <td class="text-center font-bold text-slate-500">3</td>
+                        <td class="text-left pl-6 font-medium text-slate-800">投诉举报等问题线索</td>
+                        <td class="text-left pl-6 text-[13px] leading-relaxed text-slate-600">群众多次通过12369热线举报十堰市某造纸厂夜间涉嫌偷排未达标工业废水，水体呈暗红色。</td>
+                        <td>2025年08月</td>
+                        <td><button onclick="openModal('task', '排查情况')" class="bg-[#3b82f6] hover:bg-blue-600 text-white px-3.5 py-1.5 rounded shadow-sm text-[13px] font-medium transition-colors w-full">查看详情</button></td>
+                    </tr>
+                    <tr style="display: none;">
+                        <td class="text-center font-bold text-slate-500">4</td>
+                        <td class="text-left pl-6 font-medium text-slate-800">网络平台涉水线索</td>
+                        <td class="text-left pl-6 text-[13px] leading-relaxed text-slate-600">微博网友曝光某湖泊周边存在大量未经处理的生活污水直排入湖现象，引发网络热议。</td>
+                        <td>2025年08月</td>
+                        <td><button onclick="openModal('task', '排查情况')" class="bg-[#3b82f6] hover:bg-blue-600 text-white px-3.5 py-1.5 rounded shadow-sm text-[13px] font-medium transition-colors w-full">查看详情</button></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="flex justify-between items-center px-6 py-3 bg-white border-t border-slate-200">
+                <div class="text-[13px] text-slate-500">
+                    共 <span id="public-total" class="font-bold text-slate-700 mx-1">0</span> 条记录
+                </div>
+                <div class="flex items-center space-x-1" id="public-pagination"></div>
+            </div>
+        </div>
+
+        <footer class="mt-4 pt-4 border-t border-slate-200 text-center text-xs text-slate-400 pb-2">
+            <p>&copy; 2026 湖北省生态环境厅 · 版权所有</p>
+        </footer>
+    </main>
+</div>
+
+<div id="detail-modal" class="fixed inset-0 z-[100] hidden items-center justify-center">
+    <div class="absolute inset-0 bg-slate-900/50 modal-backdrop transition-opacity" onclick="closeModal()"></div>
+
+    <div id="detail-modal-content" class="bg-white dark:bg-slate-900 rounded-xl shadow-2xl w-[1000px] max-w-[95vw] max-h-[90vh] flex flex-col relative z-10 opacity-0">
+
+        <div class="flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-slate-50/50 rounded-t-xl">
+            <div class="flex items-center space-x-2">
+                <div class="w-1.5 h-4 bg-blue-500 rounded-full"></div>
+                <h3 id="modal-title" class="text-[16px] font-bold text-slate-800 flex items-center tracking-wide">
+                    整改情况/排查情况
+                </h3>
+            </div>
+            <button onclick="closeModal()" class="text-slate-400 hover:text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-full p-1.5 transition-colors">
+                <i class="ri-close-line text-lg"></i>
+            </button>
+        </div>
+
+        <div class="p-6 overflow-y-auto custom-scrollbar flex-1" id="modal-body-container">
+        </div>
+    </div>
+</div>
+
+<script>
+    // ========== 1. 详情弹窗逻辑与模板 ==========
+    const modal = document.getElementById('detail-modal');
+    const modalContent = document.getElementById('detail-modal-content');
+    const modalContainer = document.getElementById('modal-body-container');
+
+    // 模板一：对应水生态环境质量问题 - 修改为一行展示以及新增虚线流程箭头
+    const waterQualityTemplate = `
+        <div class="bg-[#eff6ff] rounded-lg p-6 border border-blue-100">
+            <div class="mb-5 relative">
+                <div class="flex items-center space-x-3 mb-2.5">
+                    <span class="inline-block bg-blue-500 text-white text-xs font-bold px-2.5 py-1 rounded shadow-sm">2026.01</span>
+                    <h4 class="text-[16px] font-bold text-slate-800">积玉口荷花村</h4>
+                </div>
+                <div class="flex flex-wrap items-center gap-x-6 gap-y-2 text-[13px] text-slate-600 bg-white/60 px-4 py-2.5 rounded-md border border-blue-100/50 w-fit">
+                    <div class="flex items-center">
+                        <span class="text-slate-500">所在省市：</span>
+                        <span class="font-medium text-slate-800">湖北省荆州市</span>
+                    </div>
+                    <div class="w-px h-3 bg-blue-200"></div>
+                    <div class="flex items-center">
+                        <span class="text-slate-500">所在流域：</span>
+                        <span class="font-medium text-slate-800">长江流域</span>
+                    </div>
+                    <div class="w-px h-3 bg-blue-200"></div>
+                    <div class="flex items-center">
+                        <span class="text-slate-500">问题类型：</span>
+                        <span class="font-medium text-slate-800">有毒有害</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex items-stretch relative">
+                <div class="flex-1 bg-white rounded-lg p-5 shadow-sm border border-blue-50 relative z-10 hover:shadow-md transition-shadow">
+                    <h5 class="font-bold text-slate-800 mb-2 flex items-center text-[15px]">
+                        <i class="ri-error-warning-fill text-amber-500 mr-1.5"></i>症结
+                    </h5>
+                    <div class="text-[13px] text-slate-600 leading-relaxed text-justify">
+                        1月21日12时至22日6时，荆门市上西荆河积玉口荷花村断面水质自动站数据出现异常波动，总磷劣V类。省、市迅速预警，市、县组织开展溯源排查。经排查沙洋经济开发区9家重点涉水企业，其中1家停产、8家污水处理设施正常运行，尾水通过市政管网排放至沙洋工业污水处理厂处置，未发现异常排放情况；对断面上下游布设9个水质监测点，结果显示沿线各河段及支流水质正常。沿线走访过程中，群众反映1月21日上午有疑似罐车在河道边停留，且时间较长。根据此线索，立即协调公安部门调阅了该段附近视频监控，并锁定涉事车辆及企业。经调查，涉事企业为沙洋县鹏泰环保科技有限公司，主要经营项目为鱼油提取及制品制造，其生产废水经自建污水处理站处理后，由罐车转运至官垱镇污水处理厂进一步处理。1月21日上午，该公司转运罐车在西荆河芦花村段违法倾倒污水，造成水质异常升高。目前已固定相关证据，并移送公安机关进一步调查处理。<br/>
+                        该断面1月21日出现异常后，至1月22日4时，总磷浓度降至0.23mg/L (IV类)，22日6时水质恢复为III类（氨氮0.339mg/L、总磷0.146mg/L）。1月23日，接到国家采测分离初审数据，上西荆河积玉口荷花村于1月21日采样，水质为劣V类（总磷1.6mg/L、氨氮2.5mg/L、化学需氧量71mg/L、石油类0.08mg/L、挥发酚0.0079mg/L、高锰酸盐指数6.75mg/L）。由于偶发不可预见事故（罐车非法倾倒），导致积玉口荷花村断面1月21日异常超标。水质在较短时间内恢复正常，1月国控水质自动站均值保持为III类。但在事故处置期间开展第三方采测分离，导致1月水质严重超标。
+                    </div>
+                </div>
+
+                <div class="flex flex-col items-center justify-center px-1 shrink-0 w-[46px] relative bg-blue-50/30">
+                    <svg width="40" height="80" viewBox="0 0 40 80" fill="none" xmlns="http://www.w3.org/2000/svg" class="opacity-90">
+                        <path d="M 4 20 Q 4 35 30 35" stroke="#60a5fa" stroke-width="2.5" stroke-dasharray="4 3" fill="none"/>
+                        <polygon points="28,29 38,35 28,41" fill="#3b82f6"/>
+                        <path d="M 4 60 Q 4 45 30 45" stroke="#60a5fa" stroke-width="2.5" stroke-dasharray="4 3" fill="none"/>
+                        <polygon points="28,39 38,45 28,51" fill="#3b82f6"/>
+                    </svg>
+                </div>
+
+                <div class="flex-1 bg-white rounded-lg p-5 shadow-sm border border-blue-50 relative z-10 hover:shadow-md transition-shadow">
+                    <h5 class="font-bold text-slate-800 mb-2 flex items-center text-[15px]">
+                        <i class="ri-checkbox-circle-fill text-emerald-500 mr-1.5"></i>措施
+                    </h5>
+                    <div class="text-[13px] text-slate-600 leading-relaxed text-justify">
+                        一是强化工业企业管控。加强工业企业污水处理设施运行管理。做到达标排放，工业园区企业污水全部纳入污水处理厂管网进行处理，同时加大园区外企业监管力度，对直排、偷排、超标排放污水的企业依法立案查处，符合移送条件的，依法移送公安机关。二是强化沿线排污口、机埠涵闸管控。严格入河排污口监督管理，持续开展入河排污口排查整治。推进河道沟渠清淤，定期开展河道巡查及清河保洁行动。及时清除流域内河流、支流、沟渠中生活垃圾、养殖积存粪污等废弃物，消除黑臭水体。三是加强移动源监管。加强工业废水、渗滤液、危化品等重点监管对象从生产使用、运输、处置的全过程追溯，督促企业落实污染防治主体责任。不定期开展路面联合执法，严查特种运输车辆的非法倾倒和沿途抛洒行为。加强西荆河沿线交通节点视频监控设施建设。
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-5 pt-4 border-t border-blue-200/60 flex items-center text-[13px]">
+                <span class="font-bold text-slate-700 mr-2">附件：</span>
+                <a href="#" class="text-blue-600 hover:text-blue-800 hover:underline flex items-center font-medium">
+                    <i class="ri-attachment-2 mr-1"></i>湖北省生态环境厅关于2026年1月水环境问题有关情况的报告.pdf
+                </a>
+            </div>
+        </div>
+    `;
+
+    // 模板二：对应重点工作/舆情问题 - 同步替换了连线箭头
+    const taskQualityTemplate = `
+        <div class="bg-[#eff6ff] rounded-lg p-6 border border-blue-100">
+            <div class="flex items-stretch relative">
+                <div class="flex-1 bg-white rounded-lg p-5 shadow-sm border border-blue-50 relative z-10 hover:shadow-md transition-shadow">
+                    <h5 class="font-bold text-slate-800 mb-2 flex items-center text-[15px]">
+                        <i class="ri-error-warning-fill text-amber-500 mr-1.5"></i>症结
+                    </h5>
+                    <div class="text-[13px] text-slate-600 leading-relaxed text-justify">
+                        一是对地方工作指导不足。部分地区在系统填报过程中存在理解偏差，例如将上游无风险源的情况误填报为“未完成风险源名录”；同时，地方对水源地规范化建设的具体要求把握不够准确。在2025年污染防治攻坚战筹备强化监督第一阶段工作中仍发现部分问题。二是数据审核机制尚不完善。对保护区内生活源、渡口等整治措施的相关数据审核不够严格；部分未填报项目未能及时审核发现并反馈纠正。
+                    </div>
+                </div>
+
+                <div class="flex flex-col items-center justify-center px-1 shrink-0 w-[46px] relative bg-blue-50/30">
+                    <svg width="40" height="80" viewBox="0 0 40 80" fill="none" xmlns="http://www.w3.org/2000/svg" class="opacity-90">
+                        <path d="M 4 20 Q 4 35 30 35" stroke="#60a5fa" stroke-width="2.5" stroke-dasharray="4 3" fill="none"/>
+                        <polygon points="28,29 38,35 28,41" fill="#3b82f6"/>
+                        <path d="M 4 60 Q 4 45 30 45" stroke="#60a5fa" stroke-width="2.5" stroke-dasharray="4 3" fill="none"/>
+                        <polygon points="28,39 38,45 28,51" fill="#3b82f6"/>
+                    </svg>
+                </div>
+
+                <div class="flex-1 bg-white rounded-lg p-5 shadow-sm border border-blue-50 relative z-10 hover:shadow-md transition-shadow">
+                    <h5 class="font-bold text-slate-800 mb-2 flex items-center text-[15px]">
+                        <i class="ri-checkbox-circle-fill text-emerald-500 mr-1.5"></i>措施
+                    </h5>
+                    <div class="text-[13px] text-slate-600 leading-relaxed text-justify">
+                        一是对照水源地规范化建设要求，逐项核对系统填报内容，梳理突出问题，并按地市分类反馈。二是加强对地方的整改指导，针对因填报有误导致的“未完成风险源名录”等问题，及时指导更正，并督促加快完成视频监控共享等整改任务。三是要求已完成规范化建设的地市提交加盖公章的规范化建设完成情况自评表。
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-5 pt-4 border-t border-blue-200/60 flex items-center text-[13px]">
+                <span class="font-bold text-slate-700 mr-2">附件：</span>
+                <a href="#" class="text-blue-600 hover:text-blue-800 hover:underline flex items-center font-medium">
+                    <i class="ri-attachment-2 mr-1"></i>湖北省生态环境厅关于2025年上半年水环境目标任务有关情况的报告.pdf
+                </a>
+            </div>
+        </div>
+    `;
+
+    window.openModal = function(type, titleText) {
+        // 更新弹窗标题
+        const titleEl = document.getElementById('modal-title');
+        if(titleEl && titleText) {
+            titleEl.innerText = titleText;
+        }
+
+        // 注入内容
+        if(type === 'water') {
+            modalContainer.innerHTML = waterQualityTemplate;
+        } else {
+            modalContainer.innerHTML = taskQualityTemplate;
+        }
+
+        // 显示逻辑与动画
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+
+        // 强制重绘以触发动画
+        void modalContent.offsetWidth;
+        modalContent.classList.add('animate-modal-in');
+    }
+
+    window.closeModal = function() {
+        modalContent.classList.remove('animate-modal-in');
+        modalContent.style.opacity = '0';
+        setTimeout(() => {
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+            modalContent.style.opacity = '';
+        }, 200); // 等待动画结束
+    }
+
+    // 按 ESC 键关闭 Modal
+    document.addEventListener('keydown', function(event) {
+        if (event.key === "Escape" && !modal.classList.contains('hidden')) {
+            closeModal();
+        }
+    });
+
+    // ========== 2. 侧边栏与原版逻辑 ==========
+    const sidebar = document.getElementById('sidebar');
+    const toggleBtn = document.getElementById('toggleSidebarBtn');
+    const toggleIcon = document.getElementById('toggleIcon');
+    let isCollapsed = false;
+
+    toggleBtn.addEventListener('click', () => {
+        isCollapsed = !isCollapsed;
+        if (isCollapsed) {
+            sidebar.classList.remove('w-[270px]');
+            sidebar.classList.add('w-[80px]', 'hide-text', 'collapsed-sidebar');
+            toggleIcon.style.transform = 'rotate(180deg)';
+        } else {
+            sidebar.classList.remove('w-[80px]', 'hide-text', 'collapsed-sidebar');
+            sidebar.classList.add('w-[270px]');
+            toggleIcon.style.transform = 'rotate(0deg)';
+        }
+    });
+
+    function toggleSubmenu(id) {
+        if (isCollapsed) return;
+        const submenu = document.getElementById(id);
+        const btn = submenu.previousElementSibling;
+        const chevron = btn.querySelector('.sidebar-chevron');
+        if (submenu.style.maxHeight && submenu.style.maxHeight !== '0px') {
+            submenu.style.maxHeight = '0px';
+            chevron.style.transform = 'rotate(0deg)';
+        } else {
+            submenu.style.maxHeight = submenu.scrollHeight + "px";
+            chevron.style.transform = 'rotate(180deg)';
+        }
+    }
+
+    // ========== 3. 分页类 ==========
+    class TablePaginator {
+        constructor(tbodyId, paginationId, totalId, rowsPerPage = 3) {
+            this.tbody = document.getElementById(tbodyId);
+            this.paginationContainer = document.getElementById(paginationId);
+            this.totalSpan = document.getElementById(totalId);
+            this.rowsPerPage = rowsPerPage;
+            this.currentPage = 1;
+            this.rows = [];
+            if (this.tbody) {
+                this.rows = Array.from(this.tbody.getElementsByTagName('tr'));
+                this.init();
+            }
+        }
+        init() {
+            if (this.totalSpan) this.totalSpan.innerText = this.rows.length;
+            this.displayPage(1);
+        }
+        displayPage(page) {
+            const totalPages = Math.ceil(this.rows.length / this.rowsPerPage) || 1;
+            if (page < 1) page = 1;
+            if (page > totalPages) page = totalPages;
+            this.currentPage = page;
+            this.rows.forEach((row, index) => {
+                row.style.display = (index >= (page - 1) * this.rowsPerPage && index < page * this.rowsPerPage) ? '' : 'none';
+            });
+            this.updateUI(totalPages);
+        }
+        updateUI(totalPages) {
+            if (!this.paginationContainer) return;
+            let html = '';
+            const prevDisabled = this.currentPage === 1;
+            const instanceName = this.getInstanceName();
+
+            html += `<button onclick="${instanceName}.displayPage(${this.currentPage - 1})" ${prevDisabled ? 'disabled' : ''} class="px-3 py-1.5 text-[13px] border border-slate-200 rounded-md transition-colors ${prevDisabled ? 'text-slate-400 bg-slate-50 cursor-not-allowed' : 'text-slate-600 hover:bg-blue-50 hover:text-blue-600'}"><i class="ri-arrow-left-s-line"></i> 上一页</button>`;
+
+            for (let i = 1; i <= totalPages; i++) {
+                if (i === this.currentPage) {
+                    html += `<button onclick="${instanceName}.displayPage(${i})" class="px-3.5 py-1.5 text-[13px] font-bold border border-blue-500 bg-blue-500 text-white rounded-md">${i}</button>`;
+                } else {
+                    html += `<button onclick="${instanceName}.displayPage(${i})" class="px-3.5 py-1.5 text-[13px] border border-slate-200 rounded-md text-slate-600 hover:bg-slate-50 transition-colors">${i}</button>`;
+                }
+            }
+            const nextDisabled = this.currentPage === totalPages;
+            html += `<button onclick="${instanceName}.displayPage(${this.currentPage + 1})" ${nextDisabled ? 'disabled' : ''} class="px-3 py-1.5 text-[13px] border border-slate-200 rounded-md transition-colors ${nextDisabled ? 'text-slate-400 bg-slate-50 cursor-not-allowed' : 'text-slate-600 hover:bg-blue-50 hover:text-blue-600'}">下一页 <i class="ri-arrow-right-s-line"></i></button>`;
+
+            this.paginationContainer.innerHTML = html;
+        }
+        getInstanceName() {
+            if (this.tbody.id === 'quality-table-body') return 'qualityPaginator';
+            if (this.tbody.id === 'task-table-body') return 'taskPaginator';
+            if (this.tbody.id === 'public-table-body') return 'publicPaginator';
+            return '';
+        }
+    }
+
+    let qualityPaginator, taskPaginator, publicPaginator;
+
+    // ========== 4. 级联与日期选择组件初始逻辑 ==========
+    const cascaderData = [
+        {
+            category: "水生态环境质量问题",
+            items: ["长江/黄河干流断面存在降类风险", "水质明显恶化", "劣V类", "有毒有害物质超标", "饮用水水源水质超标", "南水北调调水水质超标", "水生生物明显退化", "重要湖库富营养化程度加剧", "河流断流干涸程度加剧"]
+        },
+        {
+            category: "重点工作任务问题",
+            items: ["饮用水水源保护工作", "入河排污口排查整治工作", "工业园区水污染整治工作", "黑臭水体整治工作"]
+        },
+        {
+            category: "舆情及投诉举报问题",
+            items: ["水生态环境舆情反映", "投诉举报等问题线索", "日常监管工作发现"]
+        },
+        {
+            category: "其他情形",
+            items: ["汛期污染强度较大", "在较大河流干流形成污染物峰值", "重点湖库水质恶化", "重要湖库水华暴发风险高", "年度水质目标任务难以完成风险", "长江流域国控断面总磷浓度较2020年反弹", "国控断面消除劣V类工作滞后", "水污染防治资金项目实施滞后", "推进地表水水质改善", "其他"]
+        }
+    ];
+    const cascaderTrigger = document.getElementById('cascader-trigger');
+    const cascaderIcon = document.getElementById('cascader-icon');
+    const cascaderPopover = document.getElementById('cascader-popover');
+    const cascaderCategories = document.getElementById('cascader-categories');
+    const cascaderOptions = document.getElementById('cascader-options');
+    const cascaderText = document.getElementById('cascader-text');
+    let activeCategoryIndex = 0;
+
+    function renderCategories() {
+        let html = '';
+        cascaderData.forEach((cat, index) => {
+            const isActive = index === activeCategoryIndex;
+            const textClass = isActive ? 'text-blue-600 font-bold bg-slate-50' : 'text-slate-600 hover:text-blue-500 hover:bg-slate-50';
+            html += `<div class="px-4 py-2.5 cursor-pointer flex justify-between items-center text-[14px] transition-colors ${textClass}" onmouseenter="setActiveCategory(${index})" onclick="setActiveCategory(${index})"><span>${cat.category}</span><i class="ri-arrow-right-s-line text-slate-400"></i></div>`;
+        });
+        cascaderCategories.innerHTML = html;
+        renderOptions();
+    }
+    window.setActiveCategory = function(index) { if(activeCategoryIndex === index) return; activeCategoryIndex = index; renderCategories(); }
+    function renderOptions() {
+        let html = '';
+        cascaderData[activeCategoryIndex].items.forEach(item => {
+            html += `<div class="px-4 py-2.5 cursor-pointer text-[14px] text-slate-600 hover:text-blue-600 hover:bg-blue-50 transition-colors" onclick="selectCascaderOption('${item}')">${item}</div>`;
+        });
+        cascaderOptions.innerHTML = html;
+    }
+    window.selectCascaderOption = function(item) { cascaderText.innerText = item; cascaderText.classList.replace('text-slate-500', 'text-slate-800'); closeCascader(); }
+    function toggleCascader() {
+        if (cascaderPopover.classList.contains('hidden')) { closeDatepicker(); cascaderPopover.classList.remove('hidden'); cascaderIcon.classList.remove('rotate-180'); cascaderTrigger.classList.add('border-blue-500'); renderCategories(); } else { closeCascader(); }
+    }
+    function closeCascader() { cascaderPopover.classList.add('hidden'); cascaderIcon.classList.add('rotate-180'); cascaderTrigger.classList.remove('border-blue-500'); }
+    cascaderTrigger.addEventListener('click', toggleCascader);
+
+    // 日期选择
+    const dpTrigger = document.getElementById('datepicker-trigger');
+    const dpPopover = document.getElementById('datepicker-popover');
+    const dpGrid = document.getElementById('dp-months-grid');
+    const dpText = document.getElementById('datepicker-text');
+    let currentYear = 2026, selectedYear = 2026, selectedMonth = 1;
+    const monthNames = ["一月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月", "十一月", "十二月"];
+
+    function renderDatepicker() {
+        document.getElementById('dp-current-year').innerText = `${currentYear} 年`;
+        let html = '';
+        monthNames.forEach((m, index) => {
+            const isSelected = (currentYear === selectedYear && (index + 1) === selectedMonth);
+            let btnClass = isSelected ? 'text-blue-600 font-bold' : 'text-slate-500 hover:text-blue-500';
+            html += `<div class="cursor-pointer text-[14px] transition-colors ${btnClass}" onclick="selectMonth(${index + 1})">${m}</div>`;
+        });
+        dpGrid.innerHTML = html;
+    }
+    window.selectMonth = function(month) {
+        selectedYear = currentYear; selectedMonth = month;
+        dpText.innerText = `${selectedYear}-${month < 10 ? '0'+month : month}`;
+        closeDatepicker(); renderDatepicker();
+    }
+    document.getElementById('dp-prev-year').addEventListener('click', () => { currentYear--; renderDatepicker(); });
+    document.getElementById('dp-next-year').addEventListener('click', () => { currentYear++; renderDatepicker(); });
+    function toggleDatepicker() {
+        if (dpPopover.classList.contains('hidden')) { closeCascader(); dpPopover.classList.remove('hidden'); dpTrigger.classList.add('border-blue-500'); currentYear = selectedYear; renderDatepicker(); } else { closeDatepicker(); }
+    }
+    function closeDatepicker() { dpPopover.classList.add('hidden'); dpTrigger.classList.remove('border-blue-500'); }
+    dpTrigger.addEventListener('click', toggleDatepicker);
+
+    document.addEventListener('click', (e) => {
+        if (!document.getElementById('custom-cascader').contains(e.target)) closeCascader();
+        if (!document.getElementById('custom-datepicker').contains(e.target)) closeDatepicker();
+    });
+
+    window.addEventListener('load', () => {
+        const feedbackSubmenu = document.getElementById('submenu-feedback');
+        if (feedbackSubmenu) feedbackSubmenu.style.maxHeight = feedbackSubmenu.scrollHeight + "px";
+
+        qualityPaginator = new TablePaginator('quality-table-body', 'quality-pagination', 'quality-total');
+        taskPaginator = new TablePaginator('task-table-body', 'task-pagination', 'task-total');
+        publicPaginator = new TablePaginator('public-table-body', 'public-pagination', 'public-total');
+        renderCategories(); renderDatepicker();
+    });
+</script>
+
+</body>
+</html>

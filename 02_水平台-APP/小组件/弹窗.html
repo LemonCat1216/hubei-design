@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        :root {
+            --primary-blue: #2d8cf0;
+            --border-color: #e8eaec;
+            --text-main: #515a6e;
+            --bg-light: #f8f8f9;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: #999; /* 模拟背景遮罩 */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        /* 弹窗容器 */
+        .modal {
+            background: white;
+            width: 90%;
+            max-width: 500px;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        /* 标题部分 */
+        .modal-header {
+            padding: 16px;
+            text-align: center;
+            font-size: 18px;
+            font-weight: 500;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        /* 搜索区域 */
+        .search-container {
+            padding: 12px 16px;
+            background-color: #fff;
+        }
+
+        .search-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 8px 12px 8px 36px;
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            background-color: var(--bg-light);
+            outline: none;
+            transition: all 0.2s;
+            font-size: 14px;
+        }
+
+        .search-input:focus {
+            border-color: var(--primary-blue);
+            background-color: #fff;
+            box-shadow: 0 0 0 2px rgba(45,140,240,0.2);
+        }
+
+        /* 搜索图标 (放大镜) */
+        .search-icon {
+            position: absolute;
+            left: 12px;
+            width: 16px;
+            height: 16px;
+            fill: #999;
+        }
+
+        /* 表格区域 */
+        .table-container {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        thead {
+            background-color: #fff;
+            position: sticky;
+            top: 0;
+            z-index: 1;
+        }
+
+        th {
+            color: var(--text-main);
+            font-weight: bold;
+            padding: 12px 8px;
+            border-bottom: 1px solid var(--border-color);
+            text-align: center;
+        }
+
+        td {
+            padding: 12px 8px;
+            text-align: center;
+            border-bottom: 1px solid var(--border-color);
+            color: #666;
+        }
+
+        /* 水质类别颜色 */
+        .type-i { color: #2d8cf0; font-weight: bold; } /* Ⅰ类 蓝色 */
+        .target-iii { color: #19be6b; font-weight: bold; } /* Ⅲ类 绿色 */
+        .target-ii { color: #2d8cf0; font-weight: bold; } /* Ⅱ类 蓝色 */
+
+        /* 暂无数据提示 */
+        #no-data {
+            display: none;
+            padding: 20px;
+            text-align: center;
+            color: #999;
+        }
+    </style>
+</head>
+<body>
+
+<div class="modal">
+    <div class="modal-header">自动站情况</div>
+
+    <div class="search-container">
+        <div class="search-wrapper">
+            <svg class="search-icon" viewBox="0 0 1024 1024"><path d="M426.666667 85.333333c188.501333 0 341.333333 152.832 341.333333 341.333334 0 76.288-25.002667 146.730667-67.242667 203.434666l224.576 224.576-60.330666 60.330667-224.576-224.576c-56.704 42.24-127.146667 67.242667-203.434667 67.242667-188.501333 0-341.333333-152.832-341.333333-341.333334 0-188.501333 152.832-341.333333 341.333333-341.333333z m0 85.333334c-141.397333 0-256 114.602667-256 256s114.602667 256 256 256 256-114.602667 256-256-114.602667-256-256-256z"></path></svg>
+            <input type="text" id="searchInput" class="search-input" placeholder="搜索自动站名称..." onkeyup="filterTable()">
+        </div>
+    </div>
+
+    <div class="table-container">
+        <table id="dataTable">
+            <thead>
+            <tr>
+                <th>地市</th>
+                <th>自动站名称</th>
+                <th>水质类别</th>
+                <th>水质目标</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>黄冈市</td>
+                <td>冯集</td>
+                <td class="type-i">Ⅰ类</td>
+                <td class="target-iii">Ⅲ类</td>
+            </tr>
+            <tr>
+                <td>武汉市</td>
+                <td>杨泗港</td>
+                <td class="type-i">Ⅰ类</td>
+                <td class="target-iii">Ⅲ类</td>
+            </tr>
+            <tr>
+                <td>武汉市</td>
+                <td>宗关</td>
+                <td class="type-i">Ⅰ类</td>
+                <td class="target-ii">Ⅱ类</td>
+            </tr>
+            <tr>
+                <td>武汉市</td>
+                <td>西梁子湖湖北</td>
+                <td class="type-i">Ⅰ类</td>
+                <td class="target-ii">Ⅱ类</td>
+            </tr>
+            <tr>
+                <td>武汉市</td>
+                <td>牛山湖湖心</td>
+                <td class="type-i">Ⅰ类</td>
+                <td class="target-ii">Ⅱ类</td>
+            </tr>
+            </tbody>
+        </table>
+        <div id="no-data">未找到匹配数据</div>
+    </div>
+</div>
+
+<script>
+    function filterTable() {
+        const input = document.getElementById('searchInput');
+        const filter = input.value.toUpperCase();
+        const table = document.getElementById('dataTable');
+        const tr = table.getElementsByTagName('tr');
+        const noData = document.getElementById('no-data');
+        let hasVisibleRow = false;
+
+        // 从第二行（索引1）开始遍历，跳过表头
+        for (let i = 1; i < tr.length; i++) {
+            let visible = false;
+            const tds = tr[i].getElementsByTagName('td');
+
+            // 搜索前两列：地市 和 断面名称
+            for (let j = 0; j < 2; j++) {
+                if (tds[j]) {
+                    const textValue = tds[j].textContent || tds[j].innerText;
+                    if (textValue.toUpperCase().indexOf(filter) > -1) {
+                        visible = true;
+                        break;
+                    }
+                }
+            }
+
+            if (visible) {
+                tr[i].style.display = "";
+                hasVisibleRow = true;
+            } else {
+                tr[i].style.display = "none";
+            }
+        }
+
+        // 显示或隐藏“无数据”提示
+        noData.style.display = hasVisibleRow ? "none" : "block";
+    }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>水质自动监测数据</title>
+    <style>
+        body { background-color: #f1f4f8; font-family: -apple-system, system-ui, sans-serif; margin: 0; padding: 12px; }
+
+        /* 水质等级标准配色 - 优化版 */
+        .level-1 { background-color: #C5FFFF; color: #004085; }
+        .level-2 { background-color: #34C3F6; color: white; }
+        .level-3 { background-color: #03FF03; color: #005a00; }
+        .level-4 { background-color: #FCFF7D; color: #856404; }
+        .level-5 { background-color: #FF9000; color: white; }
+        .level-worse { background-color: #FF0101; color: white; }
+
+        .card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            overflow: hidden;
+            margin-bottom: 16px;
+            border: 1px solid #ebeef5;
+        }
+
+        .card-header {
+            background-color: #f0f7ff;
+            padding: 12px 14px;
+            border-bottom: 1px solid #eef2f7;
+            cursor: pointer;
+        }
+
+        .header-top-row {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+        }
+
+        .title-left {
+            display: flex;
+            align-items: center;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .badge-id {
+            background-color: #1e88e5;
+            color: white;
+            min-width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            margin-right: 8px;
+            font-weight: bold;
+        }
+
+        .name {
+            font-size: 15px;
+            font-weight: bold;
+            color: #000;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* 目标标签：仅灰色文字，无背景 */
+        .target-label {
+            color: #888;
+            font-size: 11px;
+            margin-left: auto;
+            margin-right: 8px;
+            white-space: nowrap;
+        }
+
+        .water-type {
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        .info-row {
+            margin-top: 6px;
+            font-size: 12px;
+            color: #888;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .card-body { padding: 12px 14px; cursor: pointer; }
+
+        .data-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            column-gap: 20px;
+            row-gap: 10px;
+        }
+
+        .data-item { display: flex; justify-content: space-between; align-items: baseline; font-size: 13px; }
+        .label { color: #909399; }
+        .value-box { color: #333; font-weight: 500; text-align: right; }
+        .unit { color: #999; font-size: 11px; margin-left: 1px; }
+
+        .extra-data-wrapper {
+            display: grid;
+            grid-template-rows: 0fr;
+            transition: grid-template-rows 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .card.expanded .extra-data-wrapper {
+            grid-template-rows: 1fr;
+        }
+
+        .extra-data-container {
+            overflow: hidden;
+        }
+
+        .extra-content {
+            border-top: 1px dashed #eee;
+            margin-top: 10px;
+            padding-top: 10px;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+
+        .card.expanded .extra-content {
+            opacity: 1;
+            transform: translateY(0);
+            transition-delay: 0.1s;
+        }
+
+        .expand-btn {
+            text-align: center;
+            padding: 8px;
+            font-size: 11px;
+            color: #999;
+            background: #fafafa;
+            border-top: 1px solid #f5f5f5;
+            cursor: pointer;
+        }
+
+        .arrow {
+            display: inline-block;
+            transition: transform 0.3s ease;
+            font-size: 10px;
+        }
+        .card.expanded .arrow { transform: rotate(180deg); }
+    </style>
+</head>
+<body>
+
+<div class="card" onclick="toggleCard(this)">
+    <div class="card-header">
+        <div class="header-top-row">
+            <div class="title-left">
+                <span class="badge-id">1</span>
+                <span class="name">云池（白洋）</span>
+            </div>
+            <span class="target-label">目标：Ⅲ类</span>
+            <span class="water-type level-2">Ⅱ类</span>
+        </div>
+        <div class="info-row">
+            <span>湖北省 · 宜昌市</span>
+            <span>2025-12-18 13:44:30</span>
+        </div>
+    </div>
+
+    <div class="card-body">
+        <div class="data-grid">
+            <div class="data-item">
+                <span class="label">超标因子</span>
+                <span class="value-box">无</span>
+            </div>
+            <div class="data-item">
+                <span class="label">pH</span>
+                <span class="value-box">7.21</span>
+            </div>
+            <div class="data-item">
+                <span class="label">溶解氧</span>
+                <span class="value-box">8.4<span class="unit">mg/L</span></span>
+            </div>
+            <div class="data-item">
+                <span class="label">氨氮</span>
+                <span class="value-box">0.15<span class="unit">mg/L</span></span>
+            </div>
+            <div class="data-item">
+                <span class="label">高锰酸盐</span>
+                <span class="value-box">2.1<span class="unit">mg/L</span></span>
+            </div>
+            <div class="data-item">
+                <span class="label">总磷</span>
+                <span class="value-box">0.046<span class="unit">mg/L</span></span>
+            </div>
+        </div>
+
+        <div class="extra-data-wrapper">
+            <div class="extra-data-container">
+                <div class="extra-content">
+                    <div class="data-grid">
+                        <div class="data-item">
+                            <span class="label">总氮</span>
+                            <span class="value-box">1.2<span class="unit">mg/L</span></span>
+                        </div>
+                        <div class="data-item">
+                            <span class="label">水温</span>
+                            <span class="value-box">30.4<span class="unit">°C</span></span>
+                        </div>
+                        <div class="data-item">
+                            <span class="label">浊度</span>
+                            <span class="value-box">12.5<span class="unit">NTU</span></span>
+                        </div>
+                        <div class="data-item">
+                            <span class="label">电导率</span>
+                            <span class="value-box">452<span class="unit">μS/cm</span></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="expand-btn">查看详情 <span class="arrow">▼</span></div>
+</div>
+
+<script>
+    function toggleCard(cardElement) {
+        const btnText = cardElement.querySelector('.expand-btn');
+        const isExpanded = cardElement.classList.toggle('expanded');
+
+        btnText.innerHTML = isExpanded ?
+            '收起详情 <span class="arrow">▼</span>' :
+            '查看详情 <span class="arrow">▼</span>';
+    }
+</script>
+
+</body>
+</html>

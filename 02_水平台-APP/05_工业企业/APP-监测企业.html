@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>监测企业 - 优化调整版</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/echarts/dist/echarts.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+    <style>
+        /* --- 基础设置 --- */
+        body {
+            background-color: #F5F7FA;
+            -webkit-tap-highlight-color: transparent;
+            padding-bottom: 30px;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+
+        /* 顶部导航 */
+        .nav-header {
+            background: linear-gradient(135deg, #1565C0 0%, #1E88E5 100%);
+            padding-bottom: 15px;
+            color: white;
+            box-shadow: 0 2px 10px rgba(25, 118, 210, 0.2);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .top-bar {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        /* 导航 Tab */
+        .nav-tabs {
+            display: flex;
+            justify-content: space-around;
+            padding-top: 5px;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            opacity: 0.75;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .nav-item.active {
+            opacity: 1;
+            transform: translateY(-2px);
+        }
+
+        .nav-item.active::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            width: 20px;
+            height: 3px;
+            background: white;
+            border-radius: 2px;
+        }
+
+        .icon-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            margin-bottom: 4px;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-item.active .icon-circle {
+            background: rgba(255, 255, 255, 0.25);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .nav-text {
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+        /* 统一筛选容器样式 (Sticky) */
+        .sticky-filter-container {
+            position: sticky;
+            top: 105px; /* header height approx */
+            z-index: 40;
+            background-color: #F5F7FA;
+            padding: 10px 16px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+
+        /* 搜索输入框 */
+        .search-input-wrapper {
+            position: relative;
+            width: 100%;
+        }
+        .search-input {
+            width: 100%;
+            padding: 8px 12px 8px 36px;
+            border-radius: 20px;
+            border: 1px solid #E5E7EB;
+            background-color: #FFFFFF;
+            font-size: 13px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .search-input:focus {
+            border-color: #3B82F6;
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+        }
+        .search-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #9CA3AF;
+            font-size: 13px;
+        }
+
+        /* 下拉筛选框 */
+        .filter-row {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .filter-select {
+            flex: 1;
+            background: #FFFFFF;
+            border: 1px solid #E5E7EB;
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            color: #4B5563;
+            outline: none;
+            -webkit-appearance: none;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+            background-position: right 0.5rem center;
+            background-repeat: no-repeat;
+            background-size: 1.5em 1.5em;
+            padding-right: 2.5rem;
+        }
+
+        /* 卡片通用样式 */
+        .mobile-card {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            margin: 12px 16px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        /* 标签系统 */
+        .tag {
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+        }
+        .tag-blue { background: #E3F2FD; color: #1976D2; }
+        .tag-red { background: #FFEBEE; color: #D32F2F; }
+        .tag-green { background: #E8F5E9; color: #388E3C; }
+
+        /* 统计胶囊筛选 */
+        .capsule-filter {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            background: #F3F4F6;
+            color: #6B7280;
+            margin-right: 6px;
+            white-space: nowrap;
+            transition: all 0.2s;
+        }
+        .capsule-filter.active {
+            background: #E3F2FD;
+            color: #1565C0;
+            font-weight: 600;
+        }
+
+        /* 日期选择器简易样式 */
+        .date-input {
+            border: 1px solid #E5E7EB;
+            border-radius: 4px;
+            padding: 2px 6px;
+            font-size: 11px;
+            color: #555;
+            background: #fff;
+            width: 110px;
+        }
+
+        /* 分页按钮 */
+        .page-btn {
+            padding: 6px 16px;
+            background: white;
+            border: 1px solid #E5E7EB;
+            border-radius: 6px;
+            font-size: 12px;
+            color: #374151;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+        .page-btn:disabled {
+            opacity: 0.5;
+            background: #F9FAFB;
+        }
+
+        /* KPI Grid */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin: 12px 16px;
+        }
+        .kpi-box {
+            background: white;
+            padding: 12px 6px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+        }
+    </style>
+</head>
+<body>
+
+<div id="app">
+    <header class="nav-header">
+        <div class="top-bar">
+            <i class="fas fa-chevron-left mr-4 cursor-pointer" onclick="alert('返回工作台')"></i>
+            <span>监测企业</span>
+        </div>
+
+        <div class="nav-tabs">
+            <div class="nav-item" :class="{active: currentTab === 'enterprises'}" @click="switchTab('enterprises')">
+                <div class="icon-circle"><i class="fas fa-building"></i></div>
+                <span class="nav-text">企业清单</span>
+            </div>
+
+            <div class="nav-item" :class="{active: currentTab === 'alarms'}" @click="switchTab('alarms')">
+                <div class="icon-circle"><i class="fas fa-exclamation-triangle"></i></div>
+                <span class="nav-text">报警清单</span>
+            </div>
+
+            <div class="nav-item" :class="{active: currentTab === 'dashboard'}" @click="switchTab('dashboard')">
+                <div class="icon-circle"><i class="fas fa-chart-pie"></i></div>
+                <span class="nav-text">统计分析</span>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div v-show="currentTab === 'enterprises'">
+            <div class="sticky-filter-container">
+                <div class="search-input-wrapper">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" v-model="entSearchKeyword" placeholder="搜索企业名称、地址..." class="search-input">
+                </div>
+                <div class="filter-row">
+                    <select class="filter-select" v-model="entTypeFilter">
+                        <option value="">全部类型</option>
+                        <option value="污水处理厂">污水处理厂</option>
+                        <option value="工业企业">工业企业</option>
+                    </select>
+                    <select class="filter-select" v-model="entRegionFilter">
+                        <option value="">全部区域</option>
+                        <option value="武汉市">武汉市</option>
+                        <option value="襄阳市">襄阳市</option>
+                        <option value="宜昌市">宜昌市</option>
+                        <option value="孝感市">孝感市</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="pb-4 pt-1">
+                <div class="mobile-card" v-for="(item, idx) in paginatedEnterprises" :key="idx">
+                    <div class="flex justify-between items-start mb-2">
+                        <h4 class="font-bold text-gray-800 text-sm w-3/4 truncate">{{ item.name }}</h4>
+                        <span class="tag" :class="item.type === '污水处理厂' ? 'tag-green' : 'tag-blue'">{{ item.type }}</span>
+                    </div>
+                    <div class="space-y-1 mb-2">
+                        <div class="text-xs text-gray-500 flex items-center">
+                            <i class="fas fa-map-marker-alt w-4 text-gray-400 text-center mr-1"></i>
+                            {{ item.region }}
+                        </div>
+                        <div class="text-xs text-gray-500 flex items-center truncate">
+                            <i class="far fa-building w-4 text-gray-400 text-center mr-1"></i>
+                            {{ item.address }}
+                        </div>
+                    </div>
+                    <div class="pt-2 border-t border-gray-100 flex justify-between items-center">
+                        <div class="text-xs text-gray-500">
+                            <span class="text-gray-400 mr-1">行业类别:</span>
+                            <span class="font-medium text-gray-700">{{ item.industry }}</span>
+                        </div>
+                        <button class="text-xs bg-blue-50 text-blue-600 px-4 py-1.5 rounded-full font-medium active:bg-blue-100">
+                            查看详情
+                        </button>
+                    </div>
+                </div>
+
+                <div v-if="filteredEnterprises.length === 0" class="text-center text-gray-400 py-10 text-xs">
+                    暂无符合条件的企业
+                </div>
+
+                <div v-if="filteredEnterprises.length > 0" class="flex justify-center items-center mt-4 mb-8 space-x-4">
+                    <button @click="prevEntPage" :disabled="entPage === 1" class="page-btn">上一页</button>
+                    <span class="text-xs text-gray-500">第 {{ entPage }} / {{ totalEntPages }} 页</span>
+                    <button @click="nextEntPage" :disabled="entPage === totalEntPages" class="page-btn">下一页</button>
+                </div>
+            </div>
+        </div>
+
+        <div v-show="currentTab === 'alarms'">
+            <div class="sticky-filter-container">
+                <div class="search-input-wrapper">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" v-model="alarmSearchKeyword" placeholder="搜索报警企业名称..." class="search-input">
+                </div>
+                <div class="filter-row">
+                    <select class="filter-select" v-model="alarmTypeFilter">
+                        <option value="">全部类型</option>
+                        <option value="污水处理厂">污水处理厂</option>
+                        <option value="工业企业">工业企业</option>
+                    </select>
+                    <select class="filter-select" v-model="alarmRegionFilter">
+                        <option value="">全部区域</option>
+                        <option value="武汉市">武汉市</option>
+                        <option value="宜昌市">宜昌市</option>
+                        <option value="黄石市">黄石市</option>
+                        <option value="鄂州市">鄂州市</option>
+                        <option value="天门市">天门市</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="pb-4">
+                <div class="mobile-card" v-for="(alarm, idx) in paginatedAlarms" :key="idx">
+                    <div class="flex justify-between items-start mb-1">
+                        <h4 class="font-bold text-gray-800 text-sm w-3/4 leading-tight">{{ alarm.name }}</h4>
+                        <span class="tag tag-red flex-shrink-0"><i class="fas fa-exclamation-circle mr-1"></i>超标</span>
+                    </div>
+
+                    <div class="flex items-center text-xs text-gray-400 mb-3">
+                        <span class="mr-3"><i class="far fa-clock mr-1"></i>{{ alarm.time }}</span>
+                        <span><i class="fas fa-tint mr-1"></i>{{ alarm.outlet }}</span>
+                    </div>
+
+                    <div class="bg-gray-50 rounded p-2 grid grid-cols-3 gap-2 text-center mb-3">
+                        <div>
+                            <div class="text-[10px] text-gray-400">污染物</div>
+                            <div class="text-xs font-bold text-gray-700">{{ alarm.pollutant }}</div>
+                        </div>
+                        <div>
+                            <div class="text-[10px] text-gray-400">监测值</div>
+                            <div class="text-xs font-bold text-red-500">{{ alarm.value }}</div>
+                        </div>
+                        <div>
+                            <div class="text-[10px] text-gray-400">标准值</div>
+                            <div class="text-xs font-bold text-gray-500">{{ alarm.standard }}</div>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-between items-center pt-2 border-t border-gray-100">
+                        <span class="text-xs text-gray-500 font-medium">
+                            排放量: <span class="text-gray-800 font-bold">{{ alarm.emission }}</span> kg
+                        </span>
+                        <button class="text-xs bg-white border border-blue-200 text-blue-600 px-3 py-1 rounded-full active:bg-blue-50 shadow-sm">
+                            查看详情
+                        </button>
+                    </div>
+                </div>
+
+                <div v-if="filteredAlarms.length === 0" class="text-center text-gray-400 py-10 text-xs">
+                    暂无报警数据
+                </div>
+
+                <div v-if="filteredAlarms.length > 0" class="flex justify-center items-center mt-4 mb-8 space-x-4">
+                    <button @click="prevAlarmPage" :disabled="alarmPage === 1" class="page-btn">上一页</button>
+                    <span class="text-xs text-gray-500">第 {{ alarmPage }} / {{ totalAlarmPages }} 页</span>
+                    <button @click="nextAlarmPage" :disabled="alarmPage === totalAlarmPages" class="page-btn">下一页</button>
+                </div>
+            </div>
+        </div>
+
+        <div v-show="currentTab === 'dashboard'" class="pt-2">
+            <div class="flex items-center justify-between px-4 py-2 text-sm text-gray-500 bg-white mx-4 mt-2 rounded-lg shadow-sm">
+                <span><i class="far fa-calendar-alt text-blue-500 mr-2"></i> 2025-12</span>
+                <span class="text-blue-600 font-medium text-xs border border-blue-200 px-2 py-1 rounded">切换月份</span>
+            </div>
+
+            <div class="kpi-grid">
+                <div class="kpi-box">
+                    <div class="text-[10px] text-gray-500 mb-1">企业总数</div>
+                    <div class="text-lg font-bold text-gray-800">1,240</div>
+                </div>
+                <div class="kpi-box relative">
+                    <div class="text-[10px] text-gray-500 mb-1">报警次数</div>
+                    <div class="text-lg font-bold text-red-500">156</div>
+                    <div class="absolute top-1 right-1 w-1.5 h-1.5 bg-red-500 rounded-full"></div>
+                </div>
+                <div class="kpi-box">
+                    <div class="text-[10px] text-gray-500 mb-1">超标企业</div>
+                    <div class="text-lg font-bold text-orange-500">42</div>
+                </div>
+            </div>
+
+            <div class="mobile-card">
+                <div class="flex justify-between items-center mb-2 border-b pb-2 border-gray-100">
+                    <h3 class="font-bold text-gray-700 text-sm"><i class="fas fa-chart-pie text-blue-500 mr-2"></i>超标污染物占比</h3>
+                </div>
+                <div ref="pieChartRef" style="width: 100%; height: 240px;"></div>
+            </div>
+
+            <div class="mobile-card">
+                <div class="flex flex-col mb-2 border-b pb-2 border-gray-100">
+                    <div class="flex justify-between items-center mb-2">
+                        <h3 class="font-bold text-gray-700 text-sm"><i class="fas fa-wave-square text-blue-500 mr-2"></i>报警趋势</h3>
+                    </div>
+                    <div class="flex overflow-x-auto no-scrollbar pb-2">
+                        <span v-for="item in ['全部', '化学需氧量', '氨氮', '总磷', '总氮']"
+                              :key="item"
+                              @click="trendFilter = item"
+                              :class="['capsule-filter', trendFilter === item ? 'active' : '']">
+                            {{ item }}
+                        </span>
+                    </div>
+                    <div class="flex items-center space-x-2 bg-gray-50 p-2 rounded mt-1">
+                        <span class="text-xs text-gray-400">时间:</span>
+                        <input type="date" v-model="trendStartDate" class="date-input">
+                        <span class="text-gray-300">-</span>
+                        <input type="date" v-model="trendEndDate" class="date-input">
+                    </div>
+                </div>
+                <div ref="lineChartRef" style="width: 100%; height: 200px;"></div>
+            </div>
+
+            <div class="mobile-card">
+                <div class="flex justify-between items-center mb-3 border-b pb-2 border-gray-100">
+                    <h3 class="font-bold text-gray-700 text-sm"><i class="fas fa-list-ol text-blue-500 mr-2"></i>地市超标排名 TOP5</h3>
+                </div>
+                <div class="space-y-3">
+                    <div v-for="(city, index) in rankData" :key="index" class="flex items-center">
+                        <div :class="['w-5 h-5 rounded flex items-center justify-center text-xs text-white mr-3 font-bold', index < 3 ? 'bg-red-500' : 'bg-gray-300']">
+                            {{ index + 1 }}
+                        </div>
+                        <div class="flex-1">
+                            <div class="flex justify-between text-xs mb-1">
+                                <span class="font-medium text-gray-700">{{ city.name }}</span>
+                                <span class="text-gray-500">{{ city.val }}次</span>
+                            </div>
+                            <div class="w-full bg-gray-100 rounded-full h-1.5">
+                                <div class="h-1.5 rounded-full bg-blue-500" :style="{width: (city.val / 170 * 100) + '%'}"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+</div>
+
+<script>
+    const { createApp, ref, computed, onMounted, nextTick, watch } = Vue;
+
+    createApp({
+        setup() {
+            // 修改处：默认 Tab 设为 enterprises
+            const currentTab = ref('enterprises');
+            const pieChartRef = ref(null);
+            const lineChartRef = ref(null);
+
+            // 统计Tab变量
+            const trendFilter = ref('全部');
+            const trendStartDate = ref('2025-12-01');
+            const trendEndDate = ref('2025-12-07');
+
+            // --- 数据源 ---
+            // 修改处：为每个企业对象增加了 industry 字段
+            const enterprises = ref([
+                { name: '襄阳化工新材料有限公司', region: '襄阳市', type: '工业企业', industry: '化工制造', address: '襄阳工业园区高新大道88号' },
+                { name: '湖北泽丰化工有限公司', region: '襄阳市', type: '工业企业', industry: '化学原料', address: '襄阳市樊城区太平店镇' },
+                { name: '宜昌兴发集团股份有限公司', region: '宜昌市', type: '工业企业', industry: '磷化工', address: '宜昌市猇亭区兴发工业园' },
+                { name: '武汉钢铁(集团)公司', region: '武汉市', type: '工业企业', industry: '黑色金属冶炼', address: '武汉市青山区厂前街' },
+                { name: '孝感市孝南区污水处理厂', region: '孝感市', type: '污水处理厂', industry: '市政污水', address: '孝感市孝南区维达大道' },
+                { name: '武汉汉西污水处理厂', region: '武汉市', type: '污水处理厂', industry: '市政污水', address: '武汉市东西湖区' },
+                { name: '荆州沙市纺织印染厂', region: '荆州市', type: '工业企业', industry: '纺织印染', address: '荆州市沙市区工业路' },
+                { name: '黄石大冶有色金属公司', region: '黄石市', type: '工业企业', industry: '有色金属', address: '黄石市下陆区' }
+            ]);
+
+            const alarms = ref([
+                { name: '鄂州市葛店开发区污水处理厂', region:'鄂州市', type:'污水处理厂', outlet: '总排口', pollutant: '总氮', value: '47.96', standard: '45', emission: '124.5', time: '10-04 14:00' },
+                { name: '安琪酵母股份有限公司', region:'宜昌市', type:'工业企业', outlet: '废水出口01', pollutant: '总磷', value: '1.24', standard: '0.5', emission: '8.2', time: '09-13 09:30' },
+                { name: '黄石市东贝机电集团', region:'黄石市', type:'工业企业', outlet: '综合排口', pollutant: '氨氮', value: '5.25', standard: '5.0', emission: '35.6', time: '10-10 11:20' },
+                { name: '天门市纺织印染工业园', region:'天门市', type:'工业企业', outlet: '印染废水排口', pollutant: '总氮', value: '26.57', standard: '15', emission: '210.3', time: '10-14 16:45' },
+                { name: '武汉汉西污水处理厂', region:'武汉市', type:'污水处理厂', outlet: '总入水口', pollutant: 'COD', value: '60.5', standard: '50', emission: '500.2', time: '12-22 08:30' }
+            ]);
+
+            const rankData = ref([
+                { name: '武汉市', val: 170 },
+                { name: '宜昌市', val: 55 },
+                { name: '襄阳市', val: 50 },
+                { name: '荆州市', val: 32 },
+                { name: '黄冈市', val: 29 }
+            ]);
+
+            // --- 企业筛选与分页逻辑 ---
+            const entSearchKeyword = ref("");
+            const entTypeFilter = ref("");
+            const entRegionFilter = ref("");
+            const entPage = ref(1);
+            const entPageSize = 5;
+
+            const filteredEnterprises = computed(() => {
+                return enterprises.value.filter(item => {
+                    const matchName = entSearchKeyword.value ? item.name.includes(entSearchKeyword.value) || item.address.includes(entSearchKeyword.value) : true;
+                    const matchType = entTypeFilter.value ? item.type === entTypeFilter.value : true;
+                    const matchRegion = entRegionFilter.value ? item.region === entRegionFilter.value : true;
+                    return matchName && matchType && matchRegion;
+                });
+            });
+
+            const totalEntPages = computed(() => Math.ceil(filteredEnterprises.value.length / entPageSize));
+            const paginatedEnterprises = computed(() => {
+                const start = (entPage.value - 1) * entPageSize;
+                return filteredEnterprises.value.slice(start, start + entPageSize);
+            });
+
+            const nextEntPage = () => { if (entPage.value < totalEntPages.value) entPage.value++; };
+            const prevEntPage = () => { if (entPage.value > 1) entPage.value--; };
+
+            watch([entSearchKeyword, entTypeFilter, entRegionFilter], () => { entPage.value = 1; });
+
+            // --- 报警筛选与分页逻辑 ---
+            const alarmSearchKeyword = ref("");
+            const alarmTypeFilter = ref("");
+            const alarmRegionFilter = ref("");
+            const alarmPage = ref(1);
+            const alarmPageSize = 3;
+
+            const filteredAlarms = computed(() => {
+                return alarms.value.filter(item => {
+                    const matchName = alarmSearchKeyword.value ? item.name.includes(alarmSearchKeyword.value) : true;
+                    const matchType = alarmTypeFilter.value ? item.type === alarmTypeFilter.value : true;
+                    const matchRegion = alarmRegionFilter.value ? item.region === alarmRegionFilter.value : true;
+                    return matchName && matchType && matchRegion;
+                });
+            });
+
+            const totalAlarmPages = computed(() => Math.ceil(filteredAlarms.value.length / alarmPageSize));
+            const paginatedAlarms = computed(() => {
+                const start = (alarmPage.value - 1) * alarmPageSize;
+                return filteredAlarms.value.slice(start, start + alarmPageSize);
+            });
+
+            const nextAlarmPage = () => { if (alarmPage.value < totalAlarmPages.value) alarmPage.value++; };
+            const prevAlarmPage = () => { if (alarmPage.value > 1) alarmPage.value--; };
+
+            watch([alarmSearchKeyword, alarmTypeFilter, alarmRegionFilter], () => { alarmPage.value = 1; });
+
+
+            // --- 图表逻辑 ---
+            let pieChart = null;
+            let lineChart = null;
+
+            const initCharts = () => {
+                if (!pieChartRef.value || !lineChartRef.value) return;
+
+                // 饼图：修改为 Legend 模式，隐藏 Label
+                pieChart = echarts.init(pieChartRef.value);
+                pieChart.setOption({
+                    tooltip: { trigger: 'item' },
+                    legend: {
+                        bottom: '0%',
+                        left: 'center',
+                        icon: 'circle',
+                        itemWidth: 10,
+                        itemHeight: 10
+                    },
+                    series: [{
+                        type: 'pie',
+                        radius: ['35%', '60%'], // 稍微调小一点给 Legend 留空间
+                        center: ['50%', '40%'], // 上移一点
+                        avoidLabelOverlap: false,
+                        label: { show: false }, // 隐藏连接线和文字
+                        labelLine: { show: false },
+                        data: [
+                            { value: 65, name: '化学需氧量', itemStyle: { color: '#3B82F6' } },
+                            { value: 45, name: '氨氮', itemStyle: { color: '#10B981' } },
+                            { value: 30, name: '总磷', itemStyle: { color: '#F59E0B' } },
+                            { value: 16, name: '总氮', itemStyle: { color: '#EF4444' } }
+                        ]
+                    }]
+                });
+
+                // 趋势图
+                lineChart = echarts.init(lineChartRef.value);
+                updateLineChartData();
+            };
+
+            const updateLineChartData = () => {
+                if(!lineChart) return;
+                // 模拟根据日期和筛选变化的数据
+                const baseData = [15, 23, 18, 28, 22, 35, 30];
+                const modifier = trendFilter.value === '全部' ? 1 : Math.random() + 0.5;
+                const data = baseData.map(v => Math.floor(v * modifier));
+
+                lineChart.setOption({
+                    grid: { top: 20, bottom: 20, left: 35, right: 15 },
+                    xAxis: {
+                        type: 'category',
+                        data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                        axisLine: { lineStyle: { color: '#eee' } },
+                        axisLabel: { color: '#999', fontSize: 10 }
+                    },
+                    yAxis: { type: 'value', splitLine: { lineStyle: { type: 'dashed' } } },
+                    tooltip: { trigger: 'axis' },
+                    series: [{
+                        name: trendFilter.value,
+                        data: data,
+                        type: 'line',
+                        smooth: true,
+                        showSymbol: false,
+                        itemStyle: { color: '#3B82F6' },
+                        areaStyle: {
+                            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                                { offset: 0, color: 'rgba(59, 130, 246, 0.3)' },
+                                { offset: 1, color: 'rgba(59, 130, 246, 0.01)' }
+                            ])
+                        }
+                    }]
+                });
+            };
+
+            watch([trendFilter, trendStartDate, trendEndDate], () => {
+                updateLineChartData();
+            });
+
+            const switchTab = (tab) => {
+                currentTab.value = tab;
+            };
+
+            watch(currentTab, (newVal) => {
+                if (newVal === 'dashboard') {
+                    nextTick(() => {
+                        if (!pieChart) {
+                            initCharts();
+                        } else {
+                            pieChart.resize();
+                            lineChart.resize();
+                        }
+                    });
+                }
+            });
+
+            onMounted(() => {
+                // 如果当前就是 dashboard，初始化图表
+                if(currentTab.value === 'dashboard'){
+                    nextTick(() => {
+                        initCharts();
+                    });
+                }
+
+                window.addEventListener('resize', () => {
+                    pieChart && pieChart.resize();
+                    lineChart && lineChart.resize();
+                });
+            });
+
+            return {
+                currentTab, switchTab,
+                pieChartRef, lineChartRef,
+                rankData,
+                // Tab 1 (Dashboard moved to Tab 3, vars kept)
+                trendFilter, trendStartDate, trendEndDate,
+                // Tab 2
+                entSearchKeyword, entTypeFilter, entRegionFilter, paginatedEnterprises,
+                entPage, totalEntPages, nextEntPage, prevEntPage, filteredEnterprises,
+                // Tab 3
+                alarmSearchKeyword, alarmTypeFilter, alarmRegionFilter, paginatedAlarms,
+                alarmPage, totalAlarmPages, nextAlarmPage, prevAlarmPage, filteredAlarms
+            };
+        }
+    }).mount('#app');
+</script>
+</body>
+</html>

@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>湖北省水生态环境综合管理 - 智能报告</title>
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography,container-queries"></script>
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#3b82f6",
+                        "primary-dark": "#1e3a8a",
+                        "background-light": "#f6f9fc",
+                        "background-dark": "#0f172a",
+                        "surface-light": "#ffffff",
+                        "surface-dark": "#1e293b",
+                    },
+                    fontFamily: {
+                        display: ["Inter", "system-ui", "-apple-system", "sans-serif"],
+                    },
+                },
+            },
+        };
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .custom-scrollbar::-webkit-scrollbar {
+                width: 4px;
+                height: 4px;
+            }
+            .custom-scrollbar::-webkit-scrollbar-track {
+                background: transparent;
+            }
+            .custom-scrollbar::-webkit-scrollbar-thumb {
+                background: #cbd5e1;
+                border-radius: 10px;
+            }
+            .dark .custom-scrollbar::-webkit-scrollbar-thumb {
+                background: #475569;
+            }
+
+            .sidebar-transition {
+                transition: width 0.3s ease;
+            }
+            .sidebar-text {
+                transition: opacity 0.2s ease;
+                white-space: nowrap;
+            }
+            .hide-text .sidebar-text {
+                display: none;
+                opacity: 0;
+            }
+            .collapsed-sidebar .nav-item {
+                justify-content: center;
+                padding-left: 0;
+                padding-right: 0;
+            }
+
+            .doc-shadow {
+                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06), 0 0 0 1px rgba(0,0,0,0.05);
+            }
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-800 dark:text-slate-100 h-screen overflow-hidden flex flex-col">
+
+<header class="bg-primary h-14 flex items-center justify-between px-4 text-white shrink-0 shadow-md z-50">
+    <div class="flex items-center space-x-3">
+        <div class="w-8 h-8 bg-white rounded-full flex items-center justify-center">
+            <span class="material-symbols-outlined text-primary text-xl">water_drop</span>
+        </div>
+        <h1 class="text-xl font-bold tracking-tight">湖北省水生态环境综合管理</h1>
+    </div>
+    <nav class="flex h-full">
+        <a class="px-6 flex items-center space-x-2 hover:bg-white/10 transition-colors" href="#">
+            <span class="material-symbols-outlined text-[18px]">home</span>
+            <span class="text-sm">总体概览</span>
+        </a>
+        <a class="px-6 flex items-center space-x-2 hover:bg-white/10 transition-colors" href="#">
+            <span class="material-symbols-outlined text-[18px]">assessment</span>
+            <span class="text-sm font-medium">形势分析</span>
+        </a>
+        <a class="px-6 flex items-center space-x-2 hover:bg-white/10 transition-colors" href="#">
+            <span class="material-symbols-outlined text-[18px]">map</span>
+            <span class="text-sm">空间分析</span>
+        </a>
+        <a class="px-6 flex items-center space-x-2 bg-white/10 transition-colors" href="#">
+            <span class="material-symbols-outlined text-[18px]">waves</span>
+            <span class="text-sm">水污染源</span>
+        </a>
+        <a class="px-6 flex items-center space-x-2 hover:bg-white/10 transition-colors" href="#">
+            <span class="material-symbols-outlined text-[18px]">report_problem</span>
+            <span class="text-sm">问题聚焦</span>
+        </a>
+        <a class="px-6 flex items-center space-x-2 hover:bg-white/10 transition-colors" href="#">
+            <span class="material-symbols-outlined text-[18px]">apps</span>
+            <span class="text-sm">专题应用</span>
+        </a>
+    </nav>
+    <div class="flex items-center space-x-6">
+        <div class="flex items-center space-x-2 text-sm opacity-90">
+            <span class="material-symbols-outlined text-[18px]">public</span>
+            <span>碧水荆灵</span>
+        </div>
+        <div class="flex items-center space-x-2 text-sm">
+            <span class="material-symbols-outlined text-[18px]">account_circle</span>
+            <span>wangyunpeng</span>
+        </div>
+    </div>
+</header>
+
+<div class="flex flex-1 overflow-hidden">
+
+    <aside id="sidebar" class="w-[270px] bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 flex flex-col shrink-0 sidebar-transition">
+        <div class="flex-1 py-4 overflow-y-auto custom-scrollbar flex flex-col gap-1">
+
+            <div class="mb-2 px-2">
+                <button class="nav-item w-full flex items-center justify-between px-4 py-3 text-[16px] font-medium text-slate-600 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg group transition-colors" onclick="toggleSubmenu('submenu-overview')">
+                    <div class="flex items-center">
+                        <span class="material-symbols-outlined mr-3 text-slate-400 group-hover:text-primary">dashboard</span>
+                        <span class="sidebar-text">业务基础表单</span>
+                    </div>
+                    <span class="material-symbols-outlined text-sm text-slate-400 sidebar-chevron transition-transform duration-200">expand_more</span>
+                </button>
+            </div>
+
+            <div class="mb-2 px-2">
+                <button class="nav-item w-full flex items-center justify-between px-4 py-3 text-[16px] font-medium text-slate-600 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg group transition-colors" onclick="toggleSubmenu('submenu-analysis')">
+                    <div class="flex items-center">
+                        <span class="material-symbols-outlined mr-3 text-slate-400 group-hover:text-primary">analytics</span>
+                        <span class="sidebar-text">智能分析报告</span>
+                    </div>
+                    <span class="material-symbols-outlined text-sm text-slate-400 sidebar-chevron transition-transform duration-200 rotate-180">expand_more</span>
+                </button>
+                <div id="submenu-analysis" class="mt-1 space-y-1 overflow-hidden transition-all duration-300 max-h-[500px]">
+                    <a class="flex items-center px-12 py-2 text-[14px] text-slate-600 dark:text-slate-400 hover:text-blue-600 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors rounded-lg group" href="#">
+                        <span class="w-1.5 h-1.5 bg-slate-300 dark:bg-slate-600 group-hover:bg-blue-600 rounded-full mr-3 shrink-0 transition-colors"></span>
+                        <span class="sidebar-text">实时形势分析日报</span>
+                    </a>
+                </div>
+            </div>
+
+        </div>
+
+        <button id="toggleSidebarBtn" class="h-12 border-t border-slate-200 dark:border-slate-800 flex items-center justify-center space-x-2 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all text-slate-500 hover:text-primary group">
+            <span id="toggleIcon" class="material-symbols-outlined text-xl transition-transform duration-300">chevron_left</span>
+            <span class="sidebar-text text-sm font-medium tracking-wide">收起侧栏</span>
+        </button>
+    </aside>
+
+    <main class="flex-1 flex flex-col min-w-0 bg-slate-50/50 dark:bg-slate-950 p-6 overflow-y-auto">
+
+        <div class="h-16 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl flex items-center justify-between px-6 shrink-0 shadow-sm mb-6">
+            <div class="flex items-center gap-3">
+                <span class="relative flex h-3 w-3">
+                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-3 w-3 bg-[#3b82f6]"></span>
+                </span>
+                <h2 id="report-main-title" class="text-lg font-bold text-slate-800 dark:text-white tracking-tight">
+                    实时形势分析日报
+                </h2>
+            </div>
+
+            <div class="flex items-center gap-4">
+
+                <div class="relative group">
+                    <input type="month" value="2026-01" class="pl-3 pr-3 py-1.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-700 dark:text-slate-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none shadow-sm transition-all hover:border-slate-300 cursor-pointer">
+                </div>
+
+                <div class="relative min-w-[80px]">
+                    <select class="w-full pl-3 pr-8 py-1.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-700 dark:text-slate-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none cursor-pointer font-medium outline-none transition-colors hover:border-blue-300">
+                        <option value="武汉市" selected>武汉市</option>
+                        <option value="黄石市">黄石市</option>
+                        <option value="十堰市">十堰市</option>
+                        <option value="宜昌市">宜昌市</option>
+                        <option value="襄阳市">襄阳市</option>
+                        <option value="鄂州市">鄂州市</option>
+                        <option value="荆门市">荆门市</option>
+                    </select>
+
+                </div>
+
+                <div class="h-4 w-px bg-slate-200 dark:bg-slate-700"></div>
+
+                <button class="flex items-center gap-2 px-4 py-1.5 bg-white text-slate-600 hover:text-blue-600 hover:border-blue-300 border border-slate-200 rounded-lg text-sm font-medium transition-colors">
+                    <i class="ri-download-cloud-2-line"></i>
+                    <span>下载</span>
+                </button>
+                <button class="flex items-center gap-2 px-4 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium shadow-sm shadow-blue-500/30 transition-all active:scale-95">
+                    <i class="ri-upload-2-line"></i>
+                    <span>上传</span>
+                </button>
+            </div>
+
+        </div>
+
+        <div class="min-h-[700px] flex mb-6 gap-6">
+
+            <div class="w-64 flex flex-col bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden shrink-0">
+                <div class="px-4 py-3 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/50 flex justify-between items-center">
+                    <h3 class="font-bold text-slate-700 dark:text-slate-200 text-sm">历史归档</h3>
+                    <div class="flex gap-2 text-slate-400">
+                        <i class="ri-history-line"></i>
+                    </div>
+                </div>
+
+                <div class="flex-1 overflow-y-auto custom-scrollbar p-2 space-y-2">
+                    <div class="relative group cursor-pointer">
+                        <div class="flex items-center p-3 rounded-lg bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800/50">
+                            <div class="flex flex-col flex-1 min-w-0">
+                                <div class="flex items-center justify-between mb-1">
+                                    <span class="font-bold text-blue-700 dark:text-blue-300 text-[15px]">31日</span>
+                                    <span id="history-badge-31" class="text-[10px] px-1.5 py-0.5 rounded bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 font-medium">已审核</span>
+                                </div>
+                                <span class="text-xs text-blue-600/70 dark:text-blue-300/60 truncate">2026-01-31 实时形势分析日报</span>
+                            </div>
+                        </div>
+                        <div class="absolute left-0 top-3 bottom-3 w-1 bg-blue-500 rounded-r-full"></div>
+                    </div>
+
+                    <div class="group cursor-pointer p-3 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 border border-transparent hover:border-slate-100 dark:hover:border-slate-700 transition-all">
+                        <div class="flex flex-col flex-1 min-w-0">
+                            <div class="flex items-center justify-between mb-1">
+                                <span class="font-medium text-slate-700 dark:text-slate-300 text-[15px] group-hover:text-primary transition-colors">30日</span>
+                                <span class="text-[10px] px-1.5 py-0.5 rounded bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 font-medium">已审核</span>
+                            </div>
+                            <span class="text-xs text-slate-400 group-hover:text-slate-500 truncate">2026-01-30 实时形势分析日报</span>
+                        </div>
+                    </div>
+
+                    <div class="group cursor-pointer p-3 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 border border-transparent hover:border-slate-100 dark:hover:border-slate-700 transition-all">
+                        <div class="flex flex-col flex-1 min-w-0">
+                            <div class="flex items-center justify-between mb-1">
+                                <span class="font-medium text-slate-700 dark:text-slate-300 text-[15px] group-hover:text-primary transition-colors">29日</span>
+                                <span class="text-[10px] px-1.5 py-0.5 rounded bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 font-medium">已审核</span>
+                            </div>
+                            <span class="text-xs text-slate-400 group-hover:text-slate-500 truncate">2026-01-29 实时形势分析日报</span>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="flex-1 flex flex-col bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden relative">
+                <div class="h-10 border-b border-slate-100 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-800/80 flex items-center justify-between px-4">
+                    <div class="text-xs text-slate-500">第 1 / 8 页</div>
+                    <div class="flex items-center space-x-2">
+                        <button class="p-1 hover:bg-slate-200 dark:hover:bg-slate-700 rounded text-slate-500"><i class="ri-zoom-out-line"></i></button>
+                        <span class="text-xs text-slate-600 dark:text-slate-300 font-medium w-12 text-center">100%</span>
+                        <button class="p-1 hover:bg-slate-200 dark:hover:bg-slate-700 rounded text-slate-500"><i class="ri-zoom-in-line"></i></button>
+                        <div class="w-px h-4 bg-slate-300 mx-2"></div>
+                        <button class="p-1 hover:bg-slate-200 dark:hover:bg-slate-700 rounded text-slate-500"><i class="ri-printer-line"></i></button>
+                    </div>
+                </div>
+
+                <div class="flex-1 bg-slate-100/50 dark:bg-black/20 overflow-auto flex justify-center p-8 custom-scrollbar">
+                    <div id="report-content" class="w-[90%] max-w-[800px] bg-white dark:bg-slate-800 min-h-[1000px] doc-shadow rounded-sm p-12 text-slate-800 dark:text-slate-200 relative animate-in fade-in duration-500">
+                    </div>
+                </div>
+            </div>
+
+            <div class="w-80 flex flex-col bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden shrink-0">
+                <div class="px-4 py-3 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/50 flex justify-between items-center">
+                    <h3 class="font-bold text-slate-700 dark:text-slate-200 text-sm">版本管理</h3>
+                    <div class="text-xs text-slate-400">共 3 版</div>
+                </div>
+
+                <div class="flex-1 overflow-y-auto custom-scrollbar p-4 space-y-4" id="version-list">
+                    <div class="version-item relative pl-4 border-l-2 border-slate-200 dark:border-slate-700" id="version-card-1-2" data-version="1.2">
+                        <div class="timeline-dot absolute -left-[5px] top-0 w-2.5 h-2.5 bg-slate-300 rounded-full transition-colors"></div>
+                        <div class="card-bg rounded-lg p-3 border border-slate-100 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors group">
+                            <div class="flex justify-between items-start mb-2">
+                                <span class="text-sm font-bold text-slate-700 dark:text-slate-300">V1.2 领导修订版</span>
+                                <span class="status-badge-container">
+                                    <span class="status-badge text-[10px] bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400 px-1.5 py-0.5 rounded">待定稿</span>
+                                </span>
+                            </div>
+                            <div class="flex items-center gap-2 mb-2">
+                                <div class="w-5 h-5 rounded-full bg-slate-200 flex items-center justify-center text-[10px] text-slate-600">L</div>
+                                <span class="text-xs text-slate-500">leadership · 10分钟前</span>
+                            </div>
+                            <div class="action-buttons flex items-center justify-end gap-2 mt-3 pt-2 border-t border-slate-50 dark:border-slate-700/50">
+                                <button class="text-xs px-2 py-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded text-slate-600 dark:text-slate-300 hover:text-blue-600 hover:border-blue-300 transition-colors" onclick="previewVersion('version-card-1-2')">预览</button>
+
+                                <button class="btn-finalize text-xs px-2 py-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded text-slate-600 dark:text-slate-300 hover:text-emerald-600 hover:border-emerald-300 transition-colors flex items-center gap-1" onclick="toggleFinal('version-card-1-2')">
+                                    <i class="ri-checkbox-circle-line"></i>设为定稿
+                                </button>
+
+                                <button class="btn-distribute hidden text-xs px-2 py-1 bg-blue-600 border border-blue-600 rounded text-white hover:bg-blue-700 transition-colors items-center gap-1" onclick="distributeVersion('version-card-1-2')">
+                                    <i class="ri-send-plane-fill"></i>下发
+                                </button>
+
+                                <button class="btn-cancel-final hidden text-xs px-2 py-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded text-slate-500 hover:text-red-500 hover:border-red-300 transition-colors items-center gap-1" onclick="toggleFinal('version-card-1-2')">
+                                    <i class="ri-close-circle-line"></i>取消定稿
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="version-item relative pl-4 border-l-2 border-primary" id="version-card-1-1" data-version="1.1">
+                        <div class="timeline-dot absolute -left-[5px] top-0 w-2.5 h-2.5 bg-primary rounded-full ring-4 ring-blue-100 dark:ring-blue-900/30 transition-colors"></div>
+                        <div class="card-bg bg-blue-50/50 dark:bg-blue-900/10 rounded-lg p-3 border border-blue-100 dark:border-blue-800 transition-colors">
+                            <div class="flex justify-between items-start mb-2">
+                                <span class="text-sm font-bold text-slate-800 dark:text-white">V1.1 初稿修订</span>
+                                <span class="status-badge-container">
+                                    <span class="status-badge text-[10px] bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300 px-1.5 py-0.5 rounded border border-green-200 dark:border-green-800 font-medium">已审核</span>
+                                </span>
+                            </div>
+                            <div class="flex items-center gap-2 mb-2">
+                                <div class="w-5 h-5 rounded-full bg-slate-200 flex items-center justify-center text-[10px] text-slate-600">W</div>
+                                <span class="text-xs text-slate-500">wangyunpeng · 2小时前</span>
+                            </div>
+                            <div class="action-buttons flex items-center justify-end gap-2 mt-3 pt-2 border-t border-slate-50 dark:border-slate-700/50">
+                                <button class="text-xs px-2 py-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded text-slate-600 dark:text-slate-300 hover:text-blue-600 hover:border-blue-300 transition-colors" onclick="previewVersion('version-card-1-1')">预览</button>
+
+                                <button class="btn-finalize hidden text-xs px-2 py-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded text-slate-600 dark:text-slate-300 hover:text-emerald-600 hover:border-emerald-300 transition-colors items-center gap-1" onclick="toggleFinal('version-card-1-1')">
+                                    <i class="ri-checkbox-circle-line"></i>设为定稿
+                                </button>
+
+                                <button class="btn-distribute flex text-xs px-2 py-1 bg-blue-600 border border-blue-600 rounded text-white hover:bg-blue-700 transition-colors items-center gap-1" onclick="distributeVersion('version-card-1-1')">
+                                    <i class="ri-send-plane-fill"></i>下发
+                                </button>
+
+                                <button class="btn-cancel-final flex text-xs px-2 py-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded text-slate-500 hover:text-red-500 hover:border-red-300 transition-colors items-center gap-1" onclick="toggleFinal('version-card-1-1')">
+                                    <i class="ri-close-circle-line"></i>取消定稿
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="version-item relative pl-4 border-l-2 border-slate-200 dark:border-slate-700" id="version-card-1-0" data-version="1.0">
+                        <div class="timeline-dot absolute -left-[5px] top-0 w-2.5 h-2.5 bg-purple-300 rounded-full transition-colors"></div>
+                        <div class="card-bg rounded-lg p-3 border border-purple-100 dark:border-purple-900/30 bg-purple-50/30 dark:bg-purple-900/10 hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-colors group">
+                            <div class="flex justify-between items-start mb-2">
+                                <div class="flex items-center gap-1">
+                                    <span class="text-sm font-bold text-slate-600 dark:text-slate-300">V1.0 系统生成</span>
+                                </div>
+                                <span class="status-badge-container">
+                                    <span class="status-badge text-[10px] text-purple-600 border border-purple-200 rounded px-1">碧水荆灵</span>
+                                </span>
+                            </div>
+                            <div class="flex items-center gap-2 mb-2">
+                                <div class="w-5 h-5 rounded-full bg-purple-100 flex items-center justify-center">
+                                    <span class="material-symbols-outlined text-[12px] text-purple-600">smart_toy</span>
+                                </div>
+                                <span class="text-xs text-slate-500">自动生成 · 昨天 18:00</span>
+                            </div>
+                            <div class="action-buttons flex items-center justify-end gap-2 mt-3 pt-2 border-t border-purple-100 dark:border-purple-800/30">
+                                <button class="text-xs px-2 py-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded text-slate-600 dark:text-slate-300 hover:text-blue-600 hover:border-blue-300 transition-colors" onclick="previewVersion('version-card-1-0')">预览</button>
+
+                                <button class="btn-finalize text-xs px-2 py-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded text-slate-600 dark:text-slate-300 hover:text-emerald-600 hover:border-emerald-300 transition-colors flex items-center gap-1" onclick="toggleFinal('version-card-1-0')">
+                                    <i class="ri-checkbox-circle-line"></i>设为定稿
+                                </button>
+
+                                <button class="btn-distribute hidden text-xs px-2 py-1 bg-blue-600 border border-blue-600 rounded text-white hover:bg-blue-700 transition-colors items-center gap-1" onclick="distributeVersion('version-card-1-0')">
+                                    <i class="ri-send-plane-fill"></i>下发
+                                </button>
+
+                                <button class="btn-cancel-final hidden text-xs px-2 py-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded text-slate-500 hover:text-red-500 hover:border-red-300 transition-colors items-center gap-1" onclick="toggleFinal('version-card-1-0')">
+                                    <i class="ri-close-circle-line"></i>取消定稿
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer class="mt-auto pt-4 border-t border-slate-200 dark:border-slate-700 text-center text-xs text-slate-400 shrink-0">
+            <p>&copy; 2026 湖北省生态环境厅 · 版权所有</p>
+        </footer>
+    </main>
+</div>
+
+<script>
+    /* ---------------- Sidebar Logic ---------------- */
+    const sidebar = document.getElementById('sidebar');
+    const toggleBtn = document.getElementById('toggleSidebarBtn');
+    const toggleIcon = document.getElementById('toggleIcon');
+    let isCollapsed = false;
+
+    toggleBtn.addEventListener('click', () => {
+        isCollapsed = !isCollapsed;
+        if (isCollapsed) {
+            sidebar.classList.remove('w-[270px]');
+            sidebar.classList.add('w-[80px]', 'hide-text', 'collapsed-sidebar');
+            toggleIcon.style.transform = 'rotate(180deg)';
+        } else {
+            sidebar.classList.remove('w-[80px]', 'hide-text', 'collapsed-sidebar');
+            sidebar.classList.add('w-[270px]');
+            toggleIcon.style.transform = 'rotate(0deg)';
+        }
+    });
+
+    function toggleSubmenu(id) {
+        if (isCollapsed) return;
+        const submenu = document.getElementById(id);
+        const btn = submenu.previousElementSibling;
+        const chevron = btn.querySelector('.sidebar-chevron');
+
+        if (submenu.style.maxHeight) {
+            submenu.style.maxHeight = null;
+            chevron.style.transform = 'rotate(0deg)';
+        } else {
+            submenu.style.maxHeight = submenu.scrollHeight + "px";
+            chevron.style.transform = 'rotate(180deg)';
+        }
+    }
+
+    /* ---------------- City Selector Logic ---------------- */
+    function updateCityTitle(selectElement) {
+        const citySpan = document.getElementById('current-city-text');
+        if(citySpan) {
+            citySpan.textContent = selectElement.value;
+            citySpan.classList.add('scale-110');
+            setTimeout(() => citySpan.classList.remove('scale-110'), 200);
+        }
+
+        let activeId = 'version-card-1-1';
+        document.querySelectorAll('.version-item').forEach(item => {
+            if(item.querySelector('.card-bg').classList.contains('ring-2')) {
+                activeId = item.id;
+            }
+        });
+        previewVersion(activeId);
+    }
+
+    window.addEventListener('load', () => {
+        const submenu = document.getElementById('submenu-analysis');
+        if(submenu) {
+            submenu.style.maxHeight = submenu.scrollHeight + "px";
+            submenu.previousElementSibling.querySelector('.sidebar-chevron').style.transform = 'rotate(180deg)';
+        }
+        previewVersion('version-card-1-1');
+
+        // 初始更新历史归档状态为已审核 (对应 V1.1)
+        updateHistoryArchiveBadge('audited');
+    });
+
+    /* ---------------- Version Logic ---------------- */
+    const REPORT_DATA = {
+        'version-card-1-0': {
+            title: "实时形势分析日报 (自动生成版)",
+            date: "2026年1月31日 - V1.0",
+            summary: "系统基于IoT监测数据自动生成：今日全市地表水环境质量总体一般。国考断面水质优良比例为 88.0%（模拟数据）。主要超标因子为氨氮。AI建议关注汉江下游区域。",
+            chartColor: ["#a855f7", "#d8b4fe", "#f3e8ff"]
+        },
+        'version-card-1-1': {
+            title: "实时形势分析日报 (初稿)",
+            date: "2026年1月31日 - V1.1",
+            summary: "今日全市地表水环境质量总体保持稳定。国考断面水质优良（Ⅰ-Ⅲ类）比例为 89.2%，同比上升 1.2 个百分点；劣Ⅴ类水体比例为 0.4%，同比持平。主要污染指标为总磷、化学需氧量和高锰酸盐指数。",
+            chartColor: ["#3b82f6", "#22c55e", "#f59e0b"]
+        },
+        'version-card-1-2': {
+            title: "实时形势分析日报 (领导修订)",
+            date: "2026年1月31日 - V1.2",
+            summary: "【领导批注重点】重点关注库区水质保护成效。全市国考断面水质优良比例达 89.5%，形势喜人。需加强对通顺河流域的面源污染管控。数据经人工复核无误。",
+            chartColor: ["#10b981", "#34d399", "#6ee7b7"]
+        }
+    };
+
+    function previewVersion(versionId) {
+        const data = REPORT_DATA[versionId];
+        const contentDiv = document.getElementById('report-content');
+        const currentCityEl = document.getElementById('city-selector');
+        const currentCity = currentCityEl ? currentCityEl.value : "武汉市";
+
+        contentDiv.innerHTML = `
+            <h1 class="text-2xl font-bold text-center mb-8 font-serif">${currentCity}${data.title}</h1>
+            <div class="text-center text-sm text-slate-500 mb-10">${data.date}</div>
+
+            <h3 class="text-lg font-bold mb-4 font-serif">一、总体情况</h3>
+            <p class="text-base leading-loose indent-8 mb-6 font-serif text-justify">
+                ${data.summary}
+            </p>
+
+            <div class="my-8 border border-slate-100 dark:border-slate-700 p-4 bg-slate-50 dark:bg-slate-900/30 rounded">
+                <h4 class="text-center font-bold text-sm mb-4">图 1-1 ${currentCity}国考断面水质类别比例</h4>
+                <div class="flex justify-center items-center h-48">
+                    <div class="flex items-center gap-8">
+                        <div class="relative w-32 h-32 rounded-full" style="background: conic-gradient(${data.chartColor[0]} 0% 70%, ${data.chartColor[1]} 70% 90%, ${data.chartColor[2]} 90% 100%);"></div>
+                        <div class="text-xs space-y-2">
+                            <div class="flex items-center gap-2"><div class="w-3 h-3 rounded-sm" style="background:${data.chartColor[0]}"></div>Ⅰ-Ⅱ类</div>
+                            <div class="flex items-center gap-2"><div class="w-3 h-3 rounded-sm" style="background:${data.chartColor[1]}"></div>Ⅲ类</div>
+                            <div class="flex items-center gap-2"><div class="w-3 h-3 rounded-sm" style="background:${data.chartColor[2]}"></div>Ⅳ-Ⅴ类</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <p class="text-base leading-loose indent-8 mb-6 font-serif text-justify">
+                本月长江干流、汉江干流水质均为优。重点湖库中，丹江口水库水质为Ⅱ类，营养状态为中营养；洪湖水质为Ⅳ类，轻度富营养。
+            </p>
+        `;
+
+        document.querySelectorAll('.version-item .card-bg').forEach(el => {
+            el.classList.remove('ring-2', 'ring-blue-400', 'bg-slate-50');
+        });
+        const activeCard = document.getElementById(versionId).querySelector('.card-bg');
+        activeCard.classList.add('ring-2', 'ring-blue-400');
+    }
+
+    const BADGE_FINAL = `<span class="status-badge text-[10px] bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300 px-1.5 py-0.5 rounded border border-green-200 dark:border-green-800 font-medium animate-pulse">已审核</span>`;
+    const BADGE_PENDING = `<span class="status-badge text-[10px] bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400 px-1.5 py-0.5 rounded">待定稿</span>`;
+    const BADGE_SYSTEM = `<span class="status-badge text-[10px] text-purple-600 border border-purple-200 rounded px-1">碧水荆灵</span>`;
+
+    function updateHistoryArchiveBadge(status) {
+        const historyBadge = document.getElementById('history-badge-31');
+        if (!historyBadge) return;
+
+        if (status === 'audited') {
+            historyBadge.className = "text-[10px] px-1.5 py-0.5 rounded bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 font-medium";
+            historyBadge.innerText = "已审核";
+        } else {
+            historyBadge.className = "text-[10px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-500 font-medium";
+            historyBadge.innerText = "待定稿";
+        }
+    }
+
+    function toggleFinal(targetId) {
+        const item = document.getElementById(targetId);
+        const finalizeBtn = item.querySelector('.btn-finalize');
+        const isCurrentlyFinal = finalizeBtn.classList.contains('hidden');
+
+        // Reset ALL versions
+        document.querySelectorAll('.version-item').forEach(vItem => {
+            const timelineDot = vItem.querySelector('.timeline-dot');
+            const cardBg = vItem.querySelector('.card-bg');
+            const fBtn = vItem.querySelector('.btn-finalize');
+            const cBtn = vItem.querySelector('.btn-cancel-final');
+            const dBtn = vItem.querySelector('.btn-distribute');
+            const badgeContainer = vItem.querySelector('.status-badge-container');
+
+            vItem.style.borderColor = '';
+            vItem.classList.remove('border-primary');
+            vItem.classList.add('border-slate-200', 'dark:border-slate-700');
+            timelineDot.classList.remove('bg-primary', 'ring-4', 'ring-blue-100', 'dark:ring-blue-900/30');
+
+            if (vItem.getAttribute('data-version') === '1.0') {
+                timelineDot.classList.add('bg-purple-300');
+                cardBg.className = "card-bg rounded-lg p-3 border border-purple-100 dark:border-purple-900/30 bg-purple-50/30 dark:bg-purple-900/10 hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-colors group";
+                badgeContainer.innerHTML = BADGE_SYSTEM;
+            } else {
+                timelineDot.classList.add('bg-slate-300');
+                cardBg.className = "card-bg rounded-lg p-3 border border-slate-100 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors group";
+                badgeContainer.innerHTML = BADGE_PENDING;
+            }
+
+            // 恢复按钮状态：显示“设为定稿”，隐藏“取消”和“下发”
+            fBtn.classList.remove('hidden');
+            fBtn.classList.add('flex');
+            cBtn.classList.add('hidden');
+            cBtn.classList.remove('flex');
+            if(dBtn) {
+                dBtn.classList.add('hidden');
+                dBtn.classList.remove('flex');
+            }
+        });
+
+        // Set Final
+        if (!isCurrentlyFinal) {
+            const timelineDot = item.querySelector('.timeline-dot');
+            const cardBg = item.querySelector('.card-bg');
+            const finalizeBtn = item.querySelector('.btn-finalize');
+            const cancelBtn = item.querySelector('.btn-cancel-final');
+            const distributeBtn = item.querySelector('.btn-distribute');
+            const badgeContainer = item.querySelector('.status-badge-container');
+
+            item.style.borderColor = '#3b82f6';
+            timelineDot.classList.remove('bg-slate-300', 'bg-purple-300');
+            timelineDot.classList.add('bg-primary', 'ring-4', 'ring-blue-100', 'dark:ring-blue-900/30');
+
+            cardBg.classList.remove('bg-purple-50/30', 'dark:bg-purple-900/10');
+            cardBg.classList.add('bg-blue-50/50', 'dark:bg-blue-900/10', 'border-blue-100', 'dark:border-blue-800');
+            cardBg.classList.remove('border-slate-100', 'dark:border-slate-700', 'border-purple-100');
+
+            badgeContainer.innerHTML = BADGE_FINAL;
+
+            // 切换按钮：隐藏“设为定稿”，显示“取消”和“下发”
+            finalizeBtn.classList.add('hidden');
+            finalizeBtn.classList.remove('flex');
+            cancelBtn.classList.remove('hidden');
+            cancelBtn.classList.add('flex');
+
+            // 显示下发按钮
+            if(distributeBtn) {
+                distributeBtn.classList.remove('hidden');
+                distributeBtn.classList.add('flex');
+            }
+
+            updateHistoryArchiveBadge('audited');
+        } else {
+            updateHistoryArchiveBadge('pending');
+        }
+
+        previewVersion(targetId);
+    }
+
+    function distributeVersion(targetId) {
+        const item = document.getElementById(targetId);
+        const version = item.getAttribute('data-version');
+
+        // 1. 模拟下载
+        const content = document.getElementById('report-content').innerText;
+        const blob = new Blob([content], { type: 'text/plain' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `湖北省水生态环境_实时形势分析日报_V${version}.txt`;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+
+        // 2. 模拟跳转
+        // 使用 setTimeout 让用户先感知到下载动作
+        setTimeout(() => {
+            alert(`版本 V${version} 文件下载中...\n\n即将跳转至下发管理中心。`);
+            // 实际场景中使用 window.location.href = '/distribute/success';
+            // 演示中刷新页面或跳转到顶部
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }, 500);
+    }
+</script>
+
+</body>
+</html>

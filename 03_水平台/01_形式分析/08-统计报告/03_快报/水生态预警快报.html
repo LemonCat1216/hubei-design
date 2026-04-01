@@ -1,0 +1,926 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>湖北省水华预警监测快报 - 智能报告</title>
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography,container-queries"></script>
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#3b82f6",
+                        "primary-dark": "#1e3a8a",
+                        "background-light": "#f6f9fc",
+                        "background-dark": "#0f172a",
+                        "surface-light": "#ffffff",
+                        "surface-dark": "#1e293b",
+                    },
+                    fontFamily: {
+                        display: ["Inter", "system-ui", "-apple-system", "sans-serif"],
+                        serif: ["Noto Serif SC", "SimSun", "serif"],
+                    },
+                },
+            },
+        };
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .custom-scrollbar::-webkit-scrollbar {
+                width: 4px;
+                height: 4px;
+            }
+            .custom-scrollbar::-webkit-scrollbar-track {
+                background: transparent;
+            }
+            .custom-scrollbar::-webkit-scrollbar-thumb {
+                background: #cbd5e1;
+                border-radius: 10px;
+            }
+            .dark .custom-scrollbar::-webkit-scrollbar-thumb {
+                background: #475569;
+            }
+            .sidebar-transition {
+                transition: width 0.3s ease;
+            }
+            .sidebar-text {
+                transition: opacity 0.2s ease;
+                white-space: nowrap;
+            }
+            .hide-text .sidebar-text {
+                display: none;
+                opacity: 0;
+            }
+            .collapsed-sidebar .nav-item {
+                justify-content: center;
+                padding-left: 0;
+                padding-right: 0;
+            }
+            .doc-shadow {
+                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06), 0 0 0 1px rgba(0,0,0,0.05);
+            }
+            .issue-item.active {
+                background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+                border-color: #93c5fd;
+            }
+            .issue-item.active .issue-num {
+                color: #1d4ed8;
+            }
+            .issue-item:hover:not(.active) {
+                background: #f8fafc;
+            }
+            /* 风险等级动态色 */
+            .risk-high { color: #dc2626; border-color: #fca5a5; background: #fef2f2; }
+            .risk-medium { color: #d97706; border-color: #fcd34d; background: #fffbeb; }
+            .risk-low { color: #059669; border-color: #6ee7b7; background: #ecfdf5; }
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-800 dark:text-slate-100 h-screen overflow-hidden flex flex-col">
+
+<header class="bg-primary h-14 flex items-center justify-between px-4 text-white shrink-0 shadow-md z-50">
+    <div class="flex items-center space-x-3">
+        <div class="w-8 h-8 bg-white rounded-full flex items-center justify-center">
+            <span class="material-symbols-outlined text-primary text-xl">water_drop</span>
+        </div>
+        <h1 class="text-xl font-bold tracking-tight">湖北省水生态环境综合管理</h1>
+    </div>
+    <nav class="flex h-full">
+        <a class="px-6 flex items-center space-x-2 hover:bg-white/10 transition-colors" href="#">
+            <span class="material-symbols-outlined text-[18px]">home</span>
+            <span class="text-sm">总体概览</span>
+        </a>
+        <a class="px-6 flex items-center space-x-2 hover:bg-white/10 transition-colors" href="#">
+            <span class="material-symbols-outlined text-[18px]">assessment</span>
+            <span class="text-sm">形势分析</span>
+        </a>
+        <a class="px-6 flex items-center space-x-2 hover:bg-white/10 transition-colors" href="#">
+            <span class="material-symbols-outlined text-[18px]">map</span>
+            <span class="text-sm">空间分析</span>
+        </a>
+        <a class="px-6 flex items-center space-x-2 hover:bg-white/10 transition-colors" href="#">
+            <span class="material-symbols-outlined text-[18px]">waves</span>
+            <span class="text-sm">水污染源</span>
+        </a>
+        <a class="px-6 flex items-center space-x-2 hover:bg-white/10 transition-colors" href="#">
+            <span class="material-symbols-outlined text-[18px]">report_problem</span>
+            <span class="text-sm">问题聚焦</span>
+        </a>
+        <a class="px-6 flex items-center space-x-2 bg-white/20 transition-colors" href="#">
+            <span class="material-symbols-outlined text-[18px]">apps</span>
+            <span class="text-sm font-medium">专题应用</span>
+        </a>
+    </nav>
+    <div class="flex items-center space-x-6">
+        <div class="flex items-center space-x-2 text-sm opacity-90">
+            <span class="material-symbols-outlined text-[18px]">report</span>
+            <span>水华预警</span>
+        </div>
+        <div class="flex items-center space-x-2 text-sm">
+            <span class="material-symbols-outlined text-[18px]">account_circle</span>
+            <span>wangyunpeng</span>
+        </div>
+    </div>
+</header>
+
+<div class="flex flex-1 overflow-hidden">
+
+    <aside id="sidebar" class="w-[270px] bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 flex flex-col shrink-0 sidebar-transition">
+        <div class="flex-1 py-4 overflow-y-auto custom-scrollbar flex flex-col gap-1">
+            <div class="mb-2 px-2">
+                <button class="nav-item w-full flex items-center justify-between px-4 py-3 text-[16px] font-medium text-slate-600 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg group transition-colors" onclick="toggleSubmenu('submenu-overview')">
+                    <div class="flex items-center">
+                        <span class="material-symbols-outlined mr-3 text-slate-400 group-hover:text-primary">dashboard</span>
+                        <span class="sidebar-text">业务基础表单</span>
+                    </div>
+                    <span class="material-symbols-outlined text-sm text-slate-400 sidebar-chevron transition-transform duration-200">expand_more</span>
+                </button>
+            </div>
+
+            <div class="mb-2 px-2">
+                <button class="nav-item w-full flex items-center justify-between px-4 py-3 text-[16px] font-medium text-slate-600 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg group transition-colors" onclick="toggleSubmenu('submenu-analysis')">
+                    <div class="flex items-center">
+                        <span class="material-symbols-outlined mr-3 text-slate-400 group-hover:text-primary">analytics</span>
+                        <span class="sidebar-text">智能分析报告</span>
+                    </div>
+                    <span class="material-symbols-outlined text-sm text-slate-400 sidebar-chevron transition-transform duration-200 rotate-180">expand_more</span>
+                </button>
+            </div>
+
+            <div class="mb-2 px-2">
+                <button class="nav-item w-full flex items-center justify-between px-4 py-3 text-[16px] font-medium text-slate-600 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg group transition-colors" onclick="toggleSubmenu('submenu-analysis')">
+                    <div class="flex items-center">
+                        <span class="material-symbols-outlined mr-3 text-slate-400 group-hover:text-primary">analytics</span>
+                        <span class="sidebar-text">水生态监测快报</span>
+                    </div>
+                    <span class="material-symbols-outlined text-sm text-slate-400 sidebar-chevron transition-transform duration-200 rotate-180">expand_more</span>
+                </button>
+                <div id="submenu-analysis" class="mt-1 space-y-1 overflow-hidden transition-all duration-300 max-h-[500px]">
+                    <a class="flex items-center px-12 py-2 text-[14px] text-primary font-medium bg-blue-50/50 rounded-lg" href="#">
+                        <span class="w-1.5 h-1.5 bg-primary rounded-full mr-3 shrink-0"></span>
+                        <span class="sidebar-text">水华预警监测快报</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <button id="toggleSidebarBtn" class="h-12 border-t border-slate-200 dark:border-slate-800 flex items-center justify-center space-x-2 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all text-slate-500 hover:text-primary group">
+            <span id="toggleIcon" class="material-symbols-outlined text-xl transition-transform duration-300">chevron_left</span>
+            <span class="sidebar-text text-sm font-medium tracking-wide">收起侧栏</span>
+        </button>
+    </aside>
+
+    <main class="flex-1 flex flex-col min-w-0 bg-slate-50/50 dark:bg-slate-950 p-6 overflow-y-auto">
+
+        <div class="h-16 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl flex items-center justify-between px-6 shrink-0 shadow-sm mb-6">
+            <div class="flex items-center gap-3">
+                <span class="relative flex h-3 w-3">
+                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-3 w-3 bg-blue-500"></span>
+                </span>
+                <h2 id="report-main-title" class="text-lg font-bold text-slate-800 dark:text-white tracking-tight">
+                    水华预警监测快报
+                </h2>
+            </div>
+
+            <div class="flex items-center gap-4">
+                <div class="relative group">
+                    <select id="year-selector" onchange="filterByYear(this.value)" class="pl-3 pr-8 py-1.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-700 dark:text-slate-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none cursor-pointer font-medium outline-none transition-colors hover:border-blue-300">
+                        <option value="2025" selected>2025年</option>
+                        <option value="2026">2026年</option>
+                        <option value="all">全部年份</option>
+                    </select>
+                    <span class="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 text-[18px] pointer-events-none">expand_more</span>
+                </div>
+
+                <div class="h-4 w-px bg-slate-200 dark:bg-slate-700"></div>
+
+                <button class="flex items-center gap-2 px-4 py-1.5 bg-white text-red-500 hover:text-red-600 hover:border-red-300 hover:bg-red-50 border border-slate-200 rounded-lg text-sm font-medium transition-colors" onclick="deleteCurrentIssue()">
+                    <i class="ri-delete-bin-line"></i>
+                    <span>删除快报</span>
+                </button>
+                <button class="flex items-center gap-2 px-4 py-1.5 bg-white text-slate-600 hover:text-blue-600 hover:border-blue-300 border border-slate-200 rounded-lg text-sm font-medium transition-colors" onclick="downloadCurrentReport()">
+                    <i class="ri-download-cloud-2-line"></i>
+                    <span>下载</span>
+                </button>
+                <button class="flex items-center gap-2 px-4 py-1.5 bg-white text-slate-600 hover:text-blue-600 hover:border-blue-300 border border-slate-200 rounded-lg text-sm font-medium transition-colors" onclick="openUploadDialog()">
+                    <i class="ri-upload-2-line"></i>
+                    <span>上传新版本</span>
+                </button>
+                <button onclick="openNewIssueModal()" class="flex items-center gap-2 px-4 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium shadow-sm shadow-blue-500/30 transition-all active:scale-95">
+                    <i class="ri-add-line"></i>
+                    <span>新增快报</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="min-h-[700px] flex mb-6 gap-6">
+
+            <div class="w-72 flex flex-col bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden shrink-0">
+                <div class="px-4 py-3 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/50 flex justify-between items-center">
+                    <h3 class="font-bold text-slate-700 dark:text-slate-200 text-sm">历史归档</h3>
+                    <div class="flex items-center gap-2">
+                        <span id="issue-count-badge" class="text-[10px] px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 font-medium">--期</span>
+                        <i class="ri-history-line text-slate-400"></i>
+                    </div>
+                </div>
+
+                <div class="px-3 py-2 border-b border-slate-100 dark:border-slate-800">
+                    <div class="relative">
+                        <span class="material-symbols-outlined absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 text-[18px]">search</span>
+                        <input type="text" id="issue-search" oninput="searchIssues(this.value)" placeholder="搜索期号或湖泊..." class="w-full pl-9 pr-3 py-1.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all">
+                    </div>
+                </div>
+
+                <div id="issue-list" class="flex-1 overflow-y-auto custom-scrollbar p-2 space-y-1">
+                </div>
+            </div>
+
+            <div class="flex-1 flex flex-col bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden relative">
+                <div class="h-10 border-b border-slate-100 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-800/80 flex items-center justify-between px-4">
+                    <div id="page-indicator" class="text-xs text-slate-500">第 1 / 1 页</div>
+                    <div class="flex items-center space-x-2">
+                        <button class="p-1 hover:bg-slate-200 dark:hover:bg-slate-700 rounded text-slate-500"><i class="ri-zoom-out-line"></i></button>
+                        <span class="text-xs text-slate-600 dark:text-slate-300 font-medium w-12 text-center">100%</span>
+                        <button class="p-1 hover:bg-slate-200 dark:hover:bg-slate-700 rounded text-slate-500"><i class="ri-zoom-in-line"></i></button>
+                        <div class="w-px h-4 bg-slate-300 mx-2"></div>
+                        <button class="p-1 hover:bg-slate-200 dark:hover:bg-slate-700 rounded text-slate-500"><i class="ri-printer-line"></i></button>
+                    </div>
+                </div>
+
+                <div class="flex-1 bg-slate-100/50 dark:bg-black/20 overflow-auto flex justify-center p-8 custom-scrollbar">
+                    <div id="report-content" class="w-[90%] max-w-[800px] bg-white dark:bg-slate-800 min-h-[1000px] doc-shadow rounded-sm p-12 text-slate-800 dark:text-slate-200 relative animate-in fade-in duration-500">
+                        <div class="flex flex-col items-center justify-center h-96 text-slate-400">
+                            <span class="material-symbols-outlined text-6xl mb-4">description</span>
+                            <p class="text-lg font-medium">请选择一期快报查看</p>
+                            <p class="text-sm mt-2">或点击「新增快报」创建新的监测快报</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="w-[340px] flex flex-col bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden shrink-0">
+                <div class="px-4 py-3 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/50 flex justify-between items-center">
+                    <h3 class="font-bold text-slate-700 dark:text-slate-200 text-sm">版本管理</h3>
+                    <div id="version-count" class="text-xs text-slate-400">共 0 版</div>
+                </div>
+
+                <div class="flex-1 overflow-y-auto custom-scrollbar p-4 space-y-4" id="version-list">
+                    <div class="flex flex-col items-center justify-center h-48 text-slate-400">
+                        <span class="material-symbols-outlined text-4xl mb-2">layers</span>
+                        <p class="text-sm">选择快报后显示版本</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <footer class="mt-auto pt-4 border-t border-slate-200 dark:border-slate-700 text-center text-xs text-slate-400 shrink-0">
+            <p>&copy; 2026 湖北省生态环境厅 · 版权所有</p>
+        </footer>
+    </main>
+</div>
+
+<div id="new-issue-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-[100] hidden flex items-center justify-center">
+    <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl w-[600px] max-h-[90vh] overflow-y-auto custom-scrollbar">
+        <div class="px-6 py-4 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between sticky top-0 bg-white z-10">
+            <h3 class="text-lg font-bold text-slate-800 dark:text-white">新增水华预警监测快报</h3>
+            <button onclick="closeNewIssueModal()" class="p-1 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors">
+                <span class="material-symbols-outlined text-slate-400">close</span>
+            </button>
+        </div>
+        <div class="p-6 space-y-5">
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">期号 (当年内)</label>
+                    <input type="number" id="new-issue-number" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none" placeholder="如：1">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">日期</label>
+                    <input type="date" id="new-issue-date" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">风险等级</label>
+                    <select id="new-issue-risk" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
+                        <option value="低风险">低风险</option>
+                        <option value="中风险">中风险</option>
+                        <option value="高风险">高风险</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">上传人</label>
+                    <input type="text" id="new-issue-author" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none" placeholder="如：wangyunpeng" value="wangyunpeng">
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">标题</label>
+                <input type="text" id="new-issue-title" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none" placeholder="如：湖北省2026年第1期水华预警监测快报">
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">上传报告文件（支持 Word / PDF）</label>
+                <div id="upload-zone" class="border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-xl p-8 text-center hover:border-blue-500 transition-colors cursor-pointer" onclick="document.getElementById('file-input').click()">
+                    <span class="material-symbols-outlined text-4xl text-slate-400 mb-2">cloud_upload</span>
+                    <p class="text-sm text-slate-500">点击或拖拽文件到此处</p>
+                    <p class="text-xs text-slate-400 mt-1">支持 .doc / .docx / .pdf，不上传则自动生成</p>
+                    <input type="file" id="file-input" class="hidden" accept=".doc,.docx,.pdf" onchange="handleFileUpload(this)">
+                </div>
+                <div id="uploaded-file-info" class="hidden mt-2 px-3 py-2 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg flex items-center gap-2">
+                    <span class="material-symbols-outlined text-green-600 text-[18px]">check_circle</span>
+                    <span id="uploaded-file-name" class="text-sm text-green-700 dark:text-green-400 flex-1"></span>
+                    <button onclick="clearUploadedFile()" class="text-slate-400 hover:text-red-500"><span class="material-symbols-outlined text-[18px]">close</span></button>
+                </div>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">备注</label>
+                <textarea id="new-issue-remark" rows="2" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none resize-none" placeholder="可选备注信息"></textarea>
+            </div>
+        </div>
+        <div class="px-6 py-4 border-t border-slate-200 dark:border-slate-700 flex justify-end gap-3 sticky bottom-0 bg-white z-10">
+            <button onclick="closeNewIssueModal()" class="px-4 py-2 text-sm text-slate-600 hover:text-slate-800 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors">取消</button>
+            <button onclick="createNewIssue()" class="px-4 py-2 text-sm bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium shadow-sm transition-all active:scale-95">创建快报</button>
+        </div>
+    </div>
+</div>
+
+<div id="upload-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-[100] hidden flex items-center justify-center">
+    <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl w-[500px]">
+        <div class="px-6 py-4 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between">
+            <h3 class="text-lg font-bold text-slate-800 dark:text-white">上传新版本</h3>
+            <button onclick="closeUploadDialog()" class="p-1 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors">
+                <span class="material-symbols-outlined text-slate-400">close</span>
+            </button>
+        </div>
+        <div class="p-6 space-y-4">
+            <p class="text-sm text-slate-500">为当前选中的快报上传一个新版本。</p>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">同步更新风险等级</label>
+                    <select id="upload-issue-risk" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
+                        <option value="keep" selected>保持原定风险</option>
+                        <option value="低风险">低风险</option>
+                        <option value="中风险">中风险</option>
+                        <option value="高风险">高风险</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">上传人</label>
+                    <input type="text" id="upload-author" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none" value="wangyunpeng">
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">版本说明</label>
+                <input type="text" id="upload-version-note" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none" placeholder="如：修订了洪湖数据">
+            </div>
+
+            <div id="version-upload-zone" class="border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-xl p-6 text-center hover:border-blue-500 transition-colors cursor-pointer" onclick="document.getElementById('version-file-input').click()">
+                <span class="material-symbols-outlined text-3xl text-slate-400 mb-2">cloud_upload</span>
+                <p class="text-sm text-slate-500">点击上传版本文件（支持 .doc / .docx / .pdf）</p>
+                <input type="file" id="version-file-input" class="hidden" accept=".doc,.docx,.pdf" onchange="handleVersionUpload(this)">
+            </div>
+            <div id="version-file-info" class="hidden mt-2 px-3 py-2 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg flex items-center gap-2">
+                <span class="material-symbols-outlined text-green-600 text-[18px]">check_circle</span>
+                <span id="version-file-name" class="text-sm text-green-700 dark:text-green-400 flex-1"></span>
+                <button onclick="clearVersionFile()" class="text-slate-400 hover:text-red-500"><span class="material-symbols-outlined text-[18px]">close</span></button>
+            </div>
+        </div>
+        <div class="px-6 py-4 border-t border-slate-200 dark:border-slate-700 flex justify-end gap-3">
+            <button onclick="closeUploadDialog()" class="px-4 py-2 text-sm text-slate-600 hover:text-slate-800 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors">取消</button>
+            <button onclick="submitUpload()" class="px-4 py-2 text-sm bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium shadow-sm transition-all active:scale-95">上传修订版</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    /* ================================================================
+       数据层
+       ================================================================ */
+    function generateIssueData() {
+        const issues = [];
+        const lakes = ["梁子湖", "洪湖", "长湖", "斧头湖", "西凉湖", "龙感湖", "大冶湖", "网湖", "保安湖", "鲁湖"];
+        const riskLevels = ["高风险", "中风险", "低风险"];
+        const org = "湖北省生态环境监测中心站";
+        const startDate = new Date(2025, 0, 3);
+
+        let currentYear = 2025;
+        let yearlyIssueNum = 1;
+
+        for (let i = 1; i <= 150; i++) {
+            const issueDate = new Date(startDate);
+            issueDate.setDate(startDate.getDate() + Math.floor((i - 1) * 3)); // 扩大步长以便跨年
+            const year = issueDate.getFullYear();
+
+            // 如果是新的一年，期数重置为 1
+            if (year !== currentYear) {
+                currentYear = year;
+                yearlyIssueNum = 1;
+            }
+
+            const month = issueDate.getMonth();
+            let riskBase = (month >= 4 && month <= 8) ? 0 : (month >= 2 && month <= 3 || month >= 9 && month <= 10) ? 1 : 2;
+            const risk = riskLevels[Math.min(2, riskBase + (i % 3 === 0 ? 1 : 0))];
+            const lake = lakes[i % lakes.length];
+            const dateStr = issueDate.toISOString().split('T')[0];
+
+            // 生成全局唯一 ID (如：2025001)
+            const uniqueId = `${year}${String(yearlyIssueNum).padStart(3, '0')}`;
+
+            const versions = [];
+            versions.push({
+                id: `${uniqueId}-1.0`, version: "1.0", label: "初稿", author: "监测人员", authorInitial: "J",
+                time: `${dateStr} 09:00`, status: "audited", isManual: true
+            });
+
+            if (i % 5 === 0) {
+                versions.push({
+                    id: `${uniqueId}-1.1`, version: "1.1", label: "修订稿", author: "wangyunpeng", authorInitial: "W",
+                    time: `${dateStr} 14:30`, status: "pending", isManual: true
+                });
+            }
+
+            issues.push({
+                id: uniqueId,
+                issueNumber: yearlyIssueNum,
+                date: dateStr,
+                year: year,
+                title: `湖北省${year}年第${yearlyIssueNum}期水华预警监测快报`,
+                lake: lake,
+                risk: risk,
+                org: org,
+                versions: versions,
+                content: generateReportContent(year, yearlyIssueNum, dateStr, lake, risk)
+            });
+
+            yearlyIssueNum++;
+        }
+        return issues;
+    }
+
+    function generateReportContent(year, issueNum, date, lake, risk) {
+        const riskClass = risk === '高风险' ? 'risk-high' : risk === '中风险' ? 'risk-medium' : 'risk-low';
+        const riskIcon = risk === '高风险' ? '🔴' : risk === '中风险' ? '🟡' : '🟢';
+        const chla = risk === '高风险' ? (40 + Math.random() * 40).toFixed(1) : (5 + Math.random() * 20).toFixed(1);
+        const tp = (Math.random() * 0.3 + 0.02).toFixed(3);
+        const tn = (Math.random() * 3 + 0.5).toFixed(2);
+
+        return `
+        <div class="text-center mb-8">
+            <div class="bg-blue-600 text-white py-3 px-6 rounded-t-lg -mx-12 -mt-12 mb-6">
+                <h1 class="text-xl font-bold tracking-widest">湖北省水华预警监测快报</h1>
+                <p class="text-sm opacity-80 mt-1">HUBEI PROVINCE ALGAE BLOOM EARLY WARNING MONITORING BULLETIN</p>
+            </div>
+            <div class="flex justify-between items-center text-sm text-slate-500 mt-4">
+                <span>${year}年 第 ${issueNum} 期</span>
+                <span>湖北省生态环境监测中心站</span>
+                <span>${date}</span>
+            </div>
+        </div>
+
+        <div class="mb-8">
+            <h2 class="text-lg font-bold border-l-4 border-blue-500 pl-3 mb-4 font-serif">一、监测概况</h2>
+            <p class="text-base leading-loose indent-8 mb-4 font-serif text-justify">
+                根据湖北省水华预警监测工作安排，本期对全省重点湖库开展了水华预警监测。全省天气正常，重点湖泊水质基本保持稳定。
+            </p>
+        </div>
+
+        <div class="mb-8">
+            <h2 class="text-lg font-bold border-l-4 border-blue-500 pl-3 mb-4 font-serif">二、预警结果</h2>
+            <div class="border border-slate-200 dark:border-slate-700 rounded-lg overflow-hidden mb-4">
+                <table class="w-full text-sm">
+                    <thead>
+                        <tr class="bg-slate-50 dark:bg-slate-800">
+                            <th class="px-4 py-2.5 text-left font-semibold">湖库名称</th>
+                            <th class="px-4 py-2.5 text-center font-semibold">叶绿素a (μg/L)</th>
+                            <th class="px-4 py-2.5 text-center font-semibold">总磷 (mg/L)</th>
+                            <th class="px-4 py-2.5 text-center font-semibold">总氮 (mg/L)</th>
+                            <th class="px-4 py-2.5 text-center font-semibold">水华风险</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="border-t border-slate-100 dark:border-slate-700">
+                            <td class="px-4 py-2.5 font-medium">${lake}</td>
+                            <td class="px-4 py-2.5 text-center">${chla}</td>
+                            <td class="px-4 py-2.5 text-center">${tp}</td>
+                            <td class="px-4 py-2.5 text-center">${tn}</td>
+                            <td class="px-4 py-2.5 text-center">
+                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium border ${riskClass}">
+                                    ${riskIcon} ${risk}
+                                </span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <p class="text-base leading-loose indent-8 font-serif text-justify">
+                本期监测结果表明，${lake}处于 <strong>${risk}</strong> 状态。${risk === '高风险' ? '藻类密度较高，存在爆发风险，建议立即启动应急响应并加密监测。' : risk === '中风险' ? '需持续关注水温变化和营养盐浓度趋势，适时开展巡查。' : '各项指标正常，建议维持常规监测频次。'}
+            </p>
+        </div>
+    `;
+    }
+
+    const ALL_ISSUES = generateIssueData();
+    let currentFilter = '2025';
+    let currentIssue = null;
+    let currentVersionId = null;
+    let uploadedFileData = null;
+    let versionFileData = null;
+
+    /* 侧栏折叠逻辑 */
+    const sidebar = document.getElementById('sidebar');
+    const toggleBtn = document.getElementById('toggleSidebarBtn');
+    const toggleIcon = document.getElementById('toggleIcon');
+    let isCollapsed = false;
+
+    toggleBtn.addEventListener('click', () => {
+        isCollapsed = !isCollapsed;
+        if (isCollapsed) {
+            sidebar.classList.remove('w-[270px]');
+            sidebar.classList.add('w-[80px]', 'hide-text', 'collapsed-sidebar');
+            toggleIcon.style.transform = 'rotate(180deg)';
+        } else {
+            sidebar.classList.remove('w-[80px]', 'hide-text', 'collapsed-sidebar');
+            sidebar.classList.add('w-[270px]');
+            toggleIcon.style.transform = 'rotate(0deg)';
+        }
+    });
+
+    function toggleSubmenu(id) {
+        if (isCollapsed) return;
+        const submenu = document.getElementById(id);
+        const chevron = submenu.previousElementSibling.querySelector('.sidebar-chevron');
+        if (submenu.style.maxHeight) {
+            submenu.style.maxHeight = null;
+            chevron.style.transform = 'rotate(0deg)';
+        } else {
+            submenu.style.maxHeight = submenu.scrollHeight + "px";
+            chevron.style.transform = 'rotate(180deg)';
+        }
+    }
+
+    /* 列表渲染与过滤 */
+    function renderIssueList(issues) {
+        const listEl = document.getElementById('issue-list');
+        document.getElementById('issue-count-badge').textContent = `${issues.length}期`;
+
+        if (issues.length === 0) {
+            listEl.innerHTML = `<div class="flex flex-col items-center justify-center h-32 text-slate-400"><span class="material-symbols-outlined text-3xl mb-2">search_off</span><p class="text-sm">没有匹配的快报</p></div>`;
+            return;
+        }
+
+        listEl.innerHTML = issues.map(issue => {
+            const isActive = currentIssue && currentIssue.id === issue.id;
+            const riskClass = issue.risk === '高风险' ? 'text-red-600 bg-red-50' : issue.risk === '中风险' ? 'text-amber-600 bg-amber-50' : 'text-green-600 bg-green-50';
+            return `
+            <div class="issue-item ${isActive ? 'active' : ''} cursor-pointer rounded-lg p-3 border border-transparent hover:border-slate-200 transition-all group"
+                 onclick="selectIssue('${issue.id}')" data-issue="${issue.id}">
+                <div class="flex items-center justify-between mb-1.5">
+                    <span class="issue-num font-bold text-[14px] ${isActive ? 'text-blue-700' : 'text-slate-700 dark:text-slate-300'}">${issue.year}年 第${issue.issueNumber}期</span>
+                    <span class="text-[10px] px-1.5 py-0.5 rounded-full font-medium border ${riskClass}">${issue.risk}</span>
+                </div>
+                <div class="text-xs text-slate-400 truncate mb-1">${issue.date} · ${issue.lake}</div>
+                <div class="flex items-center gap-2">
+                    <span class="text-[10px] text-slate-400">${issue.versions.length}个版本</span>
+                    ${issue.versions.length > 1 ? '<span class="text-[10px] text-blue-500">有修订</span>' : ''}
+                </div>
+            </div>`;
+        }).join('');
+    }
+
+    function filterByYear(year) {
+        currentFilter = year;
+        const filtered = year === 'all' ? ALL_ISSUES : ALL_ISSUES.filter(i => i.year === parseInt(year));
+        renderIssueList(filtered);
+    }
+
+    function searchIssues(query) {
+        const q = query.trim().toLowerCase();
+        let base = currentFilter === 'all' ? ALL_ISSUES : ALL_ISSUES.filter(i => i.year === parseInt(currentFilter));
+        if (!q) { renderIssueList(base); return; }
+        // 搜索期号、湖泊、日期、风险、标题
+        renderIssueList(base.filter(i => String(i.issueNumber).includes(q) || i.lake.includes(q) || i.date.includes(q) || i.risk.includes(q) || i.title.toLowerCase().includes(q)));
+    }
+
+    /* 选中项渲染 */
+    function selectIssue(id) {
+        currentIssue = ALL_ISSUES.find(i => i.id === id);
+        if (!currentIssue) return;
+        document.getElementById('report-content').innerHTML = currentIssue.content;
+        renderVersionList(currentIssue);
+        document.querySelectorAll('.issue-item').forEach(el => el.classList.toggle('active', el.dataset.issue === id));
+        if (currentIssue.versions.length > 0) selectVersion(currentIssue.versions[currentIssue.versions.length - 1].id);
+    }
+
+    /* ------------------- 全局及版本删除功能 ------------------- */
+    function deleteCurrentIssue() {
+        if (!currentIssue) {
+            alert('请先选择要删除的快报！');
+            return;
+        }
+        if (confirm(`【警告】确定要删除《${currentIssue.year}年 第 ${currentIssue.issueNumber} 期快报》及其所有版本数据吗？此操作不可恢复。`)) {
+            const index = ALL_ISSUES.findIndex(i => i.id === currentIssue.id);
+            if (index > -1) {
+                ALL_ISSUES.splice(index, 1);
+                currentIssue = null;
+                filterByYear(currentFilter);
+                if (ALL_ISSUES.length > 0) {
+                    selectIssue(ALL_ISSUES[ALL_ISSUES.length - 1].id);
+                } else {
+                    document.getElementById('report-content').innerHTML = '<div class="flex flex-col items-center justify-center h-96 text-slate-400"><span class="material-symbols-outlined text-6xl mb-4">description</span><p class="text-lg font-medium">列表已空，请新建快报</p></div>';
+                    document.getElementById('version-list').innerHTML = '<div class="flex flex-col items-center justify-center h-48 text-slate-400"><span class="material-symbols-outlined text-4xl mb-2">layers</span><p class="text-sm">暂无版本</p></div>';
+                    document.getElementById('version-count').textContent = `共 0 版`;
+                }
+            }
+        }
+    }
+
+    function deleteVersion(versionId) {
+        if (!currentIssue) return;
+        if (currentIssue.versions.length <= 1) {
+            alert('必须保留至少一个版本！如需删除整期内容，请使用上方「删除快报」功能。');
+            return;
+        }
+        if (confirm(`确定要删除此修订版本吗？`)) {
+            const index = currentIssue.versions.findIndex(v => v.id === versionId);
+            if (index > -1) {
+                currentIssue.versions.splice(index, 1);
+                // 如果删除的是当前正在预览的版本，自动切换到最后一个可用版本
+                if (currentVersionId === versionId) {
+                    currentVersionId = currentIssue.versions[currentIssue.versions.length - 1].id;
+                }
+                renderVersionList(currentIssue);
+            }
+        }
+    }
+    /* -------------------------------------------------------- */
+
+    /* 版本渲染与操作 */
+    function renderVersionList(issue) {
+        const listEl = document.getElementById('version-list');
+        document.getElementById('version-count').textContent = `共 ${issue.versions.length} 版`;
+
+        const BADGE_MAP = {
+            audited: `<span class="text-[10px] bg-green-100 text-green-700 px-1.5 py-0.5 rounded border border-green-200">已审核</span>`,
+            pending: `<span class="text-[10px] bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded">待定稿</span>`,
+            final: `<span class="text-[10px] bg-green-100 text-green-700 px-1.5 py-0.5 rounded border border-green-200 animate-pulse">已定稿</span>`
+        };
+
+        listEl.innerHTML = issue.versions.map((v) => {
+            const isFinal = v.status === 'final';
+            const borderColor = isFinal ? 'border-blue-500' : 'border-slate-200 dark:border-slate-700';
+            const dotColor = isFinal ? 'bg-blue-500 ring-4 ring-blue-100' : 'bg-slate-300';
+            const cardBg = isFinal ? 'bg-blue-50/50 border-blue-100' : 'border-slate-100 hover:bg-slate-50';
+
+            return `
+            <div class="version-item relative pl-4 border-l-2 ${borderColor}" id="version-${v.id}">
+                <div class="timeline-dot absolute -left-[5px] top-0 w-2.5 h-2.5 ${dotColor} rounded-full transition-colors"></div>
+                <div class="card-bg rounded-lg p-3 border ${cardBg} transition-colors group">
+                    <div class="flex justify-between items-start mb-2">
+                        <span class="text-sm font-bold text-slate-700 dark:text-slate-300">V${v.version} ${v.label}</span>
+                        <span>${BADGE_MAP[v.status]}</span>
+                    </div>
+                    <div class="flex items-center gap-2 mb-2">
+                        <div class="w-5 h-5 rounded-full bg-slate-200 flex items-center justify-center text-[10px]">${v.authorInitial}</div>
+                        <span class="text-xs text-slate-500">${v.author} · ${v.time}</span>
+                    </div>
+
+                    <div class="flex items-center justify-end gap-2 mt-3 pt-2 border-t ${isFinal ? 'border-blue-100/50' : 'border-slate-50'}">
+                        <button class="text-xs px-2 py-1 bg-white border border-slate-200 rounded text-slate-600 hover:text-blue-600 transition-colors" onclick="selectVersion('${v.id}')">预览</button>
+                        ${!isFinal ? `
+                            <button class="text-xs px-2 py-1 bg-white border border-slate-200 rounded text-slate-600 hover:text-emerald-600 flex items-center gap-1" onclick="toggleFinal('${v.id}')">
+                                <i class="ri-checkbox-circle-line"></i>设为定稿
+                            </button>
+                            <button class="text-xs px-2 py-1 bg-white border border-slate-200 rounded text-slate-500 hover:text-red-500 hover:border-red-300 transition-colors flex items-center gap-1" onclick="deleteVersion('${v.id}')">
+                                <i class="ri-delete-bin-line"></i>删除
+                            </button>
+                        ` : `
+                            <button class="text-xs px-2 py-1 bg-white border border-slate-200 rounded text-slate-500 hover:text-amber-600 flex items-center gap-1" onclick="toggleFinal('${v.id}')">
+                                <i class="ri-close-circle-line"></i>取消定稿
+                            </button>
+                            <button class="text-xs px-2 py-1 bg-blue-600 border border-blue-600 rounded text-white hover:bg-blue-700 transition-colors flex items-center gap-1 shadow-sm shadow-blue-500/30" onclick="distributeVersion('${v.id}')">
+                                <i class="ri-send-plane-fill"></i>下发
+                            </button>
+                        `}
+                    </div>
+                </div>
+            </div>`;
+        }).join('');
+
+        if (currentVersionId) {
+            const target = document.getElementById(`version-${currentVersionId}`);
+            if (target) {
+                target.querySelector('.card-bg').classList.add('ring-2', 'ring-blue-400');
+            }
+        }
+    }
+
+    function selectVersion(versionId) {
+        currentVersionId = versionId;
+        document.querySelectorAll('.version-item .card-bg').forEach(el => el.classList.remove('ring-2', 'ring-blue-400'));
+        const target = document.getElementById(`version-${versionId}`);
+        if (target) {
+            target.querySelector('.card-bg').classList.add('ring-2', 'ring-blue-400');
+        }
+
+        const reportContent = document.getElementById('report-content');
+        if (reportContent) {
+            reportContent.classList.remove('fade-in');
+            void reportContent.offsetWidth; // 触发重绘
+            reportContent.classList.add('fade-in');
+        }
+    }
+
+    function toggleFinal(versionId) {
+        if (!currentIssue) return;
+        const version = currentIssue.versions.find(v => v.id === versionId);
+        if (!version) return;
+        if (version.status === 'final') {
+            version.status = 'audited';
+        } else {
+            currentIssue.versions.forEach(v => {
+                if(v.status === 'final') v.status = 'audited';
+            });
+            version.status = 'final';
+        }
+        renderVersionList(currentIssue);
+    }
+
+    /* 模拟下发功能 */
+    function distributeVersion(versionId) {
+        if (!currentIssue) return;
+        const version = currentIssue.versions.find(v => v.id === versionId);
+        alert(`《${currentIssue.year}年 第${currentIssue.issueNumber}期水华预警监测快报》V${version.version} 版本已成功下发！`);
+    }
+
+    /* 新增快报逻辑 */
+    function openNewIssueModal() {
+        const today = new Date().toISOString().split('T')[0];
+        const todayYear = parseInt(today.split('-')[0]);
+
+        // 只过滤当年的数据来计算最新期号
+        const yearIssues = ALL_ISSUES.filter(i => i.year === todayYear);
+        const maxIssue = yearIssues.length ? Math.max(...yearIssues.map(i => i.issueNumber)) : 0;
+
+        document.getElementById('new-issue-number').value = maxIssue + 1;
+        document.getElementById('new-issue-date').value = today;
+        document.getElementById('new-issue-title').value = '';
+        document.getElementById('new-issue-remark').value = '';
+        document.getElementById('new-issue-risk').value = '低风险';
+        clearUploadedFile();
+        document.getElementById('new-issue-modal').classList.remove('hidden');
+        document.getElementById('new-issue-modal').classList.add('flex');
+    }
+
+    function closeNewIssueModal() {
+        document.getElementById('new-issue-modal').classList.add('hidden');
+        document.getElementById('new-issue-modal').classList.remove('flex');
+    }
+
+    function handleFileUpload(input) {
+        if (input.files.length > 0) {
+            uploadedFileData = input.files[0];
+            document.getElementById('uploaded-file-name').textContent = uploadedFileData.name;
+            document.getElementById('uploaded-file-info').classList.remove('hidden');
+        }
+    }
+    function clearUploadedFile() {
+        uploadedFileData = null;
+        document.getElementById('file-input').value = '';
+        document.getElementById('uploaded-file-info').classList.add('hidden');
+    }
+
+    function createNewIssue() {
+        const issueNum = parseInt(document.getElementById('new-issue-number').value);
+        const date = document.getElementById('new-issue-date').value;
+        const risk = document.getElementById('new-issue-risk').value;
+        const year = parseInt(date.split('-')[0]);
+        const title = document.getElementById('new-issue-title').value || `湖北省${year}年第${issueNum}期水华预警监测快报`;
+        const author = document.getElementById('new-issue-author').value || 'wangyunpeng';
+
+        if (!issueNum || !date) return alert('请填写完整期号和日期');
+
+        const uniqueId = `${year}${String(issueNum).padStart(3, '0')}`;
+        if (ALL_ISSUES.find(i => i.id === uniqueId)) return alert(`${year}年第${issueNum}期已存在`);
+
+        const lake = ["梁子湖", "洪湖", "长湖", "大冶湖"][Math.floor(Math.random() * 4)];
+        const newIssue = {
+            id: uniqueId,
+            issueNumber: issueNum,
+            date: date,
+            year: year,
+            title: title,
+            lake: lake,
+            risk: risk,
+            org: "湖北省生态环境监测中心站",
+            versions: [{
+                id: `${uniqueId}-1.0`, version: "1.0", label: "手动新增", author: author, authorInitial: author.charAt(0).toUpperCase(),
+                time: `${date} ${new Date().toTimeString().slice(0,5)}`, status: "pending", isManual: true
+            }],
+            content: uploadedFileData
+                ? `<div class="text-center p-12"><span class="material-symbols-outlined text-6xl text-blue-500 mb-4">description</span><p class="text-lg font-bold">已上传文件：${uploadedFileData.name}</p></div>`
+                : generateReportContent(year, issueNum, date, lake, risk)
+        };
+
+        ALL_ISSUES.push(newIssue);
+        // 按年份和期数正序排
+        ALL_ISSUES.sort((a, b) => {
+            if (a.year !== b.year) return a.year - b.year;
+            return a.issueNumber - b.issueNumber;
+        });
+
+        closeNewIssueModal();
+        document.getElementById('year-selector').value = year;
+        filterByYear(year.toString());
+        selectIssue(uniqueId);
+    }
+
+    /* 上传新版本逻辑 */
+    function openUploadDialog() {
+        if (!currentIssue) return alert('请先选择一期快报');
+        clearVersionFile();
+        document.getElementById('upload-version-note').value = '';
+        document.getElementById('upload-issue-risk').value = 'keep';
+        document.getElementById('upload-modal').classList.remove('hidden');
+        document.getElementById('upload-modal').classList.add('flex');
+    }
+    function closeUploadDialog() {
+        document.getElementById('upload-modal').classList.add('hidden');
+        document.getElementById('upload-modal').classList.remove('flex');
+    }
+
+    function handleVersionUpload(input) {
+        if (input.files.length > 0) {
+            versionFileData = input.files[0];
+            document.getElementById('version-file-name').textContent = versionFileData.name;
+            document.getElementById('version-file-info').classList.remove('hidden');
+        }
+    }
+    function clearVersionFile() {
+        versionFileData = null;
+        document.getElementById('version-file-input').value = '';
+        document.getElementById('version-file-info').classList.add('hidden');
+    }
+
+    function submitUpload() {
+        if (!currentIssue) return;
+        const note = document.getElementById('upload-version-note').value || '修订版';
+        const author = document.getElementById('upload-author').value || 'wangyunpeng';
+        const newRisk = document.getElementById('upload-issue-risk').value;
+
+        if (newRisk !== 'keep') {
+            currentIssue.risk = newRisk;
+        }
+
+        const nextVer = (currentIssue.versions.length * 0.1 + 1.0).toFixed(1);
+        const now = new Date();
+        currentIssue.versions.push({
+            id: `${currentIssue.id}-${nextVer}`, version: nextVer, label: note, author: author, authorInitial: author.charAt(0).toUpperCase(),
+            time: `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`,
+            status: "pending", isManual: true
+        });
+
+        closeUploadDialog();
+        renderVersionList(currentIssue);
+        selectVersion(`${currentIssue.id}-${nextVer}`);
+        filterByYear(currentFilter);
+    }
+
+    function downloadCurrentReport() {
+        if (!currentIssue) return alert('请先选择一期快报');
+        alert(`湖北省水华预警监测快报_${currentIssue.year}年第${currentIssue.issueNumber}期_下载中...`);
+    }
+
+    /* 初始化 */
+    window.addEventListener('load', () => {
+        const submenu = document.getElementById('submenu-analysis');
+        if (submenu) {
+            submenu.style.maxHeight = submenu.scrollHeight + "px";
+            submenu.previousElementSibling.querySelector('.sidebar-chevron').style.transform = 'rotate(180deg)';
+        }
+
+        // 监听新建弹窗中日期的变化，动态更新期数推荐
+        document.getElementById('new-issue-date').addEventListener('change', function() {
+            const selectedYear = parseInt(this.value.split('-')[0]);
+            if (!selectedYear) return;
+            const yearIssues = ALL_ISSUES.filter(i => i.year === selectedYear);
+            const maxIssue = yearIssues.length ? Math.max(...yearIssues.map(i => i.issueNumber)) : 0;
+            document.getElementById('new-issue-number').value = maxIssue + 1;
+        });
+
+        filterByYear('2025');
+        const latest2025 = ALL_ISSUES.filter(i => i.year === 2025);
+        if (latest2025.length > 0) {
+            selectIssue(latest2025[latest2025.length - 1].id);
+        }
+    });
+</script>
+
+</body>
+</html>

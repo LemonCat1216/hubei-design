@@ -1,0 +1,1360 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>湖北省水生态环境综合管理 - 水生态</title>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography,container-queries"></script>
+
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#3b82f6",
+                        "background-light": "#f4f7fb",
+                        "background-dark": "#0f172a",
+                    },
+                    fontFamily: {
+                        display: ["Inter", "-apple-system", "sans-serif"],
+                    },
+                },
+            },
+        };
+    </script>
+
+    <style type="text/tailwindcss">
+        body { font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif; }
+        /* 滚动条美化 */
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+        .section-title-bar {
+            width: 4px;
+            height: 16px;
+            background: linear-gradient(to bottom, #93c5fd, #3b82f6);
+            border-radius: 4px;
+            margin-right: 8px;
+        }
+
+        #sidebar { transition: width 0.3s ease; }
+        .sidebar-text { transition: opacity 0.2s ease; white-space: nowrap; }
+        .hide-text .sidebar-text { display: none; opacity: 0; }
+        .collapsed-sidebar .nav-item { justify-content: center; padding-left: 0; padding-right: 0; }
+        .collapsed-sidebar .nav-item span.material-symbols-outlined { margin-right: 0; }
+
+        .card-shadow { box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.03), 0 2px 4px -2px rgb(0 0 0 / 0.03); }
+
+        .chart-action-icon {
+            @apply text-lg cursor-pointer text-slate-400 hover:text-primary transition-colors p-1.5 rounded hover:bg-blue-50 dark:hover:bg-slate-800;
+        }
+
+        /* Select清空按钮样式 */
+        .clear-btn { display: none; }
+        .group.has-value .clear-btn { display: block; }
+        select.custom-select-center { padding-top: 0; padding-bottom: 0; line-height: 32px; }
+
+        /* 表格现代设计 */
+        .data-table { border-spacing: 0; width: 100%; }
+        .data-table th, .data-table td {
+            @apply border-b border-slate-100 dark:border-slate-700/50;
+            background-clip: padding-box;
+        }
+        .data-table th {
+            @apply bg-slate-50/80 backdrop-blur-sm dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-bold px-4 py-3.5 text-center text-[13px] sticky top-0 z-10;
+        }
+        .data-table td {
+            @apply px-4 py-3.5 text-center text-[13px] text-slate-600 dark:text-slate-300;
+        }
+        .data-table tbody tr:hover {
+            @apply bg-blue-50/40 dark:bg-slate-700/40 transition-colors;
+        }
+
+        /* 标签切换按钮 */
+        .tab-btn {
+            @apply px-5 py-1.5 text-[13px] font-medium rounded transition-all cursor-pointer border border-transparent;
+        }
+        .tab-btn.active {
+            @apply bg-blue-500 text-white shadow-sm shadow-blue-500/20 font-bold;
+        }
+        .tab-btn.inactive {
+            @apply bg-slate-50 text-slate-500 border-slate-200 hover:bg-slate-100 dark:bg-slate-800 dark:text-slate-400 dark:border-slate-700 dark:hover:bg-slate-700;
+        }
+
+        /* 状态徽章优化 */
+        .badge { @apply inline-flex items-center px-2.5 py-0.5 rounded-md text-[12px] font-bold border; }
+        .badge-excellent { @apply bg-emerald-50 text-emerald-600 border-emerald-100 dark:bg-emerald-900/30 dark:text-emerald-400 dark:border-emerald-800/50; }
+        .badge-good { @apply bg-blue-50 text-blue-600 border-blue-100 dark:bg-blue-900/30 dark:text-blue-400 dark:border-blue-800/50; }
+        .badge-fair { @apply bg-amber-50 text-amber-600 border-amber-100 dark:bg-amber-900/30 dark:text-amber-400 dark:border-amber-800/50; }
+        .badge-poor { @apply bg-orange-50 text-orange-600 border-orange-100 dark:bg-orange-900/30 dark:text-orange-400 dark:border-orange-800/50; }
+        .badge-very-poor { @apply bg-red-50 text-red-600 border-red-100 dark:bg-red-900/30 dark:text-red-400 dark:border-red-800/50; }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-800 dark:text-slate-100 h-screen overflow-hidden flex flex-col">
+
+<header class="bg-primary h-14 flex items-center justify-between px-4 text-white shrink-0 shadow-md z-50">
+    <div class="flex items-center space-x-3">
+        <div class="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
+            <span class="material-symbols-outlined text-white text-xl">water_drop</span>
+        </div>
+        <h1 class="text-[17px] font-bold tracking-wider">湖北省水生态环境综合管理</h1>
+    </div>
+    <nav class="flex h-full">
+        <a class="px-6 flex items-center space-x-2 hover:bg-white/10 transition-colors" href="#">
+            <span class="material-symbols-outlined text-[18px]">home</span><span class="text-sm">总体概览</span>
+        </a>
+        <a class="px-6 flex items-center space-x-2 hover:bg-white/10 transition-colors" href="#">
+            <span class="material-symbols-outlined text-[18px]">assessment</span><span class="text-sm">形势分析</span>
+        </a>
+        <a class="px-6 flex items-center space-x-2 hover:bg-white/10 transition-colors" href="#">
+            <span class="material-symbols-outlined text-[18px]">map</span><span class="text-sm">空间分析</span>
+        </a>
+        <a class="px-6 flex items-center space-x-2 bg-white/20 border-b-2 border-white transition-colors" href="#">
+            <span class="material-symbols-outlined text-[18px]">apps</span><span class="text-sm font-bold">专题应用</span>
+        </a>
+    </nav>
+    <div class="flex items-center space-x-5">
+        <div class="flex items-center space-x-1.5 text-sm opacity-90 hover:opacity-100 cursor-pointer">
+            <span class="material-symbols-outlined text-[18px]">public</span><span>碧水荆灵</span>
+        </div>
+        <div class="flex items-center space-x-1.5 text-sm hover:opacity-100 cursor-pointer">
+            <span class="material-symbols-outlined text-[18px]">account_circle</span>
+            <span>wangyunpeng</span>
+        </div>
+    </div>
+</header>
+
+<div class="flex flex-1 overflow-hidden">
+    <aside id="sidebar" class="w-[270px] bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 flex flex-col shrink-0">
+        <div class="flex-1 py-4 overflow-y-auto custom-scrollbar flex flex-col gap-1">
+            <div class="mb-2 px-2">
+                <button class="nav-item w-full flex items-center justify-between px-4 py-3 text-[15px] font-medium text-blue-700 bg-blue-50/50 dark:bg-blue-900/10 rounded-lg group transition-colors" onclick="toggleSubmenu('submenu-analysis')">
+                    <div class="flex items-center">
+                        <span class="material-symbols-outlined mr-3 text-blue-600">query_stats</span>
+                        <span class="sidebar-text font-bold text-slate-800 dark:text-white">流域分析</span>
+                    </div>
+                    <span class="material-symbols-outlined text-sm text-blue-600 sidebar-chevron transition-transform duration-200" style="transform: rotate(180deg);">expand_more</span>
+                </button>
+                <div id="submenu-analysis" class="mt-1 space-y-1 overflow-hidden transition-all duration-300">
+                    <a class="flex items-center px-12 py-2.5 text-[14px] text-slate-600 hover:text-blue-600 hover:bg-blue-50/50 rounded-lg group" href="#">
+                        <span class="w-1.5 h-1.5 bg-slate-300 group-hover:bg-blue-600 rounded-full mr-3 shrink-0 transition-colors"></span><span class="sidebar-text">水环境</span>
+                    </a>
+                    <a class="flex items-center px-12 py-2.5 text-[14px] text-slate-600 hover:text-blue-600 hover:bg-blue-50/50 rounded-lg group" href="#">
+                        <span class="w-1.5 h-1.5 bg-slate-300 group-hover:bg-blue-600 rounded-full mr-3 shrink-0 transition-colors"></span><span class="sidebar-text">水资源</span>
+                    </a>
+                    <a class="flex items-center px-12 py-2.5 text-[14px] text-blue-700 bg-blue-50 dark:bg-blue-900/30 rounded-lg group transition-all font-bold relative" href="#">
+                        <span class="w-1.5 h-1.5 bg-blue-600 rounded-full mr-3 shrink-0"></span><span class="sidebar-text">水生态</span>
+                        <div class="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-5 bg-blue-600 rounded-r-full"></div>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <button id="toggleSidebarBtn" class="h-12 border-t border-slate-200 flex items-center justify-center space-x-2 hover:bg-slate-50 transition-all text-slate-500 hover:text-primary group">
+            <span id="toggleIcon" class="material-symbols-outlined text-xl transition-transform duration-300">chevron_left</span>
+            <span class="sidebar-text text-sm font-medium tracking-wide">收起侧栏</span>
+        </button>
+    </aside>
+
+    <main class="flex-1 overflow-y-auto custom-scrollbar p-6 bg-[#f4f7fb] dark:bg-slate-950">
+
+        <div class="h-16 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-5 flex items-center justify-between shrink-0 shadow-sm mb-6">
+            <div class="flex items-center gap-3 shrink-0">
+                <span class="relative flex h-3 w-3">
+                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-3 w-3 bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.6)]"></span>
+                </span>
+                <h2 class="text-[17px] font-bold text-slate-800 dark:text-white tracking-tight">水生态 · 水质与BQI叠加评价</h2>
+            </div>
+
+            <div class="flex items-center space-x-3 shrink-0">
+                <div class="relative flex items-center group" id="wrapper-one">
+                    <select id="river-select-one" onchange="handleLevelOneChange()" class="custom-select-center h-8 border border-slate-200 bg-slate-50 rounded-lg pl-3 pr-8 text-[13px] focus:ring-2 focus:ring-blue-500/20 outline-none min-w-[140px] hover:bg-white cursor-pointer text-slate-700 font-medium">
+                        <option value="" disabled selected hidden>请选择一级流域</option>
+                        <option value="changjiang">长江干流流域</option>
+                        <option value="huaihe">淮河流域</option>
+                        <option value="huanghe">黄河流域</option>
+                    </select>
+                    <button onclick="clearSelection('one')" class="clear-btn absolute right-6 text-slate-400 hover:text-blue-600 p-1">
+                        <i class="ri-close-line"></i>
+                    </button>
+                </div>
+                <div class="relative flex items-center group" id="wrapper-two">
+                    <select id="river-select-two" onchange="checkValue('two')" class="custom-select-center h-8 border border-slate-200 bg-slate-50 rounded-lg pl-3 pr-8 text-[13px] focus:ring-2 focus:ring-blue-500/20 outline-none min-w-[140px] disabled:opacity-50 disabled:cursor-not-allowed text-slate-400" disabled>
+                        <option value="" disabled selected hidden>请选择二级流域</option>
+                    </select>
+                    <button onclick="clearSelection('two')" class="clear-btn absolute right-6 text-slate-400 hover:text-blue-600 p-1">
+                        <i class="ri-close-line"></i>
+                    </button>
+                </div>
+                <div class="relative flex items-center group has-value">
+                    <select id="period-select" onchange="handlePeriodChange()" class="custom-select-center h-8 border border-slate-200 bg-slate-50 rounded-lg pl-3 pr-8 text-[13px] focus:ring-2 focus:ring-blue-500/20 outline-none min-w-[180px] hover:bg-white cursor-pointer text-slate-700 font-medium">
+                        <option value="2024h2" selected>2024年7~12月（秋季）</option>
+                        <option value="2025h1">2025年1~6月（春季）</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-5 mb-6" id="kpi-cards">
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-5 mb-6">
+            <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 card-shadow p-5 flex flex-col h-[400px] hover:shadow-md transition-shadow relative overflow-hidden">
+                <div class="flex items-center justify-between mb-2">
+                    <div class="flex items-center space-x-2">
+                        <div class="section-title-bar m-0"></div><h3 class="font-bold text-slate-800 text-[15px]">叠加评价各地市分布 (气泡矩阵)</h3>
+                    </div>
+                    <div class="flex gap-2 relative z-10">
+                        <i class="ri-table-2 chart-action-icon" onclick="showChartData('chartMatrix', '叠加评价各地市分布')"></i>
+                        <i class="ri-download-2-line chart-action-icon" onclick="downloadChart('chartMatrix')"></i>
+                    </div>
+                </div>
+                <div id="chart-matrix" class="w-full flex-1"></div>
+            </div>
+
+            <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 card-shadow p-5 flex flex-col h-[400px] hover:shadow-md transition-shadow">
+                <div class="flex items-center justify-between mb-2">
+                    <div class="flex items-center space-x-2">
+                        <div class="section-title-bar m-0"></div><h3 class="font-bold text-slate-800 text-[15px]">叠加评价等级占比</h3>
+                    </div>
+                    <div class="flex gap-2">
+                        <i class="ri-table-2 chart-action-icon" onclick="showChartData('chartPie', '叠加评价等级占比')"></i>
+                        <i class="ri-download-2-line chart-action-icon" onclick="downloadChart('chartPie')"></i>
+                    </div>
+                </div>
+                <div id="chart-pie" class="w-full flex-1"></div>
+            </div>
+
+            <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 card-shadow p-5 flex flex-col h-[400px] hover:shadow-md transition-shadow">
+                <div class="flex items-center justify-between mb-2">
+                    <div class="flex items-center space-x-2">
+                        <div class="section-title-bar m-0"></div><h3 class="font-bold text-slate-800 text-[15px]">水质类别分布</h3>
+                    </div>
+                    <div class="flex gap-2">
+                        <i class="ri-table-2 chart-action-icon" onclick="showChartData('chartWaterClass', '水质类别分布')"></i>
+                        <i class="ri-download-2-line chart-action-icon" onclick="downloadChart('chartWaterClass')"></i>
+                    </div>
+                </div>
+                <div id="chart-water-class" class="w-full flex-1"></div>
+            </div>
+
+            <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 card-shadow p-5 flex flex-col h-[400px] hover:shadow-md transition-shadow">
+                <div class="flex items-center justify-between mb-2">
+                    <div class="flex items-center space-x-2">
+                        <div class="section-title-bar m-0"></div><h3 class="font-bold text-slate-800 text-[15px]">BQI评价结果分布</h3>
+                    </div>
+                    <div class="flex gap-2">
+                        <i class="ri-table-2 chart-action-icon" onclick="showChartData('chartBqi', 'BQI评价结果分布')"></i>
+                        <i class="ri-download-2-line chart-action-icon" onclick="downloadChart('chartBqi')"></i>
+                    </div>
+                </div>
+                <div id="chart-bqi" class="w-full flex-1"></div>
+            </div>
+        </div>
+
+        <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 card-shadow flex flex-col overflow-hidden mb-6">
+            <div class="px-6 py-4 flex items-center justify-between border-b border-slate-100 bg-slate-50/50">
+                <div class="flex items-center space-x-3">
+                    <div class="section-title-bar m-0"></div>
+                    <h3 class="font-bold text-slate-800 text-[15px]">监测数据清单</h3>
+                    <div id="chart-filter-badge" class="items-center gap-2" style="display:none"></div>
+                </div>
+                <div class="flex items-center space-x-2 bg-slate-100/80 p-1 rounded-lg border border-slate-200/60" id="tab-controls">
+                    <button class="tab-btn active" onclick="switchTab('all', this)">全部</button>
+                    <button class="tab-btn inactive" onclick="switchTab('lake', this)">湖库</button>
+                    <button class="tab-btn inactive" onclick="switchTab('river', this)">河流</button>
+                    <button class="tab-btn inactive" onclick="switchTab('problem', this)">问题断面</button>
+                </div>
+            </div>
+            <div class="overflow-x-auto custom-scrollbar">
+                <table class="w-full data-table min-w-[1000px]">
+                    <thead id="dynamic-thead"></thead>
+                    <tbody id="dynamic-tbody"></tbody>
+                </table>
+            </div>
+            <div class="flex justify-between items-center px-6 py-3 bg-white border-t border-slate-100">
+                <div class="text-[13px] text-slate-500">
+                    共 <span id="total-items" class="font-bold text-slate-700 text-[15px] mx-1">0</span> 条记录
+                </div>
+                <div class="flex items-center space-x-1" id="pagination-controls"></div>
+            </div>
+        </div>
+        <footer class="mt-4 pt-4 border-t border-slate-200 dark:border-slate-800 text-center text-xs text-slate-400 pb-2">
+            <p>&copy; 2026 湖北省生态环境厅 · 版权所有</p>
+        </footer>
+    </main>
+</div>
+
+<div id="data-table-modal" class="fixed inset-0 z-[100] hidden bg-slate-900/50 backdrop-blur-sm flex items-center justify-center transition-opacity opacity-0 duration-300">
+    <div class="bg-white rounded shadow-2xl w-11/12 max-w-6xl flex flex-col max-h-[85vh] transform transition-transform scale-95 duration-300">
+        <div class="flex items-center justify-between px-6 py-4 border-b border-slate-100 shrink-0">
+            <div class="flex items-center space-x-2">
+                <div class="section-title-bar m-0"></div><h3 id="modal-title" class="text-base font-bold text-slate-800"></h3>
+            </div>
+            <button onclick="closeModal()" class="text-slate-400 hover:text-red-500 transition-colors"><i class="ri-close-line text-2xl"></i></button>
+        </div>
+        <div class="overflow-auto flex-1 custom-scrollbar">
+            <table class="w-full text-sm text-center text-slate-600 border-collapse">
+                <thead class="text-slate-700 bg-slate-50 sticky top-0 z-10" id="modal-thead"></thead>
+                <tbody id="modal-tbody"></tbody>
+            </table>
+        </div>
+        <div class="px-6 py-4 border-t border-slate-100 bg-white shrink-0 flex justify-center space-x-4">
+            <button onclick="closeModal()" class="px-6 py-1.5 bg-white border border-slate-300 rounded text-sm text-slate-600 hover:bg-slate-50">取消</button>
+            <button onclick="exportExcel()" class="px-6 py-1.5 bg-blue-500 text-white border border-blue-500 rounded text-sm hover:bg-blue-600">导出</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    /* ================================================================
+       DATA & MOCK INJECTION (保留完整数据结构，此处做省略但实际需保留完整真实数据)
+       ================================================================ */
+    const rawData = {
+        "2024h2": [
+            {city:"武汉市",river:"汉江",section:"宗关",cls:"Ⅱ",trophic:"-1",bqi:"一般",overlay:"优秀"},
+            {city:"武汉市",river:"涢水",section:"朱家河口",cls:"Ⅲ",trophic:"-1",bqi:"较差",overlay:"一般"},
+            {city:"武汉市",river:"长江",section:"杨泗港",cls:"Ⅱ",trophic:"-1",bqi:"很差",overlay:"良好"},
+            {city:"武汉市",river:"斧头湖",section:"江夏湖心",cls:"Ⅳ",trophic:"轻度富营养",bqi:"较差",overlay:"一般"},
+            {city:"武汉市",river:"举水",section:"沐家泾",cls:"Ⅲ",trophic:"-1",bqi:"良好",overlay:"优秀"},
+            {city:"武汉市",river:"滠水",section:"滠口",cls:"Ⅲ",trophic:"-1",bqi:"较差",overlay:"一般"},
+            {city:"武汉市",river:"梁子湖",section:"牛山湖湖心",cls:"Ⅲ",trophic:"中营养",bqi:"较差",overlay:"优秀"},
+            {city:"武汉市",river:"长江",section:"白浒山",cls:"Ⅱ",trophic:"-1",bqi:"优秀",overlay:"优秀"},
+            {city:"武汉市",river:"梁子湖",section:"西梁子湖湖北",cls:"Ⅲ",trophic:"轻度富营养",bqi:"很差",overlay:"良好"},
+            {city:"武汉市",river:"梁子湖",section:"西梁子湖湖南",cls:"Ⅲ",trophic:"轻度富营养",bqi:"很差",overlay:"良好"},
+            {city:"武汉市",river:"梁子湖",section:"西梁子湖湖心（南北嘴）",cls:"Ⅲ",trophic:"轻度富营养",bqi:"/",overlay:"良好"},
+            {city:"武汉市",river:"金水",section:"金水闸",cls:"Ⅳ",trophic:"-1",bqi:"很差",overlay:"较差"},
+            {city:"武汉市",river:"通顺河",section:"黄陵大桥",cls:"Ⅲ",trophic:"-1",bqi:"较差",overlay:"一般"},
+            {city:"武汉市",river:"倒水",section:"龙口-湖北",cls:"Ⅲ",trophic:"-1",bqi:"较差",overlay:"一般"},
+            {city:"黄石市",river:"长江",section:"中官铺",cls:"Ⅱ",trophic:"-1",bqi:"一般",overlay:"优秀"},
+            {city:"黄石市",river:"大冶湖",section:"大冶湖闸",cls:"Ⅱ",trophic:"-1",bqi:"一般",overlay:"优秀"},
+            {city:"黄石市",river:"富水",section:"富池闸",cls:"Ⅱ",trophic:"-1",bqi:"一般",overlay:"优秀"},
+            {city:"黄石市",river:"高桥河",section:"港口桥",cls:"Ⅱ",trophic:"-1",bqi:"一般",overlay:"优秀"},
+            {city:"黄石市",river:"长江",section:"风波港（右岸）",cls:"Ⅱ",trophic:"-1",bqi:"较差",overlay:"良好"},
+            {city:"十堰市",river:"东河",section:"东河口",cls:"Ⅰ",trophic:"-1",bqi:"一般",overlay:"优秀"},
+            {city:"十堰市",river:"犟河",section:"东湾桥",cls:"Ⅱ",trophic:"-1",bqi:"一般",overlay:"优秀"},
+            {city:"十堰市",river:"丹江口水库",section:"丹江口水库坝上中",cls:"Ⅱ",trophic:"中营养",bqi:"/",overlay:"优秀"},
+            {city:"十堰市",river:"丹江口水库",section:"五龙泉",cls:"Ⅱ",trophic:"中营养",bqi:"很差",overlay:"优秀"},
+            {city:"十堰市",river:"丹江口水库",section:"何家湾",cls:"Ⅱ",trophic:"中营养",bqi:"/",overlay:"优秀"},
+            {city:"十堰市",river:"剑河",section:"剑河口",cls:"Ⅱ",trophic:"-1",bqi:"很差",overlay:"良好"},
+            {city:"十堰市",river:"堵河",section:"化口",cls:"Ⅱ",trophic:"-1",bqi:"/",overlay:"优秀"},
+            {city:"十堰市",river:"竹溪河",section:"双岔",cls:"Ⅱ",trophic:"-1",bqi:"/",overlay:"优秀"},
+            {city:"十堰市",river:"天河",section:"天河口",cls:"Ⅱ",trophic:"-1",bqi:"一般",overlay:"优秀"},
+            {city:"十堰市",river:"金钱河",section:"夹河口",cls:"Ⅰ",trophic:"-1",bqi:"很差",overlay:"良好"},
+            {city:"十堰市",river:"官山河",section:"孙家湾",cls:"Ⅱ",trophic:"-1",bqi:"较差",overlay:"良好"},
+            {city:"十堰市",river:"北河",section:"彦家洲",cls:"Ⅱ",trophic:"-1",bqi:"/",overlay:"优秀"},
+            {city:"十堰市",river:"堵河",section:"新洲烂泥湾",cls:"Ⅰ",trophic:"-1",bqi:"/",overlay:"优秀"},
+            {city:"十堰市",river:"丹江口水库",section:"江北大桥",cls:"Ⅱ",trophic:"中营养",bqi:"/",overlay:"优秀"},
+            {city:"十堰市",river:"汉江",section:"沈湾",cls:"Ⅱ",trophic:"-1",bqi:"优秀",overlay:"优秀"},
+            {city:"十堰市",river:"泗水",section:"泗河口",cls:"Ⅲ",trophic:"-1",bqi:"较差",overlay:"一般"},
+            {city:"十堰市",river:"浪河",section:"浪河口",cls:"Ⅱ",trophic:"-1",bqi:"较差",overlay:"良好"},
+            {city:"十堰市",river:"淘谷河",section:"淘谷河口",cls:"Ⅱ",trophic:"-1",bqi:"一般",overlay:"优秀"},
+            {city:"十堰市",river:"堵河",section:"潘口水库坝上",cls:"Ⅰ",trophic:"-1",bqi:"较差",overlay:"良好"},
+            {city:"十堰市",river:"堵河",section:"焦家院",cls:"Ⅰ",trophic:"-1",bqi:"很差",overlay:"良好"},
+            {city:"十堰市",river:"滔河",section:"王河电站",cls:"Ⅱ",trophic:"-1",bqi:"较差",overlay:"良好"},
+            {city:"十堰市",river:"神定河",section:"神定河口",cls:"Ⅲ",trophic:"-1",bqi:"较差",overlay:"一般"},
+            {city:"十堰市",river:"汉江",section:"陈家坡",cls:"Ⅱ",trophic:"-1",bqi:"一般",overlay:"优秀"},
+            {city:"十堰市",river:"曲远河",section:"青曲",cls:"Ⅱ",trophic:"-1",bqi:"/",overlay:"优秀"},
+            {city:"十堰市",river:"马栏河",section:"马兰河口",cls:"Ⅱ",trophic:"-1",bqi:"优秀",overlay:"优秀"},
+            {city:"十堰市",river:"黄龙水库",section:"黄龙1",cls:"Ⅰ",trophic:"中营养",bqi:"/",overlay:"优秀"},
+            {city:"十堰市",river:"黄龙水库",section:"黄龙2",cls:"Ⅱ",trophic:"中营养",bqi:"/",overlay:"优秀"},
+            {city:"襄阳市",river:"汉江",section:"仙人渡",cls:"Ⅱ",trophic:"-1",bqi:"优秀",overlay:"优秀"},
+            {city:"襄阳市",river:"汉江",section:"余家湖",cls:"Ⅱ",trophic:"-1",bqi:"一般",overlay:"优秀"},
+            {city:"襄阳市",river:"蛮河",section:"孔湾（岛口）",cls:"Ⅲ",trophic:"-1",bqi:"一般",overlay:"良好"},
+            {city:"襄阳市",river:"南河",section:"开峰峪",cls:"Ⅱ",trophic:"-1",bqi:"优秀",overlay:"优秀"},
+            {city:"襄阳市",river:"清河",section:"王湾村",cls:"Ⅱ",trophic:"-1",bqi:"优秀",overlay:"优秀"},
+            {city:"襄阳市",river:"唐白河",section:"张湾",cls:"Ⅱ",trophic:"-1",bqi:"优秀",overlay:"优秀"},
+            {city:"襄阳市",river:"滚河",section:"汤店",cls:"Ⅲ",trophic:"-1",bqi:"一般",overlay:"良好"},
+            {city:"襄阳市",river:"蛮河",section:"朱市",cls:"Ⅱ",trophic:"-1",bqi:"优秀",overlay:"优秀"},
+            {city:"襄阳市",river:"沮河",section:"马渡河",cls:"Ⅱ",trophic:"-1",bqi:"优秀",overlay:"优秀"},
+            {city:"襄阳市",river:"汉江",section:"白家湾",cls:"Ⅱ",trophic:"-1",bqi:"优秀",overlay:"优秀"},
+            {city:"襄阳市",river:"北河",section:"茨河",cls:"Ⅱ",trophic:"-1",bqi:"优秀",overlay:"优秀"},
+            {city:"襄阳市",river:"蛮河",section:"孔湾",cls:"Ⅲ",trophic:"-1",bqi:"优秀",overlay:"优秀"},
+            {city:"襄阳市",river:"漳河",section:"康家沟",cls:"Ⅰ",trophic:"-1",bqi:"优秀",overlay:"优秀"},
+            {city:"襄阳市",river:"汉江",section:"郭滩",cls:"Ⅱ",trophic:"-1",bqi:"优秀",overlay:"优秀"},
+            {city:"宜昌市",river:"长江",section:"南津关",cls:"Ⅱ",trophic:"-1",bqi:"优秀",overlay:"优秀"},
+            {city:"宜昌市",river:"长江",section:"云池",cls:"Ⅱ",trophic:"-1",bqi:"优秀",overlay:"优秀"},
+            {city:"宜昌市",river:"长江",section:"虎牙滩",cls:"Ⅱ",trophic:"-1",bqi:"优秀",overlay:"优秀"},
+            {city:"宜昌市",river:"清江",section:"清江大桥",cls:"Ⅱ",trophic:"-1",bqi:"优秀",overlay:"优秀"},
+            {city:"宜昌市",river:"清江",section:"隔河岩水库出口",cls:"Ⅱ",trophic:"-1",bqi:"良好",overlay:"优秀"},
+            {city:"宜昌市",river:"沮河",section:"两河口",cls:"Ⅱ",trophic:"-1",bqi:"优秀",overlay:"优秀"},
+            {city:"宜昌市",river:"香溪河",section:"峡口",cls:"Ⅱ",trophic:"-1",bqi:"良好",overlay:"优秀"},
+            {city:"宜昌市",river:"黄柏河",section:"汤渡河",cls:"Ⅱ",trophic:"-1",bqi:"优秀",overlay:"优秀"},
+            {city:"宜昌市",river:"渔洋河",section:"聂家河",cls:"Ⅱ",trophic:"-1",bqi:"优秀",overlay:"优秀"},
+            {city:"宜昌市",river:"长江",section:"虎牙滩（右岸）",cls:"Ⅱ",trophic:"-1",bqi:"良好",overlay:"优秀"},
+            {city:"宜昌市",river:"长江",section:"磨盘溪",cls:"Ⅱ",trophic:"-1",bqi:"优秀",overlay:"优秀"},
+            {city:"宜昌市",river:"长江",section:"荆江大桥",cls:"Ⅱ",trophic:"-1",bqi:"良好",overlay:"良好"},
+            {city:"宜昌市",river:"三峡水库（湖北）",section:"太平溪",cls:"Ⅱ",trophic:"-1",bqi:"良好",overlay:"良好"},
+            {city:"宜昌市",river:"三峡水库（湖北）",section:"银杏沱",cls:"Ⅱ",trophic:"-1",bqi:"优秀",overlay:"优秀"},
+            {city:"宜昌市",river:"三峡水库（湖北）",section:"兰陵溪",cls:"Ⅱ",trophic:"-1",bqi:"优秀",overlay:"优秀"},
+            {city:"荆州市",river:"长江",section:"陡湖堤",cls:"Ⅱ",trophic:"-1",bqi:"一般",overlay:"优秀"},
+            {city:"荆州市",river:"长江",section:"观音寺",cls:"Ⅱ",trophic:"-1",bqi:"一般",overlay:"优秀"},
+            {city:"荆州市",river:"长江",section:"砖窑",cls:"Ⅱ",trophic:"-1",bqi:"一般",overlay:"优秀"},
+            {city:"荆州市",river:"长江",section:"五七码头",cls:"Ⅱ",trophic:"-1",bqi:"一般",overlay:"优秀"},
+            {city:"荆州市",river:"长江",section:"调关",cls:"Ⅱ",trophic:"-1",bqi:"一般",overlay:"优秀"},
+            {city:"荆州市",river:"长江",section:"窑淮",cls:"Ⅱ",trophic:"-1",bqi:"一般",overlay:"优秀"},
+            {city:"荆州市",river:"长江",section:"大布街",cls:"Ⅱ",trophic:"-1",bqi:"一般",overlay:"优秀"},
+            {city:"荆州市",river:"长江",section:"新厂",cls:"Ⅱ",trophic:"-1",bqi:"一般",overlay:"优秀"},
+            {city:"荆州市",river:"长江",section:"白家渡口",cls:"Ⅱ",trophic:"-1",bqi:"一般",overlay:"优秀"},
+            {city:"荆州市",river:"长江",section:"马家寨",cls:"Ⅱ",trophic:"-1",bqi:"一般",overlay:"优秀"},
+            {city:"荆州市",river:"长江",section:"洪湖",cls:"Ⅲ",trophic:"-1",bqi:"一般",overlay:"良好"},
+            {city:"荆州市",river:"长江",section:"监利半路堤",cls:"Ⅱ",trophic:"-1",bqi:"一般",overlay:"优秀"},
+            {city:"荆州市",river:"洪湖",section:"洪湖湖心",cls:"Ⅳ",trophic:"轻度富营养",bqi:"很差",overlay:"较差"},
+            {city:"荆州市",river:"长湖",section:"长湖湖心",cls:"Ⅳ",trophic:"轻度富营养",bqi:"较差",overlay:"一般"},
+            {city:"荆州市",river:"长湖",section:"后港",cls:"Ⅲ",trophic:"轻度富营养",bqi:"较差",overlay:"良好"},
+            {city:"荆州市",river:"长湖",section:"习家口",cls:"Ⅲ",trophic:"轻度富营养",bqi:"较差",overlay:"良好"},
+            {city:"荆州市",river:"四湖总干渠",section:"新滩",cls:"Ⅳ",trophic:"-1",bqi:"较差",overlay:"一般"},
+            {city:"荆州市",river:"内荆河",section:"桐梓湖",cls:"Ⅳ",trophic:"-1",bqi:"很差",overlay:"较差"},
+            {city:"荆州市",river:"松西河",section:"郑公渡",cls:"Ⅲ",trophic:"-1",bqi:"良好",overlay:"良好"},
+            {city:"荆州市",river:"虎渡河",section:"弥陀寺",cls:"Ⅲ",trophic:"-1",bqi:"良好",overlay:"良好"},
+            {city:"荆州市",river:"藕池河",section:"藕池",cls:"Ⅲ",trophic:"-1",bqi:"一般",overlay:"良好"},
+            {city:"荆州市",river:"沮漳河",section:"万城",cls:"Ⅲ",trophic:"-1",bqi:"一般",overlay:"良好"},
+            {city:"荆州市",river:"松滋河",section:"新江口",cls:"Ⅲ",trophic:"-1",bqi:"一般",overlay:"良好"},
+            {city:"荆门市",river:"汉江",section:"皇庄",cls:"Ⅱ",trophic:"-1",bqi:"优秀",overlay:"优秀"},
+            {city:"荆门市",river:"汉江",section:"沙洋",cls:"Ⅱ",trophic:"-1",bqi:"优秀",overlay:"优秀"},
+            {city:"荆门市",river:"汉北河",section:"新沟闸",cls:"Ⅲ",trophic:"-1",bqi:"良好",overlay:"良好"},
+            {city:"荆门市",river:"长湖",section:"朱家拐",cls:"Ⅲ",trophic:"轻度富营养",bqi:"一般",overlay:"良好"},
+            {city:"荆门市",river:"漳河水库",section:"库心区",cls:"Ⅱ",trophic:"贫营养",bqi:"优秀",overlay:"优秀"},
+            {city:"荆门市",river:"漳河水库",section:"马头寨",cls:"Ⅱ",trophic:"贫营养",bqi:"优秀",overlay:"优秀"},
+            {city:"荆门市",river:"竹皮河",section:"马良龚家集",cls:"Ⅳ",trophic:"-1",bqi:"较差",overlay:"一般"},
+            {city:"荆门市",river:"竹皮河",section:"杨家桥",cls:"Ⅲ",trophic:"-1",bqi:"优秀",overlay:"优秀"},
+            {city:"荆门市",river:"天门河",section:"刘家桥",cls:"Ⅲ",trophic:"-1",bqi:"优秀",overlay:"优秀"},
+            {city:"荆门市",river:"蛮河",section:"利河口",cls:"Ⅱ",trophic:"-1",bqi:"优秀",overlay:"优秀"},
+            {city:"荆门市",river:"浰河",section:"浰河口",cls:"Ⅱ",trophic:"-1",bqi:"优秀",overlay:"优秀"},
+            {city:"荆门市",river:"长寿河",section:"长寿桥",cls:"Ⅱ",trophic:"-1",bqi:"优秀",overlay:"优秀"},
+            {city:"荆门市",river:"富水河",section:"殷家河",cls:"Ⅱ",trophic:"-1",bqi:"优秀",overlay:"优秀"},
+            {city:"荆门市",river:"浰河",section:"浰河",cls:"Ⅲ",trophic:"-1",bqi:"良好",overlay:"良好"},
+            {city:"荆门市",river:"富水河",section:"浰河口",cls:"Ⅱ",trophic:"-1",bqi:"良好",overlay:"良好"},
+            {city:"荆门市",river:"西荆河",section:"西荆河口",cls:"Ⅳ",trophic:"-1",bqi:"较差",overlay:"较差"},
+            {city:"鄂州市",river:"长江",section:"燕矶",cls:"Ⅱ",trophic:"-1",bqi:"一般",overlay:"优秀"},
+            {city:"鄂州市",river:"梁子湖",section:"梁子湖湖心",cls:"Ⅲ",trophic:"中营养",bqi:"较差",overlay:"良好"},
+            {city:"鄂州市",river:"梁子湖",section:"梁子岛",cls:"Ⅲ",trophic:"中营养",bqi:"较差",overlay:"良好"},
+            {city:"鄂州市",river:"洋澜湖",section:"洋澜湖湖心",cls:"Ⅴ",trophic:"中度富营养",bqi:"很差",overlay:"一般"},
+            {city:"鄂州市",river:"花马湖",section:"花马湖上",cls:"Ⅲ",trophic:"中营养",bqi:"一般",overlay:"良好"},
+            {city:"鄂州市",river:"长江",section:"樊口",cls:"Ⅱ",trophic:"-1",bqi:"一般",overlay:"一般"},
+            {city:"孝感市",river:"汉北河",section:"垌冢",cls:"Ⅲ",trophic:"-1",bqi:"良好",overlay:"良好"},
+            {city:"孝感市",river:"汉北河",section:"新沟",cls:"Ⅲ",trophic:"-1",bqi:"较差",overlay:"良好"},
+            {city:"孝感市",river:"府河",section:"隔蒲桥",cls:"Ⅲ",trophic:"-1",bqi:"较差",overlay:"良好"},
+            {city:"孝感市",river:"府河",section:"孝感水厂",cls:"Ⅲ",trophic:"-1",bqi:"良好",overlay:"良好"},
+            {city:"孝感市",river:"沦河",section:"公路桥",cls:"Ⅲ",trophic:"-1",bqi:"一般",overlay:"良好"},
+            {city:"孝感市",river:"澴河",section:"河口大桥",cls:"Ⅲ",trophic:"-1",bqi:"良好",overlay:"良好"},
+            {city:"孝感市",river:"汉江",section:"新沟闸",cls:"Ⅱ",trophic:"-1",bqi:"优秀",overlay:"优秀"},
+            {city:"孝感市",river:"滠水",section:"滠水大桥",cls:"Ⅲ",trophic:"-1",bqi:"较差",overlay:"良好"},
+            {city:"孝感市",river:"府澴河",section:"卧龙潭",cls:"Ⅲ",trophic:"-1",bqi:"一般",overlay:"良好"},
+            {city:"孝感市",river:"大富水",section:"城关",cls:"Ⅱ",trophic:"-1",bqi:"一般",overlay:"优秀"},
+            {city:"孝感市",river:"刁汊湖",section:"刁汊湖湖心",cls:"Ⅳ",trophic:"轻度富营养",bqi:"较差",overlay:"一般"},
+            {city:"孝感市",river:"汉北河",section:"新沟闸(汉川)",cls:"Ⅲ",trophic:"-1",bqi:"一般",overlay:"一般"},
+            {city:"孝感市",river:"童家湖",section:"童家湖湖心",cls:"Ⅳ",trophic:"轻度富营养",bqi:"较差",overlay:"一般"},
+            {city:"黄冈市",river:"长江",section:"中官铺",cls:"Ⅱ",trophic:"-1",bqi:"优秀",overlay:"优秀"},
+            {city:"黄冈市",river:"长江",section:"黄冈西河口",cls:"Ⅱ",trophic:"-1",bqi:"优秀",overlay:"优秀"},
+            {city:"黄冈市",river:"举水",section:"柳子港",cls:"Ⅲ",trophic:"-1",bqi:"一般",overlay:"良好"},
+            {city:"黄冈市",river:"倒水",section:"红安二水厂",cls:"Ⅱ",trophic:"-1",bqi:"优秀",overlay:"优秀"},
+            {city:"黄冈市",river:"巴河",section:"下巴河大桥",cls:"Ⅲ",trophic:"-1",bqi:"一般",overlay:"良好"},
+            {city:"黄冈市",river:"浠水",section:"兰溪大桥",cls:"Ⅱ",trophic:"-1",bqi:"优秀",overlay:"优秀"},
+            {city:"黄冈市",river:"蕲水",section:"西河驿",cls:"Ⅱ",trophic:"-1",bqi:"优秀",overlay:"优秀"},
+            {city:"黄冈市",river:"滠水",section:"滠水河口",cls:"Ⅲ",trophic:"-1",bqi:"一般",overlay:"一般"},
+            {city:"黄冈市",river:"龙感湖",section:"龙感湖湖心",cls:"Ⅳ",trophic:"轻度富营养",bqi:"较差",overlay:"一般"},
+            {city:"黄冈市",river:"武山湖",section:"武山湖湖心",cls:"Ⅳ",trophic:"中度富营养",bqi:"很差",overlay:"一般"},
+            {city:"黄冈市",river:"白莲河水库",section:"白莲河水库出口",cls:"Ⅱ",trophic:"中营养",bqi:"优秀",overlay:"优秀"},
+            {city:"黄冈市",river:"白莲河水库",section:"白莲河水库库心",cls:"Ⅱ",trophic:"中营养",bqi:"良好",overlay:"优秀"},
+            {city:"黄冈市",river:"遗爱湖",section:"遗爱湖湖心",cls:"Ⅳ",trophic:"轻度富营养",bqi:"较差",overlay:"一般"},
+            {city:"黄冈市",river:"长江",section:"黄颡口",cls:"Ⅱ",trophic:"-1",bqi:"优秀",overlay:"优秀"},
+            {city:"咸宁市",river:"长江",section:"王家边",cls:"Ⅱ",trophic:"-1",bqi:"优秀",overlay:"优秀"},
+            {city:"咸宁市",river:"长江",section:"赤壁",cls:"Ⅱ",trophic:"-1",bqi:"优秀",overlay:"优秀"},
+            {city:"咸宁市",river:"陆水",section:"陆水水库坝上",cls:"Ⅱ",trophic:"-1",bqi:"优秀",overlay:"优秀"},
+            {city:"咸宁市",river:"陆水",section:"陆溪口",cls:"Ⅱ",trophic:"-1",bqi:"一般",overlay:"一般"},
+            {city:"咸宁市",river:"富水",section:"富水水库坝上",cls:"Ⅱ",trophic:"中营养",bqi:"优秀",overlay:"优秀"},
+            {city:"咸宁市",river:"西凉湖",section:"西凉湖湖心",cls:"Ⅲ",trophic:"轻度富营养",bqi:"较差",overlay:"良好"},
+            {city:"咸宁市",river:"斧头湖",section:"斧头湖湖心",cls:"Ⅲ",trophic:"轻度富营养",bqi:"较差",overlay:"良好"},
+            {city:"咸宁市",river:"黄盖湖",section:"黄盖湖湖心",cls:"Ⅳ",trophic:"轻度富营养",bqi:"一般",overlay:"一般"},
+            {city:"咸宁市",river:"淦河",section:"温泉橡胶坝",cls:"Ⅲ",trophic:"-1",bqi:"良好",overlay:"良好"},
+            {city:"咸宁市",river:"陆水",section:"蒲圻",cls:"Ⅱ",trophic:"-1",bqi:"优秀",overlay:"优秀"},
+            {city:"咸宁市",river:"青山水库",section:"青山水库",cls:"Ⅱ",trophic:"中营养",bqi:"优秀",overlay:"优秀"},
+            {city:"随州市",river:"涢水",section:"随县安居",cls:"Ⅱ",trophic:"-1",bqi:"优秀",overlay:"优秀"},
+            {city:"随州市",river:"涢水",section:"淅河",cls:"Ⅱ",trophic:"-1",bqi:"优秀",overlay:"优秀"},
+            {city:"随州市",river:"府河",section:"徐家河水库出口",cls:"Ⅱ",trophic:"-1",bqi:"优秀",overlay:"优秀"},
+            {city:"随州市",river:"㵐水",section:"厥水大桥",cls:"Ⅱ",trophic:"-1",bqi:"优秀",overlay:"优秀"},
+            {city:"随州市",river:"澴水",section:"洪山大桥",cls:"Ⅲ",trophic:"-1",bqi:"一般",overlay:"一般"},
+            {city:"随州市",river:"府河",section:"三里岗",cls:"Ⅲ",trophic:"-1",bqi:"一般",overlay:"一般"},
+            {city:"恩施州",river:"清江",section:"大沙坝",cls:"Ⅱ",trophic:"-1",bqi:"优秀",overlay:"优秀"},
+            {city:"恩施州",river:"清江",section:"带水河口",cls:"Ⅱ",trophic:"-1",bqi:"优秀",overlay:"优秀"},
+            {city:"恩施州",river:"清江",section:"马水河",cls:"Ⅰ",trophic:"-1",bqi:"优秀",overlay:"优秀"},
+            {city:"恩施州",river:"溇水",section:"江口",cls:"Ⅰ",trophic:"-1",bqi:"优秀",overlay:"优秀"},
+            {city:"恩施州",river:"酉水",section:"来凤",cls:"Ⅱ",trophic:"-1",bqi:"优秀",overlay:"优秀"},
+            {city:"恩施州",river:"郁江",section:"忠路",cls:"Ⅰ",trophic:"-1",bqi:"优秀",overlay:"优秀"},
+            {city:"恩施州",river:"沿渡河",section:"沿渡河",cls:"Ⅰ",trophic:"-1",bqi:"优秀",overlay:"优秀"},
+            {city:"恩施州",river:"马水河",section:"建始",cls:"Ⅱ",trophic:"-1",bqi:"优秀",overlay:"优秀"},
+            {city:"恩施州",river:"忠建河",section:"宣恩",cls:"Ⅱ",trophic:"-1",bqi:"良好",overlay:"良好"},
+            {city:"恩施州",river:"唐岩河",section:"咸丰",cls:"Ⅱ",trophic:"-1",bqi:"良好",overlay:"良好"},
+            {city:"恩施州",river:"酉水河",section:"百福司",cls:"Ⅱ",trophic:"-1",bqi:"良好",overlay:"良好"},
+            {city:"恩施州",river:"清江",section:"恩施清江大桥",cls:"Ⅱ",trophic:"-1",bqi:"良好",overlay:"良好"},
+            {city:"恩施州",river:"清江",section:"利川",cls:"Ⅱ",trophic:"-1",bqi:"良好",overlay:"良好"},
+            {city:"恩施州",river:"溇水",section:"鹤峰",cls:"Ⅰ",trophic:"-1",bqi:"优秀",overlay:"优秀"},
+            {city:"恩施州",river:"野三河",section:"野三河",cls:"Ⅰ",trophic:"-1",bqi:"优秀",overlay:"优秀"},
+            {city:"恩施州",river:"磨刀溪",section:"谋道",cls:"Ⅱ",trophic:"-1",bqi:"良好",overlay:"良好"},
+            {city:"恩施州",river:"梅子水",section:"梅子水",cls:"Ⅱ",trophic:"-1",bqi:"良好",overlay:"良好"},
+            {city:"恩施州",river:"沿渡河",section:"罗溪坝",cls:"Ⅱ",trophic:"-1",bqi:"优秀",overlay:"优秀"},
+            {city:"仙桃市",river:"汉江",section:"仙桃水厂",cls:"Ⅱ",trophic:"-1",bqi:"良好",overlay:"优秀"},
+            {city:"仙桃市",river:"通顺河",section:"仙桃三伏潭",cls:"Ⅳ",trophic:"-1",bqi:"较差",overlay:"一般"},
+            {city:"仙桃市",river:"东荆河",section:"联合桥",cls:"Ⅲ",trophic:"-1",bqi:"一般",overlay:"优秀"},
+            {city:"仙桃市",river:"排湖",section:"排湖",cls:"Ⅴ",trophic:"中度富营养",bqi:"很差",overlay:"较差"},
+            {city:"天门市",river:"汉北河",section:"天门",cls:"Ⅲ",trophic:"-1",bqi:"一般",overlay:"良好"},
+            {city:"天门市",river:"天门河",section:"拖市",cls:"Ⅲ",trophic:"-1",bqi:"一般",overlay:"一般"},
+            {city:"天门市",river:"汈汊湖",section:"汈汊湖",cls:"Ⅳ",trophic:"轻度富营养",bqi:"较差",overlay:"一般"},
+            {city:"天门市",river:"汉江",section:"岳口",cls:"Ⅱ",trophic:"-1",bqi:"优秀",overlay:"优秀"},
+            {city:"潜江市",river:"汉江",section:"泽口",cls:"Ⅱ",trophic:"-1",bqi:"良好",overlay:"优秀"},
+            {city:"潜江市",river:"东荆河",section:"新沟坝",cls:"Ⅱ",trophic:"-1",bqi:"一般",overlay:"优秀"},
+            {city:"潜江市",river:"长湖",section:"长湖",cls:"Ⅲ",trophic:"轻度富营养",bqi:"较差",overlay:"良好"},
+            {city:"潜江市",river:"田关河",section:"田关闸",cls:"Ⅱ",trophic:"-1",bqi:"一般",overlay:"一般"},
+            {city:"潜江市",river:"兴隆河",section:"刘桥",cls:"Ⅱ",trophic:"-1",bqi:"一般",overlay:"优秀"},
+            {city:"神农架林区",river:"香溪河",section:"湘坪河",cls:"Ⅰ",trophic:"-1",bqi:"优秀",overlay:"优秀"},
+            {city:"神农架林区",river:"南河",section:"九湖",cls:"Ⅰ",trophic:"-1",bqi:"优秀",overlay:"优秀"},
+            {city:"神农架林区",river:"沿渡河",section:"沿渡河",cls:"Ⅰ",trophic:"-1",bqi:"优秀",overlay:"优秀"},
+        ],
+        "2025h1": [
+            {city:"武汉市",river:"汉江",section:"宗关",cls:"Ⅱ",trophic:"-1",bqi:"较差",overlay:"优秀"},
+            {city:"武汉市",river:"涢水",section:"朱家河口",cls:"Ⅲ",trophic:"-1",bqi:"一般",overlay:"良好"},
+            {city:"武汉市",river:"长江",section:"杨泗港",cls:"Ⅱ",trophic:"-1",bqi:"一般",overlay:"优秀"},
+            {city:"武汉市",river:"斧头湖",section:"江夏湖心",cls:"Ⅲ",trophic:"中营养",bqi:"很差",overlay:"优秀"},
+            {city:"武汉市",river:"东湖",section:"汤菱湖",cls:"Ⅲ",trophic:"中营养",bqi:"很差",overlay:"优秀"},
+            {city:"武汉市",river:"举水",section:"沐家泾",cls:"Ⅲ",trophic:"-1",bqi:"一般",overlay:"良好"},
+            {city:"武汉市",river:"滠水",section:"滠口",cls:"Ⅲ",trophic:"-1",bqi:"一般",overlay:"良好"},
+            {city:"武汉市",river:"梁子湖",section:"牛山湖湖心",cls:"Ⅱ",trophic:"中营养",bqi:"较差",overlay:"优秀"},
+            {city:"武汉市",river:"长江",section:"白浒山",cls:"Ⅱ",trophic:"-1",bqi:"良好",overlay:"优秀"},
+            {city:"武汉市",river:"梁子湖",section:"西梁子湖湖北",cls:"Ⅱ",trophic:"中营养",bqi:"很差",overlay:"优秀"},
+            {city:"武汉市",river:"梁子湖",section:"西梁子湖湖南",cls:"Ⅱ",trophic:"中营养",bqi:"很差",overlay:"优秀"},
+            {city:"武汉市",river:"金水",section:"金水闸",cls:"Ⅲ",trophic:"-1",bqi:"一般",overlay:"良好"},
+            {city:"武汉市",river:"通顺河",section:"黄陵大桥",cls:"Ⅳ",trophic:"-1",bqi:"较差",overlay:"较差"},
+            {city:"武汉市",river:"倒水",section:"龙口-湖北",cls:"Ⅲ",trophic:"-1",bqi:"一般",overlay:"良好"},
+            {city:"黄石市",river:"长江",section:"中官铺",cls:"Ⅱ",trophic:"-1",bqi:"一般",overlay:"优秀"},
+            {city:"黄石市",river:"大冶湖",section:"大冶湖闸",cls:"Ⅱ",trophic:"-1",bqi:"较差",overlay:"良好"},
+            {city:"黄石市",river:"富水",section:"富池闸",cls:"Ⅱ",trophic:"-1",bqi:"一般",overlay:"优秀"},
+            {city:"黄石市",river:"高桥河",section:"港口桥",cls:"Ⅱ",trophic:"-1",bqi:"优秀",overlay:"优秀"},
+            {city:"黄石市",river:"牛皮港",section:"牛皮港",cls:"Ⅲ",trophic:"-1",bqi:"优秀",overlay:"优秀"},
+            {city:"黄石市",river:"长江",section:"风波港（右岸）",cls:"Ⅱ",trophic:"-1",bqi:"较差",overlay:"良好"},
+            {city:"十堰市",river:"东河",section:"东河口",cls:"Ⅰ",trophic:"-1",bqi:"一般",overlay:"优秀"},
+            {city:"十堰市",river:"犟河",section:"东湾桥",cls:"Ⅱ",trophic:"-1",bqi:"良好",overlay:"优秀"},
+            {city:"十堰市",river:"丹江口水库",section:"丹江口水库坝上中",cls:"Ⅱ",trophic:"中营养",bqi:null,overlay:"优秀"},
+            {city:"十堰市",river:"丹江口水库",section:"五龙泉",cls:"Ⅱ",trophic:"中营养",bqi:null,overlay:"优秀"},
+            {city:"十堰市",river:"剑河",section:"剑河口",cls:"Ⅱ",trophic:"-1",bqi:"很差",overlay:"良好"},
+            {city:"十堰市",river:"天河",section:"天河口",cls:"Ⅱ",trophic:"-1",bqi:"较差",overlay:"良好"},
+            {city:"十堰市",river:"金钱河",section:"夹河口",cls:"Ⅰ",trophic:"-1",bqi:"较差",overlay:"良好"},
+            {city:"十堰市",river:"官山河",section:"孙家湾",cls:"Ⅱ",trophic:"-1",bqi:"一般",overlay:"优秀"},
+            {city:"十堰市",river:"汉江",section:"沈湾",cls:"Ⅰ",trophic:"-1",bqi:"良好",overlay:"优秀"},
+            {city:"十堰市",river:"泗水",section:"泗河口",cls:"Ⅲ",trophic:"-1",bqi:"一般",overlay:"良好"},
+            {city:"十堰市",river:"浪河",section:"浪河口",cls:"Ⅰ",trophic:"-1",bqi:"一般",overlay:"优秀"},
+            {city:"十堰市",river:"淘谷河",section:"淘谷河口",cls:"Ⅱ",trophic:"-1",bqi:"一般",overlay:"优秀"},
+            {city:"十堰市",river:"堵河",section:"潘口水库坝上",cls:"Ⅰ",trophic:"-1",bqi:"较差",overlay:"良好"},
+            {city:"十堰市",river:"堵河",section:"焦家院",cls:"Ⅰ",trophic:"-1",bqi:"较差",overlay:"良好"},
+            {city:"十堰市",river:"滔河",section:"王河电站",cls:"Ⅱ",trophic:"-1",bqi:"良好",overlay:"优秀"},
+            {city:"十堰市",river:"神定河",section:"神定河口",cls:"Ⅲ",trophic:"-1",bqi:"很差",overlay:"一般"},
+            {city:"十堰市",river:"丹江口水库",section:"莲花",cls:"Ⅱ",trophic:"贫营养",bqi:null,overlay:"优秀"},
+            {city:"十堰市",river:"汉江",section:"陈家坡",cls:"Ⅱ",trophic:"-1",bqi:"较差",overlay:"良好"},
+            {city:"十堰市",river:"马栏河",section:"马兰河口",cls:"Ⅱ",trophic:"-1",bqi:"一般",overlay:"优秀"},
+            {city:"十堰市",river:"黄龙水库",section:"黄龙1",cls:"Ⅰ",trophic:"贫营养",bqi:null,overlay:"优秀"},
+            {city:"十堰市",river:"丹江口水库",section:"龙口",cls:"Ⅰ",trophic:"贫营养",bqi:null,overlay:"优秀"},
+            {city:"襄阳市",river:"汉江",section:"仙人渡",cls:"Ⅰ",trophic:"-1",bqi:"良好",overlay:"优秀"},
+            {city:"襄阳市",river:"汉江",section:"余家湖",cls:"Ⅱ",trophic:"-1",bqi:"优秀",overlay:"优秀"},
+            {city:"襄阳市",river:"蛮河",section:"孔湾",cls:"Ⅲ",trophic:"-1",bqi:"良好",overlay:"优秀"},
+            {city:"襄阳市",river:"漳河",section:"康家沟",cls:"Ⅰ",trophic:"-1",bqi:"较差",overlay:"良好"},
+            {city:"襄阳市",river:"唐白河",section:"张湾",cls:"Ⅱ",trophic:"-1",bqi:"一般",overlay:"优秀"},
+            {city:"襄阳市",river:"蛮河",section:"朱市",cls:"Ⅱ",trophic:"-1",bqi:"良好",overlay:"优秀"},
+            {city:"襄阳市",river:"滚河",section:"汤店",cls:"Ⅲ",trophic:"-1",bqi:"良好",overlay:"优秀"},
+            {city:"襄阳市",river:"清河",section:"王湾村",cls:"Ⅱ",trophic:"-1",bqi:"优秀",overlay:"优秀"},
+            {city:"襄阳市",river:"南河",section:"开峰峪",cls:"Ⅱ",trophic:"-1",bqi:"优秀",overlay:"优秀"},
+            {city:"襄阳市",river:"沮河",section:"马渡河",cls:"Ⅱ",trophic:"-1",bqi:"优秀",overlay:"优秀"},
+            {city:"襄阳市",river:"汉江",section:"白家湾",cls:"Ⅱ",trophic:"-1",bqi:"优秀",overlay:"优秀"},
+            {city:"襄阳市",river:"北河",section:"茨河",cls:"Ⅱ",trophic:"-1",bqi:"优秀",overlay:"优秀"},
+            {city:"宜昌市",river:"长江",section:"南津关",cls:"Ⅱ",trophic:"-1",bqi:"优秀",overlay:"优秀"},
+            {city:"宜昌市",river:"长江",section:"云池",cls:"Ⅱ",trophic:"-1",bqi:"优秀",overlay:"优秀"},
+            {city:"宜昌市",river:"长江",section:"虎牙滩",cls:"Ⅱ",trophic:"-1",bqi:"优秀",overlay:"优秀"},
+            {city:"宜昌市",river:"清江",section:"清江大桥",cls:"Ⅱ",trophic:"-1",bqi:"优秀",overlay:"优秀"},
+            {city:"宜昌市",river:"清江",section:"隔河岩水库出口",cls:"Ⅱ",trophic:"-1",bqi:"良好",overlay:"优秀"},
+            {city:"宜昌市",river:"沮河",section:"两河口",cls:"Ⅱ",trophic:"-1",bqi:"良好",overlay:"优秀"},
+            {city:"宜昌市",river:"香溪河",section:"峡口",cls:"Ⅱ",trophic:"-1",bqi:"良好",overlay:"优秀"},
+            {city:"宜昌市",river:"黄柏河",section:"汤渡河",cls:"Ⅱ",trophic:"-1",bqi:"优秀",overlay:"优秀"},
+            {city:"宜昌市",river:"渔洋河",section:"聂家河",cls:"Ⅱ",trophic:"-1",bqi:"优秀",overlay:"优秀"},
+            {city:"宜昌市",river:"三峡水库（湖北）",section:"太平溪",cls:"Ⅱ",trophic:"-1",bqi:"良好",overlay:"良好"},
+            {city:"荆州市",river:"长江",section:"陡湖堤",cls:"Ⅱ",trophic:"-1",bqi:"一般",overlay:"优秀"},
+            {city:"荆州市",river:"长江",section:"观音寺",cls:"Ⅱ",trophic:"-1",bqi:"一般",overlay:"优秀"},
+            {city:"荆州市",river:"长江",section:"砖窑",cls:"Ⅱ",trophic:"-1",bqi:"一般",overlay:"优秀"},
+            {city:"荆州市",river:"长江",section:"五七码头",cls:"Ⅱ",trophic:"-1",bqi:"一般",overlay:"优秀"},
+            {city:"荆州市",river:"长江",section:"调关",cls:"Ⅱ",trophic:"-1",bqi:"一般",overlay:"优秀"},
+            {city:"荆州市",river:"长江",section:"窑淮",cls:"Ⅱ",trophic:"-1",bqi:"一般",overlay:"良好"},
+            {city:"荆州市",river:"长江",section:"大布街",cls:"Ⅱ",trophic:"-1",bqi:"一般",overlay:"良好"},
+            {city:"荆州市",river:"长江",section:"新厂",cls:"Ⅱ",trophic:"-1",bqi:"一般",overlay:"良好"},
+            {city:"荆州市",river:"长江",section:"白家渡口",cls:"Ⅱ",trophic:"-1",bqi:"一般",overlay:"良好"},
+            {city:"荆州市",river:"长江",section:"马家寨",cls:"Ⅱ",trophic:"-1",bqi:"一般",overlay:"良好"},
+            {city:"荆州市",river:"长江",section:"洪湖",cls:"Ⅲ",trophic:"-1",bqi:"一般",overlay:"良好"},
+            {city:"荆州市",river:"长江",section:"监利半路堤",cls:"Ⅱ",trophic:"-1",bqi:"一般",overlay:"优秀"},
+            {city:"荆州市",river:"洪湖",section:"洪湖湖心",cls:"Ⅳ",trophic:"中营养",bqi:"较差",overlay:"一般"},
+            {city:"荆州市",river:"长湖",section:"长湖湖心",cls:"Ⅳ",trophic:"中营养",bqi:"较差",overlay:"一般"},
+            {city:"荆州市",river:"长湖",section:"后港",cls:"Ⅲ",trophic:"中营养",bqi:"一般",overlay:"良好"},
+            {city:"荆州市",river:"四湖总干渠",section:"新滩",cls:"Ⅳ",trophic:"-1",bqi:"较差",overlay:"较差"},
+            {city:"荆州市",river:"内荆河",section:"桐梓湖",cls:"Ⅴ",trophic:"-1",bqi:"很差",overlay:"很差"},
+            {city:"荆州市",river:"松西河",section:"郑公渡",cls:"Ⅲ",trophic:"-1",bqi:"良好",overlay:"优秀"},
+            {city:"荆州市",river:"虎渡河",section:"弥陀寺",cls:"Ⅲ",trophic:"-1",bqi:"一般",overlay:"良好"},
+            {city:"荆州市",river:"藕池河",section:"藕池",cls:"Ⅲ",trophic:"-1",bqi:"一般",overlay:"良好"},
+            {city:"荆州市",river:"沮漳河",section:"万城",cls:"Ⅲ",trophic:"-1",bqi:"较差",overlay:"较差"},
+            {city:"荆州市",river:"松滋河",section:"新江口",cls:"Ⅲ",trophic:"-1",bqi:"一般",overlay:"良好"},
+            {city:"荆门市",river:"汉江",section:"皇庄",cls:"Ⅱ",trophic:"-1",bqi:"优秀",overlay:"优秀"},
+            {city:"荆门市",river:"汉江",section:"沙洋",cls:"Ⅱ",trophic:"-1",bqi:"优秀",overlay:"优秀"},
+            {city:"荆门市",river:"汉北河",section:"新沟闸",cls:"Ⅲ",trophic:"-1",bqi:"良好",overlay:"良好"},
+            {city:"荆门市",river:"长湖",section:"朱家拐",cls:"Ⅲ",trophic:"中营养",bqi:"一般",overlay:"良好"},
+            {city:"荆门市",river:"漳河水库",section:"库心区",cls:"Ⅱ",trophic:"贫营养",bqi:"优秀",overlay:"优秀"},
+            {city:"荆门市",river:"漳河水库",section:"马头寨",cls:"Ⅱ",trophic:"贫营养",bqi:"优秀",overlay:"优秀"},
+            {city:"荆门市",river:"竹皮河",section:"马良龚家集",cls:"Ⅳ",trophic:"-1",bqi:"较差",overlay:"较差"},
+            {city:"荆门市",river:"竹皮河",section:"杨家桥",cls:"Ⅲ",trophic:"-1",bqi:"优秀",overlay:"优秀"},
+            {city:"荆门市",river:"天门河",section:"刘家桥",cls:"Ⅲ",trophic:"-1",bqi:"优秀",overlay:"优秀"},
+            {city:"荆门市",river:"蛮河",section:"利河口",cls:"Ⅱ",trophic:"-1",bqi:"优秀",overlay:"优秀"},
+            {city:"荆门市",river:"浰河",section:"浰河口",cls:"Ⅱ",trophic:"-1",bqi:"一般",overlay:"优秀"},
+            {city:"荆门市",river:"西荆河",section:"西荆河口",cls:"Ⅳ",trophic:"-1",bqi:"较差",overlay:"较差"},
+            {city:"鄂州市",river:"长江",section:"燕矶",cls:"Ⅱ",trophic:"-1",bqi:"一般",overlay:"优秀"},
+            {city:"鄂州市",river:"梁子湖",section:"梁子湖湖心",cls:"Ⅱ",trophic:"中营养",bqi:"较差",overlay:"优秀"},
+            {city:"鄂州市",river:"梁子湖",section:"梁子岛",cls:"Ⅱ",trophic:"中营养",bqi:"较差",overlay:"优秀"},
+            {city:"鄂州市",river:"洋澜湖",section:"洋澜湖湖心",cls:"Ⅴ",trophic:"中度富营养",bqi:"很差",overlay:"一般"},
+            {city:"鄂州市",river:"花马湖",section:"花马湖上",cls:"Ⅲ",trophic:"中营养",bqi:"一般",overlay:"优秀"},
+            {city:"孝感市",river:"汉北河",section:"垌冢",cls:"Ⅲ",trophic:"-1",bqi:"良好",overlay:"优秀"},
+            {city:"孝感市",river:"府河",section:"隔蒲桥",cls:"Ⅲ",trophic:"-1",bqi:"一般",overlay:"一般"},
+            {city:"孝感市",river:"沦河",section:"公路桥",cls:"Ⅲ",trophic:"-1",bqi:"一般",overlay:"一般"},
+            {city:"孝感市",river:"澴河",section:"河口大桥",cls:"Ⅲ",trophic:"-1",bqi:"良好",overlay:"良好"},
+            {city:"孝感市",river:"汉江",section:"新沟闸",cls:"Ⅱ",trophic:"-1",bqi:"优秀",overlay:"优秀"},
+            {city:"孝感市",river:"大富水",section:"城关",cls:"Ⅱ",trophic:"-1",bqi:"一般",overlay:"优秀"},
+            {city:"孝感市",river:"刁汊湖",section:"刁汊湖湖心",cls:"Ⅳ",trophic:"轻度富营养",bqi:"较差",overlay:"一般"},
+            {city:"孝感市",river:"童家湖",section:"童家湖湖心",cls:"Ⅳ",trophic:"轻度富营养",bqi:"较差",overlay:"一般"},
+            {city:"黄冈市",river:"长江",section:"中官铺",cls:"Ⅱ",trophic:"-1",bqi:"优秀",overlay:"优秀"},
+            {city:"黄冈市",river:"长江",section:"黄冈西河口",cls:"Ⅱ",trophic:"-1",bqi:"优秀",overlay:"优秀"},
+            {city:"黄冈市",river:"举水",section:"柳子港",cls:"Ⅲ",trophic:"-1",bqi:"良好",overlay:"良好"},
+            {city:"黄冈市",river:"倒水",section:"红安二水厂",cls:"Ⅱ",trophic:"-1",bqi:"优秀",overlay:"优秀"},
+            {city:"黄冈市",river:"巴河",section:"下巴河大桥",cls:"Ⅲ",trophic:"-1",bqi:"一般",overlay:"良好"},
+            {city:"黄冈市",river:"浠水",section:"兰溪大桥",cls:"Ⅱ",trophic:"-1",bqi:"优秀",overlay:"优秀"},
+            {city:"黄冈市",river:"蕲水",section:"西河驿",cls:"Ⅱ",trophic:"-1",bqi:"优秀",overlay:"优秀"},
+            {city:"黄冈市",river:"龙感湖",section:"龙感湖湖心",cls:"Ⅳ",trophic:"中营养",bqi:"较差",overlay:"一般"},
+            {city:"黄冈市",river:"武山湖",section:"武山湖湖心",cls:"劣Ⅴ",trophic:"中度富营养",bqi:"很差",overlay:"很差"},
+            {city:"黄冈市",river:"白莲河水库",section:"白莲河水库出口",cls:"Ⅱ",trophic:"中营养",bqi:"优秀",overlay:"优秀"},
+            {city:"黄冈市",river:"遗爱湖",section:"遗爱湖湖心",cls:"Ⅳ",trophic:"中营养",bqi:"较差",overlay:"一般"},
+            {city:"黄冈市",river:"长江",section:"黄颡口",cls:"Ⅱ",trophic:"-1",bqi:"优秀",overlay:"优秀"},
+            {city:"咸宁市",river:"长江",section:"王家边",cls:"Ⅱ",trophic:"-1",bqi:"优秀",overlay:"优秀"},
+            {city:"咸宁市",river:"陆水",section:"陆水水库坝上",cls:"Ⅱ",trophic:"-1",bqi:"优秀",overlay:"优秀"},
+            {city:"咸宁市",river:"陆水",section:"陆溪口",cls:"Ⅱ",trophic:"-1",bqi:"一般",overlay:"良好"},
+            {city:"咸宁市",river:"西凉湖",section:"西凉湖湖心",cls:"Ⅲ",trophic:"中营养",bqi:"良好",overlay:"良好"},
+            {city:"咸宁市",river:"斧头湖",section:"斧头湖湖心",cls:"Ⅲ",trophic:"中营养",bqi:"良好",overlay:"优秀"},
+            {city:"咸宁市",river:"淦河",section:"温泉橡胶坝",cls:"Ⅲ",trophic:"-1",bqi:"良好",overlay:"良好"},
+            {city:"咸宁市",river:"青山水库",section:"青山水库",cls:"Ⅱ",trophic:"中营养",bqi:"优秀",overlay:"优秀"},
+            {city:"随州市",river:"涢水",section:"随县安居",cls:"Ⅱ",trophic:"-1",bqi:"优秀",overlay:"优秀"},
+            {city:"随州市",river:"㵐水",section:"厥水大桥",cls:"Ⅱ",trophic:"-1",bqi:"优秀",overlay:"优秀"},
+            {city:"随州市",river:"澴水",section:"洪山大桥",cls:"Ⅲ",trophic:"-1",bqi:"较差",overlay:"较差"},
+            {city:"随州市",river:"府河",section:"三里岗",cls:"Ⅲ",trophic:"-1",bqi:"较差",overlay:"较差"},
+            {city:"恩施州",river:"清江",section:"大沙坝",cls:"Ⅱ",trophic:"-1",bqi:"优秀",overlay:"优秀"},
+            {city:"恩施州",river:"清江",section:"带水河口",cls:"Ⅱ",trophic:"-1",bqi:"优秀",overlay:"优秀"},
+            {city:"恩施州",river:"清江",section:"马水河",cls:"Ⅰ",trophic:"-1",bqi:"优秀",overlay:"优秀"},
+            {city:"恩施州",river:"溇水",section:"江口",cls:"Ⅰ",trophic:"-1",bqi:"优秀",overlay:"优秀"},
+            {city:"恩施州",river:"酉水",section:"来凤",cls:"Ⅱ",trophic:"-1",bqi:"良好",overlay:"良好"},
+            {city:"恩施州",river:"郁江",section:"忠路",cls:"Ⅰ",trophic:"-1",bqi:"良好",overlay:"良好"},
+            {city:"恩施州",river:"沿渡河",section:"沿渡河",cls:"Ⅰ",trophic:"-1",bqi:"优秀",overlay:"优秀"},
+            {city:"恩施州",river:"马水河",section:"建始",cls:"Ⅱ",trophic:"-1",bqi:"优秀",overlay:"优秀"},
+            {city:"恩施州",river:"忠建河",section:"宣恩",cls:"Ⅱ",trophic:"-1",bqi:"良好",overlay:"良好"},
+            {city:"恩施州",river:"唐岩河",section:"咸丰",cls:"Ⅱ",trophic:"-1",bqi:"一般",overlay:"一般"},
+            {city:"恩施州",river:"酉水河",section:"百福司",cls:"Ⅱ",trophic:"-1",bqi:"良好",overlay:"良好"},
+            {city:"恩施州",river:"清江",section:"恩施清江大桥",cls:"Ⅱ",trophic:"-1",bqi:"一般",overlay:"一般"},
+            {city:"恩施州",river:"清江",section:"利川",cls:"Ⅱ",trophic:"-1",bqi:"良好",overlay:"良好"},
+            {city:"恩施州",river:"溇水",section:"鹤峰",cls:"Ⅰ",trophic:"-1",bqi:"良好",overlay:"良好"},
+            {city:"恩施州",river:"野三河",section:"野三河",cls:"Ⅰ",trophic:"-1",bqi:"良好",overlay:"良好"},
+            {city:"恩施州",river:"沿渡河",section:"罗溪坝",cls:"Ⅱ",trophic:"-1",bqi:"较差",overlay:"较差"},
+            {city:"仙桃市",river:"汉江",section:"仙桃水厂",cls:"Ⅱ",trophic:"-1",bqi:"良好",overlay:"良好"},
+            {city:"仙桃市",river:"通顺河",section:"仙桃三伏潭",cls:"Ⅳ",trophic:"-1",bqi:"较差",overlay:"较差"},
+            {city:"仙桃市",river:"东荆河",section:"联合桥",cls:"Ⅲ",trophic:"-1",bqi:"一般",overlay:"良好"},
+            {city:"天门市",river:"汉北河",section:"天门",cls:"Ⅲ",trophic:"-1",bqi:"一般",overlay:"一般"},
+            {city:"天门市",river:"天门河",section:"拖市",cls:"Ⅲ",trophic:"-1",bqi:"一般",overlay:"一般"},
+            {city:"天门市",river:"汈汊湖",section:"汈汊湖",cls:"Ⅳ",trophic:"中营养",bqi:"较差",overlay:"一般"},
+            {city:"天门市",river:"汉江",section:"岳口",cls:"Ⅱ",trophic:"-1",bqi:"优秀",overlay:"优秀"},
+            {city:"天门市",river:"大富水",section:"应城",cls:"Ⅲ",trophic:"-1",bqi:"较差",overlay:"较差"},
+            {city:"潜江市",river:"汉江",section:"泽口",cls:"Ⅱ",trophic:"-1",bqi:"良好",overlay:"优秀"},
+            {city:"潜江市",river:"东荆河",section:"新沟坝",cls:"Ⅱ",trophic:"-1",bqi:"良好",overlay:"良好"},
+            {city:"潜江市",river:"兴隆河",section:"刘桥",cls:"Ⅱ",trophic:"-1",bqi:"一般",overlay:"良好"},
+            {city:"神农架林区",river:"香溪河",section:"湘坪河",cls:"Ⅰ",trophic:"-1",bqi:"优秀",overlay:"优秀"},
+            {city:"神农架林区",river:"南河",section:"九湖",cls:"Ⅰ",trophic:"-1",bqi:"优秀",overlay:"优秀"},
+        ]
+    };
+
+
+    rawData["2025h1"] = rawData["2025h1"] || [];
+
+    // 动态注入虚拟流域字段
+    function injectMockBasins(data) {
+        data.forEach(item => {
+            if (['武汉市','宜昌市','荆州市','鄂州市','黄石市','黄冈市','咸宁市','恩施州', '神农架林区'].includes(item.city)) {
+                item.basin1 = 'changjiang';
+                item.basin2 = ['武汉市','鄂州市'].includes(item.city) ? 'hanjiang' : 'minjiang';
+            } else if (['随州市','孝感市', '荆门市', '天门市', '仙桃市', '潜江市'].includes(item.city)) {
+                item.basin1 = 'huaihe';
+                item.basin2 = 'huaihe_main';
+            } else {
+                item.basin1 = 'huanghe';
+                item.basin2 = 'weihe';
+            }
+        });
+    }
+    injectMockBasins(rawData["2024h2"]);
+    injectMockBasins(rawData["2025h1"]);
+
+    const subBasinData = {
+        'changjiang': [{val: 'hanjiang', text: '汉江水系'}, {val: 'minjiang', text: '岷江水系'}],
+        'huaihe': [{val: 'yishu', text: '沂沭泗水系'}, {val: 'huaihe_main', text: '淮河干流'}],
+        'huanghe': [{val: 'weihe', text: '渭河水系'}, {val: 'fenhe', text: '汾河水系'}]
+    };
+
+    /* ================================================================
+       STATE & CORE LOGIC
+       ================================================================ */
+    let currentPeriod = '2024h2';
+    let currentTab = 'all';
+    let filterB1 = '';
+    let filterB2 = '';
+    let chartFilter = null; // { type: 'cls'|'bqi', value: string }
+
+    function getFilteredData() {
+        let data = rawData[currentPeriod] || [];
+        // 1. 流域筛选
+        if (filterB1) data = data.filter(r => r.basin1 === filterB1);
+        if (filterB2) data = data.filter(r => r.basin2 === filterB2);
+        // 2. 图表联动筛选
+        if (chartFilter) {
+            if (chartFilter.type === 'cls') data = data.filter(r => r.cls === chartFilter.value);
+            else if (chartFilter.type === 'bqi') data = data.filter(r => r.bqi === chartFilter.value);
+        }
+        // 3. Tab筛选
+        if (currentTab === 'lake') return data.filter(r => r.trophic !== '-1');
+        if (currentTab === 'river') return data.filter(r => r.trophic === '-1');
+        if (currentTab === 'problem') return data.filter(r => ['较差','很差'].includes(r.overlay));
+        return data;
+    }
+
+    /* ================================================================
+       SIDEBAR & CASCADE SELECT
+       ================================================================ */
+    const sidebar = document.getElementById('sidebar');
+    const toggleBtn = document.getElementById('toggleSidebarBtn');
+    const toggleIcon = document.getElementById('toggleIcon');
+    let isCollapsed = false;
+
+    toggleBtn.addEventListener('click', () => {
+        isCollapsed = !isCollapsed;
+        if (isCollapsed) {
+            sidebar.classList.remove('w-[270px]'); sidebar.classList.add('w-[80px]', 'hide-text', 'collapsed-sidebar');
+            toggleIcon.style.transform = 'rotate(180deg)';
+        } else {
+            sidebar.classList.remove('w-[80px]', 'hide-text', 'collapsed-sidebar'); sidebar.classList.add('w-[270px]');
+            toggleIcon.style.transform = 'rotate(0deg)';
+        }
+        setTimeout(() => { Object.values(chartInstances).forEach(c => c && c.resize()); }, 300);
+    });
+
+    function toggleSubmenu(id) {
+        if (isCollapsed) return;
+        const submenu = document.getElementById(id);
+        const chevron = submenu.previousElementSibling.querySelector('.sidebar-chevron');
+        if (submenu.style.maxHeight && submenu.style.maxHeight !== '0px') {
+            submenu.style.maxHeight = '0px'; chevron.style.transform = 'rotate(0deg)';
+        } else {
+            submenu.style.maxHeight = submenu.scrollHeight + "px"; chevron.style.transform = 'rotate(180deg)';
+        }
+    }
+
+    const elOne = document.getElementById('river-select-one');
+    const elTwo = document.getElementById('river-select-two');
+    const wrapOne = document.getElementById('wrapper-one');
+    const wrapTwo = document.getElementById('wrapper-two');
+
+    function handleLevelOneChange() {
+        filterB1 = elOne.value; filterB2 = '';
+        chartFilter = null;
+        checkValue('one');
+        elTwo.innerHTML = '<option value="" disabled selected hidden>请选择二级流域</option>';
+        elTwo.value = ""; checkValue('two');
+
+        if (filterB1 && subBasinData[filterB1]) {
+            elTwo.disabled = false;
+            elTwo.classList.remove('text-slate-400'); elTwo.classList.add('text-slate-700');
+            subBasinData[filterB1].forEach(item => {
+                const option = document.createElement('option');
+                option.value = item.val; option.textContent = item.text;
+                elTwo.appendChild(option);
+            });
+        } else {
+            elTwo.disabled = true;
+            elTwo.classList.add('text-slate-400'); elTwo.classList.remove('text-slate-700');
+        }
+        refreshAll();
+    }
+
+    function checkValue(level) {
+        if (level === 'two') filterB2 = elTwo.value;
+        const wrapper = level === 'one' ? wrapOne : wrapTwo;
+        const select = level === 'one' ? elOne : elTwo;
+        if (select.value) wrapper.classList.add('has-value');
+        else wrapper.classList.remove('has-value');
+        if (level === 'two') refreshAll();
+    }
+
+    function clearSelection(level) {
+        if (level === 'one') { elOne.value = ""; chartFilter = null; handleLevelOneChange(); }
+        else { elTwo.value = ""; checkValue('two'); }
+    }
+
+    function handlePeriodChange() {
+        currentPeriod = document.getElementById('period-select').value;
+        chartFilter = null;
+        refreshAll();
+    }
+
+    /* ================================================================
+       KPI CARDS RENDERING
+       ================================================================ */
+    function renderKpiCards() {
+        const data = getFilteredData();
+        const total = data.length;
+        let excellentCount = 0, goodPlusCount = 0, poorCount = 0;
+
+        data.forEach(r => {
+            if (r.overlay === '优秀') { excellentCount++; goodPlusCount++; }
+            else if (r.overlay === '良好') { goodPlusCount++; }
+            else if (['较差','很差'].includes(r.overlay)) { poorCount++; }
+        });
+
+        const exRate = total ? ((excellentCount/total)*100).toFixed(1) : '0.0';
+        const gpRate = total ? ((goodPlusCount/total)*100).toFixed(1) : '0.0';
+
+        document.getElementById('kpi-cards').innerHTML = `
+        <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm hover:shadow-md transition-all duration-300 relative overflow-hidden group">
+            <div class="absolute -right-8 -top-8 w-32 h-32 bg-gradient-to-br from-slate-100 to-slate-200/50 rounded-full blur-2xl transition-transform group-hover:scale-110 z-0"></div>
+            <div class="relative z-10 flex justify-between items-start">
+                <div class="flex flex-col gap-1">
+                    <span class="text-[13px] font-bold text-slate-500">监测断面总数</span>
+                    <div class="flex items-baseline gap-1.5 mt-1">
+                        <span class="text-[32px] font-black text-slate-800 tracking-tight leading-none">${total}</span>
+                        <span class="text-[12px] font-medium text-slate-400">个</span>
+                    </div>
+                </div>
+                <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-slate-100 to-slate-50 flex items-center justify-center border border-slate-200/60 shadow-inner">
+                    <span class="material-symbols-outlined text-[24px] text-slate-600">format_list_numbered</span>
+                </div>
+            </div>
+            <div class="relative z-10 mt-4 pt-3 border-t border-slate-100 flex items-center gap-2">
+                <span class="material-symbols-outlined text-[14px] text-slate-400">update</span>
+                <span class="text-[12px] text-slate-500 font-medium">当前筛选周期下数据</span>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm hover:shadow-md transition-all duration-300 relative overflow-hidden group">
+            <div class="absolute -right-8 -top-8 w-32 h-32 bg-gradient-to-br from-emerald-100 to-emerald-50/50 rounded-full blur-2xl transition-transform group-hover:scale-110 z-0"></div>
+            <div class="relative z-10 flex justify-between items-start">
+                <div class="flex flex-col gap-1">
+                    <span class="text-[13px] font-bold text-slate-500">优秀率</span>
+                    <div class="flex items-baseline gap-1 mt-1">
+                        <span class="text-[32px] font-black text-emerald-600 tracking-tight leading-none">${exRate}</span>
+                        <span class="text-[18px] font-bold text-emerald-600">%</span>
+                    </div>
+                </div>
+                <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-emerald-100 to-emerald-50 flex items-center justify-center border border-emerald-200/60 shadow-inner">
+                    <span class="material-symbols-outlined text-[24px] text-emerald-600">verified</span>
+                </div>
+            </div>
+            <div class="relative z-10 mt-4 pt-3 border-t border-slate-100 flex items-center gap-2">
+                <span class="badge badge-excellent">${excellentCount} 个</span>
+                <span class="text-[12px] text-slate-500 font-medium">叠加评价优秀</span>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm hover:shadow-md transition-all duration-300 relative overflow-hidden group">
+            <div class="absolute -right-8 -top-8 w-32 h-32 bg-gradient-to-br from-blue-100 to-blue-50/50 rounded-full blur-2xl transition-transform group-hover:scale-110 z-0"></div>
+            <div class="relative z-10 flex justify-between items-start">
+                <div class="flex flex-col gap-1">
+                    <span class="text-[13px] font-bold text-slate-500">优良率</span>
+                    <div class="flex items-baseline gap-1 mt-1">
+                        <span class="text-[32px] font-black text-blue-600 tracking-tight leading-none">${gpRate}</span>
+                        <span class="text-[18px] font-bold text-blue-600">%</span>
+                    </div>
+                </div>
+                <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-blue-100 to-blue-50 flex items-center justify-center border border-blue-200/60 shadow-inner">
+                    <span class="material-symbols-outlined text-[24px] text-blue-600">thumb_up</span>
+                </div>
+            </div>
+            <div class="relative z-10 mt-4 pt-3 border-t border-slate-100 flex items-center gap-2">
+                <span class="badge badge-good">${goodPlusCount} 个</span>
+                <span class="text-[12px] text-slate-500 font-medium">包含优秀与良好</span>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm hover:shadow-md transition-all duration-300 relative overflow-hidden group">
+            <div class="absolute -right-8 -top-8 w-32 h-32 bg-gradient-to-br from-orange-100 to-orange-50/50 rounded-full blur-2xl transition-transform group-hover:scale-110 z-0"></div>
+            <div class="relative z-10 flex justify-between items-start">
+                <div class="flex flex-col gap-1">
+                    <span class="text-[13px] font-bold text-slate-500">问题断面</span>
+                    <div class="flex items-baseline gap-1 mt-1">
+                        <span class="text-[32px] font-black text-orange-600 tracking-tight leading-none">${poorCount}</span>
+                        <span class="text-[12px] font-medium text-slate-400">个</span>
+                    </div>
+                </div>
+                <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-orange-100 to-orange-50 flex items-center justify-center border border-orange-200/60 shadow-inner">
+                    <span class="material-symbols-outlined text-[24px] text-orange-600">warning</span>
+                </div>
+            </div>
+            <div class="relative z-10 mt-4 pt-3 border-t border-slate-100 flex items-center gap-2">
+                <span class="badge badge-poor">${poorCount} 个</span>
+                <span class="text-[12px] text-slate-500 font-medium">评价为较差与很差</span>
+            </div>
+        </div>
+        `;
+    }
+
+    /* ================================================================
+       ECHARTS RENDERING (全面优化色彩与排版)
+       ================================================================ */
+    const chartInstances = {};
+
+    // 统一的色彩字典（BQI 与 叠加评价共用）
+    const overlayColors = ['#10b981', '#3b82f6', '#fcd34d', '#f97316', '#ef4444'];
+    const bqiColorMap = { '优秀': '#10b981', '良好': '#3b82f6', '一般': '#fcd34d', '较差': '#f97316', '很差': '#ef4444' };
+
+    // 严格的国家标准地表水质量类别颜色（调整为更现代的渐变色系）
+    const natWaterClassColors = {
+        'Ⅰ': { top: '#a5f3fc', bottom: '#06b6d4' }, // 柔和青
+        'Ⅱ': { top: '#93c5fd', bottom: '#3b82f6' }, // 柔和蓝
+        'Ⅲ': { top: '#86efac', bottom: '#22c55e' }, // 柔和绿
+        'Ⅳ': { top: '#fde047', bottom: '#eab308' }, // 柔和黄
+        'Ⅴ': { top: '#fdba74', bottom: '#f97316' }, // 柔和橙
+        '劣Ⅴ': { top: '#fca5a5', bottom: '#ef4444' } // 柔和红
+    };
+
+    function initCharts() {
+        chartInstances.chartMatrix = echarts.init(document.getElementById('chart-matrix'));
+        chartInstances.chartPie = echarts.init(document.getElementById('chart-pie'));
+        chartInstances.chartWaterClass = echarts.init(document.getElementById('chart-water-class'));
+        chartInstances.chartBqi = echarts.init(document.getElementById('chart-bqi'));
+    }
+
+    function renderCharts() {
+        const data = getFilteredData();
+        const textCol = '#64748b';
+
+        // --- 1. 气泡矩阵图 (彻底解决文字遮挡和左侧留白问题) ---
+        const cities = [...new Set(data.map(r => r.city))];
+        const overlayLevels = ['优秀', '良好', '一般', '较差', '很差'];
+
+        const bubbleData = [];
+        let maxCount = 0;
+
+        cities.forEach((city, xIndex) => {
+            overlayLevels.forEach((level, yIndex) => {
+                const count = data.filter(d => d.city === city && d.overlay === level).length;
+                if (count > 0) {
+                    bubbleData.push([xIndex, yIndex, count]);
+                    if (count > maxCount) maxCount = count;
+                }
+            });
+        });
+
+        chartInstances.chartMatrix.setOption({
+            tooltip: {
+                position: 'top',
+                backgroundColor: 'rgba(255,255,255,0.95)',
+                borderColor: '#e2e8f0',
+                textStyle: { color: '#334155' },
+                formatter: function (params) {
+                    return `<div class="font-bold mb-1">${cities[params.value[0]]}</div>
+                            <div class="flex items-center gap-2">
+                                <span class="w-2 h-2 rounded-full" style="background:${overlayColors[params.value[1]]}"></span>
+                                ${overlayLevels[params.value[1]]}: <span class="font-bold">${params.value[2]}</span> 个
+                            </div>`;
+                }
+            },
+            // [修复] 调整 left 缩小空白，调整 bottom 留出足够倾斜文字空间
+            grid: { top: '8%', left: '3%', right: '5%', bottom: '18%', containLabel: true },
+            xAxis: {
+                type: 'category',
+                data: cities,
+                // [修复] boundaryGap 开启，两端留出半个格子的空间，不再紧贴边缘发生遮挡
+                boundaryGap: true,
+                splitLine: { show: true, lineStyle: { color: '#f1f5f9', type: 'dashed' } },
+                axisLine: { show: false },
+                axisTick: { show: false },
+                axisLabel: { color: textCol, interval: 0, rotate: 35, fontSize: 11 }
+            },
+            yAxis: {
+                type: 'category',
+                data: overlayLevels,
+                // [修复] boundaryGap 同样开启，保护上下边缘气泡
+                boundaryGap: true,
+                axisLine: { show: false },
+                axisTick: { show: false },
+                // [修复] margin 加大，强制拉开文字与气泡的距离
+                axisLabel: { color: textCol, fontWeight: 'bold', margin: 12 },
+                splitLine: { show: true, lineStyle: { color: '#f1f5f9' } }
+            },
+            series: [{
+                name: 'Punch Card',
+                type: 'scatter',
+                symbolSize: function (val) {
+                    // [修复] 稍微控制最大气泡的半径，防止互相压盖太严重
+                    return (val[2] / (maxCount || 1)) * 20 + 8;
+                },
+                itemStyle: {
+                    color: function(params) { return overlayColors[params.value[1]]; },
+                    shadowBlur: 10,
+                    shadowColor: 'rgba(0, 0, 0, 0.1)'
+                },
+                data: bubbleData,
+                animationDelay: function (idx) { return idx * 20; }
+            }]
+        }, true);
+
+        // --- 2. 环形占比图 (与 BQI 色彩完全一致) ---
+        const pieData = overlayLevels.map((l, i) => ({
+            name: l, value: data.filter(d=>d.overlay===l).length, itemStyle: {color: overlayColors[i]}
+        })).filter(d => d.value > 0);
+
+        chartInstances.chartPie.setOption({
+            tooltip: { trigger: 'item', backgroundColor: 'rgba(255,255,255,0.95)', textStyle: { color: '#334155' } },
+            legend: { orient: 'vertical', right: '5%', top: 'center', icon: 'circle', textStyle: { color: textCol } },
+            series: [{
+                type: 'pie', radius: ['45%', '70%'], center: ['40%', '50%'],
+                itemStyle: { borderColor: '#fff', borderWidth: 2, borderRadius: 6 },
+                label: { show: false },
+                data: pieData
+            }]
+        }, true);
+
+        // --- 3. 水质类别分布 (渐变色 + 点击联动) ---
+        const wcCount = {};
+        data.forEach(r => { wcCount[r.cls] = (wcCount[r.cls] || 0) + 1; });
+        const wcOrder = ['Ⅰ', 'Ⅱ', 'Ⅲ', 'Ⅳ', 'Ⅴ', '劣Ⅴ'];
+        const wcKeys = wcOrder.filter(k => wcCount[k] !== undefined);
+
+        chartInstances.chartWaterClass.setOption({
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: { type: 'shadow', shadowStyle: { color: 'rgba(241, 245, 249, 0.4)' } },
+                backgroundColor: 'rgba(255,255,255,0.95)',
+                borderColor: '#e2e8f0',
+                padding: [10, 16],
+                textStyle: { color: '#334155' },
+                extraCssText: 'box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); border-radius: 8px;'
+            },
+            grid: { top: '15%', left: '3%', right: '4%', bottom: '5%', containLabel: true },
+            xAxis: {
+                type: 'category',
+                data: wcKeys,
+                axisTick: { show: false },
+                axisLine: { lineStyle: { color: '#e2e8f0' } },
+                axisLabel: { color: '#64748b', fontWeight: 'bold', margin: 12, fontSize: 13 }
+            },
+            yAxis: {
+                type: 'value',
+                splitLine: { lineStyle: { color: '#f1f5f9', type: 'dashed' } },
+                axisLabel: { color: '#94a3b8' }
+            },
+            series: [{
+                name: '断面数量',
+                type: 'bar',
+                barWidth: '40%',
+                barMaxWidth: 32, // 自适应宽度，但不超过32px
+                showBackground: true, // 开启背景槽
+                backgroundStyle: { color: 'rgba(241, 245, 249, 0.6)', borderRadius: [6, 6, 0, 0] },
+                label: {
+                    show: true,
+                    position: 'top',
+                    distance: 8,
+                    fontWeight: '900',
+                    fontSize: 14,
+                    color: '#475569' // 深灰色的字体让数据更清晰
+                },
+                itemStyle: {
+                    borderRadius: [6, 6, 0, 0], // 增加圆角显得更圆润
+                    color: function(params) {
+                        const c = natWaterClassColors[params.name];
+                        if (!c) return '#ccc';
+                        return new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                            { offset: 0, color: c.top },
+                            { offset: 1, color: c.bottom }
+                        ]);
+                    },
+                    shadowBlur: 8,
+                    shadowColor: 'rgba(0,0,0,0.08)',
+                    shadowOffsetY: 2
+                },
+                emphasis: {
+                    itemStyle: { shadowBlur: 15, shadowColor: 'rgba(0,0,0,0.2)' }
+                },
+                data: wcKeys.map(k => wcCount[k])
+            }]
+        }, true);
+
+        // 点击联动 (这部分保留你原有的代码)
+        chartInstances.chartWaterClass.off('click');
+        chartInstances.chartWaterClass.on('click', function(params) {
+            if (chartFilter && chartFilter.type === 'cls' && chartFilter.value === params.name) {
+                chartFilter = null;
+            } else {
+                chartFilter = { type: 'cls', value: params.name };
+            }
+            syncChartHighlight();
+            refreshTable();
+            renderKpiCards();
+            updateFilterBadge();
+        });
+
+        // --- 4. BQI评价结果分布 (渐变色 + 点击联动) ---
+        // 同样对 BQI 的色彩做高级感柔和处理
+        const bqiGradients = {
+            '优秀': { top: '#6ee7b7', bottom: '#059669' },
+            '良好': { top: '#93c5fd', bottom: '#2563eb' },
+            '一般': { top: '#fde047', bottom: '#d97706' },
+            '较差': { top: '#fdba74', bottom: '#ea580c' },
+            '很差': { top: '#fca5a5', bottom: '#dc2626' }
+        };
+        const bqiCount = {};
+        data.filter(r => r.bqi && r.bqi !== '/').forEach(r => { bqiCount[r.bqi] = (bqiCount[r.bqi] || 0) + 1; });
+        const bqiKeys = overlayLevels.filter(k => bqiCount[k] !== undefined);
+
+        chartInstances.chartBqi.setOption({
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: { type: 'shadow', shadowStyle: { color: 'rgba(241, 245, 249, 0.4)' } },
+                backgroundColor: 'rgba(255,255,255,0.95)',
+                borderColor: '#e2e8f0',
+                padding: [10, 16],
+                textStyle: { color: '#334155' },
+                extraCssText: 'box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); border-radius: 8px;'
+            },
+            grid: { top: '15%', left: '3%', right: '4%', bottom: '5%', containLabel: true },
+            xAxis: {
+                type: 'category',
+                data: bqiKeys,
+                axisTick: { show: false },
+                axisLine: { lineStyle: { color: '#e2e8f0' } },
+                axisLabel: { color: '#64748b', fontWeight: 'bold', margin: 12, fontSize: 13 }
+            },
+            yAxis: {
+                type: 'value',
+                splitLine: { lineStyle: { color: '#f1f5f9', type: 'dashed' } },
+                axisLabel: { color: '#94a3b8' }
+            },
+            series: [{
+                name: '断面数量',
+                type: 'bar',
+                barWidth: '40%',
+                barMaxWidth: 32,
+                showBackground: true,
+                backgroundStyle: { color: 'rgba(241, 245, 249, 0.6)', borderRadius: [6, 6, 0, 0] },
+                label: {
+                    show: true,
+                    position: 'top',
+                    distance: 8,
+                    fontWeight: '900',
+                    fontSize: 14,
+                    color: '#475569'
+                },
+                itemStyle: {
+                    borderRadius: [6, 6, 0, 0],
+                    color: function(params) {
+                        const c = bqiGradients[params.name];
+                        if (!c) return '#ccc';
+                        return new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                            { offset: 0, color: c.top },
+                            { offset: 1, color: c.bottom }
+                        ]);
+                    },
+                    shadowBlur: 8,
+                    shadowColor: 'rgba(0,0,0,0.08)',
+                    shadowOffsetY: 2
+                },
+                emphasis: {
+                    itemStyle: { shadowBlur: 15, shadowColor: 'rgba(0,0,0,0.2)' }
+                },
+                data: bqiKeys.map(k => bqiCount[k])
+            }]
+        }, true);
+
+        // 点击联动 (这部分保留你原有的代码)
+        chartInstances.chartBqi.off('click');
+        chartInstances.chartBqi.on('click', function(params) {
+            if (chartFilter && chartFilter.type === 'bqi' && chartFilter.value === params.name) {
+                chartFilter = null;
+            } else {
+                chartFilter = { type: 'bqi', value: params.name };
+            }
+            syncChartHighlight();
+            refreshTable();
+            renderKpiCards();
+            updateFilterBadge();
+        });
+    }
+
+    /* ================================================================
+       CHART LINKAGE HELPERS
+       ================================================================ */
+    function syncChartHighlight() {
+        // 水质类别分布高亮
+        if (chartInstances.chartWaterClass) {
+            const wcData = chartInstances.chartWaterClass.getOption().series[0].data;
+            chartInstances.chartWaterClass.dispatchAction({ type: 'downplay', seriesIndex: 0 });
+            if (chartFilter && chartFilter.type === 'cls') {
+                const idx = (chartInstances.chartWaterClass.getOption().xAxis[0].data || []).indexOf(chartFilter.value);
+                if (idx >= 0) chartInstances.chartWaterClass.dispatchAction({ type: 'highlight', seriesIndex: 0, dataIndex: idx });
+            }
+        }
+        // BQI分布高亮
+        if (chartInstances.chartBqi) {
+            chartInstances.chartBqi.dispatchAction({ type: 'downplay', seriesIndex: 0 });
+            if (chartFilter && chartFilter.type === 'bqi') {
+                const idx = (chartInstances.chartBqi.getOption().xAxis[0].data || []).indexOf(chartFilter.value);
+                if (idx >= 0) chartInstances.chartBqi.dispatchAction({ type: 'highlight', seriesIndex: 0, dataIndex: idx });
+            }
+        }
+    }
+
+    function updateFilterBadge() {
+        const badge = document.getElementById('chart-filter-badge');
+        if (!badge) return;
+        if (chartFilter) {
+            const label = chartFilter.type === 'cls' ? '水质类别' : 'BQI评价';
+            badge.innerHTML = `<span class="inline-flex items-center gap-1.5 px-3 py-1 bg-blue-50 text-blue-600 rounded-full text-[12px] font-bold border border-blue-200 cursor-pointer hover:bg-red-50 hover:text-red-500 hover:border-red-200 transition-colors" onclick="clearChartFilter()">
+                ${label}: ${chartFilter.value} <i class="ri-close-line text-[14px]"></i>
+            </span>`;
+            badge.style.display = 'flex';
+        } else {
+            badge.innerHTML = '';
+            badge.style.display = 'none';
+        }
+    }
+
+    function clearChartFilter() {
+        chartFilter = null;
+        syncChartHighlight();
+        refreshTable();
+        renderKpiCards();
+        updateFilterBadge();
+    }
+
+    /* ================================================================
+       TABLE & SMART PAGINATION
+       ================================================================ */
+    const rowsPerPage = 10;
+    let currentPage = 1;
+    let currentTableData = [];
+
+    function switchTab(tabId, btn) {
+        currentTab = tabId;
+        document.querySelectorAll('.tab-btn').forEach(b => { b.classList.remove('active'); b.classList.add('inactive'); });
+        btn.classList.remove('inactive'); btn.classList.add('active');
+        refreshTable();
+    }
+
+    function refreshTable() {
+        currentTableData = getFilteredData();
+        document.getElementById('total-items').innerText = currentTableData.length;
+        currentPage = 1;
+        renderTablePage();
+    }
+
+    function renderTablePage() {
+        const thead = document.getElementById('dynamic-thead');
+        const tbody = document.getElementById('dynamic-tbody');
+        thead.innerHTML = `<tr><th>序号</th><th>责任城市</th><th>河流/湖库</th><th>断面名称</th><th>水质类别</th><th>湖库营养状态</th><th>BQI评价</th><th>叠加评价结果</th></tr>`;
+
+        const start = (currentPage - 1) * rowsPerPage;
+        const pageData = currentTableData.slice(start, start + rowsPerPage);
+
+        let html = '';
+        pageData.forEach((r, i) => {
+            let badgeMap = {'优秀':'badge-excellent','良好':'badge-good','一般':'badge-fair','较差':'badge-poor','很差':'badge-very-poor'};
+            const trophic = r.trophic === '-1' ? '-' : r.trophic;
+            const bqi = r.bqi === '/' || !r.bqi ? '-' : r.bqi;
+            html += `<tr>
+                <td class="text-slate-400 font-medium">${start + i + 1}</td>
+                <td class="font-bold text-slate-700">${r.city}</td><td>${r.river}</td><td>${r.section}</td>
+                <td><span class="font-bold">${r.cls}</span></td>
+                <td>${trophic}</td><td>${bqi}</td>
+                <td><span class="badge ${badgeMap[r.overlay]||'badge-fair'}">${r.overlay}</span></td>
+            </tr>`;
+        });
+        tbody.innerHTML = html || '<tr><td colspan="8" class="py-12 text-center text-slate-400">暂无符合条件的数据</td></tr>';
+
+        renderPaginationUI();
+    }
+
+    function renderPaginationUI() {
+        const totalPages = Math.ceil(currentTableData.length / rowsPerPage) || 1;
+        const container = document.getElementById('pagination-controls');
+        let html = '';
+
+        const prevDis = currentPage === 1;
+        html += `<button onclick="goToPage(${currentPage-1})" ${prevDis?'disabled':''} class="px-3 py-1.5 text-[13px] border border-slate-200 rounded-md ${prevDis?'text-slate-400 bg-slate-50 cursor-not-allowed':'text-slate-600 hover:bg-blue-50 hover:text-blue-600 transition-colors'}">上一页</button>`;
+
+        let pages = [];
+        if (totalPages <= 7) {
+            for (let i = 1; i <= totalPages; i++) pages.push(i);
+        } else {
+            if (currentPage <= 4) pages = [1, 2, 3, 4, 5, '...', totalPages];
+            else if (currentPage >= totalPages - 3) pages = [1, '...', totalPages-4, totalPages-3, totalPages-2, totalPages-1, totalPages];
+            else pages = [1, '...', currentPage-1, currentPage, currentPage+1, '...', totalPages];
+        }
+
+        pages.forEach(p => {
+            if (p === '...') html += `<span class="px-2 text-slate-400 flex items-end pb-1 font-bold tracking-widest">...</span>`;
+            else if (p === currentPage) html += `<button class="px-3 py-1.5 text-[13px] font-bold border border-blue-500 bg-blue-500 text-white rounded-md shadow-sm">${p}</button>`;
+            else html += `<button onclick="goToPage(${p})" class="px-3 py-1.5 text-[13px] border border-slate-200 rounded-md text-slate-600 hover:bg-slate-50 transition-colors">${p}</button>`;
+        });
+
+        const nextDis = currentPage === totalPages;
+        html += `<button onclick="goToPage(${currentPage+1})" ${nextDis?'disabled':''} class="px-3 py-1.5 text-[13px] border border-slate-200 rounded-md ${nextDis?'text-slate-400 bg-slate-50 cursor-not-allowed':'text-slate-600 hover:bg-blue-50 hover:text-blue-600 transition-colors'}">下一页</button>`;
+
+        container.innerHTML = html;
+    }
+
+    function goToPage(page) {
+        const totalPages = Math.ceil(currentTableData.length / rowsPerPage);
+        if (page >= 1 && page <= totalPages) { currentPage = page; renderTablePage(); }
+    }
+
+    /* ================================================================
+       MODAL & EXPORT
+       ================================================================ */
+    function showChartData(chartKey, titleText) {
+        document.getElementById('modal-title').innerText = titleText + " 基础数据";
+        const modal = document.getElementById('data-table-modal');
+        modal.classList.remove('hidden'); void modal.offsetWidth;
+        modal.classList.remove('opacity-0'); modal.querySelector('div').classList.remove('scale-95');
+    }
+    function closeModal() {
+        const modal = document.getElementById('data-table-modal');
+        modal.classList.add('opacity-0'); modal.querySelector('div').classList.add('scale-95');
+        setTimeout(() => modal.classList.add('hidden'), 300);
+    }
+    function downloadChart(chartKey) {
+        const chart = chartInstances[chartKey];
+        if (!chart) return;
+        const a = document.createElement('a');
+        a.href = chart.getDataURL({ type: 'png', pixelRatio: 2, backgroundColor: '#ffffff' });
+        a.download = chartKey + '.png'; document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    }
+    function exportExcel() { alert("导出功能模拟执行成功"); }
+
+    /* ================================================================
+       INIT
+       ================================================================ */
+    function refreshAll() { renderKpiCards(); renderCharts(); refreshTable(); }
+
+    window.addEventListener('load', () => { initCharts(); refreshAll(); });
+    window.addEventListener('resize', () => { Object.values(chartInstances).forEach(c => c && c.resize()); });
+</script>
+
+</body>
+</html>

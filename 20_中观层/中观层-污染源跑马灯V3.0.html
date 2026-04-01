@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>长江流域水质空间情报系统 - Apple Style (双面板布局)</title>
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/@turf/turf@6/turf.min.js"></script>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+
+    <style>
+        /* =========================================
+           1. Apple Design Tokens
+           ========================================= */
+        :root {
+            --sys-bg: #F2F2F7;
+            --sys-surface: rgba(255, 255, 255, 0.75);
+            --sys-card: rgba(255, 255, 255, 0.95);
+
+            --text-primary: #1D1D1F;
+            --text-secondary: #86868B;
+            --text-tertiary: #A1A1A6;
+
+            --apple-blue: #007AFF;
+            --apple-red: #FF3B30;
+            --apple-orange: #FF9500;
+            --apple-green: #34C759;
+            --apple-purple: #AF52DE;
+            --apple-teal: #5AC8FA;
+
+            --shadow-float: 0 10px 40px -10px rgba(0, 0, 0, 0.12), 0 0 1px rgba(0,0,0,0.1);
+            --shadow-card: 0 2px 10px rgba(0, 0, 0, 0.04);
+
+            --radius-panel: 24px;
+            --radius-card: 16px;
+
+            --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
+            --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+        }
+
+        /* =========================================
+           2. Base Reset
+           ========================================= */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: var(--font-sans); color: var(--text-primary); overflow: hidden; background: var(--sys-bg); -webkit-font-smoothing: antialiased; }
+        #map { width: 100vw; height: 100vh; position: absolute; z-index: 1; }
+
+        /* =========================================
+           3. Glassmorphism Panels (macOS style)
+           ========================================= */
+        .panel {
+            position: absolute; top: 20px; left: 20px; width: 420px;
+            max-height: calc(100vh - 40px); overflow-y: auto;
+            background: var(--sys-surface);
+            backdrop-filter: blur(40px) saturate(200%);
+            -webkit-backdrop-filter: blur(40px) saturate(200%);
+            border: 0.5px solid rgba(255, 255, 255, 0.5);
+            border-radius: var(--radius-panel);
+            box-shadow: var(--shadow-float);
+            padding: 24px; z-index: 1000;
+            display: flex; flex-direction: column; gap: 24px;
+        }
+
+        /* 新增：右侧独立悬浮面板 */
+        .panel-right {
+            position: absolute; top: 20px; right: 20px; width: 340px;
+            max-height: calc(100vh - 120px); /* 留出底部 zoom 控件空间 */
+            background: var(--sys-surface);
+            backdrop-filter: blur(40px) saturate(200%);
+            -webkit-backdrop-filter: blur(40px) saturate(200%);
+            border: 0.5px solid rgba(255, 255, 255, 0.5);
+            border-radius: var(--radius-panel);
+            box-shadow: var(--shadow-float);
+            padding: 20px; z-index: 1000;
+            display: flex; flex-direction: column;
+        }
+
+        .panel::-webkit-scrollbar, .panel-right::-webkit-scrollbar { display: none; }
+        .panel, .panel-right { -ms-overflow-style: none; scrollbar-width: none; }
+
+        .header h1 { font-size: 1.5rem; font-weight: 700; letter-spacing: -0.5px; margin-bottom: 6px; }
+        .header p { font-size: 0.9rem; color: var(--text-secondary); font-weight: 500;}
+
+        /* =========================================
+           4. Grouped Modules (iOS Inset Grouped)
+           ========================================= */
+        .module-group {
+            background: var(--sys-card);
+            border-radius: var(--radius-card);
+            padding: 16px;
+            box-shadow: var(--shadow-card);
+        }
+
+        .module-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        .module-title { font-size: 0.85rem; font-weight: 600; text-transform: uppercase; color: var(--text-secondary); letter-spacing: 0.5px;}
+
+        .badge { background: rgba(0, 122, 255, 0.1); color: var(--apple-blue); padding: 4px 10px; border-radius: 12px; font-family: var(--font-mono); font-size: 0.8rem; font-weight: 600; }
+
+        input[type=range] { -webkit-appearance: none; width: 100%; background: transparent; margin: 10px 0; }
+        input[type=range]:focus { outline: none; }
+        input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 8px; cursor: pointer; background: rgba(0,0,0,0.08); border-radius: 4px; }
+        input[type=range]::-webkit-slider-thumb {
+            height: 24px; width: 24px; border-radius: 50%; background: #ffffff;
+            border: 0.5px solid rgba(0,0,0,0.04); box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+            cursor: pointer; -webkit-appearance: none; margin-top: -8px;
+            transition: transform 0.2s cubic-bezier(0.2, 0, 0, 1);
+        }
+        input[type=range]::-webkit-slider-thumb:active { transform: scale(1.15); }
+        .axis-labels { display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--text-tertiary); font-weight: 500;}
+
+        .playback-controls {
+            display: flex; align-items: center; gap: 8px; margin-top: 12px;
+            background: rgba(0,0,0,0.03); padding: 6px 12px; border-radius: 12px;
+        }
+        .btn-play {
+            background: #fff; border: none; width: 28px; height: 28px; border-radius: 50%;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1); cursor: pointer; color: var(--apple-blue);
+            display: flex; justify-content: center; align-items: center; font-size: 12px; transition: 0.2s;
+        }
+        .btn-play:hover { transform: scale(1.1); }
+        .speed-label { font-size: 0.75rem; color: var(--text-secondary); font-weight: 600; font-family: var(--font-mono);}
+
+        /* =========================================
+           5. Legends & Lists
+           ========================================= */
+        .legend-items { display: flex; flex-direction: column; gap: 12px; }
+        .legend-item { display: flex; align-items: center; gap: 12px; font-size: 0.85rem; }
+        .legend-swatch { display: flex; justify-content: center; align-items: center; width: 24px;}
+        .legend-label { color: var(--text-secondary); line-height: 1.4; flex: 1;}
+        .legend-label strong { color: var(--text-primary); font-weight: 600;}
+        .legend-count { font-family: var(--font-mono); font-size: 0.85rem; font-weight: 600; color: var(--text-primary); }
+
+        /* Top 50 Live Impact Bars - 优化适应右侧面板 */
+        .top-list-container {
+            flex: 1; /* 撑满剩余高度 */
+            overflow-y: auto; display: flex; flex-direction: column; gap: 4px; padding-right: 4px; margin-top: 12px;
+        }
+        .top-list-container::-webkit-scrollbar { width: 4px; display: block;}
+        .top-list-container::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 4px; }
+
+        .top-list-item {
+            position: relative; overflow: hidden;
+            border-radius: 8px; background: rgba(0,0,0,0.02);
+            cursor: pointer; transition: transform 0.2s, background 0.2s;
+            flex-shrink: 0;
+        }
+        .top-list-item:hover { background: rgba(0,0,0,0.04); transform: scale(1.02); }
+
+        .top-list-item-bar {
+            position: absolute; left: 0; top: 0; bottom: 0;
+            opacity: 0.15; z-index: 0;
+            transition: width 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), background-color 0.4s ease;
+            width: 0%;
+        }
+
+        .top-list-item-content {
+            position: relative; z-index: 1;
+            display: flex; align-items: center; padding: 10px 12px;
+        }
+
+        .top-rank { font-family: var(--font-mono); font-size: 0.85rem; font-weight: 600; color: var(--text-secondary); width: 28px; }
+        .top-name { flex: 1; font-size: 0.85rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--text-primary);}
+        .top-score { font-family: var(--font-mono); font-size: 0.95rem; font-weight: 700; transition: color 0.4s ease;}
+
+        /* =========================================
+           6. Target Analysis Panel
+           ========================================= */
+        #analysis-panel.empty { display: none; }
+
+        .data-card { padding: 12px 0; border-bottom: 0.5px solid rgba(0,0,0,0.05); }
+        .data-card:last-child { border-bottom: none; padding-bottom: 0; }
+        .data-card-header { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+        .dot { width: 8px; height: 8px; border-radius: 50%; }
+        .data-value-wrapper { display: flex; align-items: baseline; gap: 6px; }
+        .data-value { font-family: var(--font-mono); font-size: 1.5rem; font-weight: 700; letter-spacing: -0.5px; }
+        .data-unit { font-size: 0.85rem; color: var(--text-secondary); }
+
+        .math-container {
+            background: rgba(0,0,0,0.02); border-radius: 8px;
+            padding: 10px; margin: 8px 0; overflow-x: auto;
+            font-size: 0.85rem; color: var(--text-secondary);
+        }
+
+        .ics-final {
+            background: linear-gradient(135deg, rgba(90,200,250,0.1) 0%, rgba(0,122,255,0.05) 100%);
+            border-radius: 12px; padding: 16px; margin-top: 12px; text-align: center;
+        }
+        .ics-final .data-value { font-size: 3rem; color: var(--apple-blue); }
+
+        /* =========================================
+           7. Map Overrides & Animations
+           ========================================= */
+        .leaflet-control-zoom { border: none !important; box-shadow: var(--shadow-card) !important; border-radius: 10px !important; overflow: hidden; margin-right: 20px !important; margin-bottom: 20px !important;}
+        .leaflet-control-zoom a { color: var(--text-primary) !important; width: 36px !important; height: 36px !important; line-height: 36px !important; background: var(--sys-surface) !important; backdrop-filter: blur(20px);}
+
+        .halo-danger {
+            width: 24px; height: 24px; border-radius: 50%;
+            background: radial-gradient(circle, rgba(255,59,48,0.8) 30%, rgba(255,59,48,0) 70%);
+            animation: halo-pulse 2s ease-in-out infinite; position: relative;
+        }
+        .halo-danger::after {
+            content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 10px; height: 10px; background: var(--apple-red); border-radius: 50%; border: 2px solid #fff; box-shadow: 0 2px 4px rgba(255,59,48,0.5);
+        }
+        @keyframes halo-pulse { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.5); opacity: 0.5; } }
+
+        .poi-t2 { width: 14px; height: 14px; border-radius: 50%; background: var(--apple-orange); border: 2px solid #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+        .poi-t3 { width: 10px; height: 10px; border-radius: 50%; background: var(--text-tertiary); border: 1.5px solid #fff; opacity: 0.8; }
+        .telemetry-node { width: 18px; height: 18px; border-radius: 50%; background: var(--apple-blue); border: 3px solid #fff; box-shadow: 0 0 0 4px rgba(0,122,255,0.2), 0 4px 8px rgba(0,0,0,0.2); }
+
+        .fade-out { opacity: 0 !important; pointer-events: none; transition: opacity 0.4s ease; }
+        .fade-in { opacity: 1 !important; transition: opacity 0.4s ease; }
+
+        .ics-tooltip {
+            background: var(--sys-card); color: var(--text-primary);
+            border: none; border-radius: 10px; padding: 10px 14px;
+            font-size: 0.85rem; font-family: var(--font-sans);
+            box-shadow: var(--shadow-float); backdrop-filter: blur(20px);
+        }
+        .ics-tooltip::before { display: none; }
+        .ics-tooltip .tt-name { font-weight: 600; margin-bottom: 4px; }
+        .ics-tooltip .tt-score { font-family: var(--font-mono); font-weight: 700; }
+        .ics-tooltip .tt-tier { font-size: 0.75rem; opacity: 0.6; }
+    </style>
+</head>
+<body>
+
+<aside class="panel">
+    <header class="header">
+        <h1>水质空间情报系统</h1>
+        <p>多维溯源与动态风险评估模型</p>
+    </header>
+
+    <section class="module-group">
+        <div class="module-header">
+            <span class="module-title">遥测节点位置</span>
+            <span class="badge" id="ui-slider-val">0.00 km</span>
+        </div>
+        <input type="range" id="river-slider" min="0" max="100" value="0" step="0.1">
+        <div class="axis-labels">
+            <span>源头</span>
+            <span>入海口</span>
+        </div>
+
+        <div class="playback-controls">
+            <button class="btn-play" id="btn-auto-scan">▶</button>
+            <span class="speed-label">点击开启自动巡航监测</span>
+        </div>
+    </section>
+
+    <section class="module-group">
+        <div class="module-title" style="margin-bottom: 12px;">ICS 污染源分级</div>
+        <div class="legend-items">
+            <div class="legend-item">
+                <div class="legend-swatch"><div class="halo-danger" style="animation:none;"></div></div>
+                <div class="legend-label"><strong>核心污染源</strong> (T1)<br><span style="font-size:0.75rem; color:var(--text-tertiary)">ICS &gt; 80</span></div>
+                <span class="legend-count" id="legend-t1-count">0</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-swatch"><div class="poi-t2"></div></div>
+                <div class="legend-label"><strong>次级污染源</strong> (T2)<br><span style="font-size:0.75rem; color:var(--text-tertiary)">30 &lt; ICS ≤ 80</span></div>
+                <span class="legend-count" id="legend-t2-count">0</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-swatch"><div class="poi-t3"></div></div>
+                <div class="legend-label"><strong>微小影响源</strong> (T3)<br><span style="font-size:0.75rem; color:var(--text-tertiary)">ICS ≤ 30 (缩小时隐藏)</span></div>
+                <span class="legend-count" id="legend-t3-count">0</span>
+            </div>
+        </div>
+    </section>
+
+    <section class="module-group empty" id="analysis-panel">
+        <div class="module-header" style="margin-bottom: 16px;">
+            <span class="module-title">目标追踪分析</span>
+            <span style="font-size: 0.85rem; font-weight: 600; color: var(--apple-blue);" id="ui-factory-name">未选择目标</span>
+        </div>
+
+        <div class="data-card">
+            <div class="data-card-header">
+                <div class="dot" style="background: var(--apple-red);"></div>
+                <span style="font-size: 0.8rem; font-weight: 600; color: var(--text-secondary);">污染等级权重 (W_type)</span>
+            </div>
+            <div class="data-value-wrapper">
+                <span class="data-value" id="ui-weight-val" style="color: var(--text-primary);">--</span>
+                <span class="data-unit" id="ui-weight-level">--</span>
+            </div>
+        </div>
+
+        <div class="data-card">
+            <div class="data-card-header">
+                <div class="dot" style="background: var(--apple-orange);"></div>
+                <span style="font-size: 0.8rem; font-weight: 600; color: var(--text-secondary);">综合浓度风险指数 (S_scale)</span>
+            </div>
+            <div class="math-container" id="math-sscale-steps"></div>
+            <div class="data-value-wrapper">
+                <span class="data-value" id="ui-sscale-val">--</span>
+                <span class="data-unit">动态惩罚放大</span>
+            </div>
+        </div>
+
+        <div class="data-card">
+            <div class="data-card-header">
+                <div class="dot" style="background: var(--apple-purple);"></div>
+                <span style="font-size: 0.8rem; font-weight: 600; color: var(--text-secondary);">物理空间衰减 f(D)</span>
+            </div>
+            <div style="font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 8px;">
+                垂直管网 D_pipe = <span id="ui-static-dist">--</span> km |
+                河流拓扑 D_river = <span id="ui-dynamic-dist">--</span> km
+            </div>
+            <div class="math-container">
+                <div id="math-base" style="margin-bottom: 8px;"></div>
+                <div id="math-steps"></div>
+            </div>
+            <div class="data-value-wrapper">
+                <span class="data-value" id="ui-decay-val">--</span>
+                <span class="data-unit">% (终端残余比例)</span>
+            </div>
+        </div>
+
+        <div class="ics-final">
+            <div style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 12px; line-height: 1.5; text-align: left;">
+                <span style="font-family: var(--font-mono);">ICS = 100 × (1 - e<sup>-k · ln(1 + BaseRisk)</sup>)</span><br>
+                采用非线性平滑映射，k=0.35，无限逼近100但保留极值差异。
+            </div>
+        </div>
+    </section>
+</aside>
+
+<aside class="panel-right">
+    <div style="display: flex; justify-content: space-between; align-items: center; padding: 0 4px;">
+        <span style="font-size: 0.9rem; font-weight: 600; text-transform: uppercase; color: var(--text-secondary); letter-spacing: 0.5px;">高危源实时监测 TOP 50</span>
+        <div class="halo-danger" style="width: 12px; height: 12px; animation: halo-pulse 2s infinite;"></div>
+    </div>
+    <div class="top-list-container" id="ui-top-list">
+    </div>
+</aside>
+
+<main id="map"></main>
+
+<script>
+    /* ============================================
+       全局状态
+       ============================================ */
+    const AppState = {
+        riverLength: 0,
+        sliderValue: 0,
+        selectedFactory: null,
+        riverLineGeoJSON: null,
+        factoryMarkers: [],
+        currentZoom: 9,
+        icsCache: {},
+        currentTop50: []
+    };
+
+    const UI = {
+        slider: document.getElementById('river-slider'),
+        sliderVal: document.getElementById('ui-slider-val'),
+        panel: document.getElementById('analysis-panel'),
+        factoryName: document.getElementById('ui-factory-name'),
+        staticDist: document.getElementById('ui-static-dist'),
+        dynamicDist: document.getElementById('ui-dynamic-dist'),
+        decayVal: document.getElementById('ui-decay-val'),
+        mathBase: document.getElementById('math-base'),
+        mathSteps: document.getElementById('math-steps'),
+        mathSscaleSteps: document.getElementById('math-sscale-steps'),
+        weightVal: document.getElementById('ui-weight-val'),
+        weightLevel: document.getElementById('ui-weight-level'),
+        sscaleVal: document.getElementById('ui-sscale-val'),
+        icsVal: document.getElementById('ui-ics-val'),
+        legendT1: document.getElementById('legend-t1-count'),
+        legendT2: document.getElementById('legend-t2-count'),
+        legendT3: document.getElementById('legend-t3-count'),
+        topList: document.getElementById('ui-top-list')
+    };
+
+    /* ============================================
+       地图初始化 (Carto Light 底图)
+       ============================================ */
+    const map = L.map('map', { zoomControl: false }).setView([30.6, 114.3], 9);
+    L.control.zoom({ position: 'bottomright' }).addTo(map);
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+        attribution: '&copy; CARTO',
+        maxZoom: 19
+    }).addTo(map);
+
+    let telemetryMarker = null;
+    let linkLayer = null;
+    let mapAnchorLayer = null;
+
+    const IconConfig = {
+        anchor: L.divIcon({ className: '', html: '<div style="width:10px;height:10px;background:#FF9500;border-radius:50%;border:2px solid #fff;box-shadow:0 2px 4px rgba(0,0,0,0.2);"></div>', iconSize: [10,10], iconAnchor: [5,5] }),
+        telemetry: L.divIcon({ className: 'telemetry-node', iconSize: [24, 24], iconAnchor: [12, 12] })
+    };
+
+    /* ============================================
+       ICS 分级 & 图标工厂
+       ============================================ */
+    function getTier(ics) {
+        if (ics > 80) return 'T1';
+        if (ics > 30) return 'T2';
+        return 'T3';
+    }
+
+    function getTierColor(tier) {
+        if (tier === 'T1') return '#FF3B30';
+        if (tier === 'T2') return '#FF9500';
+        return '#A1A1A6';
+    }
+
+    function getTierLabel(tier) {
+        if (tier === 'T1') return '核心污染源';
+        if (tier === 'T2') return '次级污染源';
+        return '微小影响源';
+    }
+
+    function createTierIcon(tier) {
+        if (tier === 'T1') return L.divIcon({ className: '', html: '<div class="halo-danger"></div>', iconSize: [24, 24], iconAnchor: [12, 12] });
+        if (tier === 'T2') return L.divIcon({ className: '', html: '<div class="poi-t2"></div>', iconSize: [14, 14], iconAnchor: [7, 7] });
+        return L.divIcon({ className: '', html: '<div class="poi-t3"></div>', iconSize: [10, 10], iconAnchor: [5, 5] });
+    }
+
+    /* ============================================
+           极速版 ICS 计算引擎 (渐进映射算法)
+           ============================================ */
+    function computeICSForFactory(feature, telemetryKm) {
+        const props = feature.properties;
+        const w = props.weight || 0.1;
+        const D_pipe = props.D_pipe || 0;
+        const factoryDistFromStart = props.factoryDistFromStart || 0;
+        const S_scale = props.S_scale || 1.0;
+
+        const distanceDiff = telemetryKm - factoryDistFromStart;
+
+        let decayRate = 0;
+        if (distanceDiff >= 0) {
+            decayRate = Math.exp(-0.01 * D_pipe) * Math.exp(-0.03 * distanceDiff);
+        }
+
+        // 1. 计算基础风险通量 (Base Risk Flux)
+        const baseRisk = w * S_scale * decayRate;
+
+        // 2. 使用带对数衰减的反向指数映射
+        const k = 0.35;
+        // 【修改这里】引入 Math.log(1 + baseRisk)
+        const ics = 100 * (1 - Math.exp(-k * Math.log(1 + baseRisk)));
+
+        return ics;
+    }
+
+    /* ============================================
+       按需渲染与脏检查 (Diffing)
+       ============================================ */
+    function updateAllFactoryICS() {
+        let t1 = 0, t2 = 0, t3 = 0;
+
+        AppState.factoryMarkers.forEach(item => {
+            const ics = computeICSForFactory(item.feature, AppState.sliderValue);
+            const newTier = getTier(ics);
+
+            item.ics = ics;
+            AppState.icsCache[item.feature.properties.name] = ics;
+
+            if (item.tier !== newTier) {
+                item.tier = newTier;
+                item.marker.setIcon(createTierIcon(newTier));
+                item.marker.setZIndexOffset(newTier === 'T1' ? 500 : newTier === 'T2' ? 200 : 0);
+                applyZoomVisibility(item);
+            }
+
+            if (item.marker.getTooltip()) {
+                item.marker.setTooltipContent(
+                    `<div class="ics-tooltip">
+                        <div class="tt-name">${item.feature.properties.name}</div>
+                        <div class="tt-score" style="color:${getTierColor(newTier)}">ICS: ${ics.toFixed(1)}</div>
+                        <div class="tt-tier">${getTierLabel(newTier)}</div>
+                    </div>`
+                );
+            }
+
+            if (newTier === 'T1') t1++;
+            else if (newTier === 'T2') t2++;
+            else t3++;
+        });
+
+        UI.legendT1.textContent = t1;
+        UI.legendT2.textContent = t2;
+        UI.legendT3.textContent = t3;
+
+        renderTop50();
+    }
+
+    /* ============================================
+       TOP 50 动态能量条渲染 (DOM 复用防重绘)
+       ============================================ */
+    function renderTop50() {
+        AppState.currentTop50 = AppState.factoryMarkers
+            .sort((a, b) => b.ics - a.ics)
+            .slice(0, 50);
+
+        const container = UI.topList;
+
+        if (container.children.length === 0) {
+            container.innerHTML = AppState.currentTop50.map((_, index) => `
+                <div class="top-list-item" id="top-item-${index}">
+                    <div class="top-list-item-bar"></div>
+                    <div class="top-list-item-content">
+                        <span class="top-rank">#${index + 1}</span>
+                        <span class="top-name">--</span>
+                        <span class="top-score">0.00</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        AppState.currentTop50.forEach((item, index) => {
+            const el = document.getElementById(`top-item-${index}`);
+            if (!el) return;
+
+            const nameEl = el.querySelector('.top-name');
+            const scoreEl = el.querySelector('.top-score');
+            const barEl = el.querySelector('.top-list-item-bar');
+
+            const color = getTierColor(item.tier);
+            const fname = item.feature.properties.name;
+
+            if (nameEl.textContent !== fname) nameEl.textContent = fname;
+            scoreEl.textContent = item.ics.toFixed(2);
+            scoreEl.style.color = color;
+
+            barEl.style.width = `${item.ics}%`;
+            barEl.style.backgroundColor = color;
+
+            el.dataset.lat = item.feature._latlng.lat;
+            el.dataset.lng = item.feature._latlng.lng;
+            el.dataset.name = fname;
+        });
+    }
+
+    UI.topList.addEventListener('click', (e) => {
+        const itemEl = e.target.closest('.top-list-item');
+        if (!itemEl) return;
+
+        const fname = itemEl.dataset.name;
+        const targetMarker = AppState.factoryMarkers.find(m => m.feature.properties.name === fname);
+
+        if (targetMarker) {
+            handleFactorySelect(targetMarker.feature.properties, targetMarker.feature._latlng);
+        }
+    });
+
+    /* ============================================
+       自动巡航引擎 (Auto-Scan)
+       ============================================ */
+    let isAutoScanning = false;
+    let scanAnimationId = null;
+    const btnAutoScan = document.getElementById('btn-auto-scan');
+    const lblAutoScan = document.querySelector('.speed-label');
+
+    function scanLoop() {
+        if (!isAutoScanning) return;
+
+        AppState.sliderValue += 0.2;
+        if (AppState.sliderValue > AppState.riverLength) {
+            AppState.sliderValue = 0;
+        }
+
+        UI.slider.value = AppState.sliderValue;
+
+        updateTelemetryPosition();
+        updateAllFactoryICS();
+        renderDashboard();
+
+        scanAnimationId = requestAnimationFrame(scanLoop);
+    }
+
+    function updateTelemetryPosition() {
+        if (AppState.riverLineGeoJSON && telemetryMarker) {
+            const pt = turf.along(AppState.riverLineGeoJSON, AppState.sliderValue, { units: 'kilometers' });
+            telemetryMarker.setLatLng([pt.geometry.coordinates[1], pt.geometry.coordinates[0]]);
+        }
+    }
+
+    btnAutoScan.addEventListener('click', () => {
+        isAutoScanning = !isAutoScanning;
+        if (isAutoScanning) {
+            btnAutoScan.innerHTML = '⏸';
+            btnAutoScan.style.background = 'var(--apple-blue)';
+            btnAutoScan.style.color = '#fff';
+            lblAutoScan.innerText = '自动巡航监测中...';
+            lblAutoScan.style.color = 'var(--apple-blue)';
+            scanLoop();
+        } else {
+            btnAutoScan.innerHTML = '▶';
+            btnAutoScan.style.background = '#fff';
+            btnAutoScan.style.color = 'var(--apple-blue)';
+            lblAutoScan.innerText = '已暂停巡航';
+            lblAutoScan.style.color = 'var(--text-secondary)';
+            cancelAnimationFrame(scanAnimationId);
+        }
+    });
+
+    /* ============================================
+       修复手动滑动滑块时的逻辑
+       ============================================ */
+    let isSliderUpdating = false;
+    UI.slider.addEventListener('input', (e) => {
+        AppState.sliderValue = parseFloat(e.target.value);
+
+        if (isAutoScanning) btnAutoScan.click();
+
+        if (!isSliderUpdating) {
+            requestAnimationFrame(() => {
+                updateTelemetryPosition();
+                updateAllFactoryICS();
+                renderDashboard();
+                isSliderUpdating = false;
+            });
+            isSliderUpdating = true;
+        }
+    });
+
+    /* ============================================
+       层级过滤及显示
+       ============================================ */
+    function applyZoomVisibility(item) {
+        const zoom = AppState.currentZoom;
+        const el = item.marker.getElement();
+        if (!el) return;
+
+        if (item.tier === 'T3' && zoom < 11) {
+            el.classList.add('fade-out');
+            el.classList.remove('fade-in');
+            item.marker.setOpacity(0);
+        } else {
+            el.classList.remove('fade-out');
+            el.classList.add('fade-in');
+            item.marker.setOpacity(1);
+        }
+    }
+
+    function updateAllVisibility() {
+        AppState.factoryMarkers.forEach(applyZoomVisibility);
+    }
+
+    map.on('zoomend', function () {
+        AppState.currentZoom = map.getZoom();
+        updateAllVisibility();
+    });
+
+    /* ============================================
+       系统极速初始化 (BFF 接入)
+       ============================================ */
+    async function initializeSystem() {
+        try {
+            const res = await fetch('app-init-data.json');
+            const initData = await res.json();
+
+            const riverData = initData.river;
+            const pointsData = initData.factories;
+
+            AppState.riverLineGeoJSON = riverData.features[0];
+            AppState.riverLength = initData.riverLength || turf.length(AppState.riverLineGeoJSON, { units: 'kilometers' });
+            UI.slider.max = AppState.riverLength;
+
+            L.geoJSON(riverData, { style: { color: 'rgba(0,122,255,0.4)', weight: 6, opacity: 1 } }).addTo(map);
+
+            const startPt = turf.along(AppState.riverLineGeoJSON, 0, { units: 'kilometers' });
+            telemetryMarker = L.marker(
+                [startPt.geometry.coordinates[1], startPt.geometry.coordinates[0]],
+                { icon: IconConfig.telemetry, zIndexOffset: 1000 }
+            ).addTo(map);
+
+            pointsData.features.forEach(feature => {
+                const props = feature.properties;
+
+                let coords = feature.geometry.coordinates;
+                if (coords && Array.isArray(coords[0])) coords = coords[0];
+
+                const latlng = L.latLng(coords[1], coords[0]);
+                const fname = props.name;
+
+                props.anchorLatLng = L.latLng(props.anchorLat, props.anchorLng);
+                feature._latlng = latlng;
+
+                const ics = computeICSForFactory(feature, 0);
+                const tier = getTier(ics);
+
+                const marker = L.marker(latlng, {
+                    icon: createTierIcon(tier),
+                    zIndexOffset: tier === 'T1' ? 500 : tier === 'T2' ? 200 : 0
+                }).addTo(map);
+
+                marker.bindTooltip(
+                    `<div class="ics-tooltip">
+                        <div class="tt-name">${fname}</div>
+                        <div class="tt-score" style="color:${getTierColor(tier)}">ICS: ${ics.toFixed(1)}</div>
+                        <div class="tt-tier">${getTierLabel(tier)}</div>
+                    </div>`,
+                    { direction: 'top', offset: [0, -12], className: '' }
+                );
+
+                marker.on('click', () => handleFactorySelect(props, latlng));
+
+                AppState.factoryMarkers.push({ marker, feature, ics, tier });
+                AppState.icsCache[fname] = ics;
+            });
+
+            updateAllFactoryICS();
+
+            if (window.katex) {
+                katex.render("f(D) = e^{-0.01 \\cdot D_{pipe}} \\times e^{-0.03 \\cdot |D_{river}|}", UI.mathBase, { displayMode: true, throwOnError: false });
+            }
+        } catch (error) {
+            console.error("系统初始化失败:", error);
+            alert("未能加载预构建数据 (app-init-data.json)，请确保先运行 Node.js 脚本！");
+        }
+    }
+
+    /* ============================================
+       工厂选择 → 面板详情
+       ============================================ */
+    function handleFactorySelect(properties, latlng) {
+        AppState.selectedFactory = { ...properties, latlng: latlng };
+        UI.panel.classList.remove('empty');
+
+        if (linkLayer) map.removeLayer(linkLayer);
+        if (mapAnchorLayer) map.removeLayer(mapAnchorLayer);
+
+        const anchorLatLng = properties.anchorLatLng;
+
+        linkLayer = L.polyline([latlng, anchorLatLng], { color: '#FF9500', weight: 2, dashArray: '5,5', opacity: 0.8 }).addTo(map);
+        mapAnchorLayer = L.marker(anchorLatLng, { icon: IconConfig.anchor }).addTo(map);
+
+        map.flyToBounds(
+            L.featureGroup([L.marker(latlng), telemetryMarker, mapAnchorLayer]).getBounds(),
+            { padding: [80, 80], maxZoom: 12, duration: 1.0 }
+        );
+
+        renderDashboard();
+    }
+
+    /* ============================================
+       仪表板渲染（详细面板）
+       ============================================ */
+    function renderDashboard() {
+        UI.sliderVal.innerText = `${AppState.sliderValue.toFixed(2)} km`;
+        if (!AppState.selectedFactory) return;
+
+        const factory = AppState.selectedFactory;
+        const fname = factory.name || "未命名设施";
+        UI.factoryName.innerText = fname;
+
+        const D_pipe = factory.D_pipe || 0;
+        const factoryDistFromStart = factory.factoryDistFromStart || 0;
+        const distanceDiff = AppState.sliderValue - factoryDistFromStart;
+        const D_river = Math.abs(distanceDiff);
+
+        UI.staticDist.innerText = D_pipe.toFixed(2);
+        UI.dynamicDist.innerText = `${distanceDiff > 0 ? '+' : ''}${distanceDiff.toFixed(2)}`;
+
+        let decayRate = 0;
+        let stepStr = "";
+        if (distanceDiff < 0) {
+            decayRate = 0;
+            stepStr = `\\text{节点位于上游 (逆流阻断): } f(D) = 0`;
+        } else {
+            const pipe_decay = Math.exp(-0.01 * D_pipe);
+            const river_decay = Math.exp(-0.03 * D_river);
+            decayRate = pipe_decay * river_decay;
+            stepStr = `\\begin{aligned}
+            f(D) &= e^{-0.01 \\times ${D_pipe.toFixed(2)}} \\times e^{-0.03 \\times ${D_river.toFixed(2)}} \\\\
+            &= ${pipe_decay.toFixed(3)} \\times ${river_decay.toFixed(3)} = ${(decayRate * 100).toFixed(2)}\\%
+            \\end{aligned}`;
+        }
+        if (window.katex) katex.render(stepStr, UI.mathSteps, { displayMode: true, throwOnError: false });
+        UI.decayVal.innerText = (decayRate * 100).toFixed(2);
+
+        const W_type = factory.weight || 0.1;
+        UI.weightVal.innerText = W_type.toFixed(1);
+        let levelText = "微影响 (极低风险)";
+        if (W_type >= 1.0) levelText = "极高影响 (特大点源)";
+        else if (W_type >= 0.8) levelText = "高影响 (重点监管)";
+        else if (W_type >= 0.5) levelText = "中等影响 (常规排污)";
+        else if (W_type >= 0.3) levelText = "中低影响 (轻微特征)";
+        UI.weightLevel.innerText = levelText;
+
+        const S_scale = factory.S_scale || 1.0;
+        let sscale_latex = `\\text{数据不足，自动退避至基础系数 } S_{scale}=1.0`;
+
+        if (S_scale !== 1.0) {
+            sscale_latex = `\\begin{aligned}
+            S_{scale} &= (\\sum P_i \\cdot \\omega'_i) \\times K_{penalty} = ${S_scale.toFixed(3)}
+            \\end{aligned}`;
+        }
+
+        if (window.katex) katex.render(sscale_latex, UI.mathSscaleSteps, { displayMode: true, throwOnError: false });
+        UI.sscaleVal.innerText = S_scale.toFixed(3);
+
+        const cachedICS = AppState.icsCache[fname];
+        const finalICS = cachedICS !== undefined ? cachedICS : 0;
+        UI.icsVal.innerText = finalICS.toFixed(2);
+
+        const selectedTier = getTier(finalICS);
+        UI.icsVal.style.color = getTierColor(selectedTier);
+    }
+
+    initializeSystem();
+</script>
+</body>
+</html>

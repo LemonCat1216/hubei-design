@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>湖北省水生态环境综合管理 - 断面综合分析报告</title>
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography,container-queries"></script>
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#3b82f6",
+                        "primary-dark": "#1e3a8a",
+                        "background-light": "#f6f9fc",
+                        "background-dark": "#0f172a",
+                        "surface-light": "#ffffff",
+                        "surface-dark": "#1e293b",
+                    },
+                    fontFamily: {
+                        display: ["Inter", "system-ui", "-apple-system", "sans-serif"],
+                    },
+                },
+            },
+        };
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .custom-scrollbar::-webkit-scrollbar {
+                width: 4px;
+                height: 4px;
+            }
+            .custom-scrollbar::-webkit-scrollbar-track {
+                background: transparent;
+            }
+            .custom-scrollbar::-webkit-scrollbar-thumb {
+                background: #cbd5e1;
+                border-radius: 10px;
+            }
+            .dark .custom-scrollbar::-webkit-scrollbar-thumb {
+                background: #475569;
+            }
+
+            .sidebar-transition {
+                transition: width 0.3s ease;
+            }
+            .sidebar-text {
+                transition: opacity 0.2s ease;
+                white-space: nowrap;
+            }
+            .hide-text .sidebar-text {
+                display: none;
+                opacity: 0;
+            }
+            .collapsed-sidebar .nav-item {
+                justify-content: center;
+                padding-left: 0;
+                padding-right: 0;
+            }
+
+            .doc-shadow {
+                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06), 0 0 0 1px rgba(0,0,0,0.05);
+            }
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-800 dark:text-slate-100 h-screen overflow-hidden flex flex-col">
+
+<header class="bg-primary h-14 flex items-center justify-between px-4 text-white shrink-0 shadow-md z-50">
+    <div class="flex items-center space-x-3">
+        <div class="w-8 h-8 bg-white rounded-full flex items-center justify-center">
+            <span class="material-symbols-outlined text-primary text-xl">water_drop</span>
+        </div>
+        <h1 class="text-xl font-bold tracking-tight">湖北省水生态环境综合管理</h1>
+    </div>
+    <nav class="flex h-full">
+        <a class="px-6 flex items-center space-x-2 hover:bg-white/10 transition-colors" href="#">
+            <span class="material-symbols-outlined text-[18px]">home</span>
+            <span class="text-sm">总体概览</span>
+        </a>
+        <a class="px-6 flex items-center space-x-2 bg-white/10 transition-colors" href="#">
+            <span class="material-symbols-outlined text-[18px]">assessment</span>
+            <span class="text-sm font-medium">形势分析</span>
+        </a>
+        <a class="px-6 flex items-center space-x-2 hover:bg-white/10 transition-colors" href="#">
+            <span class="material-symbols-outlined text-[18px]">map</span>
+            <span class="text-sm">空间分析</span>
+        </a>
+        <a class="px-6 flex items-center space-x-2 hover:bg-white/10 transition-colors" href="#">
+            <span class="material-symbols-outlined text-[18px]">waves</span>
+            <span class="text-sm">水污染源</span>
+        </a>
+        <a class="px-6 flex items-center space-x-2 hover:bg-white/10 transition-colors" href="#">
+            <span class="material-symbols-outlined text-[18px]">report_problem</span>
+            <span class="text-sm">问题聚焦</span>
+        </a>
+        <a class="px-6 flex items-center space-x-2 hover:bg-white/10 transition-colors" href="#">
+            <span class="material-symbols-outlined text-[18px]">apps</span>
+            <span class="text-sm">专题应用</span>
+        </a>
+    </nav>
+    <div class="flex items-center space-x-6">
+        <div class="flex items-center space-x-2 text-sm opacity-90">
+            <span class="material-symbols-outlined text-[18px]">public</span>
+            <span>碧水荆灵</span>
+        </div>
+        <div class="flex items-center space-x-2 text-sm">
+            <span class="material-symbols-outlined text-[18px]">account_circle</span>
+            <span>wangyunpeng</span>
+        </div>
+    </div>
+</header>
+
+<div class="flex flex-1 overflow-hidden">
+
+    <aside id="sidebar" class="w-[270px] bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 flex flex-col shrink-0 sidebar-transition">
+        <div class="flex-1 py-4 overflow-y-auto custom-scrollbar flex flex-col gap-1">
+
+            <div class="mb-2 px-2">
+                <button class="nav-item w-full flex items-center justify-between px-4 py-3 text-[16px] font-medium text-slate-600 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg group transition-colors" onclick="toggleSubmenu('submenu-overview')">
+                    <div class="flex items-center">
+                        <span class="material-symbols-outlined mr-3 text-slate-400 group-hover:text-primary">dashboard</span>
+                        <span class="sidebar-text">业务基础表单</span>
+                    </div>
+                    <span class="material-symbols-outlined text-sm text-slate-400 sidebar-chevron transition-transform duration-200">expand_more</span>
+                </button>
+            </div>
+
+            <div class="mb-2 px-2">
+                <button class="nav-item w-full flex items-center justify-between px-4 py-3 text-[16px] font-medium text-slate-600 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg group transition-colors" onclick="toggleSubmenu('submenu-analysis')">
+                    <div class="flex items-center">
+                        <span class="material-symbols-outlined mr-3 text-slate-400 group-hover:text-primary">analytics</span>
+                        <span class="sidebar-text">智能分析报告</span>
+                    </div>
+                    <span class="material-symbols-outlined text-sm text-slate-400 sidebar-chevron transition-transform duration-200 rotate-180">expand_more</span>
+                </button>
+                <div id="submenu-analysis" class="mt-1 space-y-1 overflow-hidden transition-all duration-300 max-h-[600px]">
+
+                    <a class="flex items-center px-12 py-2 text-[14px] text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 font-medium transition-colors rounded-lg group relative" href="#">
+                        <div class="absolute left-0 top-0 bottom-0 w-1 bg-blue-600 rounded-l-lg"></div>
+                        <span class="w-1.5 h-1.5 bg-blue-600 rounded-full mr-3 shrink-0 transition-colors"></span>
+                        <span class="sidebar-text">断面综合分析报告</span>
+                    </a>
+                </div>
+            </div>
+
+        </div>
+
+        <button id="toggleSidebarBtn" class="h-12 border-t border-slate-200 dark:border-slate-800 flex items-center justify-center space-x-2 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all text-slate-500 hover:text-primary group">
+            <span id="toggleIcon" class="material-symbols-outlined text-xl transition-transform duration-300">chevron_left</span>
+            <span class="sidebar-text text-sm font-medium tracking-wide">收起侧栏</span>
+        </button>
+    </aside>
+
+    <main class="flex-1 flex flex-col min-w-0 bg-slate-50/50 dark:bg-slate-950 p-6 overflow-y-auto">
+
+        <div class="h-16 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl flex items-center justify-between px-6 shrink-0 shadow-sm mb-6">
+            <div class="flex items-center gap-3">
+                    <span class="relative flex h-3 w-3">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#3b82f6] opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-3 w-3 bg-[#3b82f6]"></span>
+                    </span>
+                <h2 class="text-lg font-bold text-slate-800 dark:text-white tracking-tight">
+                    断面综合分析报告
+                </h2>
+            </div>
+
+            <div class="flex items-center gap-4">
+                <div class="flex items-center bg-slate-50 dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 p-0.5">
+                    <button class="w-7 h-7 flex items-center justify-center hover:bg-white dark:hover:bg-slate-700 rounded text-slate-400 hover:text-primary transition-colors">
+                        <i class="ri-arrow-left-s-line"></i>
+                    </button>
+                    <div class="flex items-center gap-2 px-2 border-x border-slate-100 dark:border-slate-700/50">
+                        <span class="text-sm font-semibold text-slate-700 dark:text-slate-200 tabular-nums">2025</span>
+                    </div>
+                    <button class="w-7 h-7 flex items-center justify-center hover:bg-white dark:hover:bg-slate-700 rounded text-slate-400 hover:text-primary transition-colors">
+                        <i class="ri-arrow-right-s-line"></i>
+                    </button>
+                </div>
+
+                <div class="relative w-26">
+                    <select class="w-full pl-3 pr-10 py-1.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-700 dark:text-slate-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none cursor-pointer font-medium">
+                        <option value="hongshan" selected>洪山</option>
+                        <option value="shayang">沙洋</option>
+                        <option value="taoziling">陶子岭</option>
+                    </select>
+                </div>
+
+                <div class="h-4 w-px bg-slate-200 dark:bg-slate-700 mx-0"></div>
+
+                <button class="flex items-center gap-2 px-4 py-1.5 bg-white text-slate-600 hover:text-blue-600 hover:border-blue-300 border border-slate-200 rounded-lg text-sm font-medium transition-colors">
+                    <i class="ri-download-cloud-2-line"></i>
+                    <span>下载</span>
+                </button>
+                <button class="flex items-center gap-2 px-4 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium shadow-sm shadow-blue-500/30 transition-all active:scale-95">
+                    <i class="ri-upload-2-line"></i>
+                    <span>上传</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="min-h-[700px] flex mb-6 gap-6">
+
+            <div class="w-64 flex flex-col bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden shrink-0">
+                <div class="px-4 py-3 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/50 flex justify-between items-center">
+                    <h3 class="font-bold text-slate-700 dark:text-slate-200 text-sm">历史归档</h3>
+                    <i class="ri-history-line text-slate-400"></i>
+                </div>
+
+                <div class="flex-1 overflow-y-auto custom-scrollbar p-2 space-y-1">
+                    <div class="relative group cursor-pointer">
+                        <div class="flex items-center p-3 rounded-lg bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800/50">
+                            <div class="flex flex-col flex-1 min-w-0">
+                                <div class="flex items-center justify-between mb-1">
+                                    <span class="font-bold text-blue-700 dark:text-blue-300 text-[15px]">12月</span>
+                                    <span id="history-badge-12" class="text-[10px] px-1.5 py-0.5 rounded bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 font-medium">已审核</span>
+                                </div>
+                                <span class="text-xs text-blue-600/70 dark:text-blue-300/60 truncate">洪山断面-水质综合分析报告</span>
+                            </div>
+                        </div>
+                        <div class="absolute left-0 top-3 bottom-3 w-1 bg-blue-500 rounded-r-full"></div>
+                    </div>
+
+                    <div class="group cursor-pointer p-3 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 border border-transparent hover:border-slate-100 dark:hover:border-slate-700 transition-all">
+                        <div class="flex flex-col flex-1 min-w-0">
+                            <div class="flex items-center justify-between mb-1">
+                                <span class="font-medium text-slate-700 dark:text-slate-300 text-[15px] group-hover:text-primary transition-colors">11月</span>
+                                <span class="text-[10px] px-1.5 py-0.5 rounded bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 font-medium">已审核</span>
+                            </div>
+                            <span class="text-xs text-slate-400 group-hover:text-slate-500 truncate">洪山断面-水质综合分析报告</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex-1 flex flex-col bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden relative">
+                <div class="h-10 border-b border-slate-100 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-800/80 flex items-center justify-between px-4">
+                    <div class="text-xs text-slate-500">第 1 / 3 页</div>
+                    <div class="flex items-center space-x-2">
+                        <button class="p-1 hover:bg-slate-200 dark:hover:bg-slate-700 rounded text-slate-500"><i class="ri-zoom-out-line"></i></button>
+                        <span class="text-xs text-slate-600 dark:text-slate-300 font-medium w-12 text-center">100%</span>
+                        <button class="p-1 hover:bg-slate-200 dark:hover:bg-slate-700 rounded text-slate-500"><i class="ri-zoom-in-line"></i></button>
+                        <div class="w-px h-4 bg-slate-300 mx-2"></div>
+                        <button class="p-1 hover:bg-slate-200 dark:hover:bg-slate-700 rounded text-slate-500"><i class="ri-printer-line"></i></button>
+                    </div>
+                </div>
+
+                <div class="flex-1 bg-slate-100/50 dark:bg-black/20 overflow-auto flex justify-center p-8 custom-scrollbar">
+                    <div id="report-content" class="w-[90%] max-w-[800px] bg-white dark:bg-slate-800 min-h-[1000px] doc-shadow rounded-sm p-12 text-slate-800 dark:text-slate-200 relative animate-in fade-in duration-500">
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="w-80 flex flex-col bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden shrink-0">
+                <div class="px-4 py-3 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/50 flex justify-between items-center">
+                    <h3 class="font-bold text-slate-700 dark:text-slate-200 text-sm">版本管理 (洪山)</h3>
+                    <div class="text-xs text-slate-400">共 3 版</div>
+                </div>
+
+                <div class="flex-1 overflow-y-auto custom-scrollbar p-4 space-y-4" id="version-list">
+
+                    <div class="version-item relative pl-4 border-l-2 border-slate-200 dark:border-slate-700" id="version-card-1-2" data-version="1.2">
+                        <div class="timeline-dot absolute -left-[5px] top-0 w-2.5 h-2.5 bg-slate-300 rounded-full transition-colors"></div>
+                        <div class="card-bg rounded-lg p-3 border border-slate-100 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors group">
+                            <div class="flex justify-between items-start mb-2">
+                                <span class="text-sm font-bold text-slate-700 dark:text-slate-300">V1.2 专家审核版</span>
+                                <span class="status-badge-container">
+                                    <span class="status-badge text-[10px] bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400 px-1.5 py-0.5 rounded">待定稿</span>
+                                </span>
+                            </div>
+                            <div class="flex items-center gap-2 mb-2">
+                                <div class="w-5 h-5 rounded-full bg-slate-200 flex items-center justify-center text-[10px] text-slate-600">L</div>
+                                <span class="text-xs text-slate-500">leadership · 10分钟前</span>
+                            </div>
+                            <div class="action-buttons flex items-center justify-end gap-2 mt-3 pt-2 border-t border-slate-50 dark:border-slate-700/50">
+                                <button class="text-xs px-2 py-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded text-slate-600 dark:text-slate-300 hover:text-blue-600 hover:border-blue-300 transition-colors" onclick="previewVersion('version-card-1-2')">预览</button>
+
+                                <button class="btn-finalize text-xs px-2 py-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded text-slate-600 dark:text-slate-300 hover:text-emerald-600 hover:border-emerald-300 transition-colors flex items-center gap-1" onclick="toggleFinal('version-card-1-2')">
+                                    <i class="ri-checkbox-circle-line"></i>设为定稿
+                                </button>
+
+                                <button class="btn-distribute hidden text-xs px-2 py-1 bg-blue-600 border border-blue-600 rounded text-white hover:bg-blue-700 transition-colors items-center gap-1" onclick="distributeVersion('version-card-1-2')">
+                                    <i class="ri-send-plane-fill"></i>下发
+                                </button>
+
+                                <button class="btn-cancel-final hidden text-xs px-2 py-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded text-slate-500 hover:text-red-500 hover:border-red-300 transition-colors items-center gap-1" onclick="toggleFinal('version-card-1-2')">
+                                    <i class="ri-close-circle-line"></i>取消
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="version-item relative pl-4 border-l-2 border-primary" id="version-card-1-1" data-version="1.1">
+                        <div class="timeline-dot absolute -left-[5px] top-0 w-2.5 h-2.5 bg-primary rounded-full ring-4 ring-blue-100 dark:ring-blue-900/30 transition-colors"></div>
+                        <div class="card-bg bg-blue-50/50 dark:bg-blue-900/10 rounded-lg p-3 border border-blue-100 dark:border-blue-800 transition-colors">
+                            <div class="flex justify-between items-start mb-2">
+                                <span class="text-sm font-bold text-slate-800 dark:text-white">V1.1 数据复核</span>
+                                <span class="status-badge-container">
+                                    <span class="status-badge text-[10px] bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300 px-1.5 py-0.5 rounded border border-green-200 dark:border-green-800 font-medium">已审核</span>
+                                </span>
+                            </div>
+                            <div class="flex items-center gap-2 mb-2">
+                                <div class="w-5 h-5 rounded-full bg-slate-200 flex items-center justify-center text-[10px] text-slate-600">W</div>
+                                <span class="text-xs text-slate-500">wangyunpeng · 2小时前</span>
+                            </div>
+                            <div class="action-buttons flex items-center justify-end gap-2 mt-3 pt-2 border-t border-slate-50 dark:border-slate-700/50">
+                                <button class="text-xs px-2 py-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded text-slate-600 dark:text-slate-300 hover:text-blue-600 hover:border-blue-300 transition-colors" onclick="previewVersion('version-card-1-1')">预览</button>
+
+                                <button class="btn-finalize hidden text-xs px-2 py-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded text-slate-600 dark:text-slate-300 hover:text-emerald-600 hover:border-emerald-300 transition-colors items-center gap-1" onclick="toggleFinal('version-card-1-1')">
+                                    <i class="ri-checkbox-circle-line"></i>设为定稿
+                                </button>
+
+                                <button class="btn-distribute flex text-xs px-2 py-1 bg-blue-600 border border-blue-600 rounded text-white hover:bg-blue-700 transition-colors items-center gap-1" onclick="distributeVersion('version-card-1-1')">
+                                    <i class="ri-send-plane-fill"></i>下发
+                                </button>
+
+                                <button class="btn-cancel-final flex text-xs px-2 py-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded text-slate-500 hover:text-red-500 hover:border-red-300 transition-colors items-center gap-1" onclick="toggleFinal('version-card-1-1')">
+                                    <i class="ri-close-circle-line"></i>取消
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="version-item relative pl-4 border-l-2 border-slate-200 dark:border-slate-700" id="version-card-1-0" data-version="1.0">
+                        <div class="timeline-dot absolute -left-[5px] top-0 w-2.5 h-2.5 bg-purple-300 rounded-full transition-colors"></div>
+                        <div class="card-bg rounded-lg p-3 border border-purple-100 dark:border-purple-900/30 bg-purple-50/30 dark:bg-purple-900/10 hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-colors group">
+                            <div class="flex justify-between items-start mb-2">
+                                <div class="flex items-center gap-1">
+                                    <span class="text-sm font-bold text-slate-600 dark:text-slate-300">V1.0 自动生成</span>
+                                </div>
+                                <span class="status-badge-container">
+                                    <span class="status-badge text-[10px] text-purple-600 border border-purple-200 rounded px-1">碧水荆灵</span>
+                                </span>
+                            </div>
+                            <div class="flex items-center gap-2 mb-2">
+                                <div class="w-5 h-5 rounded-full bg-purple-100 flex items-center justify-center">
+                                    <span class="material-symbols-outlined text-[12px] text-purple-600">smart_toy</span>
+                                </div>
+                                <span class="text-xs text-slate-500">系统自动 · 昨天 18:00</span>
+                            </div>
+                            <div class="action-buttons flex items-center justify-end gap-2 mt-3 pt-2 border-t border-purple-100 dark:border-purple-800/30">
+                                <button class="text-xs px-2 py-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded text-slate-600 dark:text-slate-300 hover:text-blue-600 hover:border-blue-300 transition-colors" onclick="previewVersion('version-card-1-0')">预览</button>
+
+                                <button class="btn-finalize text-xs px-2 py-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded text-slate-600 dark:text-slate-300 hover:text-emerald-600 hover:border-emerald-300 transition-colors flex items-center gap-1" onclick="toggleFinal('version-card-1-0')">
+                                    <i class="ri-checkbox-circle-line"></i>设为定稿
+                                </button>
+
+                                <button class="btn-distribute hidden text-xs px-2 py-1 bg-blue-600 border border-blue-600 rounded text-white hover:bg-blue-700 transition-colors items-center gap-1" onclick="distributeVersion('version-card-1-0')">
+                                    <i class="ri-send-plane-fill"></i>下发
+                                </button>
+
+                                <button class="btn-cancel-final hidden text-xs px-2 py-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded text-slate-500 hover:text-red-500 hover:border-red-300 transition-colors items-center gap-1" onclick="toggleFinal('version-card-1-0')">
+                                    <i class="ri-close-circle-line"></i>取消定稿
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <footer class="mt-auto pt-4 border-t border-slate-200 dark:border-slate-700 text-center text-xs text-slate-400 shrink-0">
+            <p>&copy; 2026 湖北省生态环境厅 · 版权所有</p>
+        </footer>
+    </main>
+</div>
+
+<script>
+    /* ---------------- Sidebar Logic ---------------- */
+    const sidebar = document.getElementById('sidebar');
+    const toggleBtn = document.getElementById('toggleSidebarBtn');
+    const toggleIcon = document.getElementById('toggleIcon');
+    let isCollapsed = false;
+
+    toggleBtn.addEventListener('click', () => {
+        isCollapsed = !isCollapsed;
+        if (isCollapsed) {
+            sidebar.classList.remove('w-[270px]');
+            sidebar.classList.add('w-[80px]', 'hide-text', 'collapsed-sidebar');
+            toggleIcon.style.transform = 'rotate(180deg)';
+        } else {
+            sidebar.classList.remove('w-[80px]', 'hide-text', 'collapsed-sidebar');
+            sidebar.classList.add('w-[270px]');
+            toggleIcon.style.transform = 'rotate(0deg)';
+        }
+    });
+
+    function toggleSubmenu(id) {
+        if (isCollapsed) return;
+        const submenu = document.getElementById(id);
+        const btn = submenu.previousElementSibling;
+        const chevron = btn.querySelector('.sidebar-chevron');
+
+        if (submenu.style.maxHeight) {
+            submenu.style.maxHeight = null;
+            chevron.style.transform = 'rotate(0deg)';
+        } else {
+            submenu.style.maxHeight = submenu.scrollHeight + "px";
+            chevron.style.transform = 'rotate(180deg)';
+        }
+    }
+
+    window.addEventListener('load', () => {
+        const submenu = document.getElementById('submenu-analysis');
+        if(submenu) {
+            submenu.style.maxHeight = submenu.scrollHeight + "px";
+            submenu.previousElementSibling.querySelector('.sidebar-chevron').style.transform = 'rotate(180deg)';
+        }
+        previewVersion('version-card-1-1');
+        updateHistoryArchiveBadge('audited');
+    });
+
+    /* ---------------- Report Data Logic (Updated for Single Section) ---------------- */
+    const REPORT_DATA = {
+        'version-card-1-0': {
+            title: "断面综合分析报告 (AI初稿)",
+            section: "洪山 (国考断面)",
+            date: "2025年12月 - V1.0",
+            summary: "系统根据IoT监测站数据自动判定：2025年12月，洪山断面水质为Ⅲ类。氨氮浓度出现波动，需引起注意。上游来水流量平稳，未见明显异常排污行为。",
+            grade: "III",
+            gradeColor: "text-yellow-600 bg-yellow-100 border-yellow-200"
+        },
+        'version-card-1-1': {
+            title: "断面综合分析报告 (复核版)",
+            section: "洪山 (国考断面)",
+            date: "2025年12月 - V1.1",
+            summary: "2025年12月，洪山断面水质综合评价为Ⅲ类（达标）。主要污染物为氨氮（0.8mg/L）和化学需氧量（18mg/L），高锰酸盐指数稳定在Ⅱ类水平。与上月相比，氨氮浓度略有上升（+2.5%），但仍处于达标范围内。",
+            grade: "III",
+            gradeColor: "text-green-600 bg-green-100 border-green-200"
+        },
+        'version-card-1-2': {
+            title: "断面综合分析报告 (定稿)",
+            section: "洪山 (国考断面)",
+            date: "2025年12月 - V1.2",
+            summary: "【综合结论】本月洪山断面水质达标（Ⅲ类）。针对氨氮浓度波动情况，已核实为周边农田退水导致，建议在枯水期加强管控。下游饮用水源地水质未受影响。",
+            grade: "III",
+            gradeColor: "text-green-600 bg-green-100 border-green-200"
+        }
+    };
+
+    function previewVersion(versionId) {
+        const data = REPORT_DATA[versionId];
+        const contentDiv = document.getElementById('report-content');
+
+        contentDiv.innerHTML = `
+            <div class="border-b-2 border-red-500 mb-8 pb-4 flex justify-between items-end">
+                <div>
+                    <h1 class="text-2xl font-bold font-serif text-gray-900 dark:text-gray-100">${data.title}</h1>
+                    <div class="text-sm text-gray-500 mt-2">监测断面：<span class="font-bold text-gray-800 dark:text-gray-300">${data.section}</span></div>
+                </div>
+                <div class="text-sm text-gray-500 font-serif">${data.date}</div>
+            </div>
+
+            <div class="mb-8 p-6 bg-slate-50 dark:bg-slate-900/50 rounded-lg border border-slate-100 dark:border-slate-800 flex items-center justify-between">
+                <div>
+                    <div class="text-sm text-gray-500 mb-1">本月水质类别</div>
+                    <div class="text-4xl font-bold ${data.gradeColor.split(' ')[0]}">${data.grade} <span class="text-lg text-gray-400 font-normal">类</span></div>
+                </div>
+                <div class="h-12 w-px bg-gray-200"></div>
+                <div>
+                    <div class="text-sm text-gray-500 mb-1">主要超标因子</div>
+                    <div class="text-lg font-medium text-gray-800 dark:text-gray-200">无 (氨氮接近限值)</div>
+                </div>
+                 <div class="h-12 w-px bg-gray-200"></div>
+                <div>
+                    <div class="text-sm text-gray-500 mb-1">达标状况</div>
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                        <span class="w-1.5 h-1.5 bg-green-500 rounded-full mr-1.5"></span>
+                        达标
+                    </span>
+                </div>
+            </div>
+
+            <h3 class="text-lg font-bold mb-3 font-serif border-l-4 border-blue-500 pl-3">一、总体情况</h3>
+            <p class="text-base leading-loose mb-6 font-serif text-justify text-gray-700 dark:text-gray-300">
+                ${data.summary}
+            </p>
+
+            <h3 class="text-lg font-bold mb-3 font-serif border-l-4 border-blue-500 pl-3">二、指标趋势分析</h3>
+            <div class="my-6 border border-slate-200 dark:border-slate-700 p-4 bg-white dark:bg-slate-900 rounded shadow-sm">
+                <h4 class="text-center font-bold text-xs text-gray-500 mb-8">图 2-1 洪山断面近6个月氨氮浓度变化趋势 (mg/L)</h4>
+                <div class="flex items-end justify-between h-32 px-4 gap-2">
+                    <div class="w-8 bg-blue-100 rounded-t flex items-end justify-center group relative h-[40%]"><span class="text-[10px] absolute -top-4 text-gray-400">0.4</span></div>
+                    <div class="w-8 bg-blue-200 rounded-t flex items-end justify-center group relative h-[50%]"><span class="text-[10px] absolute -top-4 text-gray-400">0.5</span></div>
+                    <div class="w-8 bg-blue-300 rounded-t flex items-end justify-center group relative h-[45%]"><span class="text-[10px] absolute -top-4 text-gray-400">0.45</span></div>
+                    <div class="w-8 bg-blue-400 rounded-t flex items-end justify-center group relative h-[60%]"><span class="text-[10px] absolute -top-4 text-gray-400">0.6</span></div>
+                    <div class="w-8 bg-blue-500 rounded-t flex items-end justify-center group relative h-[70%]"><span class="text-[10px] absolute -top-4 text-gray-400">0.7</span></div>
+                    <div class="w-8 bg-blue-600 rounded-t flex items-end justify-center group relative h-[80%]"><span class="text-[10px] absolute -top-4 text-blue-600 font-bold">0.8</span></div>
+                </div>
+                 <div class="flex justify-between px-4 mt-2 text-[10px] text-gray-400">
+                    <span>7月</span><span>8月</span><span>9月</span><span>10月</span><span>11月</span><span>12月</span>
+                </div>
+            </div>
+
+            <p class="text-sm text-gray-500 mt-8 text-center border-t pt-4">数据来源：湖北省生态环境监测中心站 · 自动生成</p>
+        `;
+
+        document.querySelectorAll('.version-item .card-bg').forEach(el => {
+            el.classList.remove('ring-2', 'ring-blue-400');
+        });
+        const activeCard = document.getElementById(versionId).querySelector('.card-bg');
+        activeCard.classList.add('ring-2', 'ring-blue-400');
+    }
+
+    /* ---------------- Badge Logic ---------------- */
+    const BADGE_FINAL = `<span class="status-badge text-[10px] bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300 px-1.5 py-0.5 rounded border border-green-200 dark:border-green-800 font-medium animate-pulse">已审核</span>`;
+    const BADGE_PENDING = `<span class="status-badge text-[10px] bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400 px-1.5 py-0.5 rounded">待定稿</span>`;
+    const BADGE_SYSTEM = `<span class="status-badge text-[10px] text-purple-600 border border-purple-200 rounded px-1">AI生成</span>`;
+
+    function updateHistoryArchiveBadge(status) {
+        const historyBadge = document.getElementById('history-badge-12');
+        if (!historyBadge) return;
+        if (status === 'audited') {
+            historyBadge.className = "text-[10px] px-1.5 py-0.5 rounded bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 font-medium";
+            historyBadge.innerText = "已审核";
+        } else {
+            historyBadge.className = "text-[10px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-500 font-medium";
+            historyBadge.innerText = "待定稿";
+        }
+    }
+
+    function toggleFinal(targetId) {
+        const item = document.getElementById(targetId);
+        const finalizeBtn = item.querySelector('.btn-finalize');
+        const isCurrentlyFinal = finalizeBtn.classList.contains('hidden');
+
+        // Reset All
+        document.querySelectorAll('.version-item').forEach(vItem => {
+            const timelineDot = vItem.querySelector('.timeline-dot');
+            const cardBg = vItem.querySelector('.card-bg');
+            const fBtn = vItem.querySelector('.btn-finalize');
+            const cBtn = vItem.querySelector('.btn-cancel-final');
+            const dBtn = vItem.querySelector('.btn-distribute');
+            const badgeContainer = vItem.querySelector('.status-badge-container');
+
+            // Reset styles
+            vItem.style.borderColor = '';
+            vItem.classList.remove('border-primary');
+            vItem.classList.add('border-slate-200', 'dark:border-slate-700');
+            timelineDot.classList.remove('bg-primary', 'ring-4', 'ring-blue-100', 'dark:ring-blue-900/30');
+
+            // Restore special style for V1.0 if needed, else default
+            if (vItem.getAttribute('data-version') === '1.0') {
+                timelineDot.classList.add('bg-purple-300');
+                cardBg.className = "card-bg rounded-lg p-3 border border-purple-100 dark:border-purple-900/30 bg-purple-50/30 dark:bg-purple-900/10 hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-colors group";
+                badgeContainer.innerHTML = BADGE_SYSTEM;
+            } else {
+                timelineDot.classList.add('bg-slate-300');
+                cardBg.className = "card-bg rounded-lg p-3 border border-slate-100 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors group";
+                badgeContainer.innerHTML = BADGE_PENDING;
+            }
+
+            // Show "Set Final", Hide "Cancel", Hide "Distribute"
+            fBtn.classList.remove('hidden'); fBtn.classList.add('flex');
+            cBtn.classList.add('hidden'); cBtn.classList.remove('flex');
+            if(dBtn) { dBtn.classList.add('hidden'); dBtn.classList.remove('flex'); }
+        });
+
+        // Toggle ON Logic
+        if (!isCurrentlyFinal) {
+            const timelineDot = item.querySelector('.timeline-dot');
+            const cardBg = item.querySelector('.card-bg');
+            const finalizeBtn = item.querySelector('.btn-finalize');
+            const cancelBtn = item.querySelector('.btn-cancel-final');
+            const distributeBtn = item.querySelector('.btn-distribute');
+            const badgeContainer = item.querySelector('.status-badge-container');
+
+            // Apply Final Styles
+            item.style.borderColor = '#3b82f6';
+            timelineDot.classList.remove('bg-slate-300', 'bg-purple-300');
+            timelineDot.classList.add('bg-primary', 'ring-4', 'ring-blue-100', 'dark:ring-blue-900/30');
+
+            cardBg.classList.remove('bg-purple-50/30', 'dark:bg-purple-900/10');
+            cardBg.classList.add('bg-blue-50/50', 'dark:bg-blue-900/10', 'border-blue-100', 'dark:border-blue-800');
+            cardBg.classList.remove('border-slate-100', 'dark:border-slate-700', 'border-purple-100');
+
+            badgeContainer.innerHTML = BADGE_FINAL;
+
+            // Swap Buttons
+            finalizeBtn.classList.add('hidden'); finalizeBtn.classList.remove('flex');
+            cancelBtn.classList.remove('hidden'); cancelBtn.classList.add('flex');
+            if(distributeBtn) { distributeBtn.classList.remove('hidden'); distributeBtn.classList.add('flex'); }
+
+            updateHistoryArchiveBadge('audited');
+        } else {
+            updateHistoryArchiveBadge('pending');
+        }
+
+        previewVersion(targetId);
+    }
+
+    function distributeVersion(targetId) {
+        const item = document.getElementById(targetId);
+        const version = item.getAttribute('data-version');
+        // 获取选中的断面名称
+        const select = document.querySelector('select');
+        const sectionName = select ? select.options[select.selectedIndex].text : '断面';
+
+        // 1. 模拟下载
+        const content = document.getElementById('report-content').innerText;
+        const blob = new Blob([content], { type: 'text/plain' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${sectionName}_分析报告_V${version}.txt`;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+
+        // 2. 模拟跳转
+        setTimeout(() => {
+            alert(`${sectionName}_分析报告_V${version} 已下发至相关部门。\n\n即将跳转至下发管理中心。`);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }, 500);
+    }
+</script>
+
+</body>
+</html>

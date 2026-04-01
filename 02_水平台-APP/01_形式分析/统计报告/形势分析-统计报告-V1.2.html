@@ -1,0 +1,1294 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>水质考核统计报告</title>
+    <style>
+        :root {
+            --primary-color: #0056b3; /* 稳重的科技蓝 */
+            --primary-light: #007bff; /* 浅蓝渐变 */
+            --header-bg: linear-gradient(135deg, var(--primary-color), var(--primary-light)); /* 蓝色渐变 */
+            --border-color: #e9ecef;
+            --text-main: #333;
+            --text-sub: #666;
+            --text-white: #fff;
+            --danger: #dc3545;
+            --success: #28a745;
+            --warning: #ffc107;
+            --safe-area-bottom: env(safe-area-inset-bottom);
+            --mask-bg: rgba(0, 0, 0, 0.3);
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f5f7fa;
+            color: var(--text-main);
+            padding-bottom: calc(80px + var(--safe-area-bottom));
+        }
+
+        /* --- 顶部区域 --- */
+        .top-container {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: #fff;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        /* 标题与筛选 - 蓝色渐变优化 */
+        .header {
+            padding: 16px 16px;
+            display: flex;
+            justify-content: center; /* 标题居中 */
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--header-bg); /* 蓝色渐变背景 */
+            position: relative; /* 用于绝对定位日期选择器 */
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 17px; /* 统计报告字体调小 */
+            font-weight: 600;
+            color: var(--text-white); /* 白色文字 */
+            letter-spacing: 0.5px;
+        }
+
+        /* 日期选择器优化 - 右上角布局 */
+        .date-picker {
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 14px;
+            color: var(--text-white);
+            background: rgba(255, 255, 255, 0.2); /* 半透明白色背景 */
+            padding: 6px 12px;
+            border-radius: 16px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .date-picker:hover {
+            background: rgba(255, 255, 255, 0.3); /* hover时加深透明度 */
+        }
+
+        .date-picker::after {
+            content: ' ▼';
+            font-size: 10px;
+            margin-left: 4px;
+        }
+
+        /* 滑动 Tabs - 保持白色背景，优化扩展性 */
+        .tabs-wrapper {
+            overflow-x: auto;
+            white-space: nowrap;
+            scrollbar-width: none; /* Firefox */
+            -ms-overflow-style: none; /* IE */
+            padding: 0 8px;
+            border-bottom: 1px solid var(--border-color);
+            background: #fff; /* 保持白色背景，符合需求 */
+        }
+
+        .tabs-wrapper::-webkit-scrollbar {
+            display: none;
+        }
+
+        .tab-item {
+            display: inline-block;
+            padding: 14px 18px;
+            font-size: 15px;
+            color: var(--text-sub);
+            position: relative;
+            cursor: pointer;
+            transition: color 0.3s, padding 0.3s;
+            margin: 0 2px;
+            border-radius: 6px 6px 0 0; /* 顶部圆角，提升高级感 */
+        }
+
+        /* 多Tab时优化间距 */
+        .tab-item:not(:last-child) {
+            margin-right: 4px;
+        }
+
+        .tab-item.active {
+            color: var(--primary-color);
+            font-weight: 600;
+            background: rgba(0, 86, 179, 0.05); /* 轻微蓝色背景，不影响整体白色基调 */
+        }
+
+        .tab-item.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--primary-color);
+            border-radius: 3px 3px 0 0;
+        }
+
+        /* 触摸反馈优化 */
+        .tab-item:active {
+            background: rgba(0, 86, 179, 0.08);
+        }
+
+        /* --- 表格区域 --- */
+        .content-area {
+            padding: 12px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        /* 核心：响应式复杂表格容器 */
+        .table-card {
+            background: #fff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            position: relative;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            white-space: nowrap; /* 强制单行，触发横向滚动 */
+        }
+
+        th, td {
+            padding: 12px 10px;
+            border-bottom: 1px solid var(--border-color);
+            text-align: center;
+        }
+
+        th {
+            background-color: #f8f9fc;
+            color: var(--text-sub);
+            font-weight: 600;
+            font-size: 12px;
+        }
+
+        /* 复杂表头处理 */
+        .th-group {
+            border-bottom: none;
+        }
+
+        .th-sub {
+            background-color: #fff;
+            color: var(--text-sub);
+        }
+
+        /* 固定首列魔法 */
+        th.sticky-col, td.sticky-col {
+            position: sticky;
+            left: 0;
+            z-index: 10;
+            background-color: #fff; /* 防止透明穿透 */
+            border-right: 1px solid var(--border-color);
+            text-align: left;
+            font-weight: 600;
+            min-width: 80px;
+            box-shadow: 2px 0 5px -2px rgba(0, 0, 0, 0.1);
+        }
+
+        th.sticky-col {
+            background-color: #f8f9fc;
+            z-index: 11;
+        }
+
+        /* 数据状态颜色 */
+        .trend-up {
+            color: var(--danger);
+        }
+
+        /* 不降反升，坏事 */
+        .trend-down {
+            color: var(--success);
+        }
+
+        /* 改善 */
+
+        /* 水质类别颜色样式 - 按要求修改 */
+        .water-class {
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .water-1 {
+            background: #CCFFFF;
+        }
+
+        /* Ⅰ类 */
+        .water-2 {
+            background: #00CCFF;
+        }
+
+        /* Ⅱ类 */
+        .water-3 {
+            background: #00FF00;
+        }
+
+        /* Ⅲ类 */
+        .water-4 {
+            background: #FAFF19;
+        }
+
+        /* Ⅳ类 */
+        .water-5 {
+            background: #FF9B00;
+        }
+
+        /* Ⅴ类 */
+        .water-worse {
+            background: #FF0000;
+            color: white;
+        }
+
+        /* 劣Ⅴ类 */
+
+        /* --- 底部悬浮 --- */
+        .bottom-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #fff;
+            padding: 12px 16px;
+            padding-bottom: calc(12px + var(--safe-area-bottom));
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 200;
+        }
+
+        .info-text {
+            font-size: 12px;
+            color: var(--text-sub);
+        }
+
+        .btn-download {
+            background-color: var(--primary-color);
+            color: #fff;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 24px;
+            font-size: 14px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 4px 12px rgba(0, 86, 179, 0.3);
+            cursor: pointer;
+            transition: background 0.3s, box-shadow 0.3s;
+        }
+
+        .btn-download:hover {
+            background-color: var(--primary-light);
+            box-shadow: 0 6px 16px rgba(0, 86, 179, 0.4);
+        }
+
+        .btn-download svg {
+            margin-right: 6px;
+            width: 18px;
+            height: 18px;
+        }
+
+        /* --- 日期选择弹出框 - 从下面滑动弹出 --- */
+        .date-modal {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #fff;
+            border-radius: 16px 16px 0 0;
+            padding: 20px;
+            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15);
+            z-index: 1000;
+            transform: translateY(100%); /* 初始隐藏在底部 */
+            opacity: 0;
+            transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1); /* 优化滑动动画 */
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .date-modal.show {
+            transform: translateY(0); /* 从下往上滑动弹出 */
+            opacity: 1;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .modal-header h3 {
+            margin: 0;
+            font-size: 18px;
+            color: var(--primary-color);
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: var(--text-sub);
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 50%;
+            transition: background 0.2s;
+        }
+
+        .modal-close:hover {
+            background: #f5f5f5;
+        }
+
+        .date-picker-content {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .year-selector, .month-selector {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .selector-title {
+            width: 100%;
+            font-size: 14px;
+            color: var(--text-sub);
+            margin-bottom: 8px;
+        }
+
+        .date-option {
+            padding: 8px 16px;
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+            background: #fff;
+            color: var(--text-main);
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .date-option.active {
+            background: var(--primary-color);
+            color: #fff;
+            border-color: var(--primary-color);
+        }
+
+        .date-option:hover:not(.active) {
+            border-color: var(--primary-light);
+            color: var(--primary-color);
+        }
+
+        .modal-footer {
+            margin-top: 24px;
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+
+        .modal-btn {
+            padding: 8px 20px;
+            border-radius: 20px;
+            border: none;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-cancel {
+            background: #f5f5f5;
+            color: var(--text-sub);
+        }
+
+        .btn-cancel:hover {
+            background: #eee;
+        }
+
+        .btn-confirm {
+            background: var(--primary-color);
+            color: #fff;
+        }
+
+        .btn-confirm:hover {
+            background: var(--primary-light);
+        }
+
+        .modal-mask {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--mask-bg);
+            z-index: 999;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+
+        .modal-mask.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        /* --- 动画效果 --- */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(5px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* --- 响应式优化 --- */
+        @media (max-width: 375px) {
+            .tab-item {
+                padding: 14px 12px;
+                font-size: 14px;
+            }
+
+            .header h1 {
+                font-size: 16px; /* 小屏幕下标题字体进一步调小 */
+            }
+
+            .date-picker {
+                padding: 5px 10px;
+                font-size: 13px;
+            }
+
+            .btn-download {
+                padding: 8px 18px;
+                font-size: 13px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="top-container">
+    <div class="header">
+        <h1>统计报告</h1>
+        <div class="date-picker" id="datePickerBtn">2025年11月</div>
+    </div>
+
+    <!-- 优化后的Tab布局，支持无限扩展 -->
+    <div class="tabs-wrapper">
+        <div class="tab-item active" onclick="switchTab('provincial')">省控考核进展表</div>
+        <div class="tab-item" onclick="switchTab('national')">国控考核进展表</div>
+        <div class="tab-item" onclick="switchTab('unqualified')">未达Ⅲ类目标断面清单</div>
+        <div class="tab-item" onclick="switchTab('risk')">国控风险断面清单</div>
+        <!-- 未来可直接添加更多Tab，自动支持横向滚动 -->
+        <div class="tab-item" onclick="switchTab('newTab1')">新增报告...</div>
+    </div>
+</div>
+
+<div class="content-area" id="content-container">
+</div>
+
+<div class="bottom-bar">
+    <span class="info-text">共统计 326 个断面</span>
+    <button class="btn-download" onclick="downloadReport()">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+        </svg>
+        导出报表
+    </button>
+</div>
+
+<!-- 日期选择弹出框 - 从底部弹出 -->
+<div class="modal-mask" id="modalMask"></div>
+<div class="date-modal" id="dateModal">
+    <div class="modal-header">
+        <h3>选择时间</h3>
+        <button class="modal-close" id="modalCloseBtn">&times;</button>
+    </div>
+    <div class="date-picker-content">
+        <div class="year-selector">
+            <div class="selector-title">选择年份</div>
+            <div class="date-option active" data-year="2025">2025年</div>
+            <div class="date-option" data-year="2024">2024年</div>
+            <div class="date-option" data-year="2023">2023年</div>
+            <div class="date-option" data-year="2022">2022年</div>
+        </div>
+        <div class="month-selector">
+            <div class="selector-title">选择月份</div>
+            <div class="date-option" data-month="1">1月</div>
+            <div class="date-option" data-month="2">2月</div>
+            <div class="date-option" data-month="3">3月</div>
+            <div class="date-option" data-month="4">4月</div>
+            <div class="date-option" data-month="5">5月</div>
+            <div class="date-option" data-month="6">6月</div>
+            <div class="date-option" data-month="7">7月</div>
+            <div class="date-option" data-month="8">8月</div>
+            <div class="date-option" data-month="9">9月</div>
+            <div class="date-option" data-month="10">10月</div>
+            <div class="date-option active" data-month="11">11月</div>
+            <div class="date-option" data-month="12">12月</div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button class="modal-btn btn-cancel" id="cancelBtn">取消</button>
+        <button class="modal-btn btn-confirm" id="confirmBtn">确认</button>
+    </div>
+</div>
+
+<script>
+    // 模拟数据源 (基于图片内容提取)
+    const mockData = {
+        // 1. 省控考核
+        provincial: {
+            headers: ['城市', '总数', '目标', '1-11月优良(%)', '差距(个)', '同比', '11月优良(%)', '同比', '环比'],
+            rows: [
+                {
+                    city: '武汉市',
+                    total: 25,
+                    target: '88',
+                    ratio: '88',
+                    gap: '',
+                    yoy: '8.0',
+                    curRatio: '80.0',
+                    yoy2: '4.0',
+                    mom: '16.0'
+                },
+                {
+                    city: '黄石市',
+                    total: 11,
+                    target: '90.9',
+                    ratio: '90.9',
+                    gap: '',
+                    yoy: '0.0',
+                    curRatio: '90.9',
+                    yoy2: '18.2',
+                    mom: '0.0'
+                },
+                {
+                    city: '十堰市',
+                    total: 27,
+                    target: '92.6',
+                    ratio: '100',
+                    gap: '',
+                    yoy: '0.0',
+                    curRatio: '100',
+                    yoy2: '0.0',
+                    mom: '7.4'
+                },
+                {
+                    city: '襄阳市',
+                    total: 28,
+                    target: '96.4',
+                    ratio: '96.4',
+                    gap: '',
+                    yoy: '-3.6',
+                    curRatio: '100',
+                    yoy2: '7.1',
+                    mom: '7.1'
+                },
+                {
+                    city: '宜昌市',
+                    total: 34,
+                    target: '97.1',
+                    ratio: '100',
+                    gap: '',
+                    yoy: '0.0',
+                    curRatio: '97.1',
+                    yoy2: '-2.9',
+                    mom: '-2.9'
+                },
+                {
+                    city: '荆州市',
+                    total: 36,
+                    target: '86.1',
+                    ratio: '86.1',
+                    gap: '',
+                    yoy: '8.3',
+                    curRatio: '86.1',
+                    yoy2: '11.7',
+                    mom: '0.0'
+                },
+                {
+                    city: '荆门市',
+                    total: 22,
+                    target: '90.9',
+                    ratio: '90.9',
+                    gap: '',
+                    yoy: '-4.6',
+                    curRatio: '90.9',
+                    yoy2: '0.0',
+                    mom: '4.5'
+                },
+                {
+                    city: '鄂州市',
+                    total: 7,
+                    target: '85.7',
+                    ratio: '100',
+                    gap: '',
+                    yoy: '0.0',
+                    curRatio: '100',
+                    yoy2: '14.3',
+                    mom: '28.6'
+                },
+                {
+                    city: '孝感市',
+                    total: 23,
+                    target: '87',
+                    ratio: '95.7',
+                    gap: '',
+                    yoy: '0.0',
+                    curRatio: '91.3',
+                    yoy2: '-4.4',
+                    mom: '0.0'
+                },
+                {
+                    city: '黄冈市',
+                    total: 26,
+                    target: '96.2',
+                    ratio: '<b><i>88.5</i></b>',
+                    gap: '<span class="trend-up">2</span>',
+                    yoy: '-3.8',
+                    curRatio: '88.5',
+                    yoy2: '0.0',
+                    mom: '7.7'
+                },
+                {
+                    city: '咸宁市',
+                    total: 22,
+                    target: '100',
+                    ratio: '100',
+                    gap: '',
+                    yoy: '0.0',
+                    curRatio: '100',
+                    yoy2: '9.1',
+                    mom: '18.2'
+                },
+                {
+                    city: '随州市',
+                    total: 19,
+                    target: '100',
+                    ratio: '<b><i>88.9</i></b>',
+                    gap: '<span class="trend-up">2</span>',
+                    yoy: '-11.1',
+                    curRatio: '94.4',
+                    yoy2: '0.0',
+                    mom: '-5.6'
+                },
+                {
+                    city: '恩施州',
+                    total: 25,
+                    target: '100',
+                    ratio: '100',
+                    gap: '',
+                    yoy: '0.0',
+                    curRatio: '100',
+                    yoy2: '0.0',
+                    mom: '0.0'
+                },
+                {
+                    city: '仙桃市',
+                    total: 5,
+                    target: '60',
+                    ratio: '60',
+                    gap: '',
+                    yoy: '0.0',
+                    curRatio: '60.0',
+                    yoy2: '0.0',
+                    mom: '-20.0'
+                },
+                {
+                    city: '天门市',
+                    total: 8,
+                    target: '87.5',
+                    ratio: '87.5',
+                    gap: '',
+                    yoy: '0.0',
+                    curRatio: '100',
+                    yoy2: '37.5',
+                    mom: '37.5'
+                },
+                {
+                    city: '潜江市',
+                    total: 9,
+                    target: '100',
+                    ratio: '100',
+                    gap: '',
+                    yoy: '11.1',
+                    curRatio: '100',
+                    yoy2: '11.1',
+                    mom: '22.2'
+                },
+                {
+                    city: '神农架',
+                    total: 5,
+                    target: '100',
+                    ratio: '100',
+                    gap: '',
+                    yoy: '0.0',
+                    curRatio: '100',
+                    yoy2: '0.0',
+                    mom: '0.0'
+                },
+                {
+                    city: '<b>全省</b>',
+                    total: '<b>326</b>',
+                    target: '<b>91.7</b>',
+                    ratio: '<b>93.8</b>',
+                    gap: '',
+                    yoy: '<b>0.6</b>',
+                    curRatio: '<b>93.5</b>',
+                    yoy2: '<b>4.3</b>',
+                    mom: '<b>5.8</b>'
+                },
+            ]
+        },
+        // 2. 国控考核
+        national: {
+            headers: ['城市', '总数', '目标', '1-11月优良(%)', '差距(个)', '同比', '11月优良(%)', '同比', '环比'],
+            rows: [
+                {
+                    city: '武汉市',
+                    total: 11,
+                    target: '90.9',
+                    ratio: '90.9',
+                    gap: '',
+                    yoy: '-9.1',
+                    curRatio: '81.8',
+                    yoy2: '9.1',
+                    mom: '18.2'
+                },
+                {
+                    city: '黄石市',
+                    total: 5,
+                    target: '100',
+                    ratio: '100',
+                    gap: '',
+                    yoy: '0.0',
+                    curRatio: '100',
+                    yoy2: '0.0',
+                    mom: '0.0'
+                },
+                {
+                    city: '十堰市',
+                    total: 23,
+                    target: '91.3',
+                    ratio: '100',
+                    gap: '',
+                    yoy: '0.0',
+                    curRatio: '100',
+                    yoy2: '0.0',
+                    mom: '8.7'
+                },
+                {
+                    city: '襄阳市',
+                    total: 15,
+                    target: '100',
+                    ratio: '100',
+                    gap: '',
+                    yoy: '0.0',
+                    curRatio: '100',
+                    yoy2: '0.0',
+                    mom: '0.0'
+                },
+                {
+                    city: '宜昌市',
+                    total: 16,
+                    target: '100',
+                    ratio: '100',
+                    gap: '',
+                    yoy: '0.0',
+                    curRatio: '100',
+                    yoy2: '0.0',
+                    mom: '0.0'
+                },
+                {
+                    city: '荆州市',
+                    total: 24,
+                    target: '95.8',
+                    ratio: '91.7',
+                    gap: '<span class="trend-up">1</span>',
+                    yoy: '8.4',
+                    curRatio: '91.7',
+                    yoy2: '13.7',
+                    mom: '4.2'
+                },
+                {
+                    city: '荆门市',
+                    total: 16,
+                    target: '87.5',
+                    ratio: '87.5',
+                    gap: '',
+                    yoy: '-6.3',
+                    curRatio: '87.5',
+                    yoy2: '0.0',
+                    mom: '0.0'
+                },
+                {
+                    city: '鄂州市',
+                    total: 3,
+                    target: '100',
+                    ratio: '100',
+                    gap: '',
+                    yoy: '0.0',
+                    curRatio: '100',
+                    yoy2: '33.3',
+                    mom: '33.3'
+                },
+                {
+                    city: '孝感市',
+                    total: 13,
+                    target: '92.3',
+                    ratio: '100',
+                    gap: '',
+                    yoy: '0.0',
+                    curRatio: '100',
+                    yoy2: '0.0',
+                    mom: '0.0'
+                },
+                {
+                    city: '黄冈市',
+                    total: 14,
+                    target: '92.9',
+                    ratio: '<b><i>85.7</i></b>',
+                    gap: '<span class="trend-up">1</span>',
+                    yoy: '-7.2',
+                    curRatio: '85.7',
+                    yoy2: '0.0',
+                    mom: '14.3'
+                },
+                {
+                    city: '咸宁市',
+                    total: 12,
+                    target: '100',
+                    ratio: '100',
+                    gap: '',
+                    yoy: '0.0',
+                    curRatio: '100',
+                    yoy2: '8.3',
+                    mom: '16.7'
+                },
+                {
+                    city: '随州市',
+                    total: 6,
+                    target: '100',
+                    ratio: '<b><i>60</i></b>',
+                    gap: '<span class="trend-up">2</span>',
+                    yoy: '-40.0',
+                    curRatio: '80.0',
+                    yoy2: '0.0',
+                    mom: '-20.0'
+                },
+                {
+                    city: '天门市',
+                    total: 5,
+                    target: '100',
+                    ratio: '<b><i>80</i></b>',
+                    gap: '<span class="trend-up">1</span>',
+                    yoy: '-20.0',
+                    curRatio: '100',
+                    yoy2: '0.0',
+                    mom: '20.0'
+                },
+                {
+                    city: '<b>全省</b>',
+                    total: '<b>190</b>',
+                    target: '<b>94.7</b>',
+                    ratio: '<b>94.2</b>',
+                    gap: '<span class="trend-up">1</span>',
+                    yoy: '<b>-1.0</b>',
+                    curRatio: '<b>94.2</b>',
+                    yoy2: '<b>3.3</b>',
+                    mom: '<b>10.9</b>'
+                },
+            ]
+        },
+        // 3. 未达标清单 - 水质类别颜色按要求修改
+        unqualified: {
+            headers: ['城市', '水体', '断面', '目标', '本月', '本月超标', '累计', '累计超标'],
+            rows: [
+                {
+                    city: '荆门市、天门市',
+                    river: '天门河',
+                    section: '拖市',
+                    target: '<span class="water-class water-3">III</span>',
+                    curClass: '<span class="water-class water-3">III</span>',
+                    curDetail: '-',
+                    sumClass: '<span class="water-class water-4">IV</span>',
+                    sumDetail: '化学需氧量(20.3)'
+                },
+                {
+                    city: '武汉市',
+                    river: '通顺河',
+                    section: '黄陵大桥',
+                    target: '<span class="water-class water-3">III</span>',
+                    curClass: '<span class="water-class water-4">IV</span>',
+                    curDetail: '溶解氧(4.9)',
+                    sumClass: '<span class="water-class water-4">IV</span>',
+                    sumDetail: '化学需氧量(22.7)'
+                },
+                {
+                    city: '荆州市',
+                    river: '虎渡河',
+                    section: '黄山头',
+                    target: '<span class="water-class water-3">III</span>',
+                    curClass: '<span class="water-class water-5">V</span>',
+                    curDetail: '化学需氧量(38.0)<br>BOD(5.6)<br>高锰酸盐(8.0)',
+                    sumClass: '<span class="water-class water-4">IV</span>',
+                    sumDetail: '化学需氧量(23.6)'
+                },
+                {
+                    city: '随州市',
+                    river: '应山河',
+                    section: '孝昌王店',
+                    target: '<span class="water-class water-3">III</span>',
+                    curClass: '<span class="water-class water-3">III</span>',
+                    curDetail: '-',
+                    sumClass: '<span class="water-class water-4">IV</span>',
+                    sumDetail: '化学需氧量(21.1)'
+                },
+                {
+                    city: '随州市',
+                    river: '滠水',
+                    section: '平林',
+                    target: '<span class="water-class water-3">III</span>',
+                    curClass: '<span class="water-class water-2">II</span>',
+                    curDetail: '-',
+                    sumClass: '<span class="water-class water-4">IV</span>',
+                    sumDetail: '化学需氧量(21.0)'
+                },
+                {
+                    city: '黄冈市',
+                    river: '倒水',
+                    section: '冯集',
+                    target: '<span class="water-class water-3">III</span>',
+                    curClass: '<span class="water-class water-3">III</span>',
+                    curDetail: '-',
+                    sumClass: '<span class="water-class water-4">IV</span>',
+                    sumDetail: '化学需氧量(23.7)'
+                },
+                {
+                    city: '随州市',
+                    river: '漳水',
+                    section: '洛阳揭家',
+                    target: '<span class="water-class water-3">III</span>',
+                    curClass: '/',
+                    curDetail: '/',
+                    sumClass: '/',
+                    sumDetail: '/'
+                },
+            ]
+        },
+        // 4. 风险清单 - 水质类别颜色按要求修改
+        risk: {
+            headers: ['城市', '水体', '断面', '目标', '累计类别', '预警项目'],
+            rows: [
+                {
+                    city: '武汉市',
+                    river: '滠水',
+                    section: '朱家河口',
+                    target: '<span class="water-class water-4">IV</span>',
+                    current: '<span class="water-class water-3">III</span>',
+                    detail: '化学需氧量(19.4)、溶解氧(5.0)'
+                },
+                {
+                    city: '武汉市',
+                    river: '金水',
+                    section: '金水闸',
+                    target: '<span class="water-class water-3">III</span>',
+                    current: '<span class="water-class water-3">III</span>',
+                    detail: '高锰酸盐指数(5.8)'
+                },
+                {
+
+                    city: '武汉市',
+                    river: '倒水',
+                    section: '龙口',
+                    target: '<span class="water-class water-3">III</span>',
+                    current: '<span class="water-class water-3">III</span>',
+                    detail: '化学需氧量(19.7)'
+                },
+                {
+
+                    city: '武汉市',
+                    river: '斧头湖',
+                    section: '江夏湖心',
+                    target: 'TP≤0.05',
+                    current: '<span class="water-class water-3">III</span>',
+                    detail: '高锰酸盐指数(5.7)'
+                },
+                {
+
+                    city: '襄阳市',
+                    river: '滚河',
+                    section: '汤店',
+                    target: '<span class="water-class water-3">III</span>',
+                    current: '<span class="water-class water-3">III</span>',
+                    detail: '化学需氧量(19.0)'
+                },
+                {
+
+                    city: '荆州市',
+                    river: '四湖总干渠',
+                    section: '运粮湖',
+                    target: '<span class="water-class water-3">III</span>',
+                    current: '<span class="water-class water-3">III</span>',
+                    detail: '溶解氧(5.3)'
+                },
+                {
+
+                    city: '荆州市',
+                    river: '四湖总干渠',
+                    section: '新滩',
+                    target: '<span class="water-class water-3">III</span>',
+                    current: '<span class="water-class water-3">III</span>',
+                    detail: '高锰酸盐指数(5.5)'
+                },
+                {
+
+                    city: '荆门市',
+                    river: '新埠河',
+                    section: '山河电站',
+                    target: '<span class="water-class water-3">III</span>',
+                    current: '<span class="water-class water-3">III</span>',
+                    detail: '化学需氧量(19.6)'
+                },
+                {
+
+                    city: '鄂州市',
+                    river: '长港',
+                    section: '樊口',
+                    target: '<span class="water-class water-3">III</span>',
+                    current: '<span class="water-class water-3">III</span>',
+                    detail: '化学需氧量(19.0)'
+                },
+                {
+
+                    city: '孝感市',
+                    river: '滠水',
+                    section: '隔蒲桥',
+                    target: '<span class="water-class water-3">III</span>',
+                    current: '<span class="water-class water-3">III</span>',
+                    detail: '化学需氧量(19.2)'
+                },
+                {
+
+                    city: '孝感市',
+                    river: '滠水',
+                    section: '鲢鱼地泵站',
+                    target: '<span class="water-class water-4">IV</span>',
+                    current: '<span class="water-class water-3">III</span>',
+                    detail: '化学需氧量(19.5)'
+                },
+                {
+
+                    city: '孝感市',
+                    river: '滠水',
+                    section: '太平沙',
+                    target: '<span class="water-class water-3">III</span>',
+                    current: '<span class="water-class water-3">III</span>',
+                    detail: '化学需氧量(18.7)'
+                },
+                {
+
+                    city: '孝感市',
+                    river: '滠水',
+                    section: '万安闸',
+                    target: '<span class="water-class water-3">III</span>',
+                    current: '<span class="water-class water-3">III</span>',
+                    detail: '化学需氧量(19.7)'
+                },
+                {
+
+                    city: '咸宁市',
+                    river: '斧头湖',
+                    section: '咸宁湖心',
+                    target: 'TP≤0.05',
+                    current: '<span class="water-class water-3">III</span>',
+                    detail: '总磷(0.047)'
+                },
+                {
+
+                    city: '潜江市',
+                    river: '通顺河',
+                    section: '郑场游潭村',
+                    target: '<span class="water-class water-3">III</span>',
+                    current: '<span class="water-class water-3">III</span>',
+                    detail: '化学需氧量(19.2)'
+                },
+            ]
+        }
+    };
+
+    // 全局变量
+    let selectedYear = '2025';
+    let selectedMonth = '11';
+    let currentTab = 'provincial';
+
+    // 渲染表格
+    function renderTable(type) {
+        const data = mockData[type];
+        let html = `
+                <div class="table-card">
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th class="sticky-col">${data.headers[0]}</th> ${data.headers.slice(1).map(h => `<th>${h}</th>`).join('')}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${data.rows.map((row, index) => {
+            const values = Object.values(row);
+            return `
+                                    <tr>
+                                        <td class="sticky-col">${values[0]}</td>
+                                        ${values.slice(1).map(v => `<td>${v}</td>`).join('')}
+                                    </tr>
+                                    `;
+        }).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            `;
+
+        // 进展表添加图例说明
+        if (type === 'provincial' || type === 'national') {
+            html += `<div style="margin-top:10px; font-size:12px; color:#999; padding:0 4px;">
+                    注：加粗倾斜数据表示未达标，正数表示改善，负数表示下降。
+                </div>`;
+        }
+        // 未达标清单和风险清单添加水质类别图例
+        else if (type === 'unqualified' || type === 'risk') {
+            html += `<div style="margin-top:10px; font-size:12px; color:#999; padding:0 4px; display:flex; flex-wrap:wrap; gap:8px;">
+                    水质类别：
+                    <span class="water-class water-1">Ⅰ类</span>
+                    <span class="water-class water-2">Ⅱ类</span>
+                    <span class="water-class water-3">Ⅲ类</span>
+                    <span class="water-class water-4">Ⅳ类</span>
+                    <span class="water-class water-5">Ⅴ类</span>
+                    <span class="water-class water-worse">劣Ⅴ类</span>
+                </div>`;
+        }
+
+        document.getElementById('content-container').innerHTML = html;
+    }
+
+    // 切换Tab
+    function switchTab(type) {
+        // 切换 Tab 样式
+        document.querySelectorAll('.tab-item').forEach(el => el.classList.remove('active'));
+        event.target.classList.add('active');
+
+        // 重新渲染内容
+        renderTable(type);
+        currentTab = type;
+
+        // 更新底部数据统计
+        const countMap = {'provincial': 326, 'national': 190, 'unqualified': 7, 'risk': 15};
+        document.querySelector('.info-text').innerText = `共统计 ${countMap[type]} 个相关断面`;
+    }
+
+    // 下载报表
+    function downloadReport() {
+        const dateText = document.getElementById('datePickerBtn').innerText;
+        alert(`正在生成${dateText}${document.querySelector('.tab-item.active').innerText}Excel报表并开始下载...`);
+    }
+
+    // 日期选择框相关功能
+    function initDatePicker() {
+        const datePickerBtn = document.getElementById('datePickerBtn');
+        const dateModal = document.getElementById('dateModal');
+        const modalMask = document.getElementById('modalMask');
+        const modalCloseBtn = document.getElementById('modalCloseBtn');
+        const cancelBtn = document.getElementById('cancelBtn');
+        const confirmBtn = document.getElementById('confirmBtn');
+        const yearOptions = document.querySelectorAll('.year-selector .date-option');
+        const monthOptions = document.querySelectorAll('.month-selector .date-option');
+
+        // 打开日期选择框
+        datePickerBtn.addEventListener('click', () => {
+            dateModal.classList.add('show');
+            modalMask.classList.add('show');
+            // 禁止背景滚动
+            document.body.style.overflow = 'hidden';
+        });
+
+        // 关闭日期选择框
+        function closeModal() {
+            dateModal.classList.remove('show');
+            modalMask.classList.remove('show');
+            document.body.style.overflow = '';
+        }
+
+        modalCloseBtn.addEventListener('click', closeModal);
+        cancelBtn.addEventListener('click', closeModal);
+        modalMask.addEventListener('click', closeModal);
+
+        // 选择年份
+        yearOptions.forEach(option => {
+            option.addEventListener('click', () => {
+                yearOptions.forEach(opt => opt.classList.remove('active'));
+                option.classList.add('active');
+                selectedYear = option.getAttribute('data-year');
+            });
+        });
+
+        // 选择月份
+        monthOptions.forEach(option => {
+            option.addEventListener('click', () => {
+                monthOptions.forEach(opt => opt.classList.remove('active'));
+                option.classList.add('active');
+                selectedMonth = option.getAttribute('data-month');
+            });
+        });
+
+        // 确认选择
+        confirmBtn.addEventListener('click', () => {
+            const dateText = `${selectedYear}年${selectedMonth}月`;
+            datePickerBtn.innerText = dateText;
+            closeModal();
+
+            // 这里可以添加更新数据的逻辑
+            alert(`已切换统计周期至${dateText}`);
+            // 重新渲染当前表格（实际项目中应根据选择的日期请求对应数据）
+            renderTable(currentTab);
+        });
+    }
+
+    // 初始化
+    window.addEventListener('DOMContentLoaded', () => {
+        renderTable('provincial');
+        initDatePicker();
+    });
+</script>
+</body>
+</html>

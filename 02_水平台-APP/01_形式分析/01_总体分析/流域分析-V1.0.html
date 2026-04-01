@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>流域水环境分析</title>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <style>
+        /* --- Reset & Global --- */
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: #f4f5f9;
+            color: #333;
+            font-size: 14px;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* --- Header Section (Fixed) --- */
+        .app-header {
+            background-color: #0d5ebc;
+            color: white;
+            padding-bottom: 10px;
+            flex-shrink: 0;
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 44px;
+            padding: 0 15px;
+            font-size: 18px;
+            font-weight: 500;
+        }
+        .title-select { display: flex; align-items: center; gap: 5px; }
+        .arrow-down { border: solid white; border-width: 0 2px 2px 0; display: inline-block; padding: 3px; transform: rotate(45deg); margin-bottom: 2px; }
+        .back-icon { width: 10px; height: 10px; border: solid white; border-width: 2px 0 0 2px; transform: rotate(-45deg); }
+
+        /* Navigation Grid */
+        .nav-grid {
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            text-align: center;
+        }
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            opacity: 0.7;
+            transition: opacity 0.3s;
+            cursor: pointer;
+        }
+        .nav-item.active { opacity: 1; }
+        .icon-circle {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 6px;
+            font-size: 24px;
+        }
+        .nav-text { font-size: 12px; }
+
+        /* --- Common Components --- */
+        .filter-bar {
+            background: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 12px 0;
+            font-size: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        .filter-item { margin: 0 20px; display: flex; align-items: center; gap: 5px; cursor: pointer; }
+        .filter-arrow { border: solid #333; border-width: 0 1px 1px 0; display: inline-block; padding: 2px; transform: rotate(45deg); margin-bottom: 2px;}
+
+        .card {
+            background: white;
+            margin: 10px;
+            padding: 15px;
+            border-radius: 6px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            padding-left: 5px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .dropdown-btn {
+            background: #eef4ff;
+            color: #555;
+            border: 1px solid #dbe6f5;
+            padding: 8px;
+            border-radius: 4px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 12px;
+            margin-bottom: 15px;
+        }
+        .dropdown-arrow { border: solid #555; border-width: 0 1px 1px 0; display: inline-block; padding: 2px; transform: rotate(45deg); margin-left: 5px; margin-bottom: 2px; }
+
+        /* --- Main Content Area --- */
+        .main-content {
+            flex: 1;
+            overflow-y: auto;
+            position: relative;
+        }
+        .tab-view { display: none; }
+        .tab-view.active { display: block; }
+
+        /* --- View 1: Map (Spatial) --- */
+        .map-stats {
+            background: #dbeaff;
+            color: #333;
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 15px;
+            font-size: 13px;
+            border-bottom: 1px solid #ccddee;
+        }
+        .map-container {
+            height: 500px;
+            background-color: #f2f0eb;
+            background-image: radial-gradient(#d0d0d0 1px, transparent 1px);
+            background-size: 20px 20px;
+            position: relative;
+        }
+        .map-marker {
+            position: absolute;
+            background: #2db7f5;
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 24px;
+            font-size: 10px;
+            font-family: serif;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            border: 2px solid white;
+        }
+        /* Legend */
+        .map-legend {
+            position: absolute;
+            bottom: 20px;
+            left: 10px;
+            background: white;
+            padding: 10px;
+            border-radius: 4px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            font-size: 12px;
+        }
+        .legend-item { display: flex; align-items: center; margin-bottom: 8px; }
+        .legend-dot { width: 24px; height: 24px; border-radius: 50%; color: white; text-align: center; line-height: 24px; margin-right: 8px; font-size: 10px; font-family: serif; }
+        /* Quality Colors */
+        .q-1 { background: #ccffff; color: #333; }
+        .q-2 { background: #4ecbf2; }
+        .q-3 { background: #33cc00; }
+        .q-4 { background: #ffff00; color: #333; }
+        .q-5 { background: #ff9900; }
+        .q-worse { background: #ff0000; }
+        .q-none { background: #ccc; }
+
+        /* --- View 3: Pollutants (Charts) --- */
+        .chart-container {
+            width: 100%;
+            height: 250px;
+        }
+
+        /* --- View 4: List (Section) --- */
+        .list-card-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+            border-bottom: 1px solid #f5f5f5;
+            padding-bottom: 10px;
+        }
+        .badge {
+            padding: 2px 6px;
+            border-radius: 2px;
+            color: white;
+            font-size: 12px;
+            margin-right: 8px;
+            font-weight: bold;
+        }
+        .card-name { font-size: 16px; font-weight: bold; }
+        .list-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 13px;
+        }
+        .label { color: #888; }
+        .value { color: #333; font-weight: 500; }
+        .value.class-ii { color: #333; }
+
+        /* SVG Icons Mockup */
+        .svg-icon { width: 24px; height: 24px; fill: white; }
+
+    </style>
+</head>
+<body>
+
+<header class="app-header">
+    <div class="top-bar">
+        <div class="back-icon"></div>
+        <div class="title-select">
+            <span>长江流域</span>
+            <div class="arrow-down"></div>
+        </div>
+        <div style="width: 10px;"></div> </div>
+
+    <div class="nav-grid">
+        <div class="nav-item active" onclick="switchTab('map', this)">
+            <div class="icon-circle">
+                <svg class="svg-icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 2.07c3.61.45 6.48 3.33 6.93 6.93H13V4.07zM4 12c0-4.06 3.07-7.44 7-7.93v7.93H4z"/></svg>
+            </div>
+            <div class="nav-text">空间展示</div>
+        </div>
+        <div class="nav-item" onclick="switchTab('list', this)">
+            <div class="icon-circle">
+                <svg class="svg-icon" viewBox="0 0 24 24"><path d="M12 2c-5.33 4.55-8 8.48-8 11.8 0 4.98 3.8 8.2 8 8.2s8-3.22 8-8.2c0-3.32-2.67-7.25-8-11.8z"/></svg>
+            </div>
+            <div class="nav-text">流域断面</div>
+        </div>
+        <div class="nav-item" onclick="switchTab('pollutant', this)">
+            <div class="icon-circle">
+                <svg class="svg-icon" viewBox="0 0 24 24"><path d="M18 15.5c-.86 0-1.62.46-2.06 1.14l-2.65-1.53c.1-.37.15-.76.15-1.16 0-.35-.04-.69-.12-1.02l2.67-1.5c.44.64 1.18 1.07 2.01 1.07 1.38 0 2.5-1.12 2.5-2.5S19.38 7.5 18 7.5c-.83 0-1.57.43-2.01 1.07l-2.67-1.5c.08-.33.12-.67.12-1.02C13.44 4.09 11.66 2.5 9.5 2.5S5.56 4.09 5.56 6c0 .4.05.79.15 1.16L3.06 8.69C2.62 8.01 1.86 7.55 1 7.55c-1.38 0-2.5 1.12-2.5 2.5s1.12 2.5 2.5 2.5c.86 0 1.62-.46 2.06-1.14l2.65 1.53c-.1.37-.15.76-.15 1.16 0 .35.04.69.12 1.02l-2.67 1.5c-.44-.64-1.18-1.07-2.01-1.07-1.38 0-2.5 1.12-2.5 2.5s1.12 2.5 2.5 2.5c.83 0 1.57-.43 2.01-1.07l2.67 1.5c-.08.33-.12.67-.12 1.02 0 1.91 1.78 3.5 3.94 3.5s3.94-1.59 3.94-3.5c0-.4-.05-.79-.15-1.16l2.65-1.53c.44.68 1.2 1.14 2.06 1.14 1.38 0 2.5-1.12 2.5-2.5s-1.12-2.5-2.5-2.5z"/></svg>
+            </div>
+            <div class="nav-text">污染物</div>
+        </div>
+        <div class="nav-item" onclick="switchTab('weather', this)">
+            <div class="icon-circle">
+                <svg class="svg-icon" viewBox="0 0 24 24"><path d="M11.99 18.54l-7.37-5.73L3 14.07l9 7 9-7-1.63-1.27-7.38 5.74zM12 16l7.36-5.73L21 9l-9-7-9 7 1.63 1.27L12 16z"/></svg>
+            </div>
+            <div class="nav-text">水文气象</div>
+        </div>
+    </div>
+</header>
+
+<main class="main-content">
+
+    <div id="view-map" class="tab-view active">
+        <div class="filter-bar">
+            <div class="filter-item">当前月 <div class="filter-arrow"></div></div>
+            <div class="filter-item">2025-12 <div class="filter-arrow"></div></div>
+        </div>
+
+        <div class="map-stats">
+            <span>流域考核断面 17</span>
+            <span>主要污染物 无</span>
+        </div>
+
+        <div class="map-container">
+            <div class="map-marker" style="top: 40%; left: 30%;">II</div>
+            <div class="map-marker" style="top: 45%; left: 35%;">II</div>
+            <div class="map-marker" style="top: 48%; left: 38%;">II</div>
+            <div class="map-marker" style="top: 55%; left: 45%;">II</div>
+            <div class="map-marker" style="top: 52%; left: 55%;">II</div>
+            <div class="map-marker" style="top: 58%; left: 60%;">II</div>
+
+            <div class="map-legend">
+                <div class="legend-item"><div class="legend-dot q-1">I</div> I类</div>
+                <div class="legend-item"><div class="legend-dot q-2">II</div> II类</div>
+                <div class="legend-item"><div class="legend-dot q-3">III</div> III类</div>
+                <div class="legend-item"><div class="legend-dot q-4">IV</div> IV类</div>
+                <div class="legend-item"><div class="legend-dot q-5">V</div> V类</div>
+                <div class="legend-item"><div class="legend-dot q-worse">劣</div> 劣V类</div>
+                <div class="legend-item"><div class="legend-dot q-none"></div> 未检测</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="view-list" class="tab-view">
+        <div class="filter-bar">
+            <div class="filter-item">当前月 <div class="filter-arrow"></div></div>
+            <div class="filter-item">2025-12 <div class="filter-arrow"></div></div>
+        </div>
+
+        <div class="card">
+            <div class="list-card-header">
+                <span class="badge q-2">II类</span>
+                <span class="card-name">上游干流段</span>
+            </div>
+            <div class="list-row"><span class="label">同比水质类别</span><span class="value">II类</span></div>
+            <div class="list-row"><span class="label">区域/地市</span><span class="value">上游保护区</span></div>
+            <div class="list-row"><span class="label">定类因子</span><span class="value">总磷</span></div>
+            <div class="list-row"><span class="label">超标因子</span><span class="value">暂无</span></div>
+        </div>
+
+        <div class="card">
+            <div class="list-card-header">
+                <span class="badge q-2">II类</span>
+                <span class="card-name">中游汇流区</span>
+            </div>
+            <div class="list-row"><span class="label">同比水质类别</span><span class="value">II类</span></div>
+            <div class="list-row"><span class="label">区域/地市</span><span class="value">中游城市群</span></div>
+            <div class="list-row"><span class="label">定类因子</span><span class="value">高锰酸盐指数、总磷</span></div>
+            <div class="list-row"><span class="label">超标因子</span><span class="value">暂无</span></div>
+        </div>
+    </div>
+
+    <div id="view-pollutant" class="tab-view">
+        <div class="filter-bar">
+            <div class="filter-item">当前月 <div class="filter-arrow"></div></div>
+            <div class="filter-item">2025-12 <div class="filter-arrow"></div></div>
+        </div>
+
+        <div class="card">
+            <div class="section-title">主要污染物流域内变化情况</div>
+            <div class="dropdown-btn">化学需氧量 <div class="dropdown-arrow"></div></div>
+            <div id="chart-longitudinal" class="chart-container"></div>
+        </div>
+
+        <div class="card">
+            <div class="section-title">主要污染物同比变化情况</div>
+            <div class="dropdown-btn">化学需氧量 <div class="dropdown-arrow"></div></div>
+            <div id="chart-yoy" class="chart-container"></div>
+        </div>
+    </div>
+
+    <div id="view-weather" class="tab-view">
+        <div class="filter-bar">
+            <div class="filter-item">2025-12 <div class="filter-arrow"></div></div>
+        </div>
+
+        <div class="card">
+            <div class="section-title">气象降雨月均同比变化</div>
+            <div id="chart-rain" class="chart-container"></div>
+        </div>
+    </div>
+
+</main>
+
+<script>
+    // --- Navigation Logic ---
+    function switchTab(viewId, element) {
+        // Remove active from all tabs
+        document.querySelectorAll('.tab-view').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+
+        // Activate target
+        document.getElementById('view-' + viewId).classList.add('active');
+        element.classList.add('active');
+
+        // Resize charts if becoming visible
+        if (viewId === 'pollutant') {
+            setTimeout(() => {
+                chartLongitudinal.resize();
+                chartYoY.resize();
+            }, 100);
+        }
+        if (viewId === 'weather') {
+            setTimeout(() => {
+                chartRain.resize();
+            }, 100);
+        }
+    }
+
+    // --- Chart Configuration (ECharts) ---
+
+    // 1. Pollutant: Longitudinal (Blue Line)
+    const chartLongitudinal = echarts.init(document.getElementById('chart-longitudinal'));
+    chartLongitudinal.setOption({
+        grid: { top: 30, right: 10, bottom: 20, left: 30, containLabel: true },
+        legend: { data: ['2025年12月'], icon: 'circle', top: 0 },
+        xAxis: {
+            type: 'category',
+            // 修改点：X轴改为体现流域沿程流向的通用名称
+            data: ['上游起点', '', '', '', '', '', '中游干流', '', '下游出口'],
+            axisTick: { show: false },
+            axisLine: { lineStyle: { color: '#ccc' } },
+            axisLabel: { color: '#666', interval: 0, fontSize: 10 }
+        },
+        yAxis: {
+            type: 'value',
+            max: 10,
+            splitLine: { lineStyle: { color: '#eee' } }
+        },
+        series: [{
+            name: '2025年12月',
+            type: 'line',
+            data: [0, 0, 0, 0, 0, 0, 0, 6, 8, 8, 0, 0, 6, 0, 7, 9],
+            symbol: 'circle',
+            symbolSize: 6,
+            itemStyle: { color: '#4aa1ff', borderColor: '#fff', borderWidth: 1 },
+            lineStyle: { width: 2 }
+        }]
+    });
+
+    // 2. Pollutant: YoY (Blue & Orange)
+    const chartYoY = echarts.init(document.getElementById('chart-yoy'));
+    chartYoY.setOption({
+        grid: { top: 30, right: 10, bottom: 20, left: 30, containLabel: true },
+        legend: { data: ['2025年12月', '2024年12月'], icon: 'circle', top: 0 },
+        xAxis: {
+            type: 'category',
+            data: ['1月', '3月', '5月', '7月', '9月', '12月'],
+            axisTick: { show: false },
+            axisLine: { lineStyle: { color: '#ccc' } }
+        },
+        yAxis: {
+            type: 'value',
+            max: 12,
+            splitLine: { lineStyle: { color: '#eee' } }
+        },
+        series: [
+            {
+                name: '2025年12月',
+                type: 'line',
+                data: [9, 11, 9, 8, 10, 11, 8, 7, 10, 9, 9, 7],
+                symbol: 'circle',
+                itemStyle: { color: '#4aa1ff' }
+            },
+            {
+                name: '2024年12月',
+                type: 'line',
+                data: [8, 6, 7, 9, 10, 10, 11, 11, 9, 6, 8, 5],
+                symbol: 'circle',
+                itemStyle: { color: '#ffb238' }
+            }
+        ]
+    });
+
+    // 3. Weather: Rainfall (Empty Chart in screenshot, but setting up axes)
+    const chartRain = echarts.init(document.getElementById('chart-rain'));
+    chartRain.setOption({
+        grid: { top: 40, right: 10, bottom: 20, left: 20, containLabel: true },
+        legend: { data: ['2025年降雨', '2024年降雨'], icon: 'circle', top: 0 },
+        xAxis: {
+            type: 'category',
+            data: ['1月', '3月', '5月', '7月', '9月', '12月'],
+            axisLine: { show: false },
+            axisTick: { show: false }
+        },
+        yAxis: {
+            show: false
+        },
+        series: [
+            { name: '2025年降雨', type: 'line', data: [], itemStyle: { color: '#4aa1ff' } },
+            { name: '2024年降雨', type: 'line', data: [], itemStyle: { color: '#ffb238' } }
+        ]
+    });
+
+    // Handle Window Resize
+    window.addEventListener('resize', () => {
+        chartLongitudinal.resize();
+        chartYoY.resize();
+        chartRain.resize();
+    });
+</script>
+</body>
+</html>

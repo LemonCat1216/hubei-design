@@ -1,0 +1,912 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>排污口管理首页 - UI精修版</title>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <style>
+        /* --- 全局样式 --- */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: #f7f8fa;
+            color: #333;
+            padding-bottom: 90px;
+        }
+
+        /* --- 头部区域 --- */
+        .header-bg {
+            background: linear-gradient(135deg, #0050b3 0%, #1890ff 100%);
+            height: 240px;
+            border-bottom-left-radius: 30px;
+            border-bottom-right-radius: 30px;
+            padding: 25px 20px;
+            color: white;
+            position: relative;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+        }
+
+        .avatar {
+            width: 54px;
+            height: 54px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            margin-right: 15px;
+            border: 2px solid rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(5px);
+        }
+
+        .user-text h3 {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .user-text p {
+            font-size: 13px;
+            opacity: 0.9;
+            background: rgba(0, 0, 0, 0.15);
+            padding: 2px 10px;
+            border-radius: 12px;
+            display: inline-block;
+        }
+
+        /* --- 通用卡片样式 --- */
+        .card {
+            background: #fff;
+            border-radius: 16px;
+            padding: 18px;
+            margin: 0 16px 16px 16px;
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.04);
+            transition: all 0.3s ease;
+        }
+
+        .card.overlap-header {
+            margin-top: -110px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 18px;
+        }
+
+        .card-title {
+            font-size: 17px;
+            font-weight: 700;
+            color: #262626;
+            display: flex;
+            align-items: center;
+        }
+
+        .card-title::before {
+            content: '';
+            display: inline-block;
+            width: 4px;
+            height: 16px;
+            background: #1890ff;
+            border-radius: 2px;
+            margin-right: 8px;
+        }
+
+        /* --- 1. 工作进度概览样式 --- */
+        .stage-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .stage-item {
+            background: #fff;
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px solid #f0f0f0;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.01);
+        }
+
+        .stage-item::after {
+            content: '';
+            position: absolute;
+            right: -10px;
+            bottom: -10px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: currentColor;
+            opacity: 0.06;
+        }
+
+        .stage-label {
+            font-size: 12px;
+            color: #8c8c8c;
+            margin-bottom: 6px;
+        }
+
+        .stage-num {
+            font-size: 22px;
+            font-weight: 800;
+            margin-bottom: 8px;
+            font-family: 'DIN Alternate', -apple-system, sans-serif;
+            letter-spacing: 0.5px;
+        }
+
+        .stage-rate {
+            font-size: 11px;
+            display: flex;
+            align-items: center;
+            color: #666;
+        }
+
+        .color-blue {
+            color: #1890ff;
+        }
+
+        .color-purple {
+            color: #722ed1;
+        }
+
+        .color-orange {
+            color: #fa8c16;
+        }
+
+        .color-green {
+            color: #52c41a;
+        }
+
+        .progress-bar-bg {
+            width: 40px;
+            height: 4px;
+            background: #f5f5f5;
+            margin-left: 6px;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            border-radius: 2px;
+        }
+
+        /* --- 2. 待办事项样式 --- */
+        .audit-grid {
+            display: flex;
+            gap: 12px;
+            width: 100%;
+        }
+
+        .audit-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px 10px;
+            border-radius: 12px;
+            position: relative;
+            text-align: center;
+        }
+
+        .audit-item.info {
+            background-color: #f0f7ff;
+            color: #1890ff;
+        }
+
+        .audit-item.danger {
+            background-color: #fff2f0;
+            color: #ff4d4f;
+        }
+
+        .audit-num {
+            font-size: 28px;
+            font-weight: 800;
+            line-height: 1.2;
+            font-family: 'DIN Alternate', sans-serif;
+            margin-bottom: 6px;
+        }
+
+        .audit-label {
+            font-size: 13px;
+            color: #666;
+            font-weight: 500;
+        }
+
+        /* --- 3. 图表与图例样式 --- */
+        .chart-container {
+            width: 100%;
+            position: relative;
+        }
+
+        .legend-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px 15px;
+            margin-top: 10px;
+            background: #fafafa;
+            padding: 12px;
+            border-radius: 10px;
+        }
+
+        .legend-item {
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            color: #555;
+        }
+
+        .legend-left {
+            display: flex;
+            align-items: center;
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 3px;
+            margin-right: 8px;
+        }
+
+        .legend-val {
+            font-weight: bold;
+            color: #333;
+            font-family: 'DIN Alternate', sans-serif;
+        }
+
+        /* --- 日常监管模块样式 --- */
+        .sup-grid {
+            display: flex;
+            gap: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .sup-card {
+            flex: 1;
+            background: #f9faff;
+            border: 1px solid #eef2f9;
+            border-radius: 12px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            transition: all 0.3s ease;
+            opacity: 1;
+        }
+
+        .sup-card.hidden {
+            display: none;
+            opacity: 0;
+        }
+
+        .sup-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 12px;
+        }
+
+        .sup-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .sup-val {
+            font-family: 'DIN Alternate', sans-serif;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .text-green {
+            color: #52c41a;
+        }
+
+        .text-gray {
+            color: #fa8c16;
+        }
+
+        .sup-progress-bg {
+            width: 100%;
+            height: 6px;
+            background: #e6e6e6;
+            border-radius: 3px;
+            margin-top: 8px;
+            overflow: hidden;
+        }
+
+        .sup-progress-bar {
+            height: 100%;
+            border-radius: 3px;
+            background: linear-gradient(90deg, #52c41a 0%, #95de64 100%);
+            transition: width 0.5s ease;
+        }
+
+        .sup-year .sup-progress-bar {
+            background: linear-gradient(90deg, #1890ff 0%, #69c0ff 100%);
+        }
+
+        .sup-year .text-green {
+            color: #1890ff;
+        }
+
+        /* --- 筛选下拉框 (极致美化版) --- */
+        .custom-select {
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+
+            /* 背景：极淡的灰色/蓝色，类似 Input 框 */
+            background-color: #f5f7fa;
+
+            /* 边框：平时透明，保持干净 */
+            border: 1px solid transparent;
+            border-radius: 30px; /* 完全胶囊型 */
+
+            /* 内边距：右侧留足空间给箭头 */
+            padding: 6px 30px 6px 14px;
+
+            /* 字体 */
+            font-size: 13px;
+            font-weight: 600;
+            color: #1890ff; /* 品牌色字体 */
+
+            /* 交互 */
+            outline: none;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+
+            /* 图标：更小更精致的 Chevron Down */
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%231890ff' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            background-size: 10px;
+        }
+
+        /* 激活状态：加上品牌色边框和淡阴影 */
+        .custom-select:active, .custom-select:focus {
+            background-color: #fff;
+            border-color: #1890ff;
+            box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.1);
+        }
+
+        /* --- 底部导航 --- */
+        .tab-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 60px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            display: flex;
+            border-top: 1px solid #eaeaea;
+            z-index: 100;
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+
+        .tab-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #999;
+            font-size: 10px;
+        }
+
+        .tab-item.active {
+            color: #1890ff;
+        }
+
+        .tab-icon {
+            font-size: 22px;
+            margin-bottom: 2px;
+        }
+
+        /* --- 切换按钮 --- */
+        .switch-fab {
+            position: fixed;
+            bottom: 85px;
+            right: 20px;
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, #1890ff 0%, #096dd9 100%);
+            color: white;
+            border-radius: 28px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 20px rgba(24, 144, 255, 0.4);
+            z-index: 999;
+            cursor: pointer;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            transition: transform 0.2s;
+        }
+
+        .switch-fab:active {
+            transform: scale(0.92);
+        }
+
+        .switch-icon {
+            font-size: 18px;
+            margin-bottom: -2px;
+        }
+
+        .switch-text {
+            font-size: 10px;
+            font-weight: 500;
+            transform: scale(0.9);
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="header-bg">
+    <div class="user-info">
+        <div class="avatar">👤</div>
+        <div class="user-text">
+            <h3 id="roleTitle">湖北省账号</h3>
+            <p id="roleDesc">省级管理员 | 湖北省生态环境厅</p>
+        </div>
+    </div>
+</div>
+
+<div class="card overlap-header">
+    <div class="card-header">
+        <div class="card-title">工作进度概览</div>
+    </div>
+    <div class="stage-grid">
+        <div class="stage-item color-blue">
+            <div class="stage-label">排查阶段 (总)</div>
+            <div class="stage-num">34,053</div>
+            <div class="stage-rate" style="color: #1890ff;">
+                完成率 100%
+            </div>
+        </div>
+        <div class="stage-item color-purple">
+            <div class="stage-label">监测阶段</div>
+            <div class="stage-num">12,450</div>
+            <div class="stage-rate">
+                占比 36.5%
+                <div class="progress-bar-bg">
+                    <div class="progress-bar-fill" style="width: 36.5%; background: #722ed1;"></div>
+                </div>
+            </div>
+        </div>
+        <div class="stage-item color-orange">
+            <div class="stage-label">溯源阶段</div>
+            <div class="stage-num">8,920</div>
+            <div class="stage-rate">
+                占比 26.2%
+                <div class="progress-bar-bg">
+                    <div class="progress-bar-fill" style="width: 26.2%; background: #fa8c16;"></div>
+                </div>
+            </div>
+        </div>
+        <div class="stage-item color-green">
+            <div class="stage-label">整治阶段</div>
+            <div class="stage-num">5,600</div>
+            <div class="stage-rate">
+                占比 16.4%
+                <div class="progress-bar-bg">
+                    <div class="progress-bar-fill" style="width: 16.4%; background: #52c41a;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <div class="card-title">待办事项</div>
+        <div style="font-size: 12px; color: #999;">实时更新</div>
+    </div>
+    <div id="auditGrid" class="audit-grid">
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <div class="card-title">排污口类型分布</div>
+    </div>
+    <div style="display: flex; align-items: center;">
+        <div id="typeChart" style="width: 50%; height: 160px;"></div>
+        <div style="width: 50%; padding-left: 10px;">
+            <div class="legend-item" style="margin-bottom: 8px;">
+                <div class="legend-left">
+                    <div class="dot" style="background: #3AA1FF"></div>
+                    工业排口
+                </div>
+                <div class="legend-val">2,263</div>
+            </div>
+            <div class="legend-item" style="margin-bottom: 8px;">
+                <div class="legend-left">
+                    <div class="dot" style="background: #4ECB73"></div>
+                    生活污水
+                </div>
+                <div class="legend-val">1,183</div>
+            </div>
+            <div class="legend-item" style="margin-bottom: 8px;">
+                <div class="legend-left">
+                    <div class="dot" style="background: #36CBCB"></div>
+                    农业排口
+                </div>
+                <div class="legend-val">155</div>
+            </div>
+            <div class="legend-item">
+                <div class="legend-left">
+                    <div class="dot" style="background: #FBD437"></div>
+                    其他排口
+                </div>
+                <div class="legend-val">30,452</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <div class="card-title">日常监管</div>
+        <select id="supTimeSelect" class="custom-select" onchange="updateSupervision()">
+            <option value="q1">2025年3月30日</option>
+            <option value="q2">2025年6月30日</option>
+            <option value="q3">2025年9月30日</option>
+            <option value="q4" selected>2025年12月31日</option>
+        </select>
+    </div>
+    <div class="sup-grid">
+        <div id="supQuarterCard" class="sup-card">
+            <div class="sup-title">季度监测</div>
+            <div class="sup-row">
+                <span>已填报</span>
+                <span class="sup-val text-green" id="qDone">2,450</span>
+            </div>
+            <div class="sup-row">
+                <span>未填报</span>
+                <span class="sup-val text-gray" id="qUndone">124</span>
+            </div>
+            <div class="sup-progress-bg">
+                <div id="qProgress" class="sup-progress-bar" style="width: 95%;"></div>
+            </div>
+        </div>
+        <div id="supYearCard" class="sup-card sup-year">
+            <div class="sup-title">年度监测</div>
+            <div class="sup-row">
+                <span>已填报</span>
+                <span class="sup-val text-green" id="yDone">12,800</span>
+            </div>
+            <div class="sup-row">
+                <span>未填报</span>
+                <span class="sup-val text-gray" id="yUndone">890</span>
+            </div>
+            <div class="sup-progress-bg">
+                <div id="yProgress" class="sup-progress-bar" style="width: 93%;"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <div class="card-title" id="barChartTitle">各地市开展数量</div>
+        <select id="stageSelect" class="custom-select" onchange="updateCityChart()">
+            <option value="screening">排查阶段</option>
+            <option value="monitoring" selected>监测阶段</option>
+            <option value="tracing">溯源阶段</option>
+            <option value="remediation">整治阶段</option>
+        </select>
+    </div>
+    <div id="cityChart" class="chart-container" style="height: 320px;"></div>
+</div>
+
+<div class="tab-bar">
+    <div class="tab-item active">
+        <div class="tab-icon">📊</div>
+        <div>首页</div>
+    </div>
+    <div class="tab-item">
+        <div class="tab-icon">🗺️</div>
+        <div>一张图</div>
+    </div>
+    <div class="tab-item">
+        <div class="tab-icon">⚙️</div>
+        <div>工作台</div>
+    </div>
+</div>
+
+<div class="switch-fab" onclick="switchRole()">
+    <div class="switch-icon">↻</div>
+    <div class="switch-text">切换</div>
+</div>
+
+<script>
+    // --- 数据定义 ---
+
+    const ROLES = ['province', 'city', 'county'];
+    let currentRoleIdx = 0;
+
+    const ROLE_INFO = {
+        province: {title: '湖北省账号', desc: '省级管理员 | 省生态环境厅', chartTitle: '各地市开展数量'},
+        city: {title: '武汉市账号', desc: '市级管理员 | 武汉市生态环境局', chartTitle: '各区县开展数量'},
+        county: {title: '武昌区账号', desc: '区县管理员 | 武昌区分局', chartTitle: '区县开展数量'}
+    };
+
+    // 待办数据
+    const AUDIT_DATA = {
+        province: [
+            {label: '省级待审核', count: 12, type: 'info'},
+            {label: '删除待审核', count: 3, type: 'danger'}
+        ],
+        city: [
+            {label: '市级待审核', count: 8, type: 'info'},
+            {label: '省级已驳回', count: 2, type: 'danger'},
+            {label: '删除待审核', count: 1, type: 'danger'}
+        ],
+        county: [
+            {label: '区县未提交', count: 25, type: 'info'},
+            {label: '市级驳回', count: 4, type: 'danger'}
+        ]
+    };
+
+    // 监管数据
+    const SUP_DATA = {
+        q1: {qDone: 800, qUndone: 200, showYear: false},
+        q2: {qDone: 2450, qUndone: 124, showYear: true, yDone: 12800, yUndone: 890},
+        q3: {qDone: 1500, qUndone: 50, showYear: false},
+        q4: {qDone: 3200, qUndone: 10, showYear: true, yDone: 30400, yUndone: 52}
+    };
+
+    const PROVINCE_CITIES = ['武汉市', '黄石市', '十堰市', '襄阳市', '宜昌市', '荆州市', '荆门市', '鄂州市', '孝感市', '黄冈市', '咸宁市', '随州市', '恩施州', '仙桃市', '天门市', '潜江市', '神农架'];
+    const CITY_DISTRICTS = ['江岸区', '江汉区', '硚口区', '汉阳区', '武昌区', '青山区', '洪山区', '东西湖', '汉南区', '蔡甸区', '江夏区', '黄陂区', '新洲区'];
+    const COUNTY_SINGLE = ['武昌区'];
+
+    let chartDataCache = {province: {}, city: {}, county: {}};
+
+    function generateMockData(names) {
+        return {
+            screening: names.map((_, i) => Math.floor(i === 0 ? 4000 : Math.random() * 2000 + 500)),
+            monitoring: names.map((_, i) => Math.floor((i === 0 ? 4000 : Math.random() * 2000 + 500) * 0.7)),
+            tracing: names.map((_, i) => Math.floor((i === 0 ? 4000 : Math.random() * 2000 + 500) * 0.5)),
+            remediation: names.map((_, i) => Math.floor((i === 0 ? 4000 : Math.random() * 2000 + 500) * 0.3))
+        };
+    }
+
+    chartDataCache.province = generateMockData(PROVINCE_CITIES);
+    chartDataCache.city = generateMockData(CITY_DISTRICTS);
+    chartDataCache.county = generateMockData(COUNTY_SINGLE);
+
+    // --- 初始化 ---
+
+    document.addEventListener('DOMContentLoaded', () => {
+        renderRoleView();
+        initTypeChart();
+        initCityChart();
+        updateCityChart();
+        updateSupervision();
+    });
+
+    // --- 功能函数 ---
+
+    function switchRole() {
+        currentRoleIdx = (currentRoleIdx + 1) % ROLES.length;
+        renderRoleView();
+        updateCityChart();
+    }
+
+    function updateSupervision() {
+        const key = document.getElementById('supTimeSelect').value;
+        const data = SUP_DATA[key];
+        const yearCard = document.getElementById('supYearCard');
+
+        document.getElementById('qDone').innerText = data.qDone.toLocaleString();
+        document.getElementById('qUndone').innerText = data.qUndone;
+        const qRate = (data.qDone / (data.qDone + data.qUndone) * 100).toFixed(1) + '%';
+        document.getElementById('qProgress').style.width = qRate;
+
+        if (data.showYear) {
+            yearCard.classList.remove('hidden');
+            document.getElementById('yDone').innerText = data.yDone.toLocaleString();
+            document.getElementById('yUndone').innerText = data.yUndone;
+            const yRate = (data.yDone / (data.yDone + data.yUndone) * 100).toFixed(1) + '%';
+            document.getElementById('yProgress').style.width = yRate;
+        } else {
+            yearCard.classList.add('hidden');
+        }
+    }
+
+    function renderRoleView() {
+        const roleKey = ROLES[currentRoleIdx];
+        const info = ROLE_INFO[roleKey];
+        const todos = AUDIT_DATA[roleKey];
+
+        document.getElementById('roleTitle').innerText = info.title;
+        document.getElementById('roleDesc').innerText = info.desc;
+        document.getElementById('barChartTitle').innerText = info.chartTitle;
+
+        const grid = document.getElementById('auditGrid');
+        grid.innerHTML = '';
+
+        todos.forEach(item => {
+            const div = document.createElement('div');
+            div.className = `audit-item ${item.type}`;
+            div.innerHTML = `
+                <div class="audit-num">${item.count}</div>
+                <div class="audit-label">${item.label}</div>
+            `;
+            grid.appendChild(div);
+        });
+    }
+
+    let typeChartInstance = null;
+
+    function initTypeChart() {
+        typeChartInstance = echarts.init(document.getElementById('typeChart'));
+        const option = {
+            color: ['#3AA1FF', '#4ECB73', '#36CBCB', '#FBD437'],
+            series: [
+                {
+                    name: '排污口类型',
+                    type: 'pie',
+                    radius: ['60%', '80%'],
+                    center: ['50%', '50%'],
+                    avoidLabelOverlap: false,
+                    itemStyle: {
+                        borderRadius: 5,
+                        borderColor: '#fff',
+                        borderWidth: 2
+                    },
+                    label: {
+                        show: true,
+                        position: 'center',
+                        formatter: () => '总数\n3.4w',
+                        fontSize: 12,
+                        color: '#999',
+                        lineHeight: 16
+                    },
+                    emphasis: {
+                        label: {
+                            show: true,
+                            fontSize: '14',
+                            fontWeight: 'bold',
+                            formatter: '{c}'
+                        }
+                    },
+                    labelLine: {show: false},
+                    data: [
+                        {value: 2263, name: '工业排口'},
+                        {value: 1183, name: '生活污水'},
+                        {value: 155, name: '农业排口'},
+                        {value: 30452, name: '其他排口'}
+                    ]
+                }
+            ]
+        };
+        typeChartInstance.setOption(option);
+    }
+
+    let cityChartInstance = null;
+
+    function initCityChart() {
+        cityChartInstance = echarts.init(document.getElementById('cityChart'));
+    }
+
+    function updateCityChart() {
+        if (!cityChartInstance) return;
+
+        const roleKey = ROLES[currentRoleIdx];
+        const stage = document.getElementById('stageSelect').value;
+
+        let xData = [];
+        let sData = [];
+
+        if (roleKey === 'province') {
+            xData = PROVINCE_CITIES;
+            sData = chartDataCache.province[stage];
+        } else if (roleKey === 'city') {
+            xData = CITY_DISTRICTS;
+            sData = chartDataCache.city[stage];
+        } else {
+            xData = COUNTY_SINGLE;
+            sData = chartDataCache.county[stage];
+        }
+
+        const colors = {
+            screening: '#1890ff',
+            monitoring: '#722ed1',
+            tracing: '#fa8c16',
+            remediation: '#52c41a'
+        };
+
+        let calculatedBarWidth = 12;
+        if (xData.length > 15) {
+            calculatedBarWidth = 8;
+        } else if (xData.length === 1) {
+            calculatedBarWidth = 40;
+        }
+
+        const option = {
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {type: 'shadow'},
+                formatter: '{b}: {c}个'
+            },
+            grid: {
+                left: '2%',
+                right: '4%',
+                bottom: '15%',
+                top: '12%',
+                containLabel: true
+            },
+            dataZoom: [{type: 'inside', start: 0, end: 100, zoomLock: false}],
+            xAxis: {
+                type: 'category',
+                data: xData,
+                axisLabel: {
+                    interval: 0,
+                    fontSize: 10,
+                    color: '#666',
+                    formatter: function (value) {
+                        if (xData.length > 10) return value.split('').join('\n');
+                        return value;
+                    }
+                },
+                axisTick: {show: false},
+                axisLine: {lineStyle: {color: '#eee'}}
+            },
+            yAxis: {
+                type: 'value',
+                axisLabel: {color: '#999', fontSize: 10},
+                splitLine: {lineStyle: {type: 'dashed', color: '#f5f5f5'}}
+            },
+            series: [
+                {
+                    data: sData,
+                    type: 'bar',
+                    barWidth: calculatedBarWidth,
+                    itemStyle: {
+                        color: colors[stage],
+                        borderRadius: [4, 4, 0, 0]
+                    },
+                    showBackground: true,
+                    backgroundStyle: {
+                        color: '#f5f5f5',
+                        borderRadius: [4, 4, 0, 0]
+                    }
+                }
+            ]
+        };
+
+        cityChartInstance.setOption(option, true);
+    }
+
+    window.addEventListener('resize', () => {
+        if (typeChartInstance) typeChartInstance.resize();
+        if (cityChartInstance) cityChartInstance.resize();
+    });
+
+</script>
+</body>
+</html>

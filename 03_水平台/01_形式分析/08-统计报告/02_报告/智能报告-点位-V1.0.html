@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>湖北省水生态环境综合管理 - 问题点位分析</title>
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+          rel="stylesheet"/>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography,container-queries"></script>
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#3b82f6",
+                        "primary-dark": "#1e3a8a",
+                        "background-light": "#f6f9fc",
+                        "background-dark": "#0f172a",
+                        "surface-light": "#ffffff",
+                        "surface-dark": "#1e293b",
+                    },
+                    fontFamily: {
+                        display: ["Inter", "system-ui", "-apple-system", "sans-serif"],
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    }
+                },
+            },
+        };
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .custom-scrollbar::-webkit-scrollbar {
+                width: 4px;
+                height: 4px;
+            }
+
+            .custom-scrollbar::-webkit-scrollbar-track {
+                background: transparent;
+            }
+
+            .custom-scrollbar::-webkit-scrollbar-thumb {
+                background: #cbd5e1;
+                border-radius: 10px;
+            }
+
+            .dark .custom-scrollbar::-webkit-scrollbar-thumb {
+                background: #475569;
+            }
+
+            .sidebar-transition {
+                transition: width 0.3s ease;
+            }
+
+            .sidebar-text {
+                transition: opacity 0.2s ease;
+                white-space: nowrap;
+            }
+
+            .hide-text .sidebar-text {
+                display: none;
+                opacity: 0;
+            }
+
+            .doc-shadow {
+                box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05), 0 0 0 1px rgba(0, 0, 0, 0.05);
+            }
+
+            /* 模拟地图背景 */
+            .map-bg {
+                background-color: #e2e8f0;
+                background-image: linear-gradient(45deg, #cbd5e1 25%, transparent 25%, transparent 75%, #cbd5e1 75%, #cbd5e1),
+                linear-gradient(45deg, #cbd5e1 25%, transparent 25%, transparent 75%, #cbd5e1 75%, #cbd5e1);
+                background-size: 40px 40px;
+                background-position: 0 0, 20px 20px;
+            }
+
+            .dark .map-bg {
+                background-color: #1e293b;
+                background-image: linear-gradient(45deg, #334155 25%, transparent 25%, transparent 75%, #334155 75%, #334155),
+                linear-gradient(45deg, #334155 25%, transparent 25%, transparent 75%, #334155 75%, #334155);
+            }
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-800 dark:text-slate-100 h-screen overflow-hidden flex flex-col">
+
+<header class="bg-primary h-14 flex items-center justify-between px-4 text-white shrink-0 shadow-md z-50">
+    <div class="flex items-center space-x-3">
+        <div class="w-8 h-8 bg-white rounded-full flex items-center justify-center">
+            <span class="material-symbols-outlined text-primary text-xl">water_drop</span>
+        </div>
+        <h1 class="text-xl font-bold tracking-tight">湖北省水生态环境综合管理</h1>
+    </div>
+    <nav class="flex h-full">
+        <a class="px-6 flex items-center space-x-2 hover:bg-white/10 transition-colors" href="#">
+            <span class="material-symbols-outlined text-[18px]">home</span>
+            <span class="text-sm">总体概览</span>
+        </a>
+        <a class="px-6 flex items-center space-x-2 hover:bg-white/10 transition-colors" href="#">
+            <span class="material-symbols-outlined text-[18px]">assessment</span>
+            <span class="text-sm">形势分析</span>
+        </a>
+        <a class="px-6 flex items-center space-x-2 hover:bg-white/10 transition-colors" href="#">
+            <span class="material-symbols-outlined text-[18px]">map</span>
+            <span class="text-sm">空间分析</span>
+        </a>
+        <a class="px-6 flex items-center space-x-2 hover:bg-white/10 transition-colors" href="#">
+            <span class="material-symbols-outlined text-[18px]">waves</span>
+            <span class="text-sm">水污染源</span>
+        </a>
+        <a class="px-6 flex items-center space-x-2 bg-white/10 transition-colors" href="#">
+            <span class="material-symbols-outlined text-[18px]">report_problem</span>
+            <span class="text-sm font-medium">问题聚焦</span>
+        </a>
+        <a class="px-6 flex items-center space-x-2 hover:bg-white/10 transition-colors" href="#">
+            <span class="material-symbols-outlined text-[18px]">apps</span>
+            <span class="text-sm">专题应用</span>
+        </a>
+    </nav>
+    <div class="flex items-center space-x-6">
+        <div class="flex items-center space-x-2 text-sm opacity-90">
+            <span class="material-symbols-outlined text-[18px]">public</span>
+            <span>碧水荆灵</span>
+        </div>
+        <div class="flex items-center space-x-2 text-sm">
+            <span class="material-symbols-outlined text-[18px]">account_circle</span>
+            <span>wangyunpeng</span>
+        </div>
+    </div>
+</header>
+
+<div class="flex flex-1 overflow-hidden">
+
+    <aside id="sidebar"
+           class="w-[270px] bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 flex flex-col shrink-0 sidebar-transition">
+        <div class="flex-1 py-4 overflow-y-auto custom-scrollbar flex flex-col gap-1">
+
+            <div class="mb-2 px-2">
+                <button class="nav-item w-full flex items-center justify-between px-4 py-3 text-[16px] font-medium text-slate-600 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg group transition-colors"
+                        onclick="toggleSubmenu('submenu-overview')">
+                    <div class="flex items-center">
+                        <span class="material-symbols-outlined mr-3 text-slate-400 group-hover:text-primary">dashboard</span>
+                        <span class="sidebar-text">业务基础表单</span>
+                    </div>
+                    <span class="material-symbols-outlined text-sm text-slate-400 sidebar-chevron transition-transform duration-200">expand_more</span>
+                </button>
+            </div>
+
+            <div class="mb-2 px-2">
+                <button class="nav-item w-full flex items-center justify-between px-4 py-3 text-[16px] font-medium text-slate-600 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg group transition-colors"
+                        onclick="toggleSubmenu('submenu-analysis')">
+                    <div class="flex items-center">
+                        <span class="material-symbols-outlined mr-3 text-slate-400 group-hover:text-primary">analytics</span>
+                        <span class="sidebar-text">智能分析报告</span>
+                    </div>
+                    <span class="material-symbols-outlined text-sm text-slate-400 sidebar-chevron transition-transform duration-200 rotate-180">expand_more</span>
+                </button>
+                <div id="submenu-analysis"
+                     class="mt-1 space-y-1 overflow-hidden transition-all duration-300 max-h-[600px]">
+                    <a class="flex items-center px-12 py-2 text-[14px] text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 font-medium transition-colors rounded-lg group relative"
+                       href="#">
+                        <div class="absolute left-0 top-0 bottom-0 w-1 bg-blue-600 rounded-l-lg"></div>
+                        <span class="w-1.5 h-1.5 bg-blue-600 rounded-full mr-3 shrink-0 transition-colors"></span>
+                        <span class="sidebar-text">问题点位分析报告</span>
+                    </a>
+                </div>
+            </div>
+
+        </div>
+
+        <button id="toggleSidebarBtn"
+                class="h-12 border-t border-slate-200 dark:border-slate-800 flex items-center justify-center space-x-2 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all text-slate-500 hover:text-primary group">
+            <span id="toggleIcon" class="material-symbols-outlined text-xl transition-transform duration-300">chevron_left</span>
+            <span class="sidebar-text text-sm font-medium tracking-wide">收起侧栏</span>
+        </button>
+    </aside>
+    <main class="flex-1 flex flex-col min-w-0 bg-slate-50/50 dark:bg-slate-950 p-6 overflow-hidden">
+
+        <div class="h-16 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl flex items-center justify-between px-6 shrink-0 shadow-sm mb-6">
+            <div class="flex items-center gap-3">
+                    <span class="relative flex h-3 w-3">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#3b82f6] opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-3 w-3 bg-[#3b82f6]"></span>
+                    </span>
+                <h2 class="text-lg font-bold text-slate-800 dark:text-white tracking-tight">
+                    问题点位智能分析
+                </h2>
+            </div>
+
+            <div class="flex items-center gap-4">
+                <div class="relative group">
+                    <input type="month" id="analysis-month" value="2026-02"
+                           class="pl-3 pr-3 py-1.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-700 dark:text-slate-200 focus:ring-2 focus:ring-blue-500 outline-none shadow-sm transition-all hover:border-slate-300 cursor-pointer">
+                </div>
+
+                <div class="h-4 w-px bg-slate-200 dark:bg-slate-700"></div>
+
+                <button class="flex items-center gap-2 px-4 py-1.5 bg-white text-slate-600 hover:text-blue-600 hover:border-blue-300 border border-slate-200 rounded-lg text-sm font-medium transition-colors">
+                    <i class="ri-download-cloud-2-line"></i>
+                    <span>下载</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="flex-1 flex gap-6 overflow-hidden min-h-0">
+
+            <div class="w-[450px] flex flex-col shrink-0">
+                <div class="flex-1 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden relative group">
+                    <div class="absolute top-4 left-4 z-10 bg-white/90 dark:bg-slate-800/90 backdrop-blur px-3 py-2 rounded shadow-sm border border-slate-100 dark:border-slate-700">
+                        <div class="text-xs font-bold text-slate-700 dark:text-slate-200">地图选点</div>
+                        <div class="text-[10px] text-slate-400">点击红色异常点生成报告</div>
+                    </div>
+
+                    <div class="w-full h-full map-bg relative cursor-crosshair overflow-hidden">
+                        <svg class="absolute top-0 left-0 w-full h-full pointer-events-none opacity-20"
+                             xmlns="http://www.w3.org/2000/svg">
+                            <path d="M0,100 C150,200 250,50 400,150 S600,250 800,100" stroke="#3b82f6" stroke-width="40"
+                                  fill="none"/>
+                        </svg>
+
+                        <button class="map-pin absolute top-[30%] left-[20%] w-8 h-8 -ml-4 -mt-4 transform transition-all duration-300 hover:scale-125 focus:outline-none"
+                                onclick="selectPoint('p1', this)">
+                            <div class="relative w-full h-full flex items-center justify-center">
+                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                                <span class="relative inline-flex rounded-full h-4 w-4 bg-red-600 shadow-lg border-2 border-white"></span>
+                            </div>
+                            <div class="absolute top-8 left-1/2 -translate-x-1/2 whitespace-nowrap bg-slate-800 text-white text-[10px] px-2 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity">
+                                府河排污口
+                            </div>
+                        </button>
+
+                        <button class="map-pin absolute top-[60%] left-[55%] w-8 h-8 -ml-4 -mt-4 transform transition-all duration-300 hover:scale-125 focus:outline-none"
+                                onclick="selectPoint('p2', this)">
+                            <div class="relative w-full h-full flex items-center justify-center">
+                                <span class="relative inline-flex rounded-full h-4 w-4 bg-orange-500 shadow-lg border-2 border-white"></span>
+                            </div>
+                            <div class="absolute top-8 left-1/2 -translate-x-1/2 whitespace-nowrap bg-slate-800 text-white text-[10px] px-2 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity">
+                                汤逊湖西岸
+                            </div>
+                        </button>
+
+                        <button class="map-pin absolute top-[45%] left-[80%] w-8 h-8 -ml-4 -mt-4 transform transition-all duration-300 hover:scale-125 focus:outline-none"
+                                onclick="selectPoint('p3', this)">
+                            <div class="relative w-full h-full flex items-center justify-center">
+                                <span class="relative inline-flex rounded-full h-4 w-4 bg-red-600 shadow-lg border-2 border-white"></span>
+                            </div>
+                            <div class="absolute top-8 left-1/2 -translate-x-1/2 whitespace-nowrap bg-slate-800 text-white text-[10px] px-2 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity">
+                                通顺河闸口
+                            </div>
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="flex-1 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden flex flex-col relative">
+                <div class="h-10 border-b border-slate-100 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-800/80 flex items-center justify-between px-4 shrink-0">
+                    <div class="flex items-center gap-2">
+                        <span class="material-symbols-outlined text-purple-500 text-[18px]">smart_toy</span>
+                        <span class="text-xs font-medium text-purple-700 dark:text-purple-300">碧水荆灵版本</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <button class="p-1 hover:bg-slate-200 dark:hover:bg-slate-700 rounded text-slate-500"><i
+                                class="ri-zoom-out-line"></i></button>
+                        <span class="text-xs text-slate-600 dark:text-slate-300 font-medium w-12 text-center">100%</span>
+                        <button class="p-1 hover:bg-slate-200 dark:hover:bg-slate-700 rounded text-slate-500"><i
+                                class="ri-zoom-in-line"></i></button>
+                    </div>
+                </div>
+
+                <div class="flex-1 bg-slate-100/50 dark:bg-black/20 overflow-auto flex justify-center p-8 custom-scrollbar relative">
+
+                    <div id="loading-overlay"
+                         class="absolute inset-0 z-20 flex flex-col items-center justify-center bg-white/50 dark:bg-black/50 backdrop-blur-sm hidden">
+                        <div class="w-16 h-16 bg-white rounded-full shadow-lg flex items-center justify-center mb-4 animate-bounce">
+                            <span class="material-symbols-outlined text-purple-600 text-3xl">psychology</span>
+                        </div>
+                        <div class="flex flex-col items-center gap-1">
+                            <span class="font-bold text-slate-700 dark:text-white text-lg">碧水荆灵分析中...</span>
+                            <span class="text-xs text-slate-500" id="loading-text">正在调取水质指纹数据...</span>
+                        </div>
+                    </div>
+
+                    <div id="report-empty"
+                         class="w-[90%] max-w-[800px] h-full flex flex-col items-center justify-center text-slate-400">
+                        <i class="ri-file-search-line text-6xl mb-4 opacity-30"></i>
+                        <p>请选择左侧点位生成报告</p>
+                    </div>
+
+                    <div id="report-paper"
+                         class="w-[90%] max-w-[800px] bg-white dark:bg-slate-800 min-h-[900px] doc-shadow rounded-sm p-12 text-slate-800 dark:text-slate-200 hidden animate-in fade-in zoom-in-95 duration-500">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer class="mt-auto pt-4 border-t border-slate-200 dark:border-slate-700 text-center text-xs text-slate-400 shrink-0">
+            <p>&copy; 2026 湖北省生态环境厅 · 版权所有</p>
+        </footer>
+    </main>
+</div>
+
+<script>
+    /* ---------------- Sidebar Logic ---------------- */
+    const sidebar = document.getElementById('sidebar');
+    const toggleBtn = document.getElementById('toggleSidebarBtn');
+    const toggleIcon = document.getElementById('toggleIcon');
+    let isCollapsed = false;
+
+    toggleBtn.addEventListener('click', () => {
+        isCollapsed = !isCollapsed;
+        if (isCollapsed) {
+            sidebar.classList.remove('w-[270px]');
+            sidebar.classList.add('w-[80px]', 'hide-text', 'collapsed-sidebar');
+            toggleIcon.style.transform = 'rotate(180deg)';
+        } else {
+            sidebar.classList.remove('w-[80px]', 'hide-text', 'collapsed-sidebar');
+            sidebar.classList.add('w-[270px]');
+            toggleIcon.style.transform = 'rotate(0deg)';
+        }
+    });
+
+    function toggleSubmenu(id) {
+        if (isCollapsed) return;
+        const submenu = document.getElementById(id);
+        const btn = submenu.previousElementSibling;
+        const chevron = btn.querySelector('.sidebar-chevron');
+
+        if (submenu.style.maxHeight) {
+            submenu.style.maxHeight = null;
+            chevron.style.transform = 'rotate(0deg)';
+        } else {
+            submenu.style.maxHeight = submenu.scrollHeight + "px";
+            chevron.style.transform = 'rotate(180deg)';
+        }
+    }
+
+    // Init sidebar state
+    window.addEventListener('load', () => {
+        const submenu = document.getElementById('submenu-analysis');
+        if (submenu) {
+            submenu.style.maxHeight = submenu.scrollHeight + "px";
+        }
+    });
+
+    /* ---------------- Analysis Logic ---------------- */
+
+    // Mock Data for "Points"
+    const POINT_DATA = {
+        'p1': {
+            name: "府河排污口 #03",
+            id: "HB-WH-FH-003",
+            risk: "高风险",
+            basin: "长江流域-府河段",
+            pollutant: "氨氮 (1.2mg/L)",
+            time: "2026-02-02 08:30",
+            title: "府河排污口水质异常溯源分析报告",
+            reason: "上游工业园区（A区）清晨集中排放，叠加枯水期流量不足，导致混合区氨氮浓度瞬时升高。",
+            sourceType: "工业点源",
+            trendData: [0.4, 0.5, 0.4, 0.8, 1.2, 0.9],
+            suggestion: "建议立即对A区3家化工企业进行突击检查，并开启下游闸门增加生态补水流量。"
+        },
+        'p2': {
+            name: "汤逊湖西岸排口",
+            id: "HB-WH-TX-012",
+            risk: "中风险",
+            basin: "汤逊湖水系",
+            pollutant: "总磷 (0.3mg/L)",
+            time: "2026-02-01 14:00",
+            title: "汤逊湖西岸总磷超标分析报告",
+            reason: "近期雨污分流改造工程施工导致少量污水混入雨水管网，加之底泥释放影响。",
+            sourceType: "生活面源 + 内源",
+            trendData: [0.1, 0.15, 0.25, 0.3, 0.28, 0.25],
+            suggestion: "加快雨污分流施工进度，设置临时围堰防止污水直排入湖。"
+        },
+        'p3': {
+            name: "通顺河闸口监测点",
+            id: "HB-WH-TS-009",
+            risk: "高风险",
+            basin: "通顺河",
+            pollutant: "化学需氧量 (45mg/L)",
+            time: "2026-02-02 09:15",
+            title: "通顺河闸口水质恶化分析报告",
+            reason: "上游农田退水夹带大量有机物，且闸口关闭导致水体流动性差，复氧能力下降。",
+            sourceType: "农业面源",
+            trendData: [20, 22, 25, 30, 40, 45],
+            suggestion: "建议错峰调度闸口启闭时间，并在关键汇入口设置生态拦截沟渠。"
+        }
+    };
+
+    let currentPointId = null;
+
+    function selectPoint(id, btnElement) {
+        // 1. UI Selection State
+        document.querySelectorAll('.map-pin').forEach(btn => {
+            btn.querySelector('.relative.inline-flex').classList.remove('ring-4', 'ring-blue-300');
+            btn.style.transform = 'scale(1)';
+        });
+        btnElement.style.transform = 'scale(1.2)';
+        btnElement.querySelector('.relative.inline-flex').classList.add('ring-4', 'ring-blue-300');
+
+        currentPointId = id;
+        const data = POINT_DATA[id];
+
+        // 2. No intermediate card, directly generate report
+        generateReport(data);
+    }
+
+    function generateReport(data) {
+        const paper = document.getElementById('report-paper');
+        const empty = document.getElementById('report-empty');
+        const loader = document.getElementById('loading-overlay');
+        const loadingText = document.getElementById('loading-text');
+
+        // Hide current report
+        paper.classList.add('hidden');
+        empty.classList.add('hidden');
+        loader.classList.remove('hidden');
+
+        // Simulate AI "Thinking" steps
+        const steps = ["正在调取水质指纹数据...", "正在关联污染源图谱...", "碧水荆灵正在生成结论..."];
+        let stepIndex = 0;
+
+        const interval = setInterval(() => {
+            stepIndex++;
+            if (stepIndex < steps.length) {
+                loadingText.innerText = steps[stepIndex];
+            }
+        }, 500);
+
+        // Show Result after delay
+        setTimeout(() => {
+            clearInterval(interval);
+            loader.classList.add('hidden');
+            paper.classList.remove('hidden');
+            renderReportContent(data);
+        }, 1500);
+    }
+
+    function renderReportContent(data) {
+        const month = document.getElementById('analysis-month').value;
+        const content = document.getElementById('report-paper');
+
+        // Generate simple chart bars
+        const chartHtml = data.trendData.map(val => {
+            const height = Math.min(val * 80, 100);
+            return `<div class="w-8 bg-blue-500 rounded-t hover:bg-blue-600 transition-colors relative group" style="height: ${height}%">
+                        <span class="absolute -top-5 left-1/2 -translate-x-1/2 text-[10px] text-slate-500 opacity-0 group-hover:opacity-100">${val}</span>
+                    </div>`;
+        }).join('');
+
+        content.innerHTML = `
+            <div class="border-b-2 border-red-500 mb-6 pb-4 flex justify-between items-start">
+                <div>
+                    <div class="flex items-center gap-2 mb-2">
+                        <span class="px-2 py-1 bg-purple-100 text-purple-700 text-xs rounded font-bold border border-purple-200">AI 生成报告</span>
+                        <span class="text-xs text-slate-400">${new Date().toLocaleString()}</span>
+                    </div>
+                    <h1 class="text-2xl font-bold font-serif text-gray-900 dark:text-gray-100">${data.title}</h1>
+                </div>
+                <div class="text-right">
+                    <div class="text-3xl font-bold text-red-600">${data.risk}</div>
+                    <div class="text-xs text-gray-500 mt-1">置信度: 98.5%</div>
+                </div>
+            </div>
+
+            <div class="bg-red-50 dark:bg-red-900/10 border border-red-100 dark:border-red-800/50 p-4 rounded-lg mb-8 flex items-start gap-3">
+                <span class="material-symbols-outlined text-red-500 mt-0.5">warning</span>
+                <div>
+                    <h4 class="font-bold text-red-700 dark:text-red-400 text-sm mb-1">问题摘要</h4>
+                    <p class="text-sm text-red-800/80 dark:text-red-200/80 leading-relaxed">
+                        监测点位 <strong>${data.name}</strong> 在 ${month} 期间出现水质异常。主要污染物为 <strong>${data.pollutant.split(' ')[0]}</strong>，判定为非正常排放事件。
+                    </p>
+                </div>
+            </div>
+
+            <h3 class="text-lg font-bold mb-3 font-serif border-l-4 border-blue-500 pl-3">一、污染溯源分析</h3>
+            <div class="mb-6 text-base leading-loose font-serif text-justify text-gray-700 dark:text-gray-300">
+                <p class="mb-2"><strong>溯源判定结果：</strong> <span class="underline decoration-wavy decoration-red-400">${data.sourceType}</span></p>
+                <p>根据碧水荆灵多源数据关联分析，本次异常的主要原因为：${data.reason}</p>
+            </div>
+
+            <h3 class="text-lg font-bold mb-3 font-serif border-l-4 border-blue-500 pl-3">二、实时趋势指纹</h3>
+            <div class="my-6 border border-slate-200 dark:border-slate-700 p-6 bg-slate-50 dark:bg-slate-900/50 rounded shadow-sm">
+                <h4 class="text-center font-bold text-xs text-gray-500 mb-6">近6小时污染物浓度变化趋势</h4>
+                <div class="flex items-end justify-between h-32 px-8 gap-4 border-b border-gray-300 dark:border-gray-600 pb-1">
+                    ${chartHtml}
+                </div>
+                 <div class="flex justify-between px-8 mt-2 text-[10px] text-gray-400">
+                    <span>-6h</span><span>-5h</span><span>-4h</span><span>-3h</span><span>-2h</span><span>Current</span>
+                </div>
+            </div>
+
+            <h3 class="text-lg font-bold mb-3 font-serif border-l-4 border-blue-500 pl-3">三、管控建议 (AI Recommends)</h3>
+            <ul class="list-disc list-outside pl-5 space-y-2 font-serif text-gray-700 dark:text-gray-300">
+                <li>${data.suggestion}</li>
+                <li>建议加大对周边 ${data.sourceType === '工业点源' ? '排污企业' : '面源区域'} 的巡查频次。</li>
+                <li>持续跟踪未来 24 小时水质变化，若浓度持续升高，建议启动 III 级应急响应。</li>
+            </ul>
+        `;
+    }
+</script>
+
+</body>
+</html>

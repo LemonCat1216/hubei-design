@@ -1,0 +1,1105 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>湖北省水生态环境综合管理 - 水质同比恶化</title>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography,container-queries"></script>
+
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#3b82f6",
+                        "background-light": "#f4f7fb",
+                        "background-dark": "#0f172a",
+                    },
+                    fontFamily: {
+                        display: ["Inter", "system-ui", "-apple-system", "sans-serif"],
+                    },
+                },
+            },
+        };
+    </script>
+
+    <style type="text/tailwindcss">
+        body { font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif; }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+        .section-title-bar {
+            width: 4px;
+            height: 16px;
+            background: linear-gradient(to bottom, #93c5fd, #3b82f6);
+            border-radius: 4px;
+            margin-right: 8px;
+        }
+
+        #sidebar { transition: width 0.3s ease; }
+        .sidebar-text { transition: opacity 0.2s ease; white-space: nowrap; }
+        .hide-text .sidebar-text { display: none; opacity: 0; }
+        .collapsed-sidebar .nav-item { justify-content: center; padding-left: 0; padding-right: 0; }
+        .collapsed-sidebar .nav-item span.material-symbols-outlined { margin-right: 0; }
+
+        .card-shadow { box-shadow: 0 2px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05); }
+
+        .toggle-btn {
+            @apply h-full px-4 flex items-center justify-center text-xs font-bold rounded-md transition-colors cursor-pointer select-none;
+        }
+        .toggle-btn.active { @apply bg-primary text-white shadow-sm; }
+        .toggle-btn.inactive { @apply text-slate-500 hover:text-slate-700 hover:bg-slate-200 dark:text-slate-400 dark:hover:bg-slate-700/50; }
+
+        /* 表格控件基础样式 */
+        .form-select, .form-input {
+            @apply appearance-none bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-1.5 text-sm font-medium text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all cursor-pointer hover:bg-white;
+        }
+
+        /* 复杂表格专业样式 - 移除了 th 的 sticky top-0 z-10 */
+        .data-table { border-spacing: 0; width: 100%; }
+        .data-table th, .data-table td {
+            @apply border-b border-r border-slate-200 dark:border-slate-700/50;
+            background-clip: padding-box;
+        }
+        .data-table th:first-child, .data-table td:first-child { @apply border-l; }
+        .data-table tr:first-child th { @apply border-t; }
+        .data-table th {
+            @apply bg-[#f8fafc] dark:bg-slate-800/80 text-slate-700 dark:text-slate-200 font-bold px-3 py-3 text-center text-[13px];
+        }
+        .data-table td {
+            @apply px-3 py-3 text-center text-[13px] text-slate-600 dark:text-slate-300;
+        }
+        .data-table tbody tr:nth-child(even) { @apply bg-[#fbfcfd] dark:bg-slate-800/30; }
+        .data-table tbody tr:hover { @apply bg-blue-50/60 dark:bg-slate-700/50 transition-colors; }
+
+        /* 水质日历圆点样式优化 */
+        .wq-circle { @apply w-7 h-7 rounded-full flex items-center justify-center text-[11px] font-bold shadow-sm transition-transform hover:scale-110 cursor-default mx-auto; }
+        .wq-1 { @apply bg-[#CCFFFF] text-slate-700; }
+        .wq-2 { @apply bg-[#00CCFF] text-white; }
+        .wq-3 { @apply bg-[#00FF00] text-slate-700; }
+        .wq-4 { @apply bg-[#FFFF00] text-slate-700; }
+        .wq-5 { @apply bg-[#FF9900] text-white; }
+        .wq-bad5 { @apply bg-[#FF0000] text-white; }
+        .wq-none { @apply bg-[#999999] text-white dark:bg-slate-600 shadow-none; }
+
+        /* ================= 模态框统一卡片样式优化 ================= */
+        .metric-card { @apply rounded-xl p-3 text-sm transition-all duration-300 border cursor-pointer relative overflow-hidden; }
+        .metric-card.active {
+            background: linear-gradient(135deg, #fb923c, #ea580c);
+            @apply border-orange-500 text-white shadow-md shadow-orange-500/30 transform scale-[1.02];
+        }
+        .metric-card.inactive {
+            @apply bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100;
+        }
+
+        /* 顶部 Header */
+        .metric-card .metric-header { @apply pb-2 border-b transition-colors; }
+        .metric-card.active .metric-header { @apply border-white/20; }
+        .metric-card.inactive .metric-header { @apply border-slate-200 dark:border-slate-700; }
+
+        /* 顶部 标签 */
+        .metric-card .current-label { @apply text-xs transition-all; }
+        .metric-card.active .current-label { @apply bg-white/20 px-2 py-0.5 rounded backdrop-blur; }
+        .metric-card.inactive .current-label { @apply opacity-70; }
+
+        /* 顶部 值 */
+        .metric-card .current-value { @apply font-bold font-mono transition-all text-inherit; }
+        .metric-card.active .current-value { @apply text-lg; }
+        .metric-card.inactive .current-value { @apply text-[15px]; }
+
+        /* 趋势颜色 */
+        .metric-card .trend-val { @apply font-bold transition-colors; }
+        .metric-card.active .trend-val { @apply text-white; }
+        .metric-card.inactive .trend-val { @apply text-orange-500; }
+
+        /* 数据块基底 */
+        .metric-val-box { @apply bg-white/20 rounded px-2 py-0.5 font-mono text-right min-w-[65px] ml-1 backdrop-blur-sm; }
+        .metric-card.inactive .metric-val-box { @apply bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200; }
+
+        /* 激活态发光装饰 */
+        .metric-card .bg-glow { @apply absolute -right-6 -top-6 w-24 h-24 bg-white/10 rounded-full blur-xl group-hover:bg-white/20 transition-all hidden; }
+        .metric-card.active .bg-glow { @apply block; }
+
+        /* 图表工具栏图标 */
+        .chart-tool-btn { @apply text-slate-400 hover:text-blue-600 p-1.5 rounded-md hover:bg-blue-50 transition-colors cursor-pointer flex items-center; }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-800 dark:text-slate-100 h-screen overflow-hidden flex flex-col">
+
+<header class="bg-primary h-14 flex items-center justify-between px-4 text-white shrink-0 shadow-md z-50">
+    <div class="flex items-center space-x-3">
+        <div class="w-8 h-8 bg-white rounded-full flex items-center justify-center">
+            <span class="material-symbols-outlined text-primary text-xl">water_drop</span>
+        </div>
+        <h1 class="text-xl font-bold tracking-tight">湖北省水生态环境综合管理</h1>
+    </div>
+    <nav class="flex h-full">
+        <a class="px-6 flex items-center space-x-2 hover:bg-white/10 transition-colors" href="#">
+            <span class="material-symbols-outlined text-[18px]">home</span>
+            <span class="text-sm">总体概览</span>
+        </a>
+        <a class="px-6 flex items-center space-x-2 bg-white/20 border-b-2 border-white transition-colors" href="#">
+            <span class="material-symbols-outlined text-[18px]">assessment</span>
+            <span class="text-sm font-bold">形势分析</span>
+        </a>
+        <a class="px-6 flex items-center space-x-2 hover:bg-white/10 transition-colors" href="#">
+            <span class="material-symbols-outlined text-[18px]">map</span>
+            <span class="text-sm">空间分析</span>
+        </a>
+        <a class="px-6 flex items-center space-x-2 hover:bg-white/10 transition-colors" href="#">
+            <span class="material-symbols-outlined text-[18px]">waves</span>
+            <span class="text-sm">水污染源</span>
+        </a>
+        <a class="px-6 flex items-center space-x-2 hover:bg-white/10 transition-colors" href="#">
+            <span class="material-symbols-outlined text-[18px]">report_problem</span>
+            <span class="text-sm">问题聚焦</span>
+        </a>
+        <a class="px-6 flex items-center space-x-2 hover:bg-white/10 transition-colors" href="#">
+            <span class="material-symbols-outlined text-[18px]">apps</span>
+            <span class="text-sm">专题应用</span>
+        </a>
+    </nav>
+    <div class="flex items-center space-x-6">
+        <div class="flex items-center space-x-2 text-sm opacity-90">
+            <span class="material-symbols-outlined text-[18px]">public</span>
+            <span>碧水荆灵</span>
+        </div>
+        <div class="flex items-center space-x-2 text-sm">
+            <span class="material-symbols-outlined text-[18px]">account_circle</span>
+            <span>wangyunpeng</span>
+        </div>
+    </div>
+</header>
+
+<div class="flex flex-1 overflow-hidden">
+    <aside id="sidebar" class="w-[270px] bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 flex flex-col shrink-0">
+        <div class="flex-1 py-4 overflow-y-auto custom-scrollbar flex flex-col gap-1">
+            <div class="mb-2 px-2">
+                <a class="nav-item w-full flex items-center px-4 py-3 text-[14px] font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg group transition-colors" href="#">
+                    <span class="material-symbols-outlined mr-3 text-slate-400 group-hover:text-primary">assignment_late</span>
+                    <span class="sidebar-text">不达标断面</span>
+                </a>
+            </div>
+            <div class="mb-2 px-2">
+                <a class="nav-item w-full flex items-center px-4 py-3 text-[14px] font-bold text-blue-700 bg-blue-50/80 dark:bg-blue-900/20 rounded-lg group transition-colors relative" href="#">
+                    <span class="material-symbols-outlined mr-3 text-blue-600">trending_down</span>
+                    <span class="sidebar-text">水质同比恶化</span>
+                    <div class="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-5 bg-blue-600 rounded-r-full"></div>
+                </a>
+            </div>
+            <div class="mb-2 px-2">
+                <a class="nav-item w-full flex items-center px-4 py-3 text-[14px] font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg group transition-colors" href="#">
+                    <span class="material-symbols-outlined mr-3 text-slate-400 group-hover:text-primary">trending_up</span>
+                    <span class="sidebar-text">水质同比改善</span>
+                </a>
+            </div>
+            <div class="mb-2 px-2">
+                <a class="nav-item w-full flex items-center px-4 py-3 text-[14px] font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg group transition-colors" href="#">
+                    <span class="material-symbols-outlined mr-3 text-slate-400 group-hover:text-primary">query_stats</span>
+                    <span class="sidebar-text">指标同比恶化</span>
+                </a>
+            </div>
+            <div class="mb-2 px-2">
+                <a class="nav-item w-full flex items-center px-4 py-3 text-[14px] font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg group transition-colors" href="#">
+                    <span class="material-symbols-outlined mr-3 text-slate-400 group-hover:text-primary">monitoring</span>
+                    <span class="sidebar-text">指标同比改善</span>
+                </a>
+            </div>
+        </div>
+
+        <button id="toggleSidebarBtn" class="h-12 border-t border-slate-200 dark:border-slate-800 flex items-center justify-center space-x-2 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all text-slate-500 hover:text-primary group">
+            <span id="toggleIcon" class="material-symbols-outlined text-xl transition-transform duration-300">chevron_left</span>
+            <span class="sidebar-text text-sm font-medium tracking-wide">收起侧栏</span>
+        </button>
+    </aside>
+
+    <main class="flex-1 overflow-y-auto custom-scrollbar p-6">
+
+        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-6 py-4 shrink-0 card-shadow mb-5 flex flex-col gap-4">
+            <div class="flex justify-between items-center w-full">
+                <div class="flex items-center gap-3">
+                    <span class="relative flex h-3 w-3">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-3 w-3 bg-orange-500"></span>
+                    </span>
+                    <h2 class="text-lg font-bold text-slate-800 dark:text-white tracking-tight">水质同比恶化</h2>
+                </div>
+
+                <div class="flex items-center space-x-3">
+                    <div class="relative">
+                        <select class="form-select pr-8 w-[80px]">
+                            <option selected>国控</option>
+                            <option>省控</option>
+                        </select>
+                    </div>
+                    <div class="relative">
+                        <select class="form-select pr-8 w-[95px]">
+                            <option selected>2025年</option>
+                            <option>2024年</option>
+                        </select>
+                    </div>
+                    <div class="relative">
+                        <select id="month-select" class="form-select pr-8 w-[85px]">
+                            <option>11月</option>
+                            <option>10月</option>
+                            <option>9月</option>
+                        </select>
+                    </div>
+
+                    <div class="flex bg-slate-100 dark:bg-slate-800 p-0 rounded-lg border border-slate-200 dark:border-slate-700 ml-1 h-8">
+                        <button id="btn-current" class="toggle-btn active" onclick="setMonthMode('current')">当前月</button>
+                        <button id="btn-cumulative" class="toggle-btn inactive" onclick="setMonthMode('cumulative')">累计月</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 card-shadow flex flex-col overflow-hidden mb-6">
+            <div class="px-5 py-4 border-b border-slate-100 dark:border-slate-800 flex justify-between items-start gap-4">
+
+                <div class="flex items-center space-x-2 mt-1.5">
+                    <div class="section-title-bar m-0"></div>
+                    <h3 class="font-bold text-slate-800 dark:text-white text-[15px]">水质同比恶化明细</h3>
+                </div>
+
+                <div class="flex flex-col items-end gap-3">
+                    <div class="flex items-center flex-wrap gap-2.5 justify-end">
+                        <select class="form-select !bg-slate-100 dark:!bg-slate-800 !border-transparent text-[13px] !py-1.5 pr-8 min-w-[100px]">
+                            <option value="">行政区域</option>
+                            <option>恩施州</option>
+                            <option>黄冈市</option>
+                        </select>
+                        <select class="form-select !bg-slate-100 dark:!bg-slate-800 !border-transparent text-[13px] !py-1.5 pr-8 min-w-[100px]">
+                            <option value="">断面名称</option>
+                        </select>
+                        <select class="form-select !bg-slate-100 dark:!bg-slate-800 !border-transparent text-[13px] !py-1.5 pr-8 min-w-[100px]">
+                            <option value="">水质类别</option>
+                            <option>III类</option>
+                            <option>IV类</option>
+                        </select>
+
+                        <div class="flex items-center space-x-2 text-[13px] text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 px-3 py-1.5 rounded-lg">
+                            <span>同比恶化:</span>
+                            <input type="number" value="1" min="1" max="5" class="form-input w-12 text-center !px-1 !py-0.5 h-6 bg-white dark:bg-slate-700 !border-slate-200 dark:!border-slate-600">
+                            <span>级以上</span>
+                        </div>
+
+                        <div class="hidden xl:block h-6 w-px bg-slate-200 dark:bg-slate-700 mx-1"></div>
+
+                        <div class="flex items-center space-x-2">
+                            <button class="bg-[#3b82f6] hover:bg-blue-600 text-white px-4 py-1.5 rounded-lg text-[13px] font-medium transition-colors shadow-sm flex items-center">
+                                <i class="ri-search-line mr-1.5"></i> 搜索
+                            </button>
+                            <button class="bg-white hover:bg-slate-50 text-slate-600 dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 px-4 py-1.5 rounded-lg text-[13px] font-medium transition-colors flex items-center">
+                                <i class="ri-refresh-line mr-1.5"></i> 重置
+                            </button>
+                            <button class="bg-white hover:bg-slate-50 text-slate-600 dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 px-4 py-1.5 rounded-lg text-[13px] font-medium transition-colors flex items-center">
+                                <i class="ri-download-2-line mr-1.5"></i> 导出
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-3 text-[12px] font-medium text-slate-600 dark:text-slate-300 w-max">
+                        <div class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-[#CCFFFF]"></span> I类</div>
+                        <div class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-[#00CCFF]"></span> II类</div>
+                        <div class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-[#00FF00]"></span> III类</div>
+                        <div class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-[#FFFF00]"></span> IV类</div>
+                        <div class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-[#FF9900]"></span> V类</div>
+                        <div class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-[#FF0000]"></span> 劣V类</div>
+                        <div class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-[#999999] dark:bg-slate-600"></span> 暂无</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="overflow-x-auto custom-scrollbar flex-1 max-h-[calc(100vh-320px)]">
+                <table class="w-full data-table min-w-[1400px]">
+                    <thead>
+                    <tr>
+                        <th class="w-16 whitespace-nowrap">序号</th>
+                        <th class="w-24">断面名称</th>
+                        <th class="w-32">地市</th>
+                        <th class="w-24">所在水体</th>
+                        <th class="w-24">同比水质</th>
+                        <th class="w-24">水质类别</th>
+                        <th class="w-[200px]">水质月历</th>
+                        <th class="w-48 text-left px-4">定类因子</th>
+                        <th class="w-48 text-left px-4">超标因子</th>
+                        <th class="w-32">操作</th>
+                    </tr>
+                    </thead>
+                    <tbody id="table-body">
+                    <tr>
+                        <td class="font-bold text-slate-500">1</td>
+                        <td class="font-medium text-slate-800 dark:text-slate-200">南里渡桥</td>
+                        <td class="text-xs">恩施土家族苗族自治州</td>
+                        <td>马水河</td>
+                        <td>II类</td>
+                        <td>III类</td>
+                        <td>
+                            <div class="grid grid-cols-6 gap-1.5 w-max mx-auto">
+                                <div class="wq-circle wq-2">1月</div><div class="wq-circle wq-2">2月</div><div class="wq-circle wq-2">3月</div><div class="wq-circle wq-bad5">4月</div><div class="wq-circle wq-2">5月</div><div class="wq-circle wq-4">6月</div>
+                                <div class="wq-circle wq-4">7月</div><div class="wq-circle wq-3">8月</div><div class="wq-circle wq-3">9月</div><div class="wq-circle wq-2">10月</div><div class="wq-circle wq-3">11月</div><div class="wq-circle wq-none">12月</div>
+                            </div>
+                        </td>
+                        <td class="text-left text-xs leading-tight text-slate-600 dark:text-slate-400">高锰酸盐指数、化学需氧量</td>
+                        <td class="text-left text-xs text-red-500 font-medium leading-tight">高锰酸盐指数(0.1)、<br/>化学需氧量(0.1)</td>
+                        <td>
+                            <div class="flex items-center justify-center gap-2">
+                                <button class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 bg-blue-50 dark:bg-blue-900/30 hover:bg-blue-100 dark:hover:bg-blue-900/50 px-2.5 py-1 rounded text-xs transition-colors flex items-center gap-1 font-medium border border-blue-100 dark:border-blue-800/50">分析</button>
+                                <button onclick="openModal()" class="text-orange-600 hover:text-orange-800 dark:text-orange-400 dark:hover:text-orange-300 bg-orange-50 dark:bg-orange-900/30 hover:bg-orange-100 dark:hover:bg-orange-900/50 px-2.5 py-1 rounded text-xs transition-colors flex items-center gap-1 font-medium border border-orange-100 dark:border-orange-800/50">恶化</button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="font-bold text-slate-500">2</td>
+                        <td class="font-medium text-slate-800 dark:text-slate-200">艳杆坪</td>
+                        <td class="text-xs">恩施土家族苗族自治州</td>
+                        <td>清江</td>
+                        <td>I类</td>
+                        <td>II类</td>
+                        <td>
+                            <div class="grid grid-cols-6 gap-1.5 w-max mx-auto">
+                                <div class="wq-circle wq-1">1月</div><div class="wq-circle wq-1">2月</div><div class="wq-circle wq-2">3月</div><div class="wq-circle wq-1">4月</div><div class="wq-circle wq-2">5月</div><div class="wq-circle wq-2">6月</div>
+                                <div class="wq-circle wq-2">7月</div><div class="wq-circle wq-1">8月</div><div class="wq-circle wq-2">9月</div><div class="wq-circle wq-3">10月</div><div class="wq-circle wq-2">11月</div><div class="wq-circle wq-none">12月</div>
+                            </div>
+                        </td>
+                        <td class="text-left text-xs leading-tight text-slate-600 dark:text-slate-400">总磷</td>
+                        <td class="text-left text-xs text-slate-400 leading-tight">-</td>
+                        <td>
+                            <div class="flex items-center justify-center gap-2">
+                                <button class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 bg-blue-50 dark:bg-blue-900/30 hover:bg-blue-100 dark:hover:bg-blue-900/50 px-2.5 py-1 rounded text-xs transition-colors flex items-center gap-1 font-medium border border-blue-100 dark:border-blue-800/50">分析</button>
+                                <button onclick="openModal()" class="text-orange-600 hover:text-orange-800 dark:text-orange-400 dark:hover:text-orange-300 bg-orange-50 dark:bg-orange-900/30 hover:bg-orange-100 dark:hover:bg-orange-900/50 px-2.5 py-1 rounded text-xs transition-colors flex items-center gap-1 font-medium border border-orange-100 dark:border-orange-800/50">恶化</button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="font-bold text-slate-500">3</td>
+                        <td class="font-medium text-slate-800 dark:text-slate-200">周家坝</td>
+                        <td class="text-xs">恩施土家族苗族自治州</td>
+                        <td>唐岩河</td>
+                        <td>I类</td>
+                        <td>II类</td>
+                        <td>
+                            <div class="grid grid-cols-6 gap-1.5 w-max mx-auto">
+                                <div class="wq-circle wq-1">1月</div><div class="wq-circle wq-1">2月</div><div class="wq-circle wq-2">3月</div><div class="wq-circle wq-1">4月</div><div class="wq-circle wq-2">5月</div><div class="wq-circle wq-2">6月</div>
+                                <div class="wq-circle wq-2">7月</div><div class="wq-circle wq-2">8月</div><div class="wq-circle wq-2">9月</div><div class="wq-circle wq-2">10月</div><div class="wq-circle wq-2">11月</div><div class="wq-circle wq-none">12月</div>
+                            </div>
+                        </td>
+                        <td class="text-left text-xs leading-tight text-slate-600 dark:text-slate-400">总磷</td>
+                        <td class="text-left text-xs text-slate-400 leading-tight">-</td>
+                        <td>
+                            <div class="flex items-center justify-center gap-2">
+                                <button class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 bg-blue-50 dark:bg-blue-900/30 hover:bg-blue-100 dark:hover:bg-blue-900/50 px-2.5 py-1 rounded text-xs transition-colors flex items-center gap-1 font-medium border border-blue-100 dark:border-blue-800/50">分析</button>
+                                <button onclick="openModal()" class="text-orange-600 hover:text-orange-800 dark:text-orange-400 dark:hover:text-orange-300 bg-orange-50 dark:bg-orange-900/30 hover:bg-orange-100 dark:hover:bg-orange-900/50 px-2.5 py-1 rounded text-xs transition-colors flex items-center gap-1 font-medium border border-orange-100 dark:border-orange-800/50">恶化</button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="font-bold text-slate-500">4</td>
+                        <td class="font-medium text-slate-800 dark:text-slate-200">郭玉</td>
+                        <td class="text-xs">黄冈市</td>
+                        <td>举水</td>
+                        <td>II类</td>
+                        <td>III类</td>
+                        <td>
+                            <div class="grid grid-cols-6 gap-1.5 w-max mx-auto">
+                                <div class="wq-circle wq-3">1月</div><div class="wq-circle wq-3">2月</div><div class="wq-circle wq-2">3月</div><div class="wq-circle wq-3">4月</div><div class="wq-circle wq-3">5月</div><div class="wq-circle wq-4">6月</div>
+                                <div class="wq-circle wq-3">7月</div><div class="wq-circle wq-3">8月</div><div class="wq-circle wq-3">9月</div><div class="wq-circle wq-4">10月</div><div class="wq-circle wq-3">11月</div><div class="wq-circle wq-none">12月</div>
+                            </div>
+                        </td>
+                        <td class="text-left text-xs leading-tight text-slate-600 dark:text-slate-400">总磷</td>
+                        <td class="text-left text-xs text-red-500 font-medium leading-tight">总磷(0.05)</td>
+                        <td>
+                            <div class="flex items-center justify-center gap-2">
+                                <button class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 bg-blue-50 dark:bg-blue-900/30 hover:bg-blue-100 dark:hover:bg-blue-900/50 px-2.5 py-1 rounded text-xs transition-colors flex items-center gap-1 font-medium border border-blue-100 dark:border-blue-800/50">分析</button>
+                                <button onclick="openModal()" class="text-orange-600 hover:text-orange-800 dark:text-orange-400 dark:hover:text-orange-300 bg-orange-50 dark:bg-orange-900/30 hover:bg-orange-100 dark:hover:bg-orange-900/50 px-2.5 py-1 rounded text-xs transition-colors flex items-center gap-1 font-medium border border-orange-100 dark:border-orange-800/50">恶化</button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="font-bold text-slate-500">5</td>
+                        <td class="font-medium text-slate-800 dark:text-slate-200">南里渡桥</td>
+                        <td class="text-xs">恩施土家族苗族自治州</td>
+                        <td>马水河</td>
+                        <td>II类</td>
+                        <td>III类</td>
+                        <td>
+                            <div class="grid grid-cols-6 gap-1.5 w-max mx-auto">
+                                <div class="wq-circle wq-2">1月</div><div class="wq-circle wq-2">2月</div><div class="wq-circle wq-2">3月</div><div class="wq-circle wq-bad5">4月</div><div class="wq-circle wq-2">5月</div><div class="wq-circle wq-4">6月</div>
+                                <div class="wq-circle wq-4">7月</div><div class="wq-circle wq-3">8月</div><div class="wq-circle wq-3">9月</div><div class="wq-circle wq-2">10月</div><div class="wq-circle wq-3">11月</div><div class="wq-circle wq-none">12月</div>
+                            </div>
+                        </td>
+                        <td class="text-left text-xs leading-tight text-slate-600 dark:text-slate-400">高锰酸盐指数、化学需氧量</td>
+                        <td class="text-left text-xs text-red-500 font-medium leading-tight">高锰酸盐指数(0.1)、<br/>化学需氧量(0.1)</td>
+                        <td>
+                            <div class="flex items-center justify-center gap-2">
+                                <button class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 bg-blue-50 dark:bg-blue-900/30 hover:bg-blue-100 dark:hover:bg-blue-900/50 px-2.5 py-1 rounded text-xs transition-colors flex items-center gap-1 font-medium border border-blue-100 dark:border-blue-800/50">分析</button>
+                                <button onclick="openModal()" class="text-orange-600 hover:text-orange-800 dark:text-orange-400 dark:hover:text-orange-300 bg-orange-50 dark:bg-orange-900/30 hover:bg-orange-100 dark:hover:bg-orange-900/50 px-2.5 py-1 rounded text-xs transition-colors flex items-center gap-1 font-medium border border-orange-100 dark:border-orange-800/50">恶化</button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="font-bold text-slate-500">6</td>
+                        <td class="font-medium text-slate-800 dark:text-slate-200">艳杆坪</td>
+                        <td class="text-xs">恩施土家族苗族自治州</td>
+                        <td>清江</td>
+                        <td>I类</td>
+                        <td>II类</td>
+                        <td>
+                            <div class="grid grid-cols-6 gap-1.5 w-max mx-auto">
+                                <div class="wq-circle wq-1">1月</div><div class="wq-circle wq-1">2月</div><div class="wq-circle wq-2">3月</div><div class="wq-circle wq-1">4月</div><div class="wq-circle wq-2">5月</div><div class="wq-circle wq-2">6月</div>
+                                <div class="wq-circle wq-2">7月</div><div class="wq-circle wq-1">8月</div><div class="wq-circle wq-2">9月</div><div class="wq-circle wq-3">10月</div><div class="wq-circle wq-2">11月</div><div class="wq-circle wq-none">12月</div>
+                            </div>
+                        </td>
+                        <td class="text-left text-xs leading-tight text-slate-600 dark:text-slate-400">总磷</td>
+                        <td class="text-left text-xs text-slate-400 leading-tight">-</td>
+                        <td>
+                            <div class="flex items-center justify-center gap-2">
+                                <button class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 bg-blue-50 dark:bg-blue-900/30 hover:bg-blue-100 dark:hover:bg-blue-900/50 px-2.5 py-1 rounded text-xs transition-colors flex items-center gap-1 font-medium border border-blue-100 dark:border-blue-800/50">分析</button>
+                                <button onclick="openModal()" class="text-orange-600 hover:text-orange-800 dark:text-orange-400 dark:hover:text-orange-300 bg-orange-50 dark:bg-orange-900/30 hover:bg-orange-100 dark:hover:bg-orange-900/50 px-2.5 py-1 rounded text-xs transition-colors flex items-center gap-1 font-medium border border-orange-100 dark:border-orange-800/50">恶化</button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="font-bold text-slate-500">7</td>
+                        <td class="font-medium text-slate-800 dark:text-slate-200">周家坝</td>
+                        <td class="text-xs">恩施土家族苗族自治州</td>
+                        <td>唐岩河</td>
+                        <td>I类</td>
+                        <td>II类</td>
+                        <td>
+                            <div class="grid grid-cols-6 gap-1.5 w-max mx-auto">
+                                <div class="wq-circle wq-1">1月</div><div class="wq-circle wq-1">2月</div><div class="wq-circle wq-2">3月</div><div class="wq-circle wq-1">4月</div><div class="wq-circle wq-2">5月</div><div class="wq-circle wq-2">6月</div>
+                                <div class="wq-circle wq-2">7月</div><div class="wq-circle wq-2">8月</div><div class="wq-circle wq-2">9月</div><div class="wq-circle wq-2">10月</div><div class="wq-circle wq-2">11月</div><div class="wq-circle wq-none">12月</div>
+                            </div>
+                        </td>
+                        <td class="text-left text-xs leading-tight text-slate-600 dark:text-slate-400">总磷</td>
+                        <td class="text-left text-xs text-slate-400 leading-tight">-</td>
+                        <td>
+                            <div class="flex items-center justify-center gap-2">
+                                <button class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 bg-blue-50 dark:bg-blue-900/30 hover:bg-blue-100 dark:hover:bg-blue-900/50 px-2.5 py-1 rounded text-xs transition-colors flex items-center gap-1 font-medium border border-blue-100 dark:border-blue-800/50">分析</button>
+                                <button onclick="openModal()" class="text-orange-600 hover:text-orange-800 dark:text-orange-400 dark:hover:text-orange-300 bg-orange-50 dark:bg-orange-900/30 hover:bg-orange-100 dark:hover:bg-orange-900/50 px-2.5 py-1 rounded text-xs transition-colors flex items-center gap-1 font-medium border border-orange-100 dark:border-orange-800/50">恶化</button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="font-bold text-slate-500">8</td>
+                        <td class="font-medium text-slate-800 dark:text-slate-200">郭玉</td>
+                        <td class="text-xs">黄冈市</td>
+                        <td>举水</td>
+                        <td>II类</td>
+                        <td>III类</td>
+                        <td>
+                            <div class="grid grid-cols-6 gap-1.5 w-max mx-auto">
+                                <div class="wq-circle wq-3">1月</div><div class="wq-circle wq-3">2月</div><div class="wq-circle wq-2">3月</div><div class="wq-circle wq-3">4月</div><div class="wq-circle wq-3">5月</div><div class="wq-circle wq-4">6月</div>
+                                <div class="wq-circle wq-3">7月</div><div class="wq-circle wq-3">8月</div><div class="wq-circle wq-3">9月</div><div class="wq-circle wq-4">10月</div><div class="wq-circle wq-3">11月</div><div class="wq-circle wq-none">12月</div>
+                            </div>
+                        </td>
+                        <td class="text-left text-xs leading-tight text-slate-600 dark:text-slate-400">总磷</td>
+                        <td class="text-left text-xs text-red-500 font-medium leading-tight">总磷(0.05)</td>
+                        <td>
+                            <div class="flex items-center justify-center gap-2">
+                                <button class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 bg-blue-50 dark:bg-blue-900/30 hover:bg-blue-100 dark:hover:bg-blue-900/50 px-2.5 py-1 rounded text-xs transition-colors flex items-center gap-1 font-medium border border-blue-100 dark:border-blue-800/50">分析</button>
+                                <button onclick="openModal()" class="text-orange-600 hover:text-orange-800 dark:text-orange-400 dark:hover:text-orange-300 bg-orange-50 dark:bg-orange-900/30 hover:bg-orange-100 dark:hover:bg-orange-900/50 px-2.5 py-1 rounded text-xs transition-colors flex items-center gap-1 font-medium border border-orange-100 dark:border-orange-800/50">恶化</button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="font-bold text-slate-500">9</td>
+                        <td class="font-medium text-slate-800 dark:text-slate-200">南里渡桥</td>
+                        <td class="text-xs">恩施土家族苗族自治州</td>
+                        <td>马水河</td>
+                        <td>II类</td>
+                        <td>III类</td>
+                        <td>
+                            <div class="grid grid-cols-6 gap-1.5 w-max mx-auto">
+                                <div class="wq-circle wq-2">1月</div><div class="wq-circle wq-2">2月</div><div class="wq-circle wq-2">3月</div><div class="wq-circle wq-bad5">4月</div><div class="wq-circle wq-2">5月</div><div class="wq-circle wq-4">6月</div>
+                                <div class="wq-circle wq-4">7月</div><div class="wq-circle wq-3">8月</div><div class="wq-circle wq-3">9月</div><div class="wq-circle wq-2">10月</div><div class="wq-circle wq-3">11月</div><div class="wq-circle wq-none">12月</div>
+                            </div>
+                        </td>
+                        <td class="text-left text-xs leading-tight text-slate-600 dark:text-slate-400">高锰酸盐指数、化学需氧量</td>
+                        <td class="text-left text-xs text-red-500 font-medium leading-tight">高锰酸盐指数(0.1)、<br/>化学需氧量(0.1)</td>
+                        <td>
+                            <div class="flex items-center justify-center gap-2">
+                                <button class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 bg-blue-50 dark:bg-blue-900/30 hover:bg-blue-100 dark:hover:bg-blue-900/50 px-2.5 py-1 rounded text-xs transition-colors flex items-center gap-1 font-medium border border-blue-100 dark:border-blue-800/50">分析</button>
+                                <button onclick="openModal()" class="text-orange-600 hover:text-orange-800 dark:text-orange-400 dark:hover:text-orange-300 bg-orange-50 dark:bg-orange-900/30 hover:bg-orange-100 dark:hover:bg-orange-900/50 px-2.5 py-1 rounded text-xs transition-colors flex items-center gap-1 font-medium border border-orange-100 dark:border-orange-800/50">恶化</button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="font-bold text-slate-500">10</td>
+                        <td class="font-medium text-slate-800 dark:text-slate-200">艳杆坪</td>
+                        <td class="text-xs">恩施土家族苗族自治州</td>
+                        <td>清江</td>
+                        <td>I类</td>
+                        <td>II类</td>
+                        <td>
+                            <div class="grid grid-cols-6 gap-1.5 w-max mx-auto">
+                                <div class="wq-circle wq-1">1月</div><div class="wq-circle wq-1">2月</div><div class="wq-circle wq-2">3月</div><div class="wq-circle wq-1">4月</div><div class="wq-circle wq-2">5月</div><div class="wq-circle wq-2">6月</div>
+                                <div class="wq-circle wq-2">7月</div><div class="wq-circle wq-1">8月</div><div class="wq-circle wq-2">9月</div><div class="wq-circle wq-3">10月</div><div class="wq-circle wq-2">11月</div><div class="wq-circle wq-none">12月</div>
+                            </div>
+                        </td>
+                        <td class="text-left text-xs leading-tight text-slate-600 dark:text-slate-400">总磷</td>
+                        <td class="text-left text-xs text-slate-400 leading-tight">-</td>
+                        <td>
+                            <div class="flex items-center justify-center gap-2">
+                                <button class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 bg-blue-50 dark:bg-blue-900/30 hover:bg-blue-100 dark:hover:bg-blue-900/50 px-2.5 py-1 rounded text-xs transition-colors flex items-center gap-1 font-medium border border-blue-100 dark:border-blue-800/50">分析</button>
+                                <button onclick="openModal()" class="text-orange-600 hover:text-orange-800 dark:text-orange-400 dark:hover:text-orange-300 bg-orange-50 dark:bg-orange-900/30 hover:bg-orange-100 dark:hover:bg-orange-900/50 px-2.5 py-1 rounded text-xs transition-colors flex items-center gap-1 font-medium border border-orange-100 dark:border-orange-800/50">恶化</button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="font-bold text-slate-500">11</td>
+                        <td class="font-medium text-slate-800 dark:text-slate-200">周家坝</td>
+                        <td class="text-xs">恩施土家族苗族自治州</td>
+                        <td>唐岩河</td>
+                        <td>I类</td>
+                        <td>II类</td>
+                        <td>
+                            <div class="grid grid-cols-6 gap-1.5 w-max mx-auto">
+                                <div class="wq-circle wq-1">1月</div><div class="wq-circle wq-1">2月</div><div class="wq-circle wq-2">3月</div><div class="wq-circle wq-1">4月</div><div class="wq-circle wq-2">5月</div><div class="wq-circle wq-2">6月</div>
+                                <div class="wq-circle wq-2">7月</div><div class="wq-circle wq-2">8月</div><div class="wq-circle wq-2">9月</div><div class="wq-circle wq-2">10月</div><div class="wq-circle wq-2">11月</div><div class="wq-circle wq-none">12月</div>
+                            </div>
+                        </td>
+                        <td class="text-left text-xs leading-tight text-slate-600 dark:text-slate-400">总磷</td>
+                        <td class="text-left text-xs text-slate-400 leading-tight">-</td>
+                        <td>
+                            <div class="flex items-center justify-center gap-2">
+                                <button class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 bg-blue-50 dark:bg-blue-900/30 hover:bg-blue-100 dark:hover:bg-blue-900/50 px-2.5 py-1 rounded text-xs transition-colors flex items-center gap-1 font-medium border border-blue-100 dark:border-blue-800/50">分析</button>
+                                <button onclick="openModal()" class="text-orange-600 hover:text-orange-800 dark:text-orange-400 dark:hover:text-orange-300 bg-orange-50 dark:bg-orange-900/30 hover:bg-orange-100 dark:hover:bg-orange-900/50 px-2.5 py-1 rounded text-xs transition-colors flex items-center gap-1 font-medium border border-orange-100 dark:border-orange-800/50">恶化</button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="font-bold text-slate-500">12</td>
+                        <td class="font-medium text-slate-800 dark:text-slate-200">郭玉</td>
+                        <td class="text-xs">黄冈市</td>
+                        <td>举水</td>
+                        <td>II类</td>
+                        <td>III类</td>
+                        <td>
+                            <div class="grid grid-cols-6 gap-1.5 w-max mx-auto">
+                                <div class="wq-circle wq-3">1月</div><div class="wq-circle wq-3">2月</div><div class="wq-circle wq-2">3月</div><div class="wq-circle wq-3">4月</div><div class="wq-circle wq-3">5月</div><div class="wq-circle wq-4">6月</div>
+                                <div class="wq-circle wq-3">7月</div><div class="wq-circle wq-3">8月</div><div class="wq-circle wq-3">9月</div><div class="wq-circle wq-4">10月</div><div class="wq-circle wq-3">11月</div><div class="wq-circle wq-none">12月</div>
+                            </div>
+                        </td>
+                        <td class="text-left text-xs leading-tight text-slate-600 dark:text-slate-400">总磷</td>
+                        <td class="text-left text-xs text-red-500 font-medium leading-tight">总磷(0.05)</td>
+                        <td>
+                            <div class="flex items-center justify-center gap-2">
+                                <button class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 bg-blue-50 dark:bg-blue-900/30 hover:bg-blue-100 dark:hover:bg-blue-900/50 px-2.5 py-1 rounded text-xs transition-colors flex items-center gap-1 font-medium border border-blue-100 dark:border-blue-800/50">分析</button>
+                                <button onclick="openModal()" class="text-orange-600 hover:text-orange-800 dark:text-orange-400 dark:hover:text-orange-300 bg-orange-50 dark:bg-orange-900/30 hover:bg-orange-100 dark:hover:bg-orange-900/50 px-2.5 py-1 rounded text-xs transition-colors flex items-center gap-1 font-medium border border-orange-100 dark:border-orange-800/50">恶化</button>
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="flex justify-between items-center px-6 py-3 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 shrink-0">
+                <div class="text-[13px] text-slate-500 dark:text-slate-400">
+                    共 <span id="total-count" class="font-bold text-slate-700 dark:text-slate-200 mx-1">12</span> 条记录
+                </div>
+
+                <div class="flex items-center space-x-3">
+                    <select id="page-size-select" class="form-select text-[13px] !py-1 !pr-7 bg-white dark:bg-slate-800">
+                        <option value="10">10条/页</option>
+                        <option value="15" selected>15条/页</option>
+                        <option value="30">30条/页</option>
+                    </select>
+
+                    <div class="flex items-center space-x-1">
+                        <button id="prev-btn" class="px-3 py-1 text-[13px] border rounded-md transition-colors"><i class="ri-arrow-left-s-line"></i></button>
+                        <div id="page-numbers" class="flex items-center space-x-1">
+                        </div>
+                        <button id="next-btn" class="px-3 py-1 text-[13px] border rounded-md transition-colors"><i class="ri-arrow-right-s-line"></i></button>
+                    </div>
+
+                    <div class="flex items-center space-x-2 text-[13px] text-slate-500 dark:text-slate-400">
+                        <span>前往</span>
+                        <input id="go-input" type="text" value="1" class="form-input w-10 text-center !py-1 !px-1 bg-white dark:bg-slate-800">
+                        <span>页</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer class="mt-4 pt-4 border-t border-slate-200 dark:border-slate-800 text-center text-xs text-slate-400 pb-2">
+            <p>&copy; 2026 湖北省生态环境厅 · 版权所有</p>
+        </footer>
+
+    </main>
+</div>
+
+<div id="deteriorationModal" class="fixed inset-0 z-[100] bg-slate-900/40 backdrop-blur-sm flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300">
+    <div class="bg-white rounded-xl shadow-2xl w-[90%] max-w-6xl overflow-hidden flex flex-col transform scale-95 transition-transform duration-300" id="modalContent">
+
+        <div class="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+            <h3 class="font-bold text-slate-800 text-lg flex items-center">
+                <div class="w-1.5 h-4 bg-orange-500 rounded-full mr-2"></div>
+                恶化指标趋势图
+            </h3>
+            <button onclick="closeModal()" class="text-slate-400 hover:text-slate-700 hover:bg-slate-200 p-1.5 rounded-full transition-colors focus:outline-none">
+                <i class="ri-close-line text-xl"></i>
+            </button>
+        </div>
+
+        <div class="flex p-5 gap-6 h-[550px]">
+            <div class="w-[370px] flex flex-col gap-3 overflow-y-auto custom-scrollbar pr-2 pb-2 shrink-0">
+
+                <div id="card-tp" class="metric-card active group" onclick="switchMetric('tp')">
+                    <div class="flex justify-between items-center metric-header">
+                        <span class="font-bold text-[14px]">污染物名称: <span class="tracking-widest ml-1 font-bold text-inherit">总磷</span></span>
+                        <div class="flex items-center gap-1.5">
+                            <span class="current-label">本期浓度</span>
+                            <span class="current-value">0.098</span>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-y-2 gap-x-2 text-xs mt-2">
+                        <div class="flex items-center justify-between"><span class="opacity-90 whitespace-nowrap">去年同期浓度</span> <div class="metric-val-box">0.021</div></div>
+                        <div class="flex items-center justify-between"><span class="opacity-90 pl-1 whitespace-nowrap">同比上升</span> <div class="metric-val-box trend-val">366.67%</div></div>
+                        <div class="flex items-center justify-between"><span class="opacity-90 whitespace-nowrap">前序同周期平均值</span> <div class="metric-val-box">0.027</div></div>
+                        <div class="flex items-center justify-between"><span class="opacity-90 pl-1 whitespace-nowrap">高于平均</span> <div class="metric-val-box trend-val">262.96%</div></div>
+                    </div>
+                    <div class="bg-glow"></div>
+                </div>
+
+                <div id="card-codmn" class="metric-card inactive group" onclick="switchMetric('codmn')">
+                    <div class="flex justify-between items-center metric-header">
+                        <span class="font-bold text-[14px]">污染物名称: <span class="tracking-widest ml-1 font-bold text-inherit">高锰酸盐指数</span></span>
+                        <div class="flex items-center gap-1.5">
+                            <span class="current-label">本期浓度</span>
+                            <span class="current-value">4.4</span>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-y-2 gap-x-2 text-xs mt-2">
+                        <div class="flex items-center justify-between"><span class="opacity-90 whitespace-nowrap">去年同期浓度</span> <div class="metric-val-box">1.4</div></div>
+                        <div class="flex items-center justify-between"><span class="opacity-90 pl-1 whitespace-nowrap">同比上升</span> <div class="metric-val-box trend-val">214.29%</div></div>
+                        <div class="flex items-center justify-between"><span class="opacity-90 whitespace-nowrap">前序同周期平均值</span> <div class="metric-val-box">1.3</div></div>
+                        <div class="flex items-center justify-between"><span class="opacity-90 pl-1 whitespace-nowrap">高于平均</span> <div class="metric-val-box trend-val">238.46%</div></div>
+                    </div>
+                    <div class="bg-glow"></div>
+                </div>
+
+                <div id="card-cod" class="metric-card inactive group" onclick="switchMetric('cod')">
+                    <div class="flex justify-between items-center metric-header">
+                        <span class="font-bold text-[14px]">污染物名称: <span class="tracking-widest ml-1 font-bold text-inherit">化学需氧量</span></span>
+                        <div class="flex items-center gap-1.5">
+                            <span class="current-label">本期浓度</span>
+                            <span class="current-value">16</span>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-y-2 gap-x-2 text-xs mt-2">
+                        <div class="flex items-center justify-between"><span class="opacity-90 whitespace-nowrap">去年同期浓度</span> <div class="metric-val-box">8.9</div></div>
+                        <div class="flex items-center justify-between"><span class="opacity-90 pl-1 whitespace-nowrap">同比上升</span> <div class="metric-val-box trend-val">79.78%</div></div>
+                        <div class="flex items-center justify-between"><span class="opacity-90 whitespace-nowrap">前序同周期平均值</span> <div class="metric-val-box">9.0</div></div>
+                        <div class="flex items-center justify-between"><span class="opacity-90 pl-1 whitespace-nowrap">高于平均</span> <div class="metric-val-box trend-val">77.78%</div></div>
+                    </div>
+                    <div class="bg-glow"></div>
+                </div>
+
+                <div id="card-tn" class="metric-card inactive group" onclick="switchMetric('tn')">
+                    <div class="flex justify-between items-center metric-header">
+                        <span class="font-bold text-[14px]">污染物名称: <span class="tracking-widest ml-1 font-bold text-inherit">总氮</span></span>
+                        <div class="flex items-center gap-1.5">
+                            <span class="current-label">本期浓度</span>
+                            <span class="current-value">2.52</span>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-y-2 gap-x-2 text-xs mt-2">
+                        <div class="flex items-center justify-between"><span class="opacity-90 whitespace-nowrap">去年同期浓度</span> <div class="metric-val-box">1.9</div></div>
+                        <div class="flex items-center justify-between"><span class="opacity-90 pl-1 whitespace-nowrap">同比上升</span> <div class="metric-val-box trend-val">32.63%</div></div>
+                        <div class="flex items-center justify-between"><span class="opacity-90 whitespace-nowrap">前序同周期平均值</span> <div class="metric-val-box">2.0</div></div>
+                        <div class="flex items-center justify-between"><span class="opacity-90 pl-1 whitespace-nowrap">高于平均</span> <div class="metric-val-box trend-val">26.00%</div></div>
+                    </div>
+                    <div class="bg-glow"></div>
+                </div>
+            </div>
+
+            <div class="flex-1 flex flex-col border border-slate-200 rounded-xl bg-[#fafcff] relative overflow-hidden">
+
+                <div class="absolute right-4 top-3 z-10 flex items-center space-x-2">
+                    <div id="chart-legend-container" class="flex items-center space-x-4 mr-6 text-xs font-medium text-slate-600">
+                        <span class="flex items-center"><span class="w-2.5 h-2.5 rounded-full bg-blue-500 mr-1.5"></span>总磷(2025)</span>
+                        <span class="flex items-center"><span class="w-2.5 h-2.5 rounded-full bg-yellow-400 mr-1.5"></span>总磷(2024)</span>
+                        <span class="flex items-center"><span class="w-4 h-[2px] bg-red-500 mr-1.5"></span>目标值</span>
+                    </div>
+
+                    <button class="chart-tool-btn" onclick="toggleChartView()" title="查看表格">
+                        <i class="ri-table-line text-lg"></i>
+                    </button>
+                    <button class="chart-tool-btn" onclick="downloadChartData()" title="下载数据">
+                        <i class="ri-download-2-line text-lg"></i>
+                    </button>
+                </div>
+
+                <div id="chart-unit" class="text-xs text-slate-400 absolute left-4 top-4">mg/L</div>
+
+                <div id="echart-container" class="flex-1 w-full h-full p-4 mt-6"></div>
+
+                <div id="chart-table-container" class="hidden absolute inset-0 bg-white z-20 p-6 rounded-xl overflow-y-auto custom-scrollbar">
+                    <h4 id="table-title" class="text-sm font-bold mb-4 text-slate-700 border-l-4 border-blue-500 pl-2">总磷详细数据明细表</h4>
+                    <table class="data-table w-full">
+                        <thead id="table-thead">
+                        <tr>
+                            <th>月份</th>
+                            <th>总磷(2025) mg/L</th>
+                            <th>总磷(2024) mg/L</th>
+                            <th>目标值 mg/L</th>
+                        </tr>
+                        </thead>
+                        <tbody id="table-tbody">
+                        </tbody>
+                    </table>
+                    <div class="mt-4 flex justify-end">
+                        <button onclick="toggleChartView()" class="text-xs bg-slate-100 hover:bg-slate-200 px-4 py-1.5 rounded text-slate-600">返回图表</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="px-6 py-3 border-t border-slate-100 bg-slate-50 flex justify-center">
+            <button onclick="closeModal()" class="bg-blue-500 hover:bg-blue-600 text-white px-8 py-1.5 rounded-lg text-sm font-medium transition-colors shadow-md">确 定</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ====== 侧边栏交互逻辑 ======
+    const sidebar = document.getElementById('sidebar');
+    const toggleBtn = document.getElementById('toggleSidebarBtn');
+    const toggleIcon = document.getElementById('toggleIcon');
+    let isCollapsed = false;
+
+    toggleBtn.addEventListener('click', () => {
+        isCollapsed = !isCollapsed;
+        if (isCollapsed) {
+            sidebar.classList.remove('w-[270px]');
+            sidebar.classList.add('w-[80px]', 'hide-text', 'collapsed-sidebar');
+            toggleIcon.style.transform = 'rotate(180deg)';
+        } else {
+            sidebar.classList.remove('w-[80px]', 'hide-text', 'collapsed-sidebar');
+            sidebar.classList.add('w-[270px]');
+            toggleIcon.style.transform = 'rotate(0deg)';
+        }
+    });
+
+    // ====== 当前月/累计月 联动逻辑 ======
+    function setMonthMode(mode) {
+        const btnCurrent = document.getElementById('btn-current');
+        const btnCumulative = document.getElementById('btn-cumulative');
+        const monthSelect = document.getElementById('month-select');
+
+        if (mode === 'current') {
+            btnCurrent.className = 'toggle-btn active';
+            btnCumulative.className = 'toggle-btn inactive';
+            Array.from(monthSelect.options).forEach(opt => opt.text = opt.text.replace('1-', ''));
+        } else {
+            btnCurrent.className = 'toggle-btn inactive';
+            btnCumulative.className = 'toggle-btn active';
+            Array.from(monthSelect.options).forEach(opt => {
+                if (!opt.text.startsWith('1-')) opt.text = '1-' + opt.text;
+            });
+        }
+    }
+
+    // ====== 前端数据分页控制逻辑 ======
+    document.addEventListener('DOMContentLoaded', () => {
+        const tableBody = document.getElementById('table-body');
+        const rows = Array.from(tableBody.querySelectorAll('tr'));
+        const totalRows = rows.length;
+
+        let currentPage = 1;
+        let pageSize = 15;
+
+        const totalCountEl = document.getElementById('total-count');
+        const pageSizeSelect = document.getElementById('page-size-select');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const pageNumbersContainer = document.getElementById('page-numbers');
+        const goInput = document.getElementById('go-input');
+
+        if (totalCountEl) totalCountEl.innerText = totalRows;
+
+        function renderTable() {
+            const startIdx = (currentPage - 1) * pageSize;
+            const endIdx = startIdx + pageSize;
+
+            rows.forEach((row, index) => {
+                if (index >= startIdx && index < endIdx) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+
+            updatePaginationUI();
+        }
+
+        function updatePaginationUI() {
+            const totalPages = Math.ceil(totalRows / pageSize);
+
+            if (currentPage === 1) {
+                prevBtn.disabled = true;
+                prevBtn.className = 'px-3 py-1 text-[13px] border border-slate-200 dark:border-slate-700 rounded-md text-slate-400 bg-slate-50 cursor-not-allowed dark:bg-slate-800 transition-colors';
+            } else {
+                prevBtn.disabled = false;
+                prevBtn.className = 'px-3 py-1 text-[13px] border border-slate-200 dark:border-slate-700 rounded-md text-slate-600 hover:bg-blue-50 hover:text-blue-600 dark:text-slate-300 dark:hover:bg-slate-700 transition-colors cursor-pointer';
+            }
+
+            if (currentPage === totalPages || totalPages === 0) {
+                nextBtn.disabled = true;
+                nextBtn.className = 'px-3 py-1 text-[13px] border border-slate-200 dark:border-slate-700 rounded-md text-slate-400 bg-slate-50 cursor-not-allowed dark:bg-slate-800 transition-colors';
+            } else {
+                nextBtn.disabled = false;
+                nextBtn.className = 'px-3 py-1 text-[13px] border border-slate-200 dark:border-slate-700 rounded-md text-slate-600 hover:bg-blue-50 hover:text-blue-600 dark:text-slate-300 dark:hover:bg-slate-700 transition-colors cursor-pointer';
+            }
+
+            pageNumbersContainer.innerHTML = '';
+            for (let i = 1; i <= totalPages; i++) {
+                const btn = document.createElement('button');
+                if (i === currentPage) {
+                    btn.className = 'px-3 py-1 text-[13px] border border-blue-500 bg-blue-500 text-white rounded-md font-medium shadow-sm';
+                } else {
+                    btn.className = 'px-3 py-1 text-[13px] border border-slate-200 dark:border-slate-700 rounded-md text-slate-600 hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-slate-700 transition-colors';
+                }
+                btn.innerText = i;
+                btn.onclick = () => {
+                    currentPage = i;
+                    goInput.value = currentPage;
+                    renderTable();
+                };
+                pageNumbersContainer.appendChild(btn);
+            }
+        }
+
+        if(prevBtn && nextBtn) {
+            prevBtn.addEventListener('click', () => {
+                if (currentPage > 1) { currentPage--; goInput.value = currentPage; renderTable(); }
+            });
+
+            nextBtn.addEventListener('click', () => {
+                const totalPages = Math.ceil(totalRows / pageSize);
+                if (currentPage < totalPages) { currentPage++; goInput.value = currentPage; renderTable(); }
+            });
+
+            pageSizeSelect.addEventListener('change', (e) => {
+                pageSize = parseInt(e.target.value, 10); currentPage = 1; goInput.value = currentPage; renderTable();
+            });
+
+            goInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    const totalPages = Math.ceil(totalRows / pageSize);
+                    let val = parseInt(e.target.value, 10);
+                    if (val >= 1 && val <= totalPages) { currentPage = val; renderTable(); }
+                    else { e.target.value = currentPage; }
+                }
+            });
+
+            renderTable();
+        }
+    });
+
+    // ====== 模态框与 ECharts 联动逻辑 ======
+    const modal = document.getElementById('deteriorationModal');
+    const modalContent = document.getElementById('modalContent');
+    let myChart = null;
+
+    // 模拟数据源，用于不同指标卡片的联动更新
+    const metricChartData = {
+        'tp': {
+            name: '总磷', target: 0.1, yMax: 0.2,
+            data2025: [0.03, 0.03, 0.03, 0.155, 0.088, 0.17, 0.07, 0.042, 0.03, 0.078, 0.098, 0.03],
+            data2024: [0.065, 0.08, 0.085, 0.06, 0.072, 0.058, 0.042, 0.065, 0.028, 0.038, 0.02, 0.012]
+        },
+        'codmn': {
+            name: '高锰酸盐指数', target: 6.0, yMax: 8.0,
+            data2025: [2.1, 2.5, 3.0, 4.4, 3.8, 3.5, 2.9, 2.5, 2.2, 3.1, 4.4, 2.8],
+            data2024: [1.5, 1.8, 1.9, 2.0, 1.7, 1.6, 1.4, 1.5, 1.3, 1.4, 1.4, 1.2]
+        },
+        'cod': {
+            name: '化学需氧量', target: 20.0, yMax: 30.0,
+            data2025: [10, 12, 11, 15, 16, 14, 12, 10, 9, 13, 16, 11],
+            data2024: [8, 9, 8.5, 9.2, 9.5, 8.8, 7.5, 8.2, 7.8, 8.5, 8.9, 8.0]
+        },
+        'tn': {
+            name: '总氮', target: 1.0, yMax: 3.5,
+            data2025: [1.2, 1.5, 1.4, 1.8, 2.1, 2.0, 1.9, 1.7, 1.6, 2.2, 2.52, 1.8],
+            data2024: [1.0, 1.1, 1.2, 1.3, 1.4, 1.5, 1.4, 1.3, 1.2, 1.5, 1.9, 1.3]
+        }
+    };
+
+    function openModal() {
+        modal.classList.remove('pointer-events-none', 'opacity-0');
+        modalContent.classList.remove('scale-95');
+        modalContent.classList.add('scale-100');
+        setTimeout(() => { switchMetric('tp'); }, 100); // 默认加载第一个指标
+    }
+
+    function closeModal() {
+        modal.classList.add('pointer-events-none', 'opacity-0');
+        modalContent.classList.remove('scale-100');
+        modalContent.classList.add('scale-95');
+    }
+
+    // 核心切换逻辑 (现在的卡片样式变化已由 CSS 控制，这里仅需开关 active/inactive 类)
+    function switchMetric(metricId) {
+        // 1. 切换卡片样式
+        document.querySelectorAll('.metric-card').forEach(card => {
+            card.classList.remove('active');
+            card.classList.add('inactive');
+        });
+
+        const activeCard = document.getElementById(`card-${metricId}`);
+        activeCard.classList.remove('inactive');
+        activeCard.classList.add('active');
+
+        // 2. 更新 ECharts
+        const dataInfo = metricChartData[metricId];
+        updateChart(dataInfo);
+
+        // 3. 更新 UI 文案和图例
+        document.getElementById('chart-legend-container').innerHTML = `
+            <span class="flex items-center"><span class="w-2.5 h-2.5 rounded-full bg-blue-500 mr-1.5"></span>${dataInfo.name}(2025)</span>
+            <span class="flex items-center"><span class="w-2.5 h-2.5 rounded-full bg-yellow-400 mr-1.5"></span>${dataInfo.name}(2024)</span>
+            <span class="flex items-center"><span class="w-4 h-[2px] bg-red-500 mr-1.5"></span>目标值</span>
+        `;
+        document.getElementById('table-title').innerText = `${dataInfo.name}详细数据明细表`;
+
+        // 4. 更新表格视图数据
+        const thead = document.getElementById('table-thead');
+        thead.innerHTML = `
+            <tr>
+                <th>月份</th>
+                <th>${dataInfo.name}(2025) mg/L</th>
+                <th>${dataInfo.name}(2024) mg/L</th>
+                <th>目标值 mg/L</th>
+            </tr>
+        `;
+        const tbody = document.getElementById('table-tbody');
+        let trHtml = '';
+        for(let i=0; i<12; i++) {
+            trHtml += `<tr><td>${i+1}月</td><td>${dataInfo.data2025[i] || '-'}</td><td>${dataInfo.data2024[i] || '-'}</td><td>${dataInfo.target}</td></tr>`;
+        }
+        tbody.innerHTML = trHtml;
+    }
+
+    function updateChart(dataInfo) {
+        if (!myChart) {
+            myChart = echarts.init(document.getElementById('echart-container'));
+        }
+
+        const option = {
+            grid: { top: 40, right: 30, bottom: 30, left: 40, containLabel: true },
+            tooltip: {
+                trigger: 'axis',
+                backgroundColor: 'rgba(50, 50, 50, 0.8)',
+                borderColor: '#333',
+                textStyle: { color: '#fff' },
+                formatter: function (params) {
+                    let res = `<div class="font-bold mb-1 border-b border-gray-500 pb-1">${params[0].axisValue}</div>`;
+                    params.forEach(item => {
+                        let dot = `<span style="display:inline-block;margin-right:5px;border-radius:10px;width:9px;height:9px;background-color:${item.color}"></span>`;
+                        res += `<div class="text-xs my-0.5">${dot}${item.seriesName}: ${item.value}</div>`;
+                    });
+                    res += `<div class="text-xs my-0.5 text-red-400"><span style="display:inline-block;margin-right:5px;border-radius:10px;width:9px;height:9px;background-color:#ef4444"></span>目标值: ${dataInfo.target}</div>`;
+                    return res;
+                }
+            },
+            xAxis: {
+                type: 'category',
+                boundaryGap: false,
+                data: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'],
+                axisLine: { lineStyle: { color: '#e2e8f0' } },
+                axisLabel: { color: '#64748b' },
+                splitArea: { show: true, areaStyle: { color: ['rgba(250,250,250,0)', 'rgba(235,240,245,0.4)'] } }
+            },
+            yAxis: {
+                type: 'value',
+                max: dataInfo.yMax,
+                splitNumber: 5,
+                axisLine: { show: false },
+                axisTick: { show: false },
+                axisLabel: { color: '#64748b' },
+                splitLine: { lineStyle: { color: '#f1f5f9', type: 'dashed' } }
+            },
+            series: [
+                {
+                    name: `${dataInfo.name}(2025)`,
+                    type: 'line',
+                    smooth: false,
+                    symbol: 'emptyCircle',
+                    symbolSize: 6,
+                    itemStyle: { color: '#3b82f6', borderWidth: 2 },
+                    lineStyle: { width: 2 },
+                    areaStyle: {
+                        color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                            { offset: 0, color: 'rgba(59, 130, 246, 0.4)' },
+                            { offset: 1, color: 'rgba(59, 130, 246, 0.05)' }
+                        ])
+                    },
+                    data: dataInfo.data2025
+                },
+                {
+                    name: `${dataInfo.name}(2024)`,
+                    type: 'line',
+                    smooth: false,
+                    symbol: 'emptyCircle',
+                    symbolSize: 6,
+                    itemStyle: { color: '#fbbf24', borderWidth: 2 },
+                    lineStyle: { width: 2 },
+                    data: dataInfo.data2024
+                },
+                {
+                    name: '目标线',
+                    type: 'line',
+                    markLine: {
+                        symbol: 'none',
+                        data: [{ yAxis: dataInfo.target }],
+                        lineStyle: { color: '#ef4444', type: 'solid', width: 2 },
+                        label: { show: false }
+                    }
+                }
+            ]
+        };
+        myChart.setOption(option);
+    }
+
+    // 窗口尺寸变化时重新计算图表尺寸
+    window.addEventListener('resize', () => { if (myChart) myChart.resize(); });
+
+    // 点击模态框外部关闭
+    modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+
+    // ====== 图表视图 与 表格视图 切换 ======
+    let isTableView = false;
+    function toggleChartView() {
+        const echartContainer = document.getElementById('echart-container');
+        const tableContainer = document.getElementById('chart-table-container');
+
+        isTableView = !isTableView;
+        if (isTableView) {
+            echartContainer.style.display = 'none';
+            tableContainer.classList.remove('hidden');
+        } else {
+            tableContainer.classList.add('hidden');
+            echartContainer.style.display = 'block';
+            if(myChart) myChart.resize();
+        }
+    }
+
+    // ====== 模拟下载按钮 ======
+    function downloadChartData() {
+        alert("准备生成并下载当前指标的分析数据报告 (Excel 格式)...");
+    }
+</script>
+
+</body>
+</html>

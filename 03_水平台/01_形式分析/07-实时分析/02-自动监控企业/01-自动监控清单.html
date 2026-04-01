@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>湖北省水生态环境综合管理 - 自动监控清单</title>
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography,container-queries"></script>
+
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#3b82f6",
+                        "background-light": "#f4f7fb",
+                        "background-dark": "#0f172a",
+                    },
+                    fontFamily: {
+                        display: ["Inter", "system-ui", "-apple-system", "sans-serif"],
+                    },
+                },
+            },
+        };
+    </script>
+
+    <style type="text/tailwindcss">
+        body { font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif; }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+        .section-title-bar {
+            width: 4px;
+            height: 16px;
+            background: linear-gradient(to bottom, #93c5fd, #3b82f6);
+            border-radius: 4px;
+            margin-right: 8px;
+        }
+
+        #sidebar { transition: width 0.3s ease; }
+        .sidebar-text { transition: opacity 0.2s ease; white-space: nowrap; }
+        .hide-text .sidebar-text { display: none; opacity: 0; }
+        .collapsed-sidebar .nav-item { justify-content: center; padding-left: 0; padding-right: 0; }
+        .collapsed-sidebar .nav-item span.material-symbols-outlined { margin-right: 0; }
+
+        .card-shadow { box-shadow: 0 2px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05); }
+
+        /* 表格控件基础样式 (参考不达标断面) */
+        .form-select, .form-input {
+            @apply appearance-none bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-1.5 text-sm font-medium text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all cursor-pointer hover:bg-white;
+        }
+
+        /* 复杂表格专业样式 */
+        .data-table { border-spacing: 0; width: 100%; }
+        .data-table th, .data-table td {
+            @apply border-b border-r border-slate-200 dark:border-slate-700/50;
+            background-clip: padding-box;
+        }
+        .data-table th:first-child, .data-table td:first-child { @apply border-l; }
+        .data-table tr:first-child th { @apply border-t; }
+        .data-table th {
+            @apply bg-[#f8fafc] dark:bg-slate-800/80 text-slate-700 dark:text-slate-200 font-bold px-4 py-3.5 text-center text-[13px] sticky top-0 z-10 whitespace-nowrap;
+        }
+        .data-table td {
+            @apply px-4 py-3.5 text-center text-[13px] text-slate-600 dark:text-slate-300;
+        }
+        .data-table tbody tr:nth-child(even) { @apply bg-[#fbfcfd] dark:bg-slate-800/30; }
+        .data-table tbody tr:hover { @apply bg-blue-50/60 dark:bg-slate-700/50 transition-colors; }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-800 dark:text-slate-100 h-screen overflow-hidden flex flex-col">
+
+<div id="dev-notice-modal" class="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/50 backdrop-blur-sm transition-opacity duration-300">
+    <div class="bg-white dark:bg-slate-800 rounded-xl shadow-2xl w-[90%] max-w-md overflow-hidden transform transition-all scale-100">
+        <div class="px-6 py-4 border-b border-slate-100 dark:border-slate-700 bg-blue-50/50 dark:bg-slate-800/80 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <span class="material-symbols-outlined text-blue-600 dark:text-blue-400">info</span>
+                <h3 class="font-bold text-slate-800 dark:text-white text-[16px]">开发提示</h3>
+            </div>
+            <button onclick="closeDevNotice()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors">
+                <span class="material-symbols-outlined text-xl">close</span>
+            </button>
+        </div>
+        <div class="px-6 py-6">
+            <p class="text-[14px] text-slate-600 dark:text-slate-300 leading-relaxed">
+                👉 <strong>注意：</strong>点击每一个企业时应该弹出对应的详情窗口。<br><br>
+                <span class="inline-block bg-amber-50 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400 px-3 py-2 rounded-lg border border-amber-200 dark:border-amber-800/50">
+                    目前暂时使用旧版弹窗，后续开发时请别忘记迁移到新版！
+                </span>
+            </p>
+        </div>
+        <div class="px-6 py-4 bg-slate-50 dark:bg-slate-900/50 border-t border-slate-100 dark:border-slate-700 flex justify-end">
+            <button onclick="closeDevNotice()" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg text-[13px] font-medium transition-colors shadow-sm flex items-center">
+                <i class="ri-check-line mr-1.5"></i> 我知道了
+            </button>
+        </div>
+    </div>
+</div>
+<header class="bg-primary h-14 flex items-center justify-between px-4 text-white shrink-0 shadow-md z-50">
+    <div class="flex items-center space-x-3">
+        <div class="w-8 h-8 bg-white rounded-full flex items-center justify-center">
+            <span class="material-symbols-outlined text-primary text-xl">water_drop</span>
+        </div>
+        <h1 class="text-xl font-bold tracking-tight">湖北省水生态环境综合管理</h1>
+    </div>
+    <nav class="flex h-full">
+        <a class="px-6 flex items-center space-x-2 bg-white/20 border-b-2 border-white transition-colors" href="#">
+            <span class="material-symbols-outlined text-[18px]">home</span>
+            <span class="text-sm font-bold">总体概览</span>
+        </a>
+        <a class="px-6 flex items-center space-x-2 hover:bg-white/10 transition-colors" href="#">
+            <span class="material-symbols-outlined text-[18px]">assessment</span>
+            <span class="text-sm">形势分析</span>
+        </a>
+        <a class="px-6 flex items-center space-x-2 hover:bg-white/10 transition-colors" href="#">
+            <span class="material-symbols-outlined text-[18px]">map</span>
+            <span class="text-sm">空间分析</span>
+        </a>
+        <a class="px-6 flex items-center space-x-2 hover:bg-white/10 transition-colors" href="#">
+            <span class="material-symbols-outlined text-[18px]">waves</span>
+            <span class="text-sm">水污染源</span>
+        </a>
+        <a class="px-6 flex items-center space-x-2 hover:bg-white/10 transition-colors" href="#">
+            <span class="material-symbols-outlined text-[18px]">report_problem</span>
+            <span class="text-sm">问题聚焦</span>
+        </a>
+        <a class="px-6 flex items-center space-x-2 hover:bg-white/10 transition-colors" href="#">
+            <span class="material-symbols-outlined text-[18px]">apps</span>
+            <span class="text-sm">专题应用</span>
+        </a>
+    </nav>
+    <div class="flex items-center space-x-6">
+        <div class="flex items-center space-x-2 text-sm opacity-90">
+            <span class="material-symbols-outlined text-[18px]">public</span>
+            <span>碧水荆灵</span>
+        </div>
+        <div class="flex items-center space-x-2 text-sm">
+            <span class="material-symbols-outlined text-[18px]">account_circle</span>
+            <span>wangyunpeng</span>
+        </div>
+    </div>
+</header>
+
+<div class="flex flex-1 overflow-hidden">
+    <aside id="sidebar" class="w-[270px] bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 flex flex-col shrink-0">
+        <div class="flex-1 py-4 overflow-y-auto custom-scrollbar flex flex-col gap-1">
+            <div class="mb-2 px-2">
+                <button class="nav-item w-full flex items-center justify-between px-4 py-3 text-[16px] font-medium text-slate-600 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg group transition-colors" onclick="toggleSubmenu('submenu-auto-station')">
+                    <div class="flex items-center">
+                        <span class="material-symbols-outlined mr-3 text-slate-400 group-hover:text-primary">sensors</span>
+                        <span class="sidebar-text">自动站分析</span>
+                    </div>
+                    <span class="material-symbols-outlined text-sm text-slate-400 sidebar-chevron transition-transform duration-200" style="transform: rotate(0deg);">expand_more</span>
+                </button>
+                <div id="submenu-auto-station" class="mt-1 space-y-1 overflow-hidden transition-all duration-300" style="max-height: 0;">
+                    <a class="flex items-center px-12 py-2.5 text-[14px] text-slate-600 dark:text-slate-400 hover:text-blue-600 hover:bg-blue-50/50 dark:hover:bg-blue-900/20 transition-all rounded-lg group" href="#">
+                        <span class="w-1.5 h-1.5 bg-slate-300 dark:bg-slate-600 group-hover:bg-blue-600 rounded-full mr-3 shrink-0 transition-colors"></span>
+                        <span class="sidebar-text">实时形势分析</span>
+                    </a>
+                    <a class="flex items-center px-12 py-2.5 text-[14px] text-slate-600 dark:text-slate-400 hover:text-blue-600 hover:bg-blue-50/50 dark:hover:bg-blue-900/20 transition-all rounded-lg group" href="#">
+                        <span class="w-1.5 h-1.5 bg-slate-300 dark:bg-slate-600 group-hover:bg-blue-600 rounded-full mr-3 shrink-0 transition-colors"></span>
+                        <span class="sidebar-text">实时监测清单</span>
+                    </a>
+                    <a class="flex items-center px-12 py-2.5 text-[14px] text-slate-600 dark:text-slate-400 hover:text-blue-600 hover:bg-blue-50/50 dark:hover:bg-blue-900/20 transition-all rounded-lg group" href="#">
+                        <span class="w-1.5 h-1.5 bg-slate-300 dark:bg-slate-600 group-hover:bg-blue-600 rounded-full mr-3 shrink-0 transition-colors"></span>
+                        <span class="sidebar-text">达标情况分析</span>
+                    </a>
+                </div>
+            </div>
+
+            <div class="mb-2 px-2">
+                <button class="nav-item w-full flex items-center justify-between px-4 py-3 text-[16px] font-medium text-blue-700 bg-blue-50/50 dark:bg-blue-900/10 rounded-lg group transition-colors" onclick="toggleSubmenu('submenu-auto-enterprise')">
+                    <div class="flex items-center">
+                        <span class="material-symbols-outlined mr-3 text-blue-600">domain</span>
+                        <span class="sidebar-text font-bold text-slate-800 dark:text-white">自动监控企业</span>
+                    </div>
+                    <span class="material-symbols-outlined text-sm text-blue-600 sidebar-chevron transition-transform duration-200" style="transform: rotate(180deg);">expand_more</span>
+                </button>
+                <div id="submenu-auto-enterprise" class="mt-1 space-y-1 overflow-hidden transition-all duration-300">
+                    <a class="flex items-center px-12 py-2.5 text-[14px] text-blue-700 bg-blue-50 dark:bg-blue-900/30 rounded-lg group transition-all font-bold relative" href="#">
+                        <span class="w-1.5 h-1.5 bg-blue-600 rounded-full mr-3 shrink-0"></span>
+                        <span class="sidebar-text">自动监控清单</span>
+                        <div class="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-5 bg-blue-600 rounded-r-full"></div>
+                    </a>
+                    <a class="flex items-center px-12 py-2.5 text-[14px] text-slate-600 dark:text-slate-400 hover:text-blue-600 hover:bg-blue-50/50 dark:hover:bg-blue-900/20 transition-all rounded-lg group" href="#">
+                        <span class="w-1.5 h-1.5 bg-slate-300 dark:bg-slate-600 group-hover:bg-blue-600 rounded-full mr-3 shrink-0 transition-colors"></span>
+                        <span class="sidebar-text">企业超标清单</span>
+                    </a>
+                    <a class="flex items-center px-12 py-2.5 text-[14px] text-slate-600 dark:text-slate-400 hover:text-blue-600 hover:bg-blue-50/50 dark:hover:bg-blue-900/20 transition-all rounded-lg group" href="#">
+                        <span class="w-1.5 h-1.5 bg-slate-300 dark:bg-slate-600 group-hover:bg-blue-600 rounded-full mr-3 shrink-0 transition-colors"></span>
+                        <span class="sidebar-text">企业报警清单</span>
+                    </a>
+                    <a class="flex items-center px-12 py-2.5 text-[14px] text-slate-600 dark:text-slate-400 hover:text-blue-600 hover:bg-blue-50/50 dark:hover:bg-blue-900/20 transition-all rounded-lg group" href="#">
+                        <span class="w-1.5 h-1.5 bg-slate-300 dark:bg-slate-600 group-hover:bg-blue-600 rounded-full mr-3 shrink-0 transition-colors"></span>
+                        <span class="sidebar-text">自动监控统计</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <button id="toggleSidebarBtn" class="h-12 border-t border-slate-200 dark:border-slate-800 flex items-center justify-center space-x-2 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all text-slate-500 hover:text-primary group">
+            <span id="toggleIcon" class="material-symbols-outlined text-xl transition-transform duration-300">chevron_left</span>
+            <span class="sidebar-text text-sm font-medium tracking-wide">收起侧栏</span>
+        </button>
+    </aside>
+
+    <main class="flex-1 overflow-y-auto custom-scrollbar p-6 flex flex-col">
+
+        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-6 py-4 shrink-0 card-shadow mb-6">
+            <div class="flex justify-between items-center w-full flex-wrap gap-4">
+                <div class="flex items-center gap-3 shrink-0">
+                    <span class="relative flex h-3 w-3 shrink-0">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-3 w-3 bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.6)]"></span>
+                    </span>
+                    <h2 class="text-[18px] font-bold text-slate-800 dark:text-white tracking-tight flex items-center">
+                        自动监控清单
+                    </h2>
+                </div>
+
+                <div class="flex items-center flex-wrap gap-2.5 justify-end">
+                    <select id="filter-city" class="form-select !bg-slate-50 dark:!bg-slate-800 !border-transparent text-[13px] !py-1.5 pr-8 min-w-[110px]">
+                        <option value="">所属地市</option>
+                        <option value="武汉市">武汉市</option>
+                        <option value="黄石市">黄石市</option>
+                        <option value="荆门市">荆门市</option>
+                        <option value="鄂州市">鄂州市</option>
+                        <option value="孝感市">孝感市</option>
+                        <option value="黄冈市">黄冈市</option>
+                    </select>
+
+                    <input type="text" id="searchInput" placeholder="请输入企业名称或地址" class="form-input !bg-slate-50 dark:!bg-slate-800 !border-transparent text-[13px] !py-1.5 w-[180px] placeholder:text-slate-400">
+
+                    <input type="text" id="filter-industry" placeholder="行业类别" class="form-input !bg-slate-50 dark:!bg-slate-800 !border-transparent text-[13px] !py-1.5 w-[120px] placeholder:text-slate-400">
+
+                    <div class="hidden xl:block h-6 w-px bg-slate-200 dark:bg-slate-700 mx-1"></div>
+
+                    <div class="flex items-center space-x-2">
+                        <button onclick="handleSearch()" class="bg-[#3b82f6] hover:bg-blue-600 text-white px-4 py-1.5 rounded-lg text-[13px] font-medium transition-colors shadow-sm flex items-center">
+                            <i class="ri-search-line mr-1.5"></i> 查询
+                        </button>
+                        <button onclick="resetSearch()" class="bg-white hover:bg-slate-50 text-slate-600 dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 px-4 py-1.5 rounded-lg text-[13px] font-medium transition-colors flex items-center">
+                            <i class="ri-refresh-line mr-1.5"></i> 重置
+                        </button>
+                        <button onclick="exportMainTable()" class="bg-white hover:bg-slate-50 text-slate-600 dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 px-4 py-1.5 rounded-lg text-[13px] font-medium transition-colors flex items-center">
+                            <i class="ri-download-2-line mr-1.5"></i> 导出
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 card-shadow flex flex-col overflow-hidden flex-1">
+            <div class="px-6 py-4 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center bg-slate-50/50 dark:bg-slate-800/30">
+                <div class="flex items-center space-x-2">
+                    <div class="section-title-bar m-0"></div>
+                    <h3 class="font-bold text-slate-800 dark:text-white text-[15px]">企业数据列表</h3>
+                </div>
+            </div>
+
+            <div class="overflow-x-auto custom-scrollbar flex-1">
+                <table class="w-full data-table min-w-[1000px]">
+                    <thead>
+                    <tr>
+                        <th class="w-16">序号</th>
+                        <th class="text-left">企业名称</th>
+                        <th class="w-32">所属地市</th>
+                        <th class="text-left">详细地址</th>
+                        <th class="w-48 text-left">行业类别</th>
+                        <th class="w-24">经度</th>
+                        <th class="w-24">纬度</th>
+                    </tr>
+                    </thead>
+                    <tbody id="enterprise-table-body">
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="flex justify-between items-center px-6 py-4 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 shrink-0">
+                <div class="text-[13px] text-slate-500 dark:text-slate-400 flex items-center">
+                    共 <span id="total-items" class="font-bold text-slate-700 dark:text-slate-200 mx-1">0</span> 条记录
+                    <select id="pageSizeSelect" class="ml-3 form-select text-[13px] !py-1 !pr-7 bg-white dark:bg-slate-800">
+                        <option value="10">10条/页</option>
+                        <option value="20">20条/页</option>
+                        <option value="50">50条/页</option>
+                    </select>
+                </div>
+
+                <div class="flex items-center space-x-3">
+                    <div class="flex items-center space-x-1" id="pagination-controls">
+                    </div>
+
+                    <div class="flex items-center space-x-2 text-[13px] text-slate-500 dark:text-slate-400">
+                        <span>前往</span>
+                        <input type="number" id="jumpPage" min="1" value="1" class="form-input w-12 text-center !py-1 !px-1 bg-white dark:bg-slate-800">
+                        <span>页</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer class="mt-4 pt-4 border-t border-slate-200 dark:border-slate-800 text-center text-xs text-slate-400 pb-2 shrink-0">
+            <p>&copy; 2026 湖北省生态环境厅 · 版权所有</p>
+        </footer>
+    </main>
+</div>
+
+<script>
+    // --- 0. 弹窗控制逻辑 ---
+    function closeDevNotice() {
+        const modal = document.getElementById('dev-notice-modal');
+        if (modal) {
+            modal.style.opacity = '0'; // 先渐隐
+            setTimeout(() => {
+                modal.style.display = 'none'; // 动画结束后隐藏节点
+            }, 300);
+        }
+    }
+
+    // --- 1. 侧边栏交互逻辑 ---
+    const sidebar = document.getElementById('sidebar');
+    const toggleBtn = document.getElementById('toggleSidebarBtn');
+    const toggleIcon = document.getElementById('toggleIcon');
+    let isCollapsed = false;
+
+    toggleBtn.addEventListener('click', () => {
+        isCollapsed = !isCollapsed;
+        if (isCollapsed) {
+            sidebar.classList.remove('w-[270px]');
+            sidebar.classList.add('w-[80px]', 'hide-text', 'collapsed-sidebar');
+            toggleIcon.style.transform = 'rotate(180deg)';
+        } else {
+            sidebar.classList.remove('w-[80px]', 'hide-text', 'collapsed-sidebar');
+            sidebar.classList.add('w-[270px]');
+            toggleIcon.style.transform = 'rotate(0deg)';
+        }
+    });
+
+    function toggleSubmenu(id) {
+        if (isCollapsed) return;
+        const submenu = document.getElementById(id);
+        const btn = submenu.previousElementSibling;
+        const chevron = btn.querySelector('.sidebar-chevron');
+        if (submenu.style.maxHeight && submenu.style.maxHeight !== '0px') {
+            submenu.style.maxHeight = '0px';
+            chevron.style.transform = 'rotate(0deg)';
+        } else {
+            submenu.style.maxHeight = submenu.scrollHeight + "px";
+            chevron.style.transform = 'rotate(180deg)';
+        }
+    }
+
+    window.addEventListener('load', () => {
+        const activeSubmenu = document.getElementById('submenu-auto-enterprise');
+        if(activeSubmenu) activeSubmenu.style.maxHeight = activeSubmenu.scrollHeight + "px";
+    });
+
+    // --- 2. 模拟真实的主表格数据与分页、筛选逻辑 ---
+    const allData = [
+        { id: 1, name: "湖北鑫丰化工有限公司", city: "荆门市", address: "未知地址", industry: "磷肥制造", lng: "112.26", lat: "31.50" },
+        { id: 2, name: "湖北凌峰水泥股份有限公司", city: "鄂州市", address: "湖北省鄂州市碧石渡镇虹桥村", industry: "水泥制造", lng: "114.88", lat: "30.27" },
+        { id: 3, name: "荆门市宏运肥业有限公司", city: "荆门市", address: "未知地址", industry: "磷肥制造", lng: "0", lat: "0" },
+        { id: 4, name: "湖北德隆纺织有限公司", city: "黄冈市", address: "湖北省黄冈市罗田县开发区福寿路", industry: "化学纤维织造加工", lng: "115.41", lat: "30.79" },
+        { id: 5, name: "湖北雄丰肥业有限公司", city: "荆门市", address: "未知地址", industry: "复混肥料制造", lng: "114.32", lat: "30.58" },
+        { id: 6, name: "湖北康和园新材料有限公司", city: "孝感市", address: "云梦县云应路358号", industry: "化学试剂和助剂制造", lng: "113.74", lat: "30.95" },
+        { id: 7, name: "湖北源丰化工有限公司", city: "随州市", address: "随州市经济技术开发区淅河工业园", industry: "复混肥料制造", lng: "113.49", lat: "31.67" },
+        { id: 8, name: "葛洲坝水务（黄冈）有限公司", city: "黄冈市", address: "黄冈市黄州大道198号", industry: "污水处理及其再生利用", lng: "114.94", lat: "30.43" },
+        { id: 9, name: "湖北天义药业有限公司", city: "天门市", address: "天门市侨乡街道开发区创业大道", industry: "化学药品原料药制造", lng: "0", lat: "0" },
+        { id: 10, name: "武汉普乐环境技术有限公司鄂州分公司", city: "鄂州市", address: "未知地址", industry: "环境卫生管理", lng: "114.94", lat: "30.39" }
+    ];
+
+    // 为了演示分页，我们复制扩充数据到 25 条
+    let tableData = [...allData];
+    for (let i = 11; i <= 25; i++) {
+        tableData.push({
+            id: i,
+            name: `湖北省第${i}测试环保企业`,
+            city: ["武汉市", "荆门市", "黄石市", "宜昌市"][i%4],
+            address: "模拟地址",
+            industry: "环保设施运营",
+            lng: (114 + i*0.01).toFixed(2),
+            lat: (30 + i*0.01).toFixed(2)
+        });
+    }
+
+    let filteredData = [...tableData];
+    let rowsPerPage = 10;
+    let currentPage = 1;
+
+    function renderTable() {
+        const tbody = document.getElementById('enterprise-table-body');
+        tbody.innerHTML = '';
+
+        const start = (currentPage - 1) * rowsPerPage;
+        const end = start + rowsPerPage;
+        const pageData = filteredData.slice(start, end);
+
+        if(pageData.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="7" class="py-10 text-slate-400 text-center">暂无相关数据</td></tr>`;
+            document.getElementById('total-items').innerText = 0;
+            renderPagination();
+            return;
+        }
+
+        pageData.forEach(row => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td class="font-medium text-slate-500">${row.id}</td>
+                <td class="text-left font-medium text-slate-800 dark:text-slate-200 text-[#3b82f6] hover:underline cursor-pointer" onclick="alert('TODO: 此处应打开企业详情弹窗！当前点击的是【${row.name}】')">${row.name}</td>
+                <td>${row.city}</td>
+                <td class="text-left text-xs">${row.address}</td>
+                <td class="text-left"><span class="bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 px-2.5 py-1 rounded text-xs font-medium">${row.industry}</span></td>
+                <td>${row.lng}</td>
+                <td>${row.lat}</td>
+            `;
+            tbody.appendChild(tr);
+        });
+
+        document.getElementById('total-items').innerText = filteredData.length;
+        renderPagination();
+    }
+
+    function renderPagination() {
+        const totalPages = Math.ceil(filteredData.length / rowsPerPage);
+        const paginationContainer = document.getElementById('pagination-controls');
+        let html = '';
+
+        // 上一页
+        const prevDisabled = currentPage === 1 || totalPages === 0;
+        html += `<button onclick="changePage(${currentPage - 1})" ${prevDisabled ? 'disabled' : ''} class="px-3 py-1 text-[13px] border border-slate-200 dark:border-slate-700 rounded-md transition-colors ${prevDisabled ? 'text-slate-400 bg-slate-50 cursor-not-allowed dark:bg-slate-800' : 'text-slate-600 hover:bg-blue-50 hover:text-blue-600 dark:text-slate-300 dark:hover:bg-slate-700'}"><i class="ri-arrow-left-s-line"></i></button>`;
+
+        // 页码
+        for (let i = 1; i <= totalPages; i++) {
+            if (i === currentPage) {
+                html += `<button onclick="changePage(${i})" class="px-3 py-1 text-[13px] border border-blue-500 bg-blue-500 text-white rounded-md font-medium shadow-sm">${i}</button>`;
+            } else {
+                html += `<button onclick="changePage(${i})" class="px-3 py-1 text-[13px] border border-slate-200 dark:border-slate-700 rounded-md text-slate-600 hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-slate-700 transition-colors">${i}</button>`;
+            }
+        }
+
+        // 下一页
+        const nextDisabled = currentPage === totalPages || totalPages === 0;
+        html += `<button onclick="changePage(${currentPage + 1})" ${nextDisabled ? 'disabled' : ''} class="px-3 py-1 text-[13px] border border-slate-200 dark:border-slate-700 rounded-md transition-colors ${nextDisabled ? 'text-slate-400 bg-slate-50 cursor-not-allowed dark:bg-slate-800' : 'text-slate-600 hover:bg-blue-50 hover:text-blue-600 dark:text-slate-300 dark:hover:bg-slate-700'}"><i class="ri-arrow-right-s-line"></i></button>`;
+
+        paginationContainer.innerHTML = html;
+        document.getElementById('jumpPage').max = totalPages;
+        document.getElementById('jumpPage').value = currentPage;
+    }
+
+    function changePage(page) {
+        const totalPages = Math.ceil(filteredData.length / rowsPerPage);
+        if(page < 1 || page > totalPages) return;
+        currentPage = page;
+        renderTable();
+    }
+
+    // 绑定前往页码跳转
+    document.getElementById('jumpPage').addEventListener('change', (e) => {
+        let page = parseInt(e.target.value);
+        changePage(page);
+    });
+
+    // 绑定每页条数切换
+    document.getElementById('pageSizeSelect').addEventListener('change', (e) => {
+        rowsPerPage = parseInt(e.target.value);
+        currentPage = 1;
+        renderTable();
+    });
+
+    // 多条件联合查询
+    function handleSearch() {
+        const city = document.getElementById('filter-city').value;
+        const keyword = document.getElementById('searchInput').value.trim();
+        const industry = document.getElementById('filter-industry').value.trim();
+
+        filteredData = tableData.filter(item => {
+            const matchCity = city === "" || item.city === city;
+            const matchKey = keyword === "" || item.name.includes(keyword) || item.address.includes(keyword);
+            const matchIndustry = industry === "" || item.industry.includes(industry);
+            return matchCity && matchKey && matchIndustry;
+        });
+
+        currentPage = 1;
+        renderTable();
+    }
+
+    // 重置查询
+    function resetSearch() {
+        document.getElementById('filter-city').value = "";
+        document.getElementById('searchInput').value = "";
+        document.getElementById('filter-industry').value = "";
+        handleSearch();
+    }
+
+    // 导出 Excel
+    function exportMainTable() {
+        let csv = ['序号,企业名称,所属地市,详细地址,行业类别,经度,纬度'];
+        filteredData.forEach(row => {
+            csv.push(`"${row.id}","${row.name}","${row.city}","${row.address}","${row.industry}","${row.lng}","${row.lat}"`);
+        });
+        triggerDownload(csv.join('\n'), '企业自动监控清单');
+    }
+
+    function triggerDownload(csvContent, filename) {
+        const csvFile = new Blob(['\uFEFF' + csvContent], {type: 'text/csv;charset=utf-8;'});
+        const downloadLink = document.createElement("a");
+        downloadLink.download = filename + ".csv";
+        downloadLink.href = window.URL.createObjectURL(csvFile);
+        downloadLink.style.display = "none";
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        document.body.removeChild(downloadLink);
+    }
+
+    // 初始化加载表格
+    window.addEventListener('load', renderTable);
+</script>
+
+</body>
+</html>

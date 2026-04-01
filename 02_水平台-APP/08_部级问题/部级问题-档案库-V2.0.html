@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>水生态环境综合管理</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        /* 隐藏滚动条但保留功能 */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        /* 动画类 */
+        .fade-in {
+            animation: fadeIn 0.3s ease-out;
+        }
+        .slide-up {
+            animation: slideUp 0.3s ease-out;
+        }
+        .slide-down-enter {
+            animation: slideDown 0.2s ease-out forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes slideUp {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        /* 模拟按压效果 */
+        .active-press:active {
+            transform: scale(0.98);
+        }
+
+        /* 下拉框自定义样式 - 针对新设计微调箭头位置 */
+        select {
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%2364748b' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3E%3C/svg%3E");
+            background-position: right 1rem center;
+            background-repeat: no-repeat;
+            background-size: 1.25em 1.25em;
+        }
+    </style>
+</head>
+<body class="flex flex-col h-screen bg-slate-50 font-sans text-slate-800 overflow-hidden relative">
+
+<header class="bg-gradient-to-br from-blue-500 to-blue-600 text-white pt-3 pb-3 px-3 shadow-lg shrink-0 z-30 relative">
+    <div class="relative flex items-center justify-center mb-3 z-40">
+        <button class="absolute left-0 p-1 rounded-lg hover:bg-white/10 transition">
+            <svg  width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+        </button>
+
+        <div class="relative">
+            <button onclick="toggleLibMenu()" class="flex items-center gap-1.5 text-lg font-bold hover:opacity-90 transition active:scale-95 group">
+                <span id="current-lib-name">问题库</span>
+                <div class="bg-white/20 p-0.5 rounded-full group-hover:bg-white/30 transition">
+                    <i data-lucide="chevron-down" id="menu-arrow" class="w-4 h-4 transition-transform duration-200"></i>
+                </div>
+            </button>
+
+            <div id="lib-menu" class="hidden absolute top-full left-1/2 -translate-x-1/2 mt-2 w-40 bg-white rounded-xl shadow-xl border border-slate-100 overflow-hidden text-slate-800 origin-top ring-1 ring-black/5 z-50">
+                <div class="py-1" id="lib-menu-items">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="flex gap-3 items-center">
+        <div class="relative flex-1">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <i data-lucide="search" class="text-slate-400 w-5 h-5"></i>
+            </div>
+            <input
+                    id="search-input"
+                    type="text"
+                    oninput="renderList()"
+                    class="block w-full pl-10 pr-3 py-2 border-none rounded-lg leading-5 bg-white text-slate-700 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-300 transition duration-150 text-[14px]"
+                    placeholder="输入名称..."
+            />
+        </div>
+        <button onclick="renderList()" class="bg-white text-blue-600 px-4 py-2 rounded-lg font-bold text-[14px] shadow-sm active:scale-95 transition hover:bg-slate-50 flex-shrink-0 h-full">
+            搜索
+        </button>
+    </div>
+
+    <div id="menu-backdrop" onclick="closeAllMenus()" class="hidden fixed inset-0 z-20 cursor-default"></div>
+</header>
+
+<div class=" backdrop-blur-md px-4 py-3 flex justify-between items-center border-b border-slate-100 shrink-0 z-20 shadow-sm">
+    <div class="text-[12px] text-slate-500">
+        共找到 <span id="total-count" class="text-slate-900 font-bold mx-0.5">0</span> 条记录
+    </div>
+
+    <button onclick="openFilterDrawer()" class="flex items-center gap-1.5 bg-white hover:bg-slate-50 border border-slate-300 text-slate-600 px-3 py-1.5 rounded-lg text-[12px] transition active:scale-95 shadow-sm">
+        <span>筛选</span>
+        <i data-lucide="filter" class="w-4 h-4 text-slate-500 fill-slate-500/20"></i>
+    </button>
+</div>
+
+<main class="flex-1 overflow-y-auto p-4 space-y-4 pb-20 scroll-smooth" id="list-container">
+</main>
+
+<div id="filter-drawer-backdrop" class="hidden fixed inset-0 z-40 bg-slate-900/60 backdrop-blur-sm transition-opacity" onclick="closeFilterDrawer()"></div>
+
+<div id="filter-drawer" class="fixed bottom-0 left-0 right-0 z-50 bg-white rounded-t-[32px] shadow-2xl transform translate-y-full transition-transform duration-300 flex flex-col max-h-[85vh]">
+    <div class="px-6 pt-6 pb-2 flex justify-between items-center shrink-0">
+        <h3 class="font-extrabold text-xl text-slate-800">筛选条件</h3>
+        <button onclick="closeFilterDrawer()" class="p-2 -mr-2 text-slate-400 hover:text-slate-600 transition">
+            <i data-lucide="x" class="w-6 h-6"></i>
+        </button>
+    </div>
+
+    <div class="flex-1 overflow-y-auto px-6 py-4 space-y-6" id="filter-container">
+    </div>
+
+    <div class="p-6 border-t border-slate-100 flex gap-4 shrink-0 bg-white pb-8">
+        <button onclick="resetFiltersInDrawer()" class="flex-1 py-3.5 rounded-xl border border-slate-200 text-slate-600 font-bold text-sm hover:bg-slate-50 active:scale-95 transition">
+            重置
+        </button>
+        <button onclick="applyFilters()" class="flex-1 py-3.5 rounded-xl bg-gradient-to-r from-blue-600 to-blue-500 text-white font-bold text-sm shadow-lg shadow-blue-200 active:scale-95 transition hover:shadow-md">
+            确认
+        </button>
+    </div>
+</div>
+
+
+<div id="detail-modal" class="hidden fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-slate-900/60 backdrop-blur-sm transition-opacity" onclick="closeModal(event)">
+    <div class="bg-white w-full sm:w-[600px] h-[75%] sm:h-[80%] rounded-t-3xl sm:rounded-2xl shadow-2xl flex flex-col overflow-hidden slide-up" onclick="event.stopPropagation()">
+
+        <div class="bg-white px-6 py-4 border-b border-slate-100 flex justify-between items-center shrink-0">
+            <div>
+                <h2 id="modal-title" class="text-xl font-bold text-slate-800">问题详情</h2>
+                <p id="modal-subtitle" class="text-xs text-slate-400 mt-1">ID: --</p>
+            </div>
+            <button onclick="closeModal()" class="p-2 bg-slate-100 hover:bg-slate-200 rounded-full transition">
+                <i data-lucide="x" class="text-slate-600 w-5 h-5"></i>
+            </button>
+        </div>
+
+        <div class="flex-1 overflow-y-auto bg-slate-50 p-4 sm:p-6" id="modal-content">
+        </div>
+    </div>
+</div>
+
+<script>
+    // --- Mock Data (添加 ly 字段模拟流域筛选) ---
+    const MOCK_DATA = {
+        issues: [
+            { id: 1, title: "梁子湖入湖口总磷超标预警", location: "湖北省 鄂州市", ly:"长江流域", date: "2025-10-15", category: "水环境", source: "预警函", status: "待处理", description: "监测发现梁子湖入湖口断面总磷浓度持续升高，超过III类水质标准。" },
+            { id: 2, title: "卫星遥感发现疑似黑臭水体", location: "湖北省 武汉市", ly:"海河流域", date: "2025-11-02", category: "水资源", source: "预警函", status: "处理中", description: "通过高分二号卫星影像解译，发现某支流存在疑似黑臭水体区域，长度约200米。" },
+            { id: 3, title: "积玉口荷花村沿岸垃圾堆放", location: "湖北省 荆门市",ly:"汉江流域", date: "2022-09-28", category: "水生态", source: "预警函", status: "已完成", description: "村民反映河岸边有大量生活垃圾随意堆放，雨天渗滤液直排入河。" },
+            { id: 4, title: "石矶头大桥上", location: "湖北省 武汉市", ly:"长江流域",date: "2023-09-28", category: "其他", source: "环保督察", status: "已完成", description: "村民反映河岸边有大量生活垃圾随意堆放，雨天渗滤液直排入河。" },
+            { id: 5, title: "湖北夷陵经济开发区（小溪塔综合产业园）", location: "湖北省 潜江市", ly:"长江流域",date: "2023-05-12", category: "水生态", source: "群众举报", status: "已完成", description: "村民反映河岸边有大量生活垃圾随意堆放，雨天渗滤液直排入河。" },
+        ],
+        cruxes: [
+            { id: 3, title: "积玉口荷花村沿岸垃圾堆放", location: "湖北省 荆门市",ly:"汉江流域", date: "2022-09-28", category: "自然本底因素", source: "地方反馈", status: "已完成", description: "村民反映河岸边有大量生活垃圾随意堆放，雨天渗滤液直排入河。" },
+            { id: 4, title: "石矶头大桥上", location: "湖北省 武汉市", ly:"长江流域",date: "2023-09-28", category: "水量激增冲刷底泥", source: "地方反馈", status: "已完成", description: "村民反映河岸边有大量生活垃圾随意堆放，雨天渗滤液直排入河。" },
+            { id: 5, title: "湖北夷陵经济开发区（小溪塔综合产业园）", location: "湖北省 潜江市", ly:"长江流域",date: "2023-05-12", category: "汛期降雨", source: "其他反馈", status: "已完成", description: "村民反映河岸边有大量生活垃圾随意堆放，雨天渗滤液直排入河。" },
+        ],
+        measures: [
+            { id: 3, title: "积玉口荷花村沿岸垃圾堆放", location: "湖北省 荆门市",ly:"汉江流域", date: "2022-09-28", category: "中央环保督察", source: "预警函", status: "已完成", description: "村民反映河岸边有大量生活垃圾随意堆放，雨天渗滤液直排入河。" },
+            { id: 4, title: "石矶头大桥上", location: "湖北省 武汉市", ly:"长江流域",date: "2023-09-28", category: "其他", source: "地方反馈", status: "已完成", description: "村民反映河岸边有大量生活垃圾随意堆放，雨天渗滤液直排入河。" },
+            { id: 5, title: "湖北夷陵经济开发区（小溪塔综合产业园）", location: "湖北省 潜江市", ly:"长江流域",date: "2023-05-12", category: "水生态", source: "地方反馈", status: "已完成", description: "村民反映河岸边有大量生活垃圾随意堆放，雨天渗滤液直排入河。" },
+        ]
+    };
+
+    // --- Config ---
+    const LIBRARY_CONFIG = [
+        { id: 'issues', label: '问题库', icon: 'alert-circle', color: 'text-red-500', bgColor: 'bg-red-50' },
+        { id: 'cruxes', label: '症结库', icon: 'layers', color: 'text-indigo-500', bgColor: 'bg-indigo-50' },
+        { id: 'measures', label: '措施库', icon: 'file-text', color: 'text-emerald-500', bgColor: 'bg-emerald-50' }
+    ];
+
+    // 新的筛选配置结构 (更新以匹配图片中的一些字段概念)
+    const FILTER_SCHEMAS = {
+        'issues': [
+            { key: 'time', label: '选择时间', type: 'time-year' }, //
+            { key: 'category', label: '问题类别', type: 'select', dataField: 'category' },
+            { key: 'source', label: '问题来源', type: 'select', dataField: 'source' }
+        ],
+        'cruxes': [
+            { key: 'time', label: '选择时间', type: 'time-year' },
+            { key: 'cat1', label: '症结类别一', type: 'select', dataField: 'category' },
+            { key: 'cat1', label: '症结类别二', type: 'select', dataField: 'category' },
+            { key: 'cat1', label: '症结类别三', type: 'select', dataField: 'category' },
+        ],
+        'measures': [
+            { key: 'time', label: '选择时间', type: 'time-year' },
+            { key: 'source', label: '措施来源', type: 'select', dataField: 'source' },
+            { key: 'type', label: '措施类型', type: 'select', dataField: 'category' }
+        ]
+    };
+
+    // --- State ---
+    let currentTab = 'issues';
+    let isLibMenuOpen = false;
+    let activeFilters = {};
+    let tempFilters = {};
+
+    // --- Logic ---
+
+    function getFilteredData() {
+        let data = MOCK_DATA[currentTab] || [];
+        const searchText = document.getElementById('search-input').value.toLowerCase();
+        const schema = FILTER_SCHEMAS[currentTab];
+
+        schema.forEach(fieldConfig => {
+            const filterValue = activeFilters[fieldConfig.key];
+
+            if (filterValue && filterValue !== 'all') {
+                if (fieldConfig.type === 'time-year') {
+                    // 时间匹配 (YYYY)
+                    data = data.filter(item => item.date && item.date.startsWith(filterValue));
+                } else if (fieldConfig.dataField) {
+                    data = data.filter(item => item[fieldConfig.dataField] === filterValue);
+                }
+            }
+        });
+
+        if (searchText) {
+            data = data.filter(item =>
+                item.title.toLowerCase().includes(searchText) ||
+                (item.location && item.location.toLowerCase().includes(searchText)) ||
+                (item.id.toString().includes(searchText))
+            );
+        }
+
+        return data;
+    }
+
+    function getUniqueValues(field) {
+        const data = MOCK_DATA[currentTab] || [];
+        const values = new Set();
+        data.forEach(item => { if (item[field]) values.add(item[field]); });
+        return Array.from(values).sort();
+    }
+
+    // 获取年份
+    function getAvailableYears() {
+        const data = MOCK_DATA[currentTab] || [];
+        const years = new Set();
+        data.forEach(item => {
+            if (item.date && item.date.length >= 4) {
+                years.add(item.date.substring(0, 4) + '年');
+            }
+        });
+        // 模拟数据里可能没有2022，手动补全一点让筛选框好看些，或者根据真实数据
+        return Array.from(years).sort().reverse();
+    }
+
+    // --- Render Functions ---
+
+    function renderApp() {
+        renderHeaderUI();
+        renderList();
+        lucide.createIcons();
+    }
+
+    function setTab(tabId) {
+        currentTab = tabId;
+        activeFilters = {};
+        tempFilters = {};
+        closeAllMenus();
+        renderApp();
+    }
+
+    function renderHeaderUI() {
+        const currentConfig = LIBRARY_CONFIG.find(c => c.id === currentTab);
+        document.getElementById('current-lib-name').innerText = currentConfig.label;
+
+        const menuContainer = document.getElementById('lib-menu-items');
+        menuContainer.innerHTML = LIBRARY_CONFIG.map(lib => {
+            const isActive = currentTab === lib.id;
+            return `
+                    <button onclick="setTab('${lib.id}')" class="w-full text-left px-4 py-3 flex items-center gap-3 hover:bg-slate-50 transition active:bg-slate-100">
+                        <div class="w-8 h-8 rounded-lg flex items-center justify-center ${lib.bgColor} ${lib.color}">
+                            <i data-lucide="${lib.icon}" class="w-4.5 h-4.5"></i>
+                        </div>
+                        <span class="font-medium text-sm flex-1 ${isActive ? 'text-blue-600 font-bold' : 'text-slate-600'}">${lib.label}</span>
+                        ${isActive ? '<i data-lucide="check" class="w-4 h-4 text-blue-600"></i>' : ''}
+                    </button>
+                `;
+        }).join('');
+    }
+
+    function toggleLibMenu() {
+        isLibMenuOpen = !isLibMenuOpen;
+        updateMenuState('lib-menu', 'menu-arrow', isLibMenuOpen);
+    }
+
+    function closeAllMenus() {
+        isLibMenuOpen = false;
+        updateMenuState('lib-menu', 'menu-arrow', false);
+    }
+
+    function updateMenuState(menuId, arrowId, isOpen) {
+        const menu = document.getElementById(menuId);
+        const backdrop = document.getElementById('menu-backdrop');
+        const arrow = document.getElementById(arrowId);
+
+        if (isOpen) {
+            menu.classList.remove('hidden');
+            menu.classList.add('slide-down-enter');
+            backdrop.classList.remove('hidden');
+            if(arrow) arrow.style.transform = 'rotate(180deg)';
+        } else {
+            menu.classList.add('hidden');
+            menu.classList.remove('slide-down-enter');
+            backdrop.classList.add('hidden');
+            if(arrow) arrow.style.transform = 'rotate(0deg)';
+        }
+    }
+
+    function renderList() {
+        const container = document.getElementById('list-container');
+        const data = getFilteredData();
+
+        document.getElementById('total-count').innerText = data.length;
+
+        if (!data || data.length === 0) {
+            container.innerHTML = `<div class="flex flex-col items-center justify-center mt-20 text-slate-400">
+                    <i data-lucide="inbox" class="w-12 h-12 mb-2 opacity-50"></i>
+                    <p class="text-sm">暂无符合条件的数据</p>
+                </div>`;
+            lucide.createIcons();
+            return;
+        }
+
+        const html = data.map(item => {
+            let categoryLabel = item.category;
+            let sourceLabel = item.source;
+            let categoryTitle = "类别";
+            let sourceTitle = "来源";
+
+            if (currentTab === 'issues') {
+                categoryTitle = "问题类别"; sourceTitle = "问题来源";
+            } else if (currentTab === 'cruxes') {
+                categoryTitle = "症结类别"; sourceTitle = "症结来源";
+            } else {
+                categoryTitle = "措施类别"; sourceTitle = "措施来源";
+            }
+
+            const tagColor = item.ly === '长江流域' ? 'bg-red-50 text-red-600' : item.ly === '海河流域' ? 'bg-amber-50 text-amber-600' : 'bg-green-50 text-green-600';
+
+            return `
+                <div onclick="openModal(${item.id})" class="group bg-white rounded-2xl p-5 shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] border border-slate-50 active-press transition-transform duration-200 cursor-pointer relative overflow-hidden fade-in">
+                    <div class="absolute top-0 left-0 w-1 h-full bg-blue-500 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    <div class="flex justify-between items-start mb-3">
+                        <h3 class="text-lg font-bold text-slate-800 leading-tight flex-1 pr-2">${item.title}</h3>
+                        <span class="text-xs px-2 py-1 rounded-md font-medium shrink-0 ${tagColor}">
+                            ${item.ly}
+                        </span>
+                    </div>
+                    <div class="flex items-center justify-between mb-4 w-full">
+                        <div class="flex items-center text-slate-500 text-xs bg-slate-50 p-2 rounded-lg w-fit">
+                            <i data-lucide="map-pin" class="w-3 h-3 mr-1 text-blue-400"></i>
+                            ${item.location}
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-y-2 text-sm mb-3">
+                        <div class="flex flex-col">
+                            <span class="text-slate-400 text-xs mb-0.5">${categoryTitle}</span>
+                            <span class="text-slate-700 font-medium">${categoryLabel}</span>
+                        </div>
+                        <div class="flex flex-col text-right">
+                            <span class="text-slate-400 text-xs mb-0.5">${sourceTitle}</span>
+                            <span class="text-slate-700 font-medium">${sourceLabel}</span>
+                        </div>
+                    </div>
+                </div>`;
+        }).join('');
+
+        container.innerHTML = html + `<div class="h-10 text-center text-slate-400 text-xs pt-4 pb-8">· 到底了 ·</div>`;
+        lucide.createIcons();
+    }
+
+    // --- Filter Drawer Logic (核心样式修改部分) ---
+
+    function openFilterDrawer() {
+        tempFilters = { ...activeFilters };
+        renderFilterOptionsInDrawer();
+
+        const drawer = document.getElementById('filter-drawer');
+        const backdrop = document.getElementById('filter-drawer-backdrop');
+
+        backdrop.classList.remove('hidden');
+        setTimeout(() => {
+            drawer.classList.remove('translate-y-full');
+            backdrop.classList.remove('opacity-0');
+        }, 10);
+
+        lucide.createIcons();
+    }
+
+    function closeFilterDrawer() {
+        const drawer = document.getElementById('filter-drawer');
+        const backdrop = document.getElementById('filter-drawer-backdrop');
+
+        drawer.classList.add('translate-y-full');
+        backdrop.classList.add('opacity-0');
+
+        setTimeout(() => {
+            backdrop.classList.add('hidden');
+        }, 300);
+    }
+
+    // 渲染筛选选项 - 样式参考图片调整
+    function renderFilterOptionsInDrawer() {
+        const container = document.getElementById('filter-container');
+        const schema = FILTER_SCHEMAS[currentTab];
+
+        let html = '';
+
+        schema.forEach(field => {
+            let options = [];
+            // 获取选项数据
+            if (field.type === 'time-year') {
+                options = getAvailableYears();
+            } else if (field.options) {
+                options = field.options;
+            } else {
+                options = getUniqueValues(field.dataField);
+            }
+
+            const selectedValue = tempFilters[field.key] || 'all';
+
+            const optionsHtml = options.map(opt => {
+                const val = field.type === 'time-year' ? opt.replace('年','') : opt;
+                return `<option value="${val}" ${selectedValue === val ? 'selected' : ''}>${opt}</option>`;
+            }).join('');
+
+
+            let inputHtml = '';
+
+            if (field.key === 'ly') {
+                inputHtml = `
+                <div class="flex gap-3">
+                    <div class="relative flex-1">
+                        <select
+                            onchange="updateTempFilter('${field.key}', this.value)"
+                            class="block w-full bg-slate-50 border border-slate-200 text-slate-700 py-3 pl-4 pr-10 rounded-xl text-sm leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition shadow-sm font-medium"
+                        >
+                            <option value="all" ${selectedValue === 'all' ? 'selected' : ''}>全流域</option>
+                            ${optionsHtml}
+                        </select>
+                    </div>
+                    <div class="relative flex-1">
+                        <select disabled
+                            class="block w-full bg-slate-50 border border-slate-200 text-slate-400 py-3 pl-4 pr-10 rounded-xl text-sm leading-tight focus:outline-none transition shadow-sm font-medium cursor-not-allowed"
+                        >
+                            <option>二级流域</option>
+                        </select>
+                    </div>
+                </div>`;
+            } else {
+                // 标准单列样式
+                let defaultText = "全部";
+                if(field.label.includes("年份")) defaultText = "全部年份";
+                if(field.label.includes("类别")) defaultText = "全部类别";
+
+                inputHtml = `
+                <div class="relative">
+                    <select
+                        onchange="updateTempFilter('${field.key}', this.value)"
+                        class="block w-full bg-slate-50 border border-slate-200 text-slate-700 py-3 pl-4 pr-10 rounded-xl text-sm leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition shadow-sm font-medium"
+                    >
+                        <option value="all" ${selectedValue === 'all' ? 'selected' : ''}>${defaultText}</option>
+                        ${optionsHtml}
+                    </select>
+                </div>`;
+            }
+
+            html += `
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 mb-2.5 ml-1">
+                        ${field.label}
+                    </label>
+                    ${inputHtml}
+                </div>
+            `;
+        });
+
+        container.innerHTML = html;
+        lucide.createIcons();
+    }
+
+    function updateTempFilter(key, value) {
+        tempFilters[key] = value;
+    }
+
+    function resetFiltersInDrawer() {
+        tempFilters = {};
+        renderFilterOptionsInDrawer();
+    }
+
+    function applyFilters() {
+        activeFilters = { ...tempFilters };
+        closeFilterDrawer();
+        renderList();
+    }
+
+    // --- Modal Logic ---
+    function openModal(id) {
+        const item = MOCK_DATA[currentTab].find(i => i.id === id);
+        if (!item) return;
+
+        const cruxText = item.cruxText || "2022年1月该断面月均水质V类，超标因子总磷。分析超标原因如下：一是内源性污染严重，底泥磷释放明显；二是面源污染治理不够。";
+        const measureText = item.measureText || "针对断面水质恶化问题，持续督促有关地区加大整治力度：（一）加快推进水污染防治年度攻坚；（二）持续强化水质自动监测预警。";
+
+        document.getElementById('modal-title').innerText = currentTab === 'issues' ? '问题详情' : currentTab === 'cruxes' ? '症结详情' : '措施详情';
+        document.getElementById('modal-subtitle').innerText = `ID: ${item.id} | ${item.date || '暂无日期'}`;
+
+        const contentHtml = `
+                <div class="bg-white rounded-xl p-5 shadow-sm border border-slate-100 mb-4">
+                    <h3 class="font-bold text-slate-800 text-lg mb-3">${item.title}</h3>
+                    <div class="grid grid-cols-2 gap-4 text-sm">
+                        <div>
+                            <span class="text-slate-400 block text-xs mb-1">位置/区域</span>
+                            <span class="text-slate-700">${item.location || '相关流域区域'}</span>
+                        </div>
+                        <div>
+                            <span class="text-slate-400 block text-xs mb-1">来源</span>
+                            <span class="text-slate-700">${item.source || '上级督办'}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="space-y-4">
+                    <div class="bg-blue-50/50 rounded-xl border border-blue-100 overflow-hidden">
+                        <div class="bg-blue-100/50 px-4 py-2 flex items-center gap-2">
+                            <div class="w-2 h-2 rounded-full bg-blue-600"></div>
+                            <span class="font-bold text-blue-800 text-sm">症结分析 (Root Cause)</span>
+                        </div>
+                        <div class="p-4">
+                            <p class="text-sm text-slate-700 leading-relaxed text-justify">${item.detail || item.description || cruxText}</p>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-center -my-2 relative z-10">
+                        <div class="bg-white border border-slate-200 rounded-full p-1.5 shadow-sm text-slate-400">
+                            <i data-lucide="arrow-down" class="w-5 h-5"></i>
+                        </div>
+                    </div>
+
+                    <div class="bg-emerald-50/50 rounded-xl border border-emerald-100 overflow-hidden">
+                        <div class="bg-emerald-100/50 px-4 py-2 flex items-center gap-2">
+                            <div class="w-2 h-2 rounded-full bg-emerald-600"></div>
+                            <span class="font-bold text-emerald-800 text-sm">治理措施 (Measures)</span>
+                        </div>
+                        <div class="p-4">
+                            <p class="text-sm text-slate-700 leading-relaxed text-justify">${item.content || measureText}</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+        document.getElementById('modal-content').innerHTML = contentHtml;
+        document.getElementById('detail-modal').classList.remove('hidden');
+        lucide.createIcons();
+    }
+
+    function closeModal() {
+        document.getElementById('detail-modal').classList.add('hidden');
+    }
+
+    // --- Init ---
+    window.addEventListener('DOMContentLoaded', () => {
+        renderApp();
+    });
+
+</script>
+</body>
+</html>

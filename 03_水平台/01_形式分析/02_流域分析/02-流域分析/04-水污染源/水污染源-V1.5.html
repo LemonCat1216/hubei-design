@@ -1,0 +1,1149 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>湖北省水生态环境综合管理 - 水污染源分析</title>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography,container-queries"></script>
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#3b82f6",
+                        "primary-dark": "#1e3a8a",
+                        "background-light": "#f6f9fc",
+                        "background-dark": "#0f172a",
+                        "surface-light": "#ffffff",
+                        "surface-dark": "#1e293b",
+                        "surface-dark-hover": "#334155",
+                    },
+                    fontFamily: {
+                        display: ["Inter", "system-ui", "-apple-system", "sans-serif"],
+                    },
+                },
+            },
+        };
+    </script>
+    <style type="text/tailwindcss">
+        @layer base {
+            body {
+                font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            }
+        }
+
+        @layer utilities {
+            .custom-scrollbar::-webkit-scrollbar {
+                width: 4px;
+                height: 4px;
+            }
+
+            .custom-scrollbar::-webkit-scrollbar-track {
+                background: transparent;
+            }
+
+            .custom-scrollbar::-webkit-scrollbar-thumb {
+                background: #cbd5e1;
+                border-radius: 10px;
+            }
+
+            .sidebar-transition {
+                transition: width 0.3s ease;
+            }
+
+            .sidebar-text {
+                transition: opacity 0.2s ease;
+                white-space: nowrap;
+            }
+
+            .hide-text .sidebar-text {
+                display: none;
+                opacity: 0;
+            }
+
+            .collapsed-sidebar .nav-item {
+                justify-content: center;
+                padding-left: 0;
+                padding-right: 0;
+            }
+
+            .collapsed-sidebar .nav-item span.material-symbols-outlined {
+                margin-right: 0;
+            }
+
+            .section-title-bar {
+                width: 5px;
+                height: 16px;
+                background: linear-gradient(180deg, #60a5fa 0%, #1e40af 100%);
+                border-radius: 99px;
+                margin-right: 10px;
+                flex-shrink: 0;
+            }
+
+            .clear-btn {
+                display: none;
+            }
+
+            .group.has-value .clear-btn {
+                display: block;
+            }
+
+            .global-tooltip {
+                position: fixed;
+                background-color: rgba(15, 23, 42, 0.95);
+                color: #fff;
+                padding: 12px;
+                border-radius: 6px;
+                font-size: 12px;
+                line-height: 1.6;
+                max-width: 240px;
+                z-index: 9999;
+                pointer-events: none;
+                box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
+                opacity: 0;
+                transition: opacity 0.2s;
+                visibility: hidden;
+            }
+
+            input[type="date"]::-webkit-calendar-picker-indicator {
+                cursor: pointer;
+                opacity: 0.6;
+                transition: 0.2s;
+            }
+
+            input[type="date"]::-webkit-calendar-picker-indicator:hover {
+                opacity: 1;
+            }
+
+            .toggle-btn {
+                @apply px-3 py-1 text-xs font-medium rounded transition-colors cursor-pointer select-none;
+            }
+
+            .toggle-btn.active {
+                @apply bg-primary text-white;
+            }
+
+            .toggle-btn.inactive {
+                @apply bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-700 dark:text-slate-300 dark:hover:bg-slate-600;
+            }
+
+            .progress-bar-bg {
+                @apply h-2 w-full bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden;
+            }
+
+            .progress-bar-fill {
+                @apply h-full rounded-full transition-all duration-1000 ease-out;
+            }
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-800 dark:text-slate-100 h-screen overflow-hidden flex flex-col">
+
+<div id="global-tooltip" class="global-tooltip"></div>
+
+<header class="bg-primary h-14 flex items-center justify-between px-4 text-white shrink-0 shadow-md z-50">
+    <div class="flex items-center space-x-3">
+        <div class="w-8 h-8 bg-white rounded-full flex items-center justify-center">
+            <span class="material-symbols-outlined text-primary text-xl">water_drop</span>
+        </div>
+        <h1 class="text-xl font-bold tracking-tight">湖北省水生态环境综合管理</h1>
+    </div>
+    <nav class="flex h-full">
+        <a class="px-6 flex items-center space-x-2 hover:bg-white/10 transition-colors" href="#">
+            <span class="material-symbols-outlined text-[18px]">home</span>
+            <span class="text-sm">总体概览</span>
+        </a>
+        <a class="px-6 flex items-center space-x-2 hover:bg-white/10 transition-colors" href="#">
+            <span class="material-symbols-outlined text-[18px]">assessment</span>
+            <span class="text-sm font-medium">形势分析</span>
+        </a>
+        <a class="px-6 flex items-center space-x-2 hover:bg-white/10 transition-colors" href="#">
+            <span class="material-symbols-outlined text-[18px]">map</span>
+            <span class="text-sm">空间分析</span>
+        </a>
+        <a class="px-6 flex items-center space-x-2 bg-white/10 transition-colors" href="#">
+            <span class="material-symbols-outlined text-[18px]">waves</span>
+            <span class="text-sm">水污染源</span>
+        </a>
+        <a class="px-6 flex items-center space-x-2 hover:bg-white/10 transition-colors" href="#">
+            <span class="material-symbols-outlined text-[18px]">report_problem</span>
+            <span class="text-sm">问题聚焦</span>
+        </a>
+        <a class="px-6 flex items-center space-x-2 hover:bg-white/10 transition-colors" href="#">
+            <span class="material-symbols-outlined text-[18px]">apps</span>
+            <span class="text-sm">专题应用</span>
+        </a>
+    </nav>
+    <div class="flex items-center space-x-6">
+        <div class="flex items-center space-x-2 text-sm opacity-90">
+            <span class="material-symbols-outlined text-[18px]">public</span>
+            <span>碧水荆灵</span>
+        </div>
+        <div class="flex items-center space-x-2 text-sm">
+            <span class="material-symbols-outlined text-[18px]">account_circle</span>
+            <span>wangyunpeng</span>
+        </div>
+    </div>
+</header>
+
+<div class="flex flex-1 overflow-hidden">
+
+    <aside id="sidebar" class="w-[270px] bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 flex flex-col shrink-0 sidebar-transition">
+        <div class="flex-1 py-4 overflow-y-auto custom-scrollbar flex flex-col gap-1">
+
+            <div class="mb-2 px-2">
+                <button class="nav-item w-full flex items-center justify-between px-4 py-3 text-[16px] font-medium text-slate-600 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg group transition-colors" onclick="toggleSubmenu('submenu-overview')">
+                    <div class="flex items-center">
+                        <span class="material-symbols-outlined mr-3 text-slate-400 group-hover:text-primary">dashboard</span>
+                        <span class="sidebar-text">流域概览</span>
+                    </div>
+                    <span class="material-symbols-outlined text-sm text-slate-400 sidebar-chevron transition-transform duration-200">expand_more</span>
+                </button>
+
+                <div id="submenu-overview" class="mt-1 space-y-1 overflow-hidden transition-all duration-300 max-h-0">
+                    <a class="flex items-center px-12 py-2 text-[14px] text-slate-600 dark:text-slate-400 hover:text-blue-600 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors rounded-lg group" href="#">
+                        <span class="w-1.5 h-1.5 bg-slate-300 dark:bg-slate-600 group-hover:bg-blue-600 rounded-full mr-3 shrink-0 transition-colors"></span>
+                        <span class="sidebar-text">总体概览</span>
+                    </a>
+                    <a class="flex items-center px-12 py-2 text-[14px] text-slate-600 dark:text-slate-400 hover:text-blue-600 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors rounded-lg group" href="#">
+                        <span class="w-1.5 h-1.5 bg-slate-300 dark:bg-slate-600 group-hover:bg-blue-600 rounded-full mr-3 shrink-0 transition-colors"></span>
+                        <span class="sidebar-text">总体分析</span>
+                    </a>
+                    <a class="flex items-center px-12 py-2 text-[14px] text-slate-600 dark:text-slate-400 hover:text-blue-600 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors rounded-lg group" href="#">
+                        <span class="w-1.5 h-1.5 bg-slate-300 dark:bg-slate-600 group-hover:bg-blue-600 rounded-full mr-3 shrink-0 transition-colors"></span>
+                        <span class="sidebar-text">空间分析</span>
+                    </a>
+                </div>
+            </div>
+
+            <div class="mb-2 px-2">
+                <button class="nav-item w-full flex items-center justify-between px-4 py-3 text-[16px] font-medium text-slate-600 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg group transition-colors" onclick="toggleSubmenu('submenu-analysis')">
+                    <div class="flex items-center">
+                        <span class="material-symbols-outlined mr-3 text-slate-400 group-hover:text-primary">analytics</span>
+                        <span class="sidebar-text">流域分析</span>
+                    </div>
+                    <span class="material-symbols-outlined text-sm text-slate-400 sidebar-chevron transition-transform duration-200">expand_more</span>
+                </button>
+
+                <div id="submenu-analysis" class="mt-1 space-y-1 overflow-hidden transition-all duration-300 max-h-0">
+                    <a class="flex items-center px-12 py-2 text-[14px] text-slate-600 dark:text-slate-400 hover:text-blue-600 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors rounded-lg group" href="#">
+                        <span class="w-1.5 h-1.5 bg-slate-300 dark:bg-slate-600 group-hover:bg-blue-600 rounded-full mr-3 shrink-0 transition-colors"></span>
+                        <span class="sidebar-text">水环境</span>
+                    </a>
+                    <a class="flex items-center px-12 py-2 text-[14px] text-slate-600 dark:text-slate-400 hover:text-blue-600 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors rounded-lg group" href="#">
+                        <span class="w-1.5 h-1.5 bg-slate-300 dark:bg-slate-600 group-hover:bg-blue-600 rounded-full mr-3 shrink-0 transition-colors"></span>
+                        <span class="sidebar-text">水资源</span>
+                    </a>
+                    <a class="flex items-center px-12 py-2 text-[14px] text-slate-600 dark:text-slate-400 hover:text-blue-600 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors rounded-lg group" href="#">
+                        <span class="w-1.5 h-1.5 bg-slate-300 dark:bg-slate-600 group-hover:bg-blue-600 rounded-full mr-3 shrink-0 transition-colors"></span>
+                        <span class="sidebar-text">水生态</span>
+                    </a>
+                    <a class="flex items-center px-12 py-2 text-[14px] text-blue-600 bg-blue-50 dark:bg-blue-900/20 rounded-lg group font-medium transition-colors" href="#">
+                        <span class="w-1.5 h-1.5 bg-blue-600 rounded-full mr-3 shrink-0 transition-colors"></span>
+                        <span class="sidebar-text">水污染源</span>
+                    </a>
+                </div>
+            </div>
+
+        </div>
+
+        <button id="toggleSidebarBtn" class="h-12 border-t border-slate-200 dark:border-slate-800 flex items-center justify-center space-x-2 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all text-slate-500 hover:text-primary group">
+            <span id="toggleIcon" class="material-symbols-outlined text-xl transition-transform duration-300">chevron_left</span>
+            <span class="sidebar-text text-sm font-medium tracking-wide">收起侧栏</span>
+        </button>
+    </aside>
+
+    <main class="flex-1 overflow-y-auto custom-scrollbar bg-slate-50 dark:bg-black/20 p-6">
+        <div class="h-16 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl flex items-center justify-between px-6 shrink-0 shadow-sm mb-6">
+            <div class="flex items-center gap-3">
+                <div class="flex items-center gap-3">
+                    <span class="relative flex h-3 w-3">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-3 w-3 bg-[#3b82f6]"></span>
+                    </span>
+                    <h2 class="text-lg font-bold text-slate-800 dark:text-white tracking-tight">
+                        水污染源
+                    </h2>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-3">
+                <div class="relative flex items-center group " id="wrapper-one">
+                    <select id="river-select-one" onchange="handleLevelOneChange()" class="h-8 border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 dark:text-slate-200 rounded-lg pl-3 pr-8 py-1 text-sm focus:ring-2 focus:ring-blue-500/20 outline-none min-w-[140px] transition-all hover:bg-white dark:hover:bg-slate-750 appearance-none cursor-pointer">
+                        <option value="" disabled selected hidden>请选择一级流域</option>
+                        <option value="changjiang">长江流域</option>
+                        <option value="huaihe">淮河流域</option>
+                        <option value="huanghe">黄河流域</option>
+                    </select>
+                    <button onclick="clearSelection('one')" class="clear-btn absolute right-8 hover:text-blue-700 p-1 rounded-full hover:bg-blue-50 transition-colors" title="清除">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    </button>
+                </div>
+
+                <div class="relative flex items-center group" id="wrapper-two">
+                    <select id="river-select-two" onchange="checkValue('two')" class="h-8 border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 dark:text-slate-200 rounded-lg pl-3 pr-8 py-1 text-sm focus:ring-2 focus:ring-blue-500/20 outline-none min-w-[140px] transition-all hover:bg-white dark:hover:bg-slate-750 appearance-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
+                        <option value="" disabled selected hidden>请选择二级流域</option>
+                    </select>
+                    <button onclick="clearSelection('two')" class="clear-btn absolute right-8 hover:text-blue-700 p-1 rounded-full hover:bg-blue-50 transition-colors" title="清除">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+            <div class="flex flex-col gap-3 rounded-xl bg-surface-light dark:bg-surface-dark p-5 border border-slate-200 dark:border-slate-800 shadow-sm relative overflow-hidden group hover:-translate-y-1 transition-all duration-300 hover:shadow-md">
+                <div class="absolute right-0 top-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
+                    <i class="ri-building-4-fill text-[80px] text-primary"></i>
+                </div>
+                <div class="flex items-center gap-3">
+                    <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                        <i class="ri-building-4-fill text-[20px]"></i>
+                    </div>
+                    <p class="text-slate-500 dark:text-slate-400 text-sm font-medium">固定污染源</p>
+                </div>
+                <p class="text-3xl font-bold tracking-tight text-slate-900 dark:text-white mt-1">
+                    102,369
+                    <span class="text-sm font-normal text-slate-500 ml-1">家</span>
+                </p>
+            </div>
+
+            <div class="flex flex-col gap-3 rounded-xl bg-surface-light dark:bg-surface-dark p-5 border border-slate-200 dark:border-slate-800 shadow-sm relative overflow-hidden group hover:-translate-y-1 transition-all duration-300 hover:shadow-md">
+                <div class="absolute right-0 top-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
+                    <i class="ri-dashboard-3-line text-[80px] text-blue-400"></i>
+                </div>
+                <div class="flex items-center gap-3">
+                    <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-500/10 text-blue-500">
+                        <i class="ri-dashboard-3-line text-[20px]"></i>
+                    </div>
+                    <p class="text-slate-500 dark:text-slate-400 text-sm font-medium">自动监控企业</p>
+                </div>
+                <p class="text-3xl font-bold tracking-tight text-slate-900 dark:text-white mt-1">
+                    2,109
+                    <span class="text-sm font-normal text-slate-500 ml-1">家</span>
+                </p>
+            </div>
+
+            <div class="flex flex-col gap-3 rounded-xl bg-surface-light dark:bg-surface-dark p-5 border border-slate-200 dark:border-slate-800 shadow-sm relative overflow-hidden group hover:-translate-y-1 transition-all duration-300 hover:shadow-md">
+                <div class="absolute right-0 top-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
+                    <i class="ri-water-flash-line text-[80px] text-teal-400"></i>
+                </div>
+                <div class="flex items-center gap-3">
+                    <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-teal-500/10 text-teal-500">
+                        <i class="ri-water-flash-line text-[20px]"></i>
+                    </div>
+                    <p class="text-slate-500 dark:text-slate-400 text-sm font-medium">污水处理厂</p>
+                </div>
+                <p class="text-3xl font-bold tracking-tight text-slate-900 dark:text-white mt-1">
+                    200
+                    <span class="text-sm font-normal text-slate-500 ml-1">座</span>
+                </p>
+            </div>
+
+            <div class="flex flex-col gap-3 rounded-xl bg-surface-light dark:bg-surface-dark p-5 border border-slate-200 dark:border-slate-800 shadow-sm relative overflow-hidden group hover:-translate-y-1 transition-all duration-300 hover:shadow-md">
+                <div class="absolute right-0 top-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
+                    <i class="ri-focus-2-line text-[80px] text-orange-400"></i>
+                </div>
+                <div class="flex items-center gap-3">
+                    <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-orange-500/10 text-orange-500">
+                        <i class="ri-focus-2-line text-[20px]"></i>
+                    </div>
+                    <p class="text-slate-500 dark:text-slate-400 text-sm font-medium">排污口</p>
+                </div>
+                <p class="text-3xl font-bold tracking-tight text-slate-900 dark:text-white mt-1">
+                    34,169
+                    <span class="text-sm font-normal text-slate-500 ml-1">个</span>
+                </p>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 xl:grid-cols-2 gap-6 mb-6">
+            <div class="flex flex-col rounded-xl bg-surface-light dark:bg-surface-dark border border-slate-200 dark:border-slate-800 shadow-sm h-[360px]">
+                <div class="flex items-center justify-between px-6 pt-4 pb-2">
+                    <div class="flex items-center">
+                        <div class="section-title-bar"></div>
+                        <h2 class="text-[16px] font-bold text-[#000000] dark:text-white">自动监控企业类别</h2>
+                    </div>
+                    <button class="h-6 px-3 flex items-center justify-center text-xs font-medium rounded bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600 transition">
+                        查看详情
+                    </button>
+                </div>
+                <div class="h-px bg-slate-100 dark:bg-slate-800 mb-4 mx-6"></div>
+
+                <div class="flex-1 w-full px-6 pb-6 flex flex-col justify-between overflow-y-auto custom-scrollbar">
+                    <div class="flex flex-col gap-1.5">
+                        <div class="flex justify-between items-end">
+                            <span class="text-sm font-medium text-slate-600 dark:text-slate-300">其他</span>
+                            <span class="text-[14px] font-bold text-slate-900 dark:text-white">1,768</span>
+                        </div>
+                        <div class="progress-bar-bg">
+                            <div class="progress-bar-fill bg-primary" style="width: 100%"></div>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col gap-1.5">
+                        <div class="flex justify-between items-end">
+                            <span class="text-sm font-medium text-slate-600 dark:text-slate-300">造纸</span>
+                            <span class="text-[14px] font-bold text-slate-900 dark:text-white">185</span>
+                        </div>
+                        <div class="progress-bar-bg">
+                            <div class="progress-bar-fill bg-primary opacity-80" style="width: 15%"></div>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col gap-1.5">
+                        <div class="flex justify-between items-end">
+                            <span class="text-sm font-medium text-slate-600 dark:text-slate-300">水泥/染料</span>
+                            <span class="text-[14px] font-bold text-slate-900 dark:text-white">120</span>
+                        </div>
+                        <div class="progress-bar-bg">
+                            <div class="progress-bar-fill bg-primary opacity-60" style="width: 10%"></div>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col gap-1.5">
+                        <div class="flex justify-between items-end">
+                            <span class="text-sm font-medium text-slate-600 dark:text-slate-300">化肥/农药</span>
+                            <span class="text-[14px] font-bold text-slate-900 dark:text-white">89</span>
+                        </div>
+                        <div class="progress-bar-bg">
+                            <div class="progress-bar-fill bg-primary opacity-50" style="width: 8%"></div>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col gap-1.5">
+                        <div class="flex justify-between items-end">
+                            <span class="text-sm font-medium text-slate-600 dark:text-slate-300">印染</span>
+                            <span class="text-[14px] font-bold text-slate-900 dark:text-white">11</span>
+                        </div>
+                        <div class="progress-bar-bg">
+                            <div class="progress-bar-fill bg-primary opacity-30" style="width: 2%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex flex-col rounded-xl bg-surface-light dark:bg-surface-dark border border-slate-200 dark:border-slate-800 shadow-sm h-[360px]">
+                <div class="flex items-center justify-between px-6 pt-4 pb-2">
+                    <div class="flex items-center">
+                        <div class="section-title-bar"></div>
+                        <h2 class="text-[16px] font-bold text-[#000000] dark:text-white">污水处理与排污口类型分布</h2>
+                    </div>
+                </div>
+                <div class="h-px bg-slate-100 dark:bg-slate-800 mb-3 mx-6"></div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 items-center h-full px-4 pb-2">
+                    <div class="flex flex-col items-center h-full w-full">
+                        <div id="chart-donut-1" class="w-full h-full"></div>
+                    </div>
+                    <div class="flex flex-col items-center h-full w-full">
+                        <div id="chart-donut-2" class="w-full h-full"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex flex-col rounded-xl bg-surface-light dark:bg-surface-dark border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden flex-1 mb-6">
+            <div class="px-6 pt-4 pb-2 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between flex-wrap gap-y-2">
+                <div class="flex items-center">
+                    <div class="section-title-bar"></div>
+                    <h2 class="text-[16px] font-bold text-[#000000] dark:text-white">自动监控流域清单</h2>
+                </div>
+
+                <div class="flex items-center gap-3">
+                    <div class="relative flex items-center">
+                        <input type="date" class="h-6 bg-slate-100 dark:bg-slate-700 border-none rounded text-xs px-2 text-slate-600 dark:text-slate-300 focus:ring-1 focus:ring-primary outline-none cursor-pointer" value="2026-01-26">
+                    </div>
+
+                    <div class="relative flex items-center">
+                        <select class="h-6 bg-slate-100 dark:bg-slate-700 border-none rounded text-xs pl-2 pr-7 py-0 text-slate-600 dark:text-slate-300 focus:ring-1 focus:ring-primary outline-none appearance-none cursor-pointer min-w-[100px]">
+                            <option value="all">全部污染物</option>
+                            <option value="cod">化学需氧量</option>
+                            <option value="nh3n">氨氮</option>
+                            <option value="tp">总磷</option>
+                            <option value="tn">总氮</option>
+                        </select>
+                    </div>
+
+                    <div class="h-6 bg-slate-100 dark:bg-slate-700 rounded-md flex items-center">
+                        <div class="h-full toggle-btn active" onclick="switchTab(this, 'day')">日报</div>
+                        <div class="h-full toggle-btn inactive" onclick="switchTab(this, 'week')">周报</div>
+                    </div>
+
+                    <div class="h-4 w-px bg-slate-200 dark:bg-slate-600 mx-1"></div>
+
+                    <div class="flex gap-2">
+                        <button class="h-6 px-3 flex items-center justify-center text-xs font-medium rounded bg-blue-500 dark:bg-blue-600 text-white dark:text-white hover:bg-blue-600 dark:hover:bg-blue-700 transition">
+                            导出
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="overflow-x-auto custom-scrollbar">
+                <table class="w-full text-left border-collapse whitespace-nowrap">
+                    <thead>
+                    <tr class="border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-[#151c27]">
+                        <th class="px-2 py-3 text-[14px] font-bold text-[#475569] dark:text-slate-400 uppercase tracking-wider text-center w-[16%]">
+                            一级流域
+                        </th>
+                        <th class="px-2 py-3 text-[14px] font-bold text-[#475569] dark:text-slate-400 uppercase tracking-wider text-center w-[16%]">
+                            二级流域
+                        </th>
+                        <th class="px-2 py-3 text-[14px] font-bold text-[#475569] dark:text-slate-400 uppercase tracking-wider text-center w-[16%]">
+                            企业数量
+                        </th>
+                        <th class="px-2 py-3 text-[14px] font-bold text-[#475569] dark:text-slate-400 uppercase tracking-wider text-center w-[16%]">
+                            报警次数
+                        </th>
+                        <th class="px-2 py-3 text-[14px] font-bold text-[#475569] dark:text-slate-400 uppercase tracking-wider text-center w-[16%]">
+                            <div class="flex items-center justify-center gap-1">
+                                "夜猫子"企业
+                                <span class="material-symbols-rounded text-black dark:text-slate-400 text-[18px] cursor-help" onmouseenter='showTooltip(event, "\"夜猫子\"企业是指在非工作时间（如深夜、凌晨）进行生产活动或污染物排放异常的企业，通常具有隐蔽排污的嫌疑。")' onmouseleave="hideTooltip()">
+                                        help
+                                    </span>
+                            </div>
+                        </th>
+                        <th class="px-2 py-3 text-[14px] font-bold text-[#475569] dark:text-slate-400 uppercase tracking-wider text-center w-[16%]">
+                            查看详情
+                        </th>
+                    </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+                    <tr class="hover:bg-slate-50 dark:hover:bg-surface-dark-hover transition-colors">
+                        <td rowspan="9" class="group px-2 py-3 font-semibold text-slate-800 dark:text-white border-r border-slate-100 dark:border-slate-800 align-middle bg-white dark:bg-surface-dark text-center cursor-default">
+                            <div class="transition-transform duration-300 group-hover:-translate-y-1">
+                                长江流域
+                            </div>
+                            <div class="text-xs text-slate-500 dark:text-slate-400 mt-2 py-2 border-t border-slate-50 dark:border-slate-800 opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 pointer-events-none">
+                                企业总数: 849<br>
+                                报警次数: 7<br>
+                                "夜猫子"企业: 14
+                            </div>
+                        </td>
+                        <td class="px-2 py-3 text-slate-600 dark:text-slate-300 text-center align-middle">富水片区</td>
+                        <td class="px-2 py-3 font-medium text-center align-middle">85</td>
+                        <td class="px-2 py-3 font-medium text-center align-middle text-red-500">
+                            <div class="inline-flex items-center gap-2  px-3 py-1 rounded-full opacity-90">
+                                    <span class="relative flex h-2 w-2">
+                                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                                        <span class="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
+                                    </span>
+                                <span class="text-xs font-bold text-red-600 dark:text-red-400">2 次</span>
+                            </div>
+                        </td>
+                        <td class="px-2 py-3 text-center align-middle"><span class="inline-flex items-center justify-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 dark:bg-indigo-900/20 text-indigo-900 dark:text-indigo-200 min-w-[30px]"><i class="ri-moon-line mr-1"></i>1</span></td>
+                        <td class="px-2 py-3 text-center align-middle">
+                            <button class="px-3 py-1.5 text-xs font-medium rounded bg-blue-500 text-white hover:bg-blue-600 transition-colors">
+                                详情
+                            </button>
+                        </td>
+                    </tr>
+                    <tr class="hover:bg-slate-50 dark:hover:bg-surface-dark-hover transition-colors">
+                        <td class="px-2 py-3 text-slate-600 dark:text-slate-300 text-center align-middle">鄂东南片区
+                        </td>
+                        <td class="px-2 py-3 font-medium text-center align-middle">124</td>
+                        <td class="px-2 py-3 font-medium text-center align-middle text-emerald-500">
+                            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full opacity-90">
+                                    <span class="relative flex h-2 w-2">
+                                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-30"></span>
+                                        <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                                    </span>
+                                <span class="text-xs font-medium text-emerald-600 dark:text-emerald-400">正常</span>
+                            </div>
+                        </td>
+                        <td class="px-2 py-3 text-center align-middle"><span class="inline-flex items-center justify-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 dark:bg-indigo-900/20 text-indigo-900 dark:text-indigo-200 min-w-[30px]"><i class="ri-moon-line mr-1"></i>3</span></td>
+                        <td class="px-2 py-3 text-center align-middle">
+                            <button class="px-3 py-1.5 text-xs font-medium rounded bg-blue-500 text-white hover:bg-blue-600 transition-colors">
+                                详情
+                            </button>
+                        </td>
+                    </tr>
+                    <tr class="hover:bg-slate-50 dark:hover:bg-surface-dark-hover transition-colors">
+                        <td class="px-2 py-3 text-slate-600 dark:text-slate-300 text-center align-middle">四湖片区</td>
+                        <td class="px-2 py-3 font-medium text-center align-middle">96</td>
+                        <td class="px-2 py-3 font-medium text-center align-middle text-red-500">
+                            <div class="inline-flex items-center gap-2  px-3 py-1 rounded-full opacity-90">
+                                    <span class="relative flex h-2 w-2">
+                                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                                        <span class="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
+                                    </span>
+                                <span class="text-xs font-bold text-red-600 dark:text-red-400">1 次</span>
+                            </div>
+                        </td>
+                        <td class="px-2 py-3 text-center align-middle"><span class="inline-flex items-center justify-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 dark:bg-indigo-900/20 text-indigo-900 dark:text-indigo-200 min-w-[30px]"><i class="ri-moon-line mr-1"></i>2</span></td>
+                        <td class="px-2 py-3 text-center align-middle">
+                            <button class="px-3 py-1.5 text-xs font-medium rounded bg-blue-500 text-white hover:bg-blue-600 transition-colors">
+                                详情
+                            </button>
+                        </td>
+                    </tr>
+                    <tr class="hover:bg-slate-50 dark:hover:bg-surface-dark-hover transition-colors">
+                        <td class="px-2 py-3 text-slate-600 dark:text-slate-300 text-center align-middle">荆南四河片区
+                        </td>
+                        <td class="px-2 py-3 font-medium text-center align-middle">78</td>
+                        <td class="px-2 py-3 font-medium text-center align-middle text-emerald-500">
+                            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full opacity-90">
+                                    <span class="relative flex h-2 w-2">
+                                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-30"></span>
+                                        <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                                    </span>
+                                <span class="text-xs font-medium text-emerald-600 dark:text-emerald-400">正常</span>
+                            </div>
+                        </td>
+                        <td class="px-2 py-3 text-center align-middle"><span class="inline-flex items-center justify-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400 min-w-[30px]"><i class="ri-moon-line mr-1"></i>0</span></td>
+                        <td class="px-2 py-3 text-center align-middle">
+                            <button class="px-3 py-1.5 text-xs font-medium rounded bg-blue-500 text-white hover:bg-blue-600 transition-colors">
+                                详情
+                            </button>
+                        </td>
+                    </tr>
+                    <tr class="hover:bg-slate-50 dark:hover:bg-surface-dark-hover transition-colors">
+                        <td class="px-2 py-3 text-slate-600 dark:text-slate-300 text-center align-middle">黄柏河片区
+                        </td>
+                        <td class="px-2 py-3 font-medium text-center align-middle">65</td>
+                        <td class="px-2 py-3 font-medium text-center align-middle text-emerald-500">
+                            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full opacity-90">
+                                    <span class="relative flex h-2 w-2">
+                                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-30"></span>
+                                        <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                                    </span>
+                                <span class="text-xs font-medium text-emerald-600 dark:text-emerald-400">正常</span>
+                            </div>
+                        </td>
+                        <td class="px-2 py-3 text-center align-middle"><span class="inline-flex items-center justify-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 dark:bg-indigo-900/20 text-indigo-900 dark:text-indigo-200 min-w-[30px]"><i class="ri-moon-line mr-1"></i>1</span></td>
+                        <td class="px-2 py-3 text-center align-middle">
+                            <button class="px-3 py-1.5 text-xs font-medium rounded bg-blue-500 text-white hover:bg-blue-600 transition-colors">
+                                详情
+                            </button>
+                        </td>
+                    </tr>
+                    <tr class="hover:bg-slate-50 dark:hover:bg-surface-dark-hover transition-colors">
+                        <td class="px-2 py-3 text-slate-600 dark:text-slate-300 text-center align-middle">沮漳河片区
+                        </td>
+                        <td class="px-2 py-3 font-medium text-center align-middle">112</td>
+                        <td class="px-2 py-3 font-medium text-center align-middle text-red-500">
+                            <div class="inline-flex items-center gap-2  px-3 py-1 rounded-full opacity-90">
+                                    <span class="relative flex h-2 w-2">
+                                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                                        <span class="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
+                                    </span>
+                                <span class="text-xs font-bold text-red-600 dark:text-red-400">3 次</span>
+                            </div>
+                        </td>
+                        <td class="px-2 py-3 text-center align-middle"><span class="inline-flex items-center justify-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 dark:bg-indigo-900/20 text-indigo-900 dark:text-indigo-200 min-w-[30px]"><i class="ri-moon-line mr-1"></i>2</span></td>
+                        <td class="px-2 py-3 text-center align-middle">
+                            <button class="px-3 py-1.5 text-xs font-medium rounded bg-blue-500 text-white hover:bg-blue-600 transition-colors">
+                                详情
+                            </button>
+                        </td>
+                    </tr>
+                    <tr class="hover:bg-slate-50 dark:hover:bg-surface-dark-hover transition-colors">
+                        <td class="px-2 py-3 text-slate-600 dark:text-slate-300 text-center align-middle">府河片区</td>
+                        <td class="px-2 py-3 font-medium text-center align-middle">88</td>
+                        <td class="px-2 py-3 font-medium text-center align-middle text-emerald-500">
+                            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full opacity-90">
+                                    <span class="relative flex h-2 w-2">
+                                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-30"></span>
+                                        <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                                    </span>
+                                <span class="text-xs font-medium text-emerald-600 dark:text-emerald-400">正常</span>
+                            </div>
+                        </td>
+                        <td class="px-2 py-3 text-center align-middle"><span class="inline-flex items-center justify-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 dark:bg-indigo-900/20 text-indigo-900 dark:text-indigo-200 min-w-[30px]"><i class="ri-moon-line mr-1"></i>1</span></td>
+                        <td class="px-2 py-3 text-center align-middle">
+                            <button class="px-3 py-1.5 text-xs font-medium rounded bg-blue-500 text-white hover:bg-blue-600 transition-colors">
+                                详情
+                            </button>
+                        </td>
+                    </tr>
+                    <tr class="hover:bg-slate-50 dark:hover:bg-surface-dark-hover transition-colors">
+                        <td class="px-2 py-3 text-slate-600 dark:text-slate-300 text-center align-middle">鄂东五河片区
+                        </td>
+                        <td class="px-2 py-3 font-medium text-center align-middle">145</td>
+                        <td class="px-2 py-3 font-medium text-center align-middle text-red-500">
+                            <div class="inline-flex items-center gap-2  px-3 py-1 rounded-full opacity-90">
+                                    <span class="relative flex h-2 w-2">
+                                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                                        <span class="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
+                                    </span>
+                                <span class="text-xs font-bold text-red-600 dark:text-red-400">1 次</span>
+                            </div>
+                        </td>
+                        <td class="px-2 py-3 text-center align-middle"><span class="inline-flex items-center justify-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 dark:bg-indigo-900/20 text-indigo-900 dark:text-indigo-200 min-w-[30px]"><i class="ri-moon-line mr-1"></i>4</span></td>
+                        <td class="px-2 py-3 text-center align-middle">
+                            <button class="px-3 py-1.5 text-xs font-medium rounded bg-blue-500 text-white hover:bg-blue-600 transition-colors">
+                                详情
+                            </button>
+                        </td>
+                    </tr>
+                    <tr class="hover:bg-slate-50 dark:hover:bg-surface-dark-hover transition-colors">
+                        <td class="px-2 py-3 text-slate-600 dark:text-slate-300 text-center align-middle">三峡库区</td>
+                        <td class="px-2 py-3 font-medium text-center align-middle">56</td>
+                        <td class="px-2 py-3 font-medium text-center align-middle text-emerald-500">
+                            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full opacity-90">
+                                    <span class="relative flex h-2 w-2">
+                                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-30"></span>
+                                        <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                                    </span>
+                                <span class="text-xs font-medium text-emerald-600 dark:text-emerald-400">正常</span>
+                            </div>
+                        </td>
+                        <td class="px-2 py-3 text-center align-middle"><span class="inline-flex items-center justify-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400 min-w-[30px]"><i class="ri-moon-line mr-1"></i>0</span></td>
+                        <td class="px-2 py-3 text-center align-middle">
+                            <button class="px-3 py-1.5 text-xs font-medium rounded bg-blue-500 text-white hover:bg-blue-600 transition-colors">
+                                详情
+                            </button>
+                        </td>
+                    </tr>
+
+                    <tr class="hover:bg-slate-50 dark:hover:bg-surface-dark-hover transition-colors border-t border-slate-100 dark:border-slate-800">
+                        <td rowspan="4" class="group px-2 py-3 font-semibold text-slate-800 dark:text-white border-r border-slate-100 dark:border-slate-800 align-middle bg-white dark:bg-surface-dark text-center cursor-default">
+                            <div class="transition-transform duration-300 group-hover:-translate-y-1">
+                                汉江流域
+                            </div>
+                            <div class="text-xs text-slate-500 dark:text-slate-400 mt-2 py-2 border-t border-slate-50 dark:border-slate-800 opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 pointer-events-none">
+                                企业总数: 532<br>
+                                报警次数: 3<br>
+                                "夜猫子"企业: 11
+                            </div>
+                        </td>
+                        <td class="px-2 py-3 text-slate-600 dark:text-slate-300 text-center align-middle">汉江下游片区
+                        </td>
+                        <td class="px-2 py-3 font-medium text-center align-middle">210</td>
+                        <td class="px-2 py-3 font-medium text-center align-middle text-red-500">
+                            <div class="inline-flex items-center gap-2  px-3 py-1 rounded-full opacity-90">
+                                    <span class="relative flex h-2 w-2">
+                                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                                        <span class="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
+                                    </span>
+                                <span class="text-xs font-bold text-red-600 dark:text-red-400">2 次</span>
+                            </div>
+                        </td>
+                        <td class="px-2 py-3 text-center align-middle"><span class="inline-flex items-center justify-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 dark:bg-indigo-900/20 text-indigo-900 dark:text-indigo-200 min-w-[30px]"><i class="ri-moon-line mr-1"></i>5</span></td>
+                        <td class="px-2 py-3 text-center align-middle">
+                            <button class="px-3 py-1.5 text-xs font-medium rounded bg-blue-500 text-white hover:bg-blue-600 transition-colors">
+                                详情
+                            </button>
+                        </td>
+                    </tr>
+                    <tr class="hover:bg-slate-50 dark:hover:bg-surface-dark-hover transition-colors">
+                        <td class="px-2 py-3 text-slate-600 dark:text-slate-300 text-center align-middle">汉江丹库以上
+                        </td>
+                        <td class="px-2 py-3 font-medium text-center align-middle">85</td>
+                        <td class="px-2 py-3 font-medium text-center align-middle text-emerald-500">
+                            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full opacity-90">
+                                    <span class="relative flex h-2 w-2">
+                                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-30"></span>
+                                        <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                                    </span>
+                                <span class="text-xs font-medium text-emerald-600 dark:text-emerald-400">正常</span>
+                            </div>
+                        </td>
+                        <td class="px-2 py-3 text-center align-middle"><span class="inline-flex items-center justify-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 dark:bg-indigo-900/20 text-indigo-900 dark:text-indigo-200 min-w-[30px]"><i class="ri-moon-line mr-1"></i>1</span></td>
+                        <td class="px-2 py-3 text-center align-middle">
+                            <button class="px-3 py-1.5 text-xs font-medium rounded bg-blue-500 text-white hover:bg-blue-600 transition-colors">
+                                详情
+                            </button>
+                        </td>
+                    </tr>
+                    <tr class="hover:bg-slate-50 dark:hover:bg-surface-dark-hover transition-colors">
+                        <td class="px-2 py-3 text-slate-600 dark:text-slate-300 text-center align-middle">唐白河片区
+                        </td>
+                        <td class="px-2 py-3 font-medium text-center align-middle">92</td>
+                        <td class="px-2 py-3 font-medium text-center align-middle text-red-500">
+                            <div class="inline-flex items-center gap-2  px-3 py-1 rounded-full opacity-90">
+                                    <span class="relative flex h-2 w-2">
+                                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                                        <span class="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
+                                    </span>
+                                <span class="text-xs font-bold text-red-600 dark:text-red-400">1 次</span>
+                            </div>
+                        </td>
+                        <td class="px-2 py-3 text-center align-middle"><span class="inline-flex items-center justify-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 dark:bg-indigo-900/20 text-indigo-900 dark:text-indigo-200 min-w-[30px]"><i class="ri-moon-line mr-1"></i>2</span></td>
+                        <td class="px-2 py-3 text-center align-middle">
+                            <button class="px-3 py-1.5 text-xs font-medium rounded bg-blue-500 text-white hover:bg-blue-600 transition-colors">
+                                详情
+                            </button>
+                        </td>
+                    </tr>
+                    <tr class="hover:bg-slate-50 dark:hover:bg-surface-dark-hover transition-colors">
+                        <td class="px-2 py-3 text-slate-600 dark:text-slate-300 text-center align-middle">汉江中游片区
+                        </td>
+                        <td class="px-2 py-3 font-medium text-center align-middle">145</td>
+                        <td class="px-2 py-3 font-medium text-center align-middle text-emerald-500">
+                            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full opacity-90">
+                                    <span class="relative flex h-2 w-2">
+                                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-30"></span>
+                                        <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                                    </span>
+                                <span class="text-xs font-medium text-emerald-600 dark:text-emerald-400">正常</span>
+                            </div>
+                        </td>
+                        <td class="px-2 py-3 text-center align-middle"><span class="inline-flex items-center justify-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 dark:bg-indigo-900/20 text-indigo-900 dark:text-indigo-200 min-w-[30px]"><i class="ri-moon-line mr-1"></i>3</span></td>
+                        <td class="px-2 py-3 text-center align-middle">
+                            <button class="px-3 py-1.5 text-xs font-medium rounded bg-blue-500 text-white hover:bg-blue-600 transition-colors">
+                                详情
+                            </button>
+                        </td>
+                    </tr>
+
+                    <tr class="hover:bg-slate-50 dark:hover:bg-surface-dark-hover transition-colors border-t border-slate-100 dark:border-slate-800">
+                        <td rowspan="3" class="group px-2 py-3 font-semibold text-slate-800 dark:text-white border-r border-slate-100 dark:border-slate-800 align-middle bg-white dark:bg-surface-dark text-center cursor-default">
+                            <div class="transition-transform duration-300 group-hover:-translate-y-1">
+                                清江流域
+                            </div>
+                            <div class="text-xs text-slate-500 dark:text-slate-400 mt-2 py-2 border-t border-slate-50 dark:border-slate-800 opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 pointer-events-none">
+                                企业总数: 277<br>
+                                报警次数: 1<br>
+                                "夜猫子"企业: 3
+                            </div>
+                        </td>
+                        <td class="px-2 py-3 text-slate-600 dark:text-slate-300 text-center align-middle">清江片区</td>
+                        <td class="px-2 py-3 font-medium text-center align-middle">160</td>
+                        <td class="px-2 py-3 font-medium text-center align-middle text-emerald-500">
+                            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full opacity-90">
+                                    <span class="relative flex h-2 w-2">
+                                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-30"></span>
+                                        <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                                    </span>
+                                <span class="text-xs font-medium text-emerald-600 dark:text-emerald-400">正常</span>
+                            </div>
+                        </td>
+                        <td class="px-2 py-3 text-center align-middle">
+                                <span class="inline-flex items-center justify-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 dark:bg-indigo-900/20 text-indigo-900 dark:text-indigo-200 min-w-[30px]"><i class="ri-moon-line mr-1"></i>2
+                                </span>
+                        </td>
+                        <td class="px-2 py-3 text-center align-middle">
+                            <button class="px-3 py-1.5 text-xs font-medium rounded bg-blue-500 text-white hover:bg-blue-600 transition-colors">
+                                详情
+                            </button>
+                        </td>
+                    </tr>
+                    <tr class="hover:bg-slate-50 dark:hover:bg-surface-dark-hover transition-colors">
+                        <td class="px-2 py-3 text-slate-600 dark:text-slate-300 text-center align-middle">沅江澧水片区
+                        </td>
+                        <td class="px-2 py-3 font-medium text-center align-middle">75</td>
+                        <td class="px-2 py-3 font-medium text-center align-middle text-red-500">
+                            <div class="inline-flex items-center gap-2  px-3 py-1 rounded-full opacity-90">
+                                    <span class="relative flex h-2 w-2">
+                                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                                        <span class="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
+                                    </span>
+                                <span class="text-xs font-bold text-red-600 dark:text-red-400">1 次</span>
+                            </div>
+                        </td>
+                        <td class="px-2 py-3 text-center align-middle"><span class="inline-flex items-center justify-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 dark:bg-indigo-900/20 text-indigo-900 dark:text-indigo-200 min-w-[30px]"><i class="ri-moon-line mr-1"></i>1</span></td>
+                        <td class="px-2 py-3 text-center align-middle">
+                            <button class="px-3 py-1.5 text-xs font-medium rounded bg-blue-500 text-white hover:bg-blue-600 transition-colors">
+                                详情
+                            </button>
+                        </td>
+                    </tr>
+                    <tr class="hover:bg-slate-50 dark:hover:bg-surface-dark-hover transition-colors">
+                        <td class="px-2 py-3 text-slate-600 dark:text-slate-300 text-center align-middle">乌江片区</td>
+                        <td class="px-2 py-3 font-medium text-center align-middle">42</td>
+                        <td class="px-2 py-3 font-medium text-center align-middle text-emerald-500">
+                            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full opacity-90">
+                                    <span class="relative flex h-2 w-2">
+                                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-30"></span>
+                                        <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                                    </span>
+                                <span class="text-xs font-medium text-emerald-600 dark:text-emerald-400">正常</span>
+                            </div>
+                        </td>
+                        <td class="px-2 py-3 text-center align-middle"><span class="inline-flex items-center justify-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400 min-w-[30px]"><i class="ri-moon-line mr-1"></i>0</span></td>
+                        <td class="px-2 py-3 text-center align-middle">
+                            <button class="px-3 py-1.5 text-xs font-medium rounded bg-blue-500 text-white hover:bg-blue-600 transition-colors">
+                                详情
+                            </button>
+                        </td>
+                    </tr>
+
+                    </tbody>
+                </table>
+            </div>
+
+
+        </div>
+
+        <footer class="mt-auto pt-4 border-t border-slate-200 dark:border-slate-700 text-center text-xs text-slate-400">
+            <p>&copy; 2026 湖北省生态环境厅 · 版权所有</p>
+        </footer>
+    </main>
+</div>
+
+<script>
+    /* ---------------- Sidebar Logic ---------------- */
+    const sidebar = document.getElementById('sidebar');
+    const toggleBtn = document.getElementById('toggleSidebarBtn');
+    const toggleIcon = document.getElementById('toggleIcon');
+    let isCollapsed = false;
+
+    toggleBtn.addEventListener('click', () => {
+        isCollapsed = !isCollapsed;
+        if (isCollapsed) {
+            sidebar.classList.remove('w-[270px]');
+            sidebar.classList.add('w-[80px]', 'hide-text', 'collapsed-sidebar');
+            toggleIcon.style.transform = 'rotate(180deg)';
+        } else {
+            sidebar.classList.remove('w-[80px]', 'hide-text', 'collapsed-sidebar');
+            sidebar.classList.add('w-[270px]');
+            toggleIcon.style.transform = 'rotate(0deg)';
+        }
+        // Resize charts when sidebar toggles
+        setTimeout(() => {
+            chartDonut1 && chartDonut1.resize();
+            chartDonut2 && chartDonut2.resize();
+        }, 300);
+    });
+
+    function toggleSubmenu(id) {
+        if (isCollapsed) return;
+        const submenu = document.getElementById(id);
+        const btn = submenu.previousElementSibling;
+        const chevron = btn.querySelector('.sidebar-chevron');
+
+        if (submenu.style.maxHeight) {
+            submenu.style.maxHeight = null;
+            chevron.style.transform = 'rotate(0deg)';
+        } else {
+            submenu.style.maxHeight = submenu.scrollHeight + "px";
+            chevron.style.transform = 'rotate(180deg)';
+        }
+    }
+
+    /* ---------------- Select Box Logic ---------------- */
+    const subBasinData = {
+        'changjiang': [
+            {val: 'hanjiang', text: '汉江水系'},
+            {val: 'minjiang', text: '岷江水系'},
+            {val: 'jialing', text: '嘉陵江水系'}
+        ],
+        'huaihe': [
+            {val: 'yishu', text: '沂沭泗水系'},
+            {val: 'huaihe_main', text: '淮河干流'}
+        ],
+        'huanghe': [
+            {val: 'weihe', text: '渭河水系'},
+            {val: 'fenhe', text: '汾河水系'}
+        ]
+    };
+
+    const elOne = document.getElementById('river-select-one');
+    const elTwo = document.getElementById('river-select-two');
+    const wrapOne = document.getElementById('wrapper-one');
+    const wrapTwo = document.getElementById('wrapper-two');
+
+    function handleLevelOneChange() {
+        const selectedValue = elOne.value;
+        checkValue('one');
+
+        // Reset Level 2
+        elTwo.innerHTML = '<option value="" disabled selected hidden>请选择二级流域</option>';
+        elTwo.value = "";
+        checkValue('two');
+
+        if (selectedValue && subBasinData[selectedValue]) {
+            elTwo.disabled = false;
+            subBasinData[selectedValue].forEach(item => {
+                const option = document.createElement('option');
+                option.value = item.val;
+                option.textContent = item.text;
+                elTwo.appendChild(option);
+            });
+        } else {
+            elTwo.disabled = true;
+        }
+    }
+
+    function clearSelection(level) {
+        if (level === 'one') {
+            elOne.value = "";
+            handleLevelOneChange();
+        } else {
+            elTwo.value = "";
+            checkValue('two');
+        }
+    }
+
+    function checkValue(level) {
+        const wrapper = level === 'one' ? wrapOne : wrapTwo;
+        const select = level === 'one' ? elOne : elTwo;
+
+        if (select.value && select.value !== "") {
+            wrapper.classList.add('has-value');
+        } else {
+            wrapper.classList.remove('has-value');
+        }
+    }
+
+    // Tab Switching Logic
+    function switchTab(el, type) {
+        const parent = el.parentElement;
+        parent.querySelectorAll('.toggle-btn').forEach(btn => {
+            btn.classList.remove('active');
+            btn.classList.add('inactive');
+        });
+        el.classList.remove('inactive');
+        el.classList.add('active');
+        console.log("Switched to:", type);
+    }
+
+    /* ---------------- Tooltip Logic (JavaScript Implementation) ---------------- */
+    const tooltipEl = document.getElementById('global-tooltip');
+
+    function showTooltip(event, text) {
+        tooltipEl.textContent = text;
+        tooltipEl.style.visibility = 'visible';
+        tooltipEl.style.opacity = '1';
+
+        // Initial positioning
+        moveTooltip(event);
+
+        // Track mouse move
+        event.target.addEventListener('mousemove', moveTooltip);
+    }
+
+    function hideTooltip() {
+        tooltipEl.style.visibility = 'hidden';
+        tooltipEl.style.opacity = '0';
+
+        // Remove listener (optional, but good practice if we had a precise target ref)
+    }
+
+    function moveTooltip(event) {
+        // Offset from mouse
+        const xOffset = 15;
+        const yOffset = 15;
+
+        let left = event.clientX + xOffset;
+        let top = event.clientY + yOffset;
+
+        // Prevent going off screen (right edge)
+        if (left + 250 > window.innerWidth) {
+            left = event.clientX - 260; // Flip to left side
+        }
+
+        tooltipEl.style.left = left + 'px';
+        tooltipEl.style.top = top + 'px';
+    }
+
+
+    /* ---------------- ECharts Initialization ---------------- */
+    let chartDonut1, chartDonut2;
+
+    function initCharts() {
+        // 1. Donut Chart 1: 污水处理厂类型 (半径调整以匹配图片)
+        const domDonut1 = document.getElementById('chart-donut-1');
+        chartDonut1 = echarts.init(domDonut1);
+        const optionDonut1 = {
+            title: {
+                text: '200',
+                subtext: '处理厂总数',
+                left: 'center',
+                top: '33%',
+                textStyle: {fontSize: 24, fontWeight: 'bold', color: '#1e293b'},
+                subtextStyle: {fontSize: 12, color: '#64748b'}
+            },
+            tooltip: {trigger: 'item'},
+            legend: {
+                bottom: '5%',
+                left: 'center',
+                icon: 'circle',
+                itemWidth: 8,
+                itemHeight: 8
+            },
+            series: [
+                {
+                    name: '污水处理厂类型',
+                    type: 'pie',
+                    radius: ['50%', '60%'], // 调整半径：更粗的圆环，匹配图片
+                    center: ['50%', '40%'],
+                    avoidLabelOverlap: false,
+                    label: {show: false},
+                    data: [
+                        {value: 120, name: '工业园区', itemStyle: {color: '#2b7cee'}},
+                        {value: 50, name: '城镇', itemStyle: {color: '#f59e0b'}},
+                        {value: 30, name: '其他', itemStyle: {color: '#94a3b8'}}
+                    ]
+                }
+            ]
+        };
+        chartDonut1.setOption(optionDonut1);
+
+        // 2. Donut Chart 2: 排污口类型 (半径调整以匹配图片)
+        const domDonut2 = document.getElementById('chart-donut-2');
+        chartDonut2 = echarts.init(domDonut2);
+        const optionDonut2 = {
+            title: {
+                text: '3.4w',
+                subtext: '排污口总数',
+                left: 'center',
+                top: '33%',
+                textStyle: {fontSize: 24, fontWeight: 'bold', color: '#1e293b'},
+                subtextStyle: {fontSize: 12, color: '#64748b'}
+            },
+            tooltip: {trigger: 'item'},
+            legend: {
+                bottom: '5%',
+                left: 'center',
+                icon: 'circle',
+                itemWidth: 8,
+                itemHeight: 8
+            },
+            series: [
+                {
+                    name: '排污口类型',
+                    type: 'pie',
+                    radius: ['50%', '60%'], // 调整半径：更粗的圆环，匹配图片
+                    center: ['50%', '40%'],
+                    avoidLabelOverlap: false,
+                    label: {show: false},
+                    data: [
+                        {value: 13667, name: '工业', itemStyle: {color: '#2b7cee'}},
+                        {value: 8542, name: '农业', itemStyle: {color: '#10b981'}},
+                        {value: 6833, name: '城镇', itemStyle: {color: '#f59e0b'}},
+                        {value: 5127, name: '其他', itemStyle: {color: '#94a3b8'}}
+                    ]
+                }
+            ]
+        };
+        chartDonut2.setOption(optionDonut2);
+    }
+
+    // Init
+    window.addEventListener('load', () => {
+        checkValue('one');
+        checkValue('two');
+
+        // Auto expand analysis menu
+        const submenu = document.getElementById('submenu-analysis');
+        if (submenu) {
+            submenu.style.maxHeight = submenu.scrollHeight + "px";
+            submenu.previousElementSibling.querySelector('.sidebar-chevron').style.transform = 'rotate(180deg)';
+        }
+
+        // Init Charts
+        initCharts();
+    });
+
+    // Handle Window Resize
+    window.addEventListener('resize', () => {
+        chartDonut1 && chartDonut1.resize();
+        chartDonut2 && chartDonut2.resize();
+    });
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>湖北省水环境自动站归因研判原型图 - 2026</title>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;700&display=swap');
+
+        :root {
+            --bg-body: #f0f2f5;
+            --bg-card: #ffffff;
+            --primary: #2563eb;
+            --primary-soft: #eff6ff;
+            --text-main: #1e293b;
+            --text-sub: #64748b;
+            --border: #e2e8f0;
+            --danger: #ef4444;
+            --danger-bg: #fef2f2;
+            --warning: #f59e0b;
+            --success: #10b981;
+            --success-bg: #ecfdf5;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+
+        body {
+            margin: 0;
+            padding: 20px;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            font-family: "Inter", "Noto Sans SC", sans-serif;
+            -webkit-font-smoothing: antialiased;
+            height: 100vh;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* --- 顶部导航 --- */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(8px);
+            padding: 12px 24px;
+            border-radius: 12px;
+            border: 1px solid white;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .header-left { display: flex; align-items: center; gap: 12px; }
+        .logo-block { width: 4px; height: 20px; background: var(--primary); border-radius: 2px; }
+        .title { font-size: 20px; font-weight: 700; color: #0f172a; letter-spacing: -0.5px; }
+
+        .controls { display: flex; gap: 10px; }
+
+        select, input[type="date"] {
+            padding: 8px 12px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 13px;
+            color: var(--text-main);
+            outline: none;
+            background: #fff;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+        select:hover, input:hover { border-color: #cbd5e1; }
+        select:focus, input:focus { border-color: var(--primary); box-shadow: 0 0 0 2px var(--primary-soft); }
+
+        /* --- 栅格布局 --- */
+        .grid-container {
+            display: grid;
+            grid-template-columns: 320px 1fr 340px;
+            gap: 16px;
+            flex: 1;
+            min-height: 0;
+        }
+
+        .column {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            min-height: 0;
+        }
+
+        /* --- 通用卡片 --- */
+        .card {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid rgba(255,255,255,0.6);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .card-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #334155;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .card-title::before {
+            content: '';
+            display: block;
+            width: 6px;
+            height: 6px;
+            background: var(--primary);
+            border-radius: 50%;
+        }
+
+        /* --- 左侧：核心概况样式 --- */
+        .overview-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px dashed var(--border);
+        }
+
+        .stat-box {
+            background: #f8fafc;
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .stat-label { font-size: 12px; color: var(--text-sub); margin-bottom: 4px; }
+        .stat-value { font-size: 16px; font-weight: 700; color: var(--text-main); }
+
+        .badge-level {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        .level-ok { background: var(--success-bg); color: var(--success); }
+        .level-bad { background: var(--danger-bg); color: var(--danger); }
+
+        .param-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+        }
+        .param-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 13px;
+            padding: 8px;
+            background: #fff;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+        }
+        .param-name { color: var(--text-sub); }
+        .param-val { font-family: 'Roboto Mono', monospace; font-weight: 600; color: #334155; }
+        .val-exceed { color: var(--danger); }
+
+        /* --- 左侧：滚动列表 --- */
+        .scroll-wrapper {
+            flex: 1;
+            overflow: hidden;
+            position: relative;
+            background: #f8fafc;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+        .scroll-list {
+            position: absolute;
+            width: 100%;
+            animation: scrollUp 25s linear infinite;
+        }
+        .scroll-list:hover { animation-play-state: paused; }
+
+        @keyframes scrollUp {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-50%); }
+        }
+
+        .log-item {
+            padding: 10px 12px;
+            border-bottom: 1px solid #e2e8f0;
+            background: #fff;
+            font-size: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .log-header { display: flex; justify-content: space-between; color: var(--text-sub); }
+        .log-body { display: flex; justify-content: space-between; align-items: center; }
+        .log-name { font-weight: 600; color: #334155; }
+        .log-status { padding: 1px 6px; border-radius: 3px; font-weight: 500; font-size: 11px; }
+        .status-iii { background: #e0f2fe; color: #0284c7; } /* 蓝 */
+        .status-iv { background: #fef3c7; color: #d97706; } /* 黄 */
+        .status-v { background: #fee2e2; color: #dc2626; } /* 红 */
+
+        .log-detail { font-size: 11px; color: var(--danger); margin-top: 2px; }
+
+        /* --- 中间：智能报告 (Visual Focus) --- */
+        .report-wrapper {
+            flex: 1;
+            overflow-y: auto;
+            padding-right: 8px;
+        }
+
+        .report-wrapper::-webkit-scrollbar { width: 4px; }
+        .report-wrapper::-webkit-scrollbar-track { background: transparent; }
+        .report-wrapper::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+
+        .report-section {
+            margin-bottom: 16px;
+            background: #f8fafc;
+            padding: 16px;
+            border-radius: 8px;
+            border: 1px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .report-section.active-warning {
+            background: #fff1f2;
+            border-color: #fecdd3;
+        }
+
+        .sec-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+            color: #0f172a;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        /* UPDATED ICON STYLES
+           改为容纳 SVG 的容器
+        */
+        .sec-icon {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: white;
+            border-radius: 6px;
+            box-shadow: 0 1px 3px rgba(37, 99, 235, 0.1);
+            border: 1px solid rgba(226, 232, 240, 0.8);
+            color: var(--primary);
+            flex-shrink: 0;
+        }
+
+        .sec-icon svg {
+            width: 14px;
+            height: 14px;
+            stroke-width: 2px;
+        }
+
+        .sec-text {
+            font-size: 14px;
+            line-height: 1.7;
+            color: #475569;
+            text-align: justify;
+        }
+        .highlight-red { color: var(--danger); font-weight: 600; background: rgba(239,68,68,0.08); padding: 0 4px; border-radius: 2px; }
+        .highlight-blue { color: var(--primary); font-weight: 600; }
+
+        /* --- 右侧：列表样式 --- */
+        .rank-list { padding-top: 5px; }
+        .rank-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        .rank-badge {
+            width: 24px;
+            height: 24px;
+            background: #f1f5f9;
+            color: #64748b;
+            font-size: 12px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            margin-right: 12px;
+        }
+        .rank-badge.top1 { background: #fee2e2; color: #ef4444; }
+        .rank-badge.top2 { background: #ffedd5; color: #f97316; }
+        .rank-badge.top3 { background: #e0f2fe; color: #0ea5e9; }
+
+        .rank-content { flex: 1; }
+        .rank-row { display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 13px; color: #334155; }
+        .rank-val { font-weight: 600; color: var(--text-main); }
+
+        .bar-bg { height: 6px; background: #f1f5f9; border-radius: 3px; overflow: hidden; }
+        .bar-fill { height: 100%; border-radius: 3px; background: var(--primary); transition: width 0.5s ease; }
+
+        /* Utility */
+        .text-xs { font-size: 12px; color: #94a3b8; }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <div class="header-left">
+        <div class="logo-block"></div>
+        <div class="title">湖北省水环境自动站归因研判原型图 - 2026 <span style="font-size:12px; background:#e0f2fe; color:var(--primary); padding:2px 6px; border-radius:4px; margin-left:5px; font-weight:normal;">V3.3</span></div>
+    </div>
+    <div class="controls">
+        <input type="date" id="dateSelect" value="2026-01-12">
+        <select id="stationSelect" onchange="refreshDashboard()">
+            <option value="river_1">汉江某干流断面 (河流)</option>
+            <option value="lake_1">洪湖中心监测点 (湖库)</option>
+        </select>
+    </div>
+</div>
+
+<div class="grid-container">
+
+    <div class="column">
+        <div class="card" style="height: auto;">
+            <div class="card-header">
+                <div class="card-title">当前水质概况</div>
+            </div>
+
+            <div id="overviewContent">
+            </div>
+        </div>
+
+        <div class="card" style="flex: 1; overflow: hidden; display: flex; flex-direction: column;">
+            <div class="card-header" style="margin-bottom:10px;">
+                <div class="card-title" id="relatedTitle">上游临近自动站 (24h)</div>
+                <div class="text-xs">实时推送</div>
+            </div>
+            <div class="scroll-wrapper">
+                <div class="scroll-list" id="scrollList">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="column">
+        <div class="card" style="height: 100%;">
+            <div class="card-header">
+                <div class="card-title">智能归因研判报告</div>
+                <div style="font-size:12px; color:var(--primary); background:var(--primary-soft); padding:4px 8px; border-radius:4px;">
+                    自动生成
+                </div>
+            </div>
+            <div class="report-wrapper" id="reportContent">
+            </div>
+        </div>
+    </div>
+
+    <div class="column">
+        <div class="card" style="height: 320px;">
+            <div class="card-header">
+                <div class="card-title">面源污染构成</div>
+                <select id="npsFilter" onchange="updateNPSChart()" style="padding:4px 8px; font-size:12px;">
+                    <option value="all">综合</option>
+                    <option value="总磷">总磷</option>
+                    <option value="氨氮">氨氮</option>
+                </select>
+            </div>
+            <div id="npsChart" style="width: 100%; height: 240px;"></div>
+        </div>
+
+        <div class="card" style="flex: 1;">
+            <div class="card-header">
+                <div class="card-title">点源贡献排行</div>
+                <select id="psFilter" onchange="updatePointSourceList()" style="padding:4px 8px; font-size:12px; width:80px;">
+                    <option value="总磷">总磷</option>
+                    <option value="氨氮">氨氮</option>
+                    <option value="氨氮">溶解氧</option>
+                    <option value="氨氮">COD</option>
+                </select>
+            </div>
+            <div id="psList" class="rank-list">
+            </div>
+            <div class="text-xs" style="margin-top:auto; text-align:center; padding-top:10px;">
+                * 数据基于点云扩散模型实时计算
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    // --- 定义SVG图标库 (Modern Outline Style) ---
+    const SVGIcons = {
+        // 现状诊断 - 剪贴板
+        diagnosis: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>`,
+
+        // 面源解析 - 饼状图/成分
+        source: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z" /><path stroke-linecap="round" stroke-linejoin="round" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z" /></svg>`,
+
+        // 关联分析 - 链接
+        link: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" /></svg>`,
+
+        // 气象研判 - 云朵
+        weather: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z" /></svg>`,
+
+        // 趋势预判 - 上升趋势
+        trend: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" /></svg>`
+    };
+
+    // --- 模拟数据 ---
+    const mockData = {
+        "river_1": {
+            type: "river",
+            name: "汉江某干流断面",
+            current: {
+                level: "IV类",
+                target: "III类",
+                isExceed: true,
+                exceedFactors: ["总磷"],
+                determinant: "总磷", // 定类因子
+                values: { "pH": 7.2, "溶解氧": 6.8, "氨氮": 0.65, "总磷": 0.24, "高锰酸盐": 4.5 },
+                limits: { "总磷": 0.2 }
+            },
+            relatedStations: [
+                { name: "丹江口下", time: "14:00", level: "II类", exceed: null },
+                { name: "襄阳段", time: "14:00", level: "IV类", exceed: "总磷(0.26)" }, // 超标
+                { name: "襄阳段", time: "13:00", level: "IV类", exceed: "总磷(0.25)" },
+                { name: "唐白河", time: "14:00", level: "III类", exceed: null },
+                { name: "丹江口下", time: "13:00", level: "II类", exceed: null },
+                { name: "唐白河", time: "13:00", level: "III类", exceed: null }
+            ],
+            nps: {
+                "all": { "城市面源": 30, "农业面源": 50, "自然面源": 20 },
+                "总磷": { "城市面源": 20, "农业面源": 70, "自然面源": 10 },
+                "氨氮": { "城市面源": 60, "农业面源": 30, "自然面源": 10 }
+            },
+            pointSources: [
+                { name: "XX化肥厂", factor: "总磷", value: 45 },
+                { name: "XX食品加工", factor: "总磷", value: 25 },
+                { name: "市政排口A", factor: "总磷", value: 10 },
+                { name: "XX化肥厂", factor: "氨氮", value: 15 },
+                { name: "市政排口A", factor: "氨氮", value: 55 }
+            ],
+            // 气象影响配置
+            meteoImpact: {
+                "总磷": { temp: "负相关(轻微)", hum: "无明显影响", press: "正相关(显著)" },
+                "氨氮": { temp: "正相关(显著)", hum: "无明显影响", press: "无明显影响" }
+            },
+            forecast: [
+                { day: "1.13", val: 0.23, exceed: true },
+                { day: "1.14", val: 0.21, exceed: true },
+                { day: "1.15", val: 0.19, exceed: false }
+            ]
+        },
+        "lake_1": {
+            type: "lake",
+            name: "洪湖中心监测点",
+            current: {
+                level: "III类",
+                target: "III类",
+                isExceed: false,
+                exceedFactors: [],
+                determinant: "总磷",
+                values: { "pH": 7.8, "溶解氧": 7.5, "氨氮": 0.35, "总磷": 0.04, "高锰酸盐": 3.2 },
+                limits: { "总磷": 0.05 }
+            },
+            relatedStations: [
+                { name: "洪湖-东湖", time: "14:00", level: "III类", exceed: null },
+                { name: "入湖口", time: "14:00", level: "IV类", exceed: "总磷(0.06)" },
+                { name: "洪湖-西岸", time: "14:00", level: "III类", exceed: null },
+                { name: "入湖口", time: "13:00", level: "IV类", exceed: "总磷(0.07)" }
+            ],
+            nps: {
+                "all": { "城市面源": 10, "农业面源": 30, "自然面源": 60 },
+                "总磷": { "城市面源": 10, "农业面源": 20, "自然面源": 70 },
+                "氨氮": { "城市面源": 20, "农业面源": 60, "自然面源": 20 }
+            },
+            pointSources: [
+                { name: "湖周水产A", factor: "总磷", value: 30 },
+                { name: "湖周水产B", factor: "总磷", value: 20 },
+                { name: "旅游餐饮区", factor: "总磷", value: 15 }
+            ],
+            meteoImpact: {
+                "总磷": { temp: "无明显影响", hum: "无明显影响", press: "轻微影响" }
+            },
+            forecast: [
+                { day: "1.13", val: 0.04, exceed: false },
+                { day: "1.14", val: 0.04, exceed: false }
+            ]
+        }
+    };
+
+    let npsChartInstance = null;
+
+    function init() {
+        refreshDashboard();
+    }
+
+    function refreshDashboard() {
+        const id = document.getElementById('stationSelect').value;
+        const data = mockData[id];
+
+        renderOverview(data);
+        renderRelatedTicker(data);
+        updateNPSChart();
+        updatePointSourceList();
+        generateReport(data);
+    }
+
+    // 1. 核心概况
+    function renderOverview(data) {
+        const container = document.getElementById('overviewContent');
+        const c = data.current;
+
+        const exceedText = c.isExceed ? `<span style="color:var(--danger)">${c.exceedFactors.join(',')}</span>` : "无";
+        const levelClass = c.isExceed ? "level-bad" : "level-ok";
+
+        const topHtml = `
+            <div class="overview-grid">
+                <div class="stat-box">
+                    <div class="stat-label">当前水质</div>
+                    <div class="badge-level ${levelClass}">${c.level}</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">考核目标</div>
+                    <div class="stat-value" style="font-size:14px; color:#64748b;">${c.target}</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">超标因子</div>
+                    <div class="stat-value" style="font-size:13px;">${exceedText}</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">定类因子</div>
+                    <div class="stat-value" style="font-size:13px;">${c.determinant}</div>
+                </div>
+            </div>
+        `;
+
+        let paramHtml = '<div class="param-grid">';
+        for(let [k, v] of Object.entries(c.values)) {
+            let isBad = c.limits && c.limits[k] && v > c.limits[k];
+            let valColor = isBad ? 'val-exceed' : '';
+            paramHtml += `
+                <div class="param-item">
+                    <span class="param-name">${k}</span>
+                    <span class="param-val ${valColor}">${v}</span>
+                </div>
+            `;
+        }
+        paramHtml += '</div>';
+
+        container.innerHTML = topHtml + paramHtml;
+    }
+
+    // 2. 滚动列表
+    function renderRelatedTicker(data) {
+        const title = document.getElementById('relatedTitle');
+        const list = document.getElementById('scrollList');
+        title.innerText = data.type === 'river' ? "上游临近自动站 (24h)" : "湖库内其他自动站 (24h)";
+
+        let html = '';
+        data.relatedStations.forEach(item => {
+            let statusClass = "status-iii";
+            if(item.level.includes("IV")) statusClass = "status-iv";
+            if(item.level.includes("V") || item.level.includes("劣")) statusClass = "status-v";
+            if(item.level.includes("II") || item.level.includes("I")) statusClass = "status-iii";
+
+            let detailHtml = item.exceed ?
+                `<div class="log-detail">⚠️ 超标: ${item.exceed}</div>` :
+                `<div style="font-size:11px; color:#94a3b8;">各项指标正常</div>`;
+
+            html += `
+                <div class="log-item">
+                    <div class="log-header">
+                        <span>${item.time}</span>
+                        <span class="log-status ${statusClass}">${item.level}</span>
+                    </div>
+                    <div class="log-body">
+                        <span class="log-name">${item.name}</span>
+                    </div>
+                    ${detailHtml}
+                </div>
+            `;
+        });
+        list.innerHTML = html + html;
+    }
+
+    // 3. 面源图表
+    function updateNPSChart() {
+        const id = document.getElementById('stationSelect').value;
+        const filter = document.getElementById('npsFilter').value;
+        const npsData = mockData[id].nps[filter] || mockData[id].nps['all'];
+
+        const dom = document.getElementById('npsChart');
+        if (npsChartInstance) npsChartInstance.dispose();
+        npsChartInstance = echarts.init(dom);
+
+        const chartData = Object.keys(npsData).map(k => ({ value: npsData[k], name: k }));
+
+        const option = {
+            tooltip: { trigger: 'item' },
+            legend: { top: 'bottom', itemWidth: 8, itemHeight: 8, textStyle: {color: '#64748b'} },
+            color: ['#3b82f6', '#f59e0b', '#10b981'],
+            series: [
+                {
+                    name: '污染占比',
+                    type: 'pie',
+                    radius: ['45%', '70%'],
+                    center: ['50%', '45%'],
+                    itemStyle: { borderRadius: 6, borderColor: '#fff', borderWidth: 2 },
+                    data: chartData,
+                    label: { show: true, formatter: '{d}%', fontSize: 11, color: '#475569' }
+                }
+            ]
+        };
+        npsChartInstance.setOption(option);
+    }
+
+    // 4. 企业贡献
+    function updatePointSourceList() {
+        const id = document.getElementById('stationSelect').value;
+        const filterFactor = document.getElementById('psFilter').value;
+        const listContainer = document.getElementById('psList');
+        const allSources = mockData[id].pointSources;
+
+        const filtered = allSources.filter(s => s.factor === filterFactor)
+            .sort((a, b) => b.value - a.value)
+            .slice(0, 3);
+
+        let html = '';
+        if (filtered.length === 0) {
+            html = '<div style="text-align:center; color:#cbd5e1; margin-top:40px;">暂无关联企业数据</div>';
+        } else {
+            filtered.forEach((item, index) => {
+                html += `
+                    <div class="rank-item">
+                        <div class="rank-badge top${index+1}">${index+1}</div>
+                        <div class="rank-content">
+                            <div class="rank-row">
+                                <span>${item.name}</span>
+                                <span class="rank-val">${item.value}%</span>
+                            </div>
+                            <div class="bar-bg">
+                                <div class="bar-fill" style="width:${item.value}%"></div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+        listContainer.innerHTML = html;
+    }
+
+    // --- 辅助函数：找最大值的Key ---
+    function getKeyWithMaxValue(obj) {
+        return Object.keys(obj).reduce((a, b) => obj[a] > obj[b] ? a : b);
+    }
+
+    // 5. 智能研判报告
+    function generateReport(data) {
+        const container = document.getElementById('reportContent');
+        const sections = [];
+
+        // --- 第一部分：水质现状 ---
+        let sec1Content = `当前该自动站水质类别为 <b>${data.current.level}</b> (目标${data.current.target})，定类因子为 <b>${data.current.determinant}</b>。`;
+        if (data.current.isExceed) {
+            sec1Content += `监测数据显示，站点受 <span class="highlight-red">${data.current.exceedFactors.join('、')}</span> 影响，处于超标状态。`;
+        } else {
+            sec1Content += `当前水质状况良好，未出现超标现象。`;
+        }
+        // 使用 SVG 图标：diagnosis
+        sections.push({ title: "现状诊断", content: sec1Content, icon: SVGIcons.diagnosis, isBad: data.current.isExceed });
+
+
+        // --- 第二部分：面源归因 ---
+        const overallNPS = data.nps['all'];
+        const overallMax = getKeyWithMaxValue(overallNPS);
+        let sec2Content = `自动站整体受 <b>${overallMax}</b> (${overallNPS[overallMax]}%) 影响为主导。`;
+
+        if (data.current.isExceed) {
+            const badFactor = data.current.exceedFactors[0];
+            if (data.nps[badFactor]) {
+                const badFactorNPS = data.nps[badFactor];
+                const badFactorMax = getKeyWithMaxValue(badFactorNPS);
+                sec2Content += `<br>针对超标因子 <span class="highlight-red">${badFactor}</span>，模型分析显示其受 <b>${badFactorMax}</b> 影响最为显著。`;
+            }
+        }
+        // 使用 SVG 图标：source
+        sections.push({ title: "面源解析", content: sec2Content, icon: SVGIcons.source });
+
+
+        // --- 第三部分：关联分析 ---
+        let sec3Content = "";
+        const exceedStations = data.relatedStations.filter(s => s.exceed);
+        const hasUpstreamExceed = exceedStations.length > 0;
+
+        if (data.type === 'river') {
+            if (hasUpstreamExceed) {
+                const names = [...new Set(exceedStations.map(s => s.name))].join('、');
+                sec3Content = `上游最近自动站中 (${names}) 在24小时内存在超标数据，可能对下游断面产生输入性影响，建议开展上下游联防联控。`;
+            } else {
+                sec3Content = `上游临近自动站近24小时水质稳定，暂无明显超标数据输入，对本断面影响较小。`;
+            }
+        } else {
+            if (hasUpstreamExceed) {
+                const names = [...new Set(exceedStations.map(s => s.name))].join('、');
+                sec3Content = `湖库区域内其他自动站 (${names}) 在24小时内监测到超标数据，表明湖区整体水环境存在波动，可能对该点位产生扩散影响。`;
+            } else {
+                sec3Content = `湖库内其他自动站近24小时水质状况良好，未发现明显超标数据，湖区水质整体稳定。`;
+            }
+        }
+        // 使用 SVG 图标：link
+        sections.push({ title: "关联分析", content: sec3Content, icon: SVGIcons.link, isBad: hasUpstreamExceed });
+
+
+        // --- 第四部分：气象影响 ---
+        let sec4Content = "综合定性分析显示，该区域污染物浓度扩散与气象条件存在显著关联。<br>";
+
+        if (data.current.isExceed) {
+            data.current.exceedFactors.forEach(factor => {
+                const meteo = data.meteoImpact[factor];
+                if (meteo) {
+                    sec4Content += `<span class="highlight-blue">${factor}</span>超标研判：`;
+                    let details = [];
+                    if(meteo.temp.includes("相关")) details.push(`气温(${meteo.temp})`);
+                    if(meteo.hum.includes("相关")) details.push(`湿度(${meteo.hum})`);
+                    if(meteo.press.includes("相关") || meteo.press.includes("显著")) details.push(`气压(${meteo.press})`);
+
+                    if(details.length > 0) {
+                        sec4Content += `需重点关注 ${details.join('、')} 对浓度的影响。`;
+                    } else {
+                        sec4Content += `气温、湿度、气压影响较小。`;
+                    }
+                    sec4Content += "<br>";
+                }
+            });
+        } else {
+            sec4Content += "当前各项指标未超标，气象条件（气温、湿度、气压）处于适宜区间，无需特殊关注。";
+        }
+        // 使用 SVG 图标：weather
+        sections.push({ title: "气象研判", content: sec4Content, icon: SVGIcons.weather });
+
+
+        // --- 第五部分：趋势预测 ---
+        const futureBad = data.forecast.filter(d => d.exceed);
+        let sec5Content = "";
+        if (futureBad.length > 0) {
+            sec5Content = `基于预测模型分析，未来15天内，<span class="highlight-red">${futureBad.map(d=>d.day).join('、')}</span> 存在较高的超标风险，建议提前部署管控措施。`;
+        } else {
+            sec5Content = `未来15天水质演变趋势平稳，预计将持续保持达标状态，无明显超标风险。`;
+        }
+        // 使用 SVG 图标：trend
+        sections.push({ title: "趋势预判", content: sec5Content, icon: SVGIcons.trend, isBad: futureBad.length > 0 });
+
+
+        // --- 渲染HTML ---
+        let html = '';
+        sections.forEach(sec => {
+            const activeClass = sec.isBad ? 'active-warning' : '';
+            html += `
+                <div class="report-section ${activeClass}">
+                    <div class="sec-header">
+                        <div class="sec-icon">${sec.icon}</div>
+                        <span>${sec.title}</span>
+                    </div>
+                    <div class="sec-text">${sec.content}</div>
+                </div>
+            `;
+        });
+        container.innerHTML = html;
+    }
+
+    init();
+    window.addEventListener('resize', () => {
+        npsChartInstance && npsChartInstance.resize();
+    });
+</script>
+
+</body>
+</html>

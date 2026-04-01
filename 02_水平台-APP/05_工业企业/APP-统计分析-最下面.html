@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>地市排名复刻 - 保持Icon</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <style>
+        :root {
+            --primary-blue: #4482ff;
+            --rank-red: #f54336;
+            --rank-gray: #d1d5db;
+            --text-main: #334155;
+            --border-color: #f1f5f9;
+        }
+
+        body {
+            background-color: #f5f7fa;
+            font-family: -apple-system, "SF Pro Text", "Helvetica Neue", sans-serif;
+            display: flex;
+            justify-content: center;
+            padding: 40px;
+        }
+
+        .card {
+            background: #fff;
+            border-radius: 16px;
+            padding: 24px;
+            width: 440px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+        }
+
+        /* 顶部区域 */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .title-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* 复刻原图 Icon */
+        .custom-icon {
+            width: 20px;
+            height: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+        }
+        .custom-icon::before {
+            content: "1\2";
+            position: absolute;
+            left: -4px;
+            top: -2px;
+            font-size: 10px;
+            color: var(--primary-blue);
+            font-weight: bold;
+            transform: scale(0.8);
+        }
+        .custom-icon i {
+            display: block;
+            height: 2.5px;
+            background: var(--primary-blue);
+            border-radius: 2px;
+            margin-left: 8px;
+        }
+        .custom-icon i:nth-child(1) { width: 12px; }
+        .custom-icon i:nth-child(2) { width: 14px; }
+        .custom-icon i:nth-child(3) { width: 10px; }
+
+        .title-text {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-main);
+            letter-spacing: 0.5px;
+        }
+
+        /* 切换按钮 */
+        .switch-tabs {
+            display: flex;
+            background: #f1f5f9;
+            padding: 2px;
+            border-radius: 6px;
+        }
+        .tab-item {
+            padding: 4px 12px;
+            font-size: 12px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.2s;
+            color: #64748b;
+        }
+        .tab-item.active {
+            background: #fff;
+            color: var(--primary-blue);
+            font-weight: bold;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        /* 列表区域 */
+        .rank-list {
+            margin-top: 20px;
+            border-top: 1px solid var(--border-color);
+            padding-top: 20px;
+        }
+
+        .rank-row {
+            display: flex;
+            margin-bottom: 24px;
+            transition: transform 0.5s ease;
+        }
+
+        .rank-num {
+            width: 24px;
+            height: 24px;
+            background: var(--rank-gray);
+            color: #fff;
+            border-radius: 6px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 14px;
+            font-weight: bold;
+            margin-right: 16px;
+        }
+        .rank-row:nth-child(-n+3) .rank-num {
+            background: var(--rank-red);
+        }
+
+        .content-wrap {
+            flex: 1;
+        }
+
+        .label-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+        .city-name {
+            font-size: 16px;
+            color: #1e293b;
+            font-weight: 500;
+        }
+        .value-num {
+            font-size: 15px;
+            color: #94a3b8;
+        }
+
+        /* 进度条 */
+        .progress-bg {
+            height: 6px;
+            background: #f1f5f9;
+            border-radius: 3px;
+        }
+        .progress-fill {
+            height: 100%;
+            background: var(--primary-blue);
+            border-radius: 3px;
+            transition: width 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        /* 动画库 */
+        .list-move { transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
+    </style>
+</head>
+<body>
+
+<div id="app">
+    <div class="card">
+        <div class="header">
+            <div class="title-container">
+                <div class="custom-icon">
+                    <i></i><i></i><i></i>
+                </div>
+                <div class="title-text">地市{{ typeName }}排名 TOP5</div>
+            </div>
+            <div class="switch-tabs">
+                <div class="tab-item" :class="{active: currentType === 'exceed'}" @click="currentType = 'exceed'">超标</div>
+                <div class="tab-item" :class="{active: currentType === 'alarm'}" @click="currentType = 'alarm'">报警</div>
+            </div>
+        </div>
+
+        <div class="rank-list">
+            <transition-group name="list">
+                <div v-for="(item, index) in displayData" :key="item.name" class="rank-row">
+                    <div class="rank-num">{{ index + 1 }}</div>
+                    <div class="content-wrap">
+                        <div class="label-row">
+                            <span class="city-name">{{ item.name }}</span>
+                            <span class="value-num">{{ item.value }}次</span>
+                        </div>
+                        <div class="progress-bg">
+                            <div class="progress-fill" :style="{ width: (item.value / maxVal * 100) + '%' }"></div>
+                        </div>
+                    </div>
+                </div>
+            </transition-group>
+        </div>
+    </div>
+</div>
+
+<script>
+    const { createApp, ref, computed } = Vue;
+    createApp({
+        setup() {
+            const currentType = ref('exceed');
+
+            const rawData = {
+                exceed: [
+                    { name: '武汉市', value: 36 }, { name: '荆门市', value: 27 },
+                    { name: '十堰市', value: 25 }, { name: '黄冈市', value: 22 },
+                    { name: '仙桃市', value: 22 }
+                ],
+                alarm: [
+                    { name: '武汉市', value: 30 }, { name: '十堰市', value: 28 },
+                    { name: '宜昌市', value: 20 }, { name: '荆州市', value: 18 },
+                    { name: '黄石市', value: 12 }
+                ]
+            };
+
+            const typeName = computed(() => currentType.value === 'exceed' ? '超标' : '报警');
+            const displayData = computed(() => [...rawData[currentType.value]].sort((a,b) => b.value - a.value));
+            const maxVal = computed(() => Math.max(...displayData.value.map(d => d.value)) * 1.05);
+
+            return { currentType, typeName, displayData, maxVal };
+        }
+    }).mount('#app');
+</script>
+
+</body>
+</html>

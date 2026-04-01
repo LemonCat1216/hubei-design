@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>水质环境监测看板</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #1890ff;
+            --secondary-color: #f0f2f5;
+            --text-main: #333;
+            --text-sub: #888;
+            --card-bg: #ffffff;
+            --success: #52c41a;
+            --warning: #faad14;
+            --danger: #f5222d;
+            --bg-blue-light: #e6f7ff;
+            --bg-orange-light: #fff7e6;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+
+        body {
+            background-color: #f5f7fa;
+            display: flex;
+            justify-content: center;
+            padding-bottom: 60px; /* 为底部导航留出空间 */
+        }
+
+        /* 模拟手机容器 */
+        .app-container {
+            width: 100%;
+            max-width: 480px;
+            background-color: #f5f7fa;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        /* 通用卡片样式 */
+        .card {
+            background: var(--card-bg);
+            margin: 12px;
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        /* 头部排名部分 */
+        .ranking-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .dropdown-btn {
+            background: #fff;
+            border: 1px solid #ddd;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            color: var(--text-sub);
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .ranking-grid {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .rank-item {
+            flex: 1;
+            padding: 10px 5px;
+        }
+
+        .rank-item.main {
+            flex: 1.2;
+            background: linear-gradient(135deg, #1890ff 0%, #36cfc9 100%);
+            border-radius: 12px;
+            color: white;
+            padding: 20px 5px;
+            margin: 0 5px;
+            transform: translateY(-5px);
+            box-shadow: 0 4px 10px rgba(24, 144, 255, 0.3);
+            position: relative;
+        }
+
+        .rank-item.main::after {
+            content: '\f091'; /* Trophy Icon */
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            position: absolute;
+            bottom: -10px;
+            right: -5px;
+            font-size: 40px;
+            opacity: 0.2;
+            color: white;
+        }
+
+        .rank-num {
+            font-size: 20px;
+            font-weight: bold;
+            display: block;
+            margin-bottom: 4px;
+        }
+        .rank-item.main .rank-num { font-size: 24px; }
+
+        .rank-desc {
+            font-size: 10px;
+            color: var(--text-sub);
+        }
+        .rank-item.main .rank-desc { color: rgba(255,255,255,0.9); }
+
+        /* 实时监测 & 过滤器 */
+        .filter-row {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+
+        .tag-select {
+            background: #f0f2f5;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            color: #666;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .monitor-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .stat-box {
+            border-radius: 8px;
+            padding: 15px;
+        }
+
+        .stat-box.green { background-color: #e6ffec; }
+        .stat-box.orange { background-color: #fff7e6; }
+
+        .stat-label { font-size: 12px; color: #666; margin-bottom: 5px; }
+        .stat-value { font-size: 24px; font-weight: bold; }
+        .stat-count { font-size: 12px; margin-top: 5px; }
+
+        .text-green { color: var(--success); }
+        .text-orange { color: var(--warning); }
+
+        /* 表格样式 */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+            margin-top: 10px;
+        }
+
+        .data-table th {
+            text-align: left;
+            color: #1890ff;
+            background: #f0f7ff;
+            padding: 8px;
+            font-weight: normal;
+        }
+
+        .data-table td {
+            padding: 8px;
+            border-bottom: 1px solid #eee;
+            color: #333;
+        }
+
+        /* 企业超标数据 */
+        .enterprise-stats {
+            display: flex;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            margin-top: 10px;
+            background: #f9faff;
+        }
+
+        .ent-item {
+            flex: 1;
+            text-align: center;
+            padding: 15px;
+            border-right: 1px solid #eee;
+        }
+        .ent-item:last-child { border-right: none; }
+
+        .ent-num { font-size: 18px; font-weight: bold; color: var(--primary-color); display: block; }
+        .ent-num.warning { color: var(--warning); }
+        .ent-desc { font-size: 11px; color: var(--text-sub); }
+
+        /* 预测数据图表占位 */
+        .chart-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .chart-tab {
+            flex: 1;
+            text-align: center;
+            padding: 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            color: white;
+            font-weight: bold;
+        }
+        .bg-blue { background-color: var(--primary-color); }
+        .bg-red { background-color: var(--danger); }
+
+        .chart-placeholder {
+            height: 150px;
+            border-left: 1px solid #ddd;
+            border-bottom: 1px solid #ddd;
+            position: relative;
+            margin: 10px;
+        }
+        .chart-line {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 60%;
+            border-top: 2px dashed #ddd;
+        }
+        .chart-line::after {
+            content: '暂无趋势数据';
+            position: absolute;
+            top: -20px;
+            left: 40%;
+            font-size: 10px;
+            color: #ccc;
+        }
+
+        /* ==================== 省级问题识别样式 ==================== */
+        .problem-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-top: 10px;
+        }
+        .problem-item {
+            background-color: #f7f9fc;
+            border-radius: 8px;
+            padding: 12px 5px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid transparent;
+        }
+        .problem-item:active {
+            transform: scale(0.98);
+            background-color: #e6f7ff;
+        }
+        .problem-count {
+            font-size: 18px;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 4px;
+            display: block;
+        }
+        .problem-count.red { color: var(--danger); }
+        .problem-count.orange { color: var(--warning); }
+
+        .problem-label {
+            font-size: 12px;
+            color: #666;
+        }
+
+        /* 弹窗样式 */
+        .modal-overlay {
+            display: none; /* 默认隐藏 */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .modal-box {
+            background: white;
+            width: 100%;
+            max-width: 400px;
+            border-radius: 12px;
+            overflow: hidden;
+            animation: slideIn 0.3s ease-out;
+            display: flex;
+            flex-direction: column;
+            /* 整体最大高度，防溢出屏幕 */
+            max-height: 85vh;
+        }
+        @keyframes slideIn {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .modal-header {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #fafafa;
+            flex-shrink: 0;
+        }
+        .modal-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #333;
+        }
+        .modal-more {
+            font-size: 13px;
+            color: var(--primary-color);
+            cursor: pointer;
+        }
+        .modal-content-list {
+            padding: 0;
+            /* 关键修改：设置最大高度为约 330px (5条数据的高度) */
+            /* 如果数据超过这个高度，会出现滚动条 */
+            max-height: 330px;
+            overflow-y: auto;
+            flex: 1;
+            padding-bottom: 10px;
+            -webkit-overflow-scrolling: touch;
+        }
+        .modal-item {
+            padding: 12px 15px;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+        }
+        .modal-item:last-child { border-bottom: none; }
+        .m-title { font-size: 14px; color: #333; margin-bottom: 5px; }
+        .m-info { font-size: 12px; color: #999; display: flex; justify-content: space-between;}
+
+        /* ==================== 结束新增样式 ==================== */
+
+        /* 断面占比圆环与网格 */
+        .donut-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px 0;
+        }
+        .donut-chart {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: conic-gradient(
+                    #1890ff 0% 51.6%,
+                    #69c0ff 51.6% 88.3%,
+                    #52c41a 88.3% 99.5%,
+                    #f5222d 99.5% 100%
+            );
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-right: 20px;
+        }
+        .donut-inner {
+            width: 70px;
+            height: 70px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 2;
+        }
+        .donut-stats h3 { font-size: 24px; color: var(--primary-color); }
+        .donut-stats p { font-size: 10px; color: #666; }
+
+        .quality-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-top: 10px;
+        }
+        .quality-item {
+            background: #f0f7ff;
+            border-radius: 6px;
+            padding: 8px;
+            text-align: center;
+        }
+        .quality-item.bg-green { background: #e6ffec; }
+        .quality-item.bg-orange { background: #fff7e6; }
+        .quality-item.bg-red { background: #fff1f0; }
+
+        .q-name { font-size: 12px; color: #666; margin-bottom: 4px; display: block;}
+        .q-pct { font-size: 13px; font-weight: bold; color: #333; display: block;}
+        .q-bar {
+            height: 16px;
+            border-radius: 8px;
+            color: white;
+            font-size: 10px;
+            line-height: 16px;
+            margin-top: 4px;
+            display: block;
+        }
+
+        /* 底部导航 */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            max-width: 480px;
+            background: white;
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            border-top: 1px solid #eee;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+            z-index: 100;
+        }
+        .nav-item {
+            text-align: center;
+            color: #999;
+            font-size: 10px;
+            cursor: pointer;
+        }
+        .nav-item.active { color: var(--primary-color); }
+        .nav-item i { font-size: 20px; margin-bottom: 2px; display: block; }
+
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+
+    <div class="card">
+        <div class="ranking-header">
+            <span class="section-title">当前排名情况</span>
+            <span class="dropdown-btn">累计月 <i class="fas fa-caret-down"></i></span>
+        </div>
+        <div class="ranking-grid">
+            <div class="rank-item">
+                <span class="rank-num">第 19 位</span>
+                <span class="rank-desc">全国各省<br>(自治区、直辖市)</span>
+            </div>
+            <div class="rank-item main">
+                <span class="rank-desc" style="color: #fff; opacity: 0.8;">中部六省排名</span>
+                <span class="rank-num">第 3 位</span>
+            </div>
+            <div class="rank-item">
+                <span class="rank-num">第 8 位</span>
+                <span class="rank-desc">长江经济带31省<br>(直辖市)</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="ranking-header">
+            <span class="section-title">实时监测状态</span>
+        </div>
+        <div class="filter-row">
+            <div class="tag-select">国控 <i class="fas fa-caret-down"></i></div>
+            <div class="tag-select">自动站 (时) <i class="fas fa-caret-down"></i></div>
+            <div class="tag-select" style="margin-left: auto;">2025-12-01 21:00:00 <i class="fas fa-calendar-alt"></i></div>
+        </div>
+
+        <div class="monitor-stats">
+            <div class="stat-box green">
+                <div class="stat-label">I-III类占比</div>
+                <div class="stat-value text-green">100%</div>
+                <div class="stat-count text-green">个数: 115</div>
+            </div>
+            <div class="stat-box orange">
+                <div class="stat-label">劣V类占比</div>
+                <div class="stat-value text-orange">0%</div>
+                <div class="stat-count text-orange">个数: 0</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="ranking-header">
+            <span class="section-title">水质实时超标情况</span>
+        </div>
+        <table class="data-table">
+            <thead>
+            <tr>
+                <th>断面名称</th>
+                <th>水质类别</th>
+                <th>地市</th>
+                <th>流域</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>西梁子湖湖心 (南北嘴)</td>
+                <td><b>Ⅱ类</b></td>
+                <td>武汉市</td>
+                <td>长江流域</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="card">
+        <div class="ranking-header">
+            <span class="section-title">自动监测企业超标数据 (近三十天)</span>
+        </div>
+        <div class="enterprise-stats">
+            <div class="ent-item">
+                <span class="ent-num">45 家</span>
+                <span class="ent-desc">超标数量</span>
+            </div>
+            <div class="ent-item">
+                <span class="ent-num warning">0 家</span>
+                <span class="ent-desc">报警数量</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="ranking-header">
+            <span class="section-title">断面预测数据</span>
+            <span class="dropdown-btn">今日 <i class="fas fa-caret-down"></i></span>
+        </div>
+        <div class="chart-tabs">
+            <div class="chart-tab bg-blue"><i class="fas fa-tint"></i> 预测断面 0个</div>
+            <div class="chart-tab bg-red"><i class="fas fa-exclamation-triangle"></i> 超标断面 0个</div>
+        </div>
+        <div class="chart-placeholder">
+            <div class="chart-line"></div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="ranking-header">
+            <span class="section-title">省级问题识别</span>
+            <span class="dropdown-btn">2025-12 <i class="fas fa-caret-down"></i></span>
+        </div>
+        <div class="problem-grid">
+            <div class="problem-item" onclick="showProblemDetails('水生态环境', 12)">
+                <span class="problem-count">12</span>
+                <span class="problem-label">水生态环境</span>
+            </div>
+            <div class="problem-item" onclick="showProblemDetails('重点工作', 5)">
+                <span class="problem-count">5</span>
+                <span class="problem-label">重点工作</span>
+            </div>
+            <div class="problem-item" onclick="showProblemDetails('环保舆情', 8)">
+                <span class="problem-count orange">8</span>
+                <span class="problem-label">环保舆情</span>
+            </div>
+            <div class="problem-item" onclick="showProblemDetails('水质预测', 15)">
+                <span class="problem-count red">15</span>
+                <span class="problem-label">水质预测</span>
+            </div>
+            <div class="problem-item" onclick="showProblemDetails('信访举报', 3)">
+                <span class="problem-count">3</span>
+                <span class="problem-label">信访举报</span>
+            </div>
+            <div class="problem-item" onclick="showProblemDetails('其他问题', 15)">
+                <span class="problem-count">15</span>
+                <span class="problem-label">其他问题</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="ranking-header">
+            <span class="section-title">断面占比</span>
+        </div>
+        <div class="filter-row">
+            <div class="tag-select">国控 <i class="fas fa-caret-down"></i></div>
+            <div class="tag-select">累计月 <i class="fas fa-caret-down"></i></div>
+            <div class="tag-select">2025-10 <i class="fas fa-caret-down"></i></div>
+        </div>
+
+        <div class="donut-container">
+            <div class="donut-chart">
+                <div class="donut-inner">
+                    <i class="fas fa-layer-group" style="color: #1890ff; font-size: 24px;"></i>
+                </div>
+            </div>
+            <div class="donut-stats">
+                <p>国控断面 <span style="color:#52c41a">190</span></p>
+                <div style="background: #f0f7ff; padding: 10px; border-radius: 8px; text-align: center; margin-top: 5px;">
+                    <h3 style="margin:0;">188</h3>
+                    <span style="font-size: 10px; color: #666;">10月实测断面</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="quality-grid">
+            <div class="quality-item">
+                <span class="q-name">I 类</span>
+                <span class="q-pct" style="color: #1890ff">3.7%</span>
+                <span class="q-bar" style="background: #1890ff">7个</span>
+            </div>
+            <div class="quality-item">
+                <span class="q-name">II 类</span>
+                <span class="q-pct" style="color: #40a9ff">47.9%</span>
+                <span class="q-bar" style="background: #40a9ff">90个</span>
+            </div>
+            <div class="quality-item">
+                <span class="q-name">III 类</span>
+                <span class="q-pct" style="color: #69c0ff">36.7%</span>
+                <span class="q-bar" style="background: #69c0ff">69个</span>
+            </div>
+            <div class="quality-item bg-green">
+                <span class="q-name">IV 类</span>
+                <span class="q-pct" style="color: #52c41a">11.2%</span>
+                <span class="q-bar" style="background: #52c41a">21个</span>
+            </div>
+            <div class="quality-item bg-orange">
+                <span class="q-name">V 类</span>
+                <span class="q-pct" style="color: #faad14">0%</span>
+                <span class="q-bar" style="background: #faad14">0个</span>
+            </div>
+            <div class="quality-item bg-red">
+                <span class="q-name">劣V 类</span>
+                <span class="q-pct" style="color: #f5222d">0.5%</span>
+                <span class="q-bar" style="background: #f5222d">1个</span>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div class="bottom-nav">
+    <div class="nav-item active">
+        <i class="fas fa-home"></i>
+        首页
+    </div>
+    <div class="nav-item">
+        <i class="fas fa-chart-line"></i>
+        工作台
+    </div>
+</div>
+
+<div id="problemModal" class="modal-overlay" onclick="closeModal(event)">
+    <div class="modal-box" onclick="event.stopPropagation()">
+        <div class="modal-header">
+            <span class="modal-title" id="modalTitle">问题详情</span>
+            <span class="modal-more" onclick="goToClueList()">更多 <i class="fas fa-angle-right"></i></span>
+        </div>
+        <div class="modal-content-list" id="modalList">
+        </div>
+    </div>
+</div>
+
+<script>
+    function showProblemDetails(category, count) {
+        const modal = document.getElementById('problemModal');
+        const titleEl = document.getElementById('modalTitle');
+        const listEl = document.getElementById('modalList');
+
+        titleEl.textContent = category + '问题 (' + count + ')';
+
+        // 模拟生成列表数据
+        let html = '';
+
+        // 修改：生成全部数据，不再限制为5条
+        // CSS 中的 .modal-content-list { max-height: 330px; overflow-y: auto; } 会控制视觉上只显示前5条
+        for(let i = 1; i <= count; i++) {
+            html += `
+                    <div class="modal-item">
+                        <div class="m-title">${category}相关问题反馈或监测异常点位-${i}</div>
+                        <div class="m-info">
+                            <span>状态: 待处理</span>
+                            <span>2025-12-21</span>
+                        </div>
+                    </div>
+                `;
+        }
+
+        listEl.innerHTML = html;
+        modal.style.display = 'flex';
+    }
+
+    function closeModal(event) {
+        const modal = document.getElementById('problemModal');
+        modal.style.display = 'none';
+    }
+
+    function goToClueList() {
+        // 这里可以替换为实际的跳转链接
+        alert('即将跳转至“问题线索清单”页面');
+    }
+</script>
+
+</body>
+</html>

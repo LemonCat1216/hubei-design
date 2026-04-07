@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>站点监测详情 - 环境监测数据仪表盘</title>
+<script src="https://modao.cc/agent-py/static/source/js/tailwindcss.3.4.3.js"></script>
+<script src="https://modao.cc/agent-py/static/source/js/iconify-icon.min.1.0.7.js"></script>
+<style>
+        @font-face {
+            font-family: 'PingFang SC';
+            src: local('PingFang SC');
+        }
+        body {
+            font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            background-color: #F8FAFC;
+            color: #1E293B;
+        }
+        .detail-card {
+            background: white;
+            border-radius: 24px;
+            padding: 20px;
+            box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.03);
+            border: 1px solid #F1F5F9;
+        }
+        .label-text {
+            font-size: 13px;
+            color: #64748B;
+            margin-bottom: 4px;
+        }
+        .value-text {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1E293B;
+        }
+    </style>
+</head>
+<body class="flex justify-center items-center min-h-screen">
+<div class="w-[375px] h-[812px] bg-white relative shadow-2xl rounded-[40px] overflow-hidden border-[8px] border-slate-900 flex flex-col">
+<!-- Status Bar (Mock) -->
+<div class="h-10 w-full flex justify-between items-center px-8 shrink-0">
+<span class="text-sm font-semibold text-slate-500">2026年04月02日 13:00</span>
+<div class="flex gap-1.5 items-center text-slate-500">
+<iconify-icon icon="mingcute:signal-fill" width="16"></iconify-icon>
+<iconify-icon icon="mingcute:wifi-line" width="16"></iconify-icon>
+<iconify-icon class="rotate-90" icon="mingcute:battery-fill" width="18"></iconify-icon>
+</div>
+</div>
+<!-- Header -->
+<header class="px-5 py-2 flex items-center gap-4 shrink-0">
+<a class="w-10 h-10 flex items-center justify-center rounded-full bg-slate-100 text-slate-600 active:scale-90 transition-transform" href="env_dashboard.html">
+<iconify-icon icon="mingcute:left-line" width="24"></iconify-icon>
+</a>
+<h1 class="text-xl font-bold tracking-tight text-slate-800">太平沙 站点详情</h1>
+</header>
+<!-- Main Content -->
+<main class="flex-1 overflow-y-auto px-5 py-6">
+<div class="flex items-center gap-3 mb-6">
+<div class="w-12 h-12 rounded-2xl bg-blue-600 text-white flex items-center justify-center shadow-md">
+<iconify-icon icon="mingcute:router-mesh-fill" width="28"></iconify-icon>
+</div>
+<div>
+<h2 class="text-xl font-bold text-slate-800">太平沙</h2>
+<p class="text-xs text-slate-400">水质自动监测站</p>
+</div>
+</div>
+<div class="space-y-4">
+<div class="detail-card">
+<div class="flex items-center gap-2 mb-4">
+<span class="w-1 h-4 bg-blue-500 rounded-full"></span>
+<h3 class="font-bold text-slate-800">监测信息</h3>
+</div>
+<div class="grid grid-cols-1 gap-5">
+<!-- 自动站名称 -->
+<div class="flex justify-between items-center border-b border-slate-50 pb-3">
+<div>
+<div class="label-text">自动站名称</div>
+<div class="value-text" id="site-name">太平沙</div>
+</div>
+<iconify-icon class="text-slate-300" icon="mingcute:tag-2-line" width="20"></iconify-icon>
+</div>
+<!-- 所属流域 -->
+<div class="flex justify-between items-center border-b border-slate-50 pb-3">
+<div>
+<div class="label-text">所属流域</div>
+<div class="value-text" id="site-basin">-</div>
+</div>
+<iconify-icon class="text-slate-300" icon="mingcute:waves-line" width="20"></iconify-icon>
+</div>
+<!-- 所属地市 -->
+<div class="flex justify-between items-center border-b border-slate-50 pb-3">
+<div>
+<div class="label-text">所属地市</div>
+<div class="value-text" id="site-city">-</div>
+</div>
+<iconify-icon class="text-slate-300" icon="mingcute:location-line" width="20"></iconify-icon>
+</div>
+<!-- 水体 -->
+<div class="flex justify-between items-center border-b border-slate-50 pb-3">
+<div>
+<div class="label-text">水体</div>
+<div class="value-text" id="site-water">-</div>
+</div>
+<iconify-icon class="text-slate-300" icon="mingcute:drop-line" width="20"></iconify-icon>
+</div>
+<!-- 超标因子 -->
+<div class="flex justify-between items-center">
+<div>
+<div class="label-text">超标因子</div>
+<div class="value-text text-orange-600" id="site-factor">-</div>
+</div>
+<div class="bg-orange-50 text-orange-600 px-2 py-0.5 rounded text-[10px] font-bold border border-orange-100">
+                                实时监测
+                            </div>
+</div>
+</div>
+</div>
+</div>
+<div class="mt-8 p-4 bg-slate-50 rounded-2xl border border-slate-100">
+<div class="flex items-center gap-2 mb-2 text-slate-500">
+<iconify-icon icon="mingcute:time-line" width="16"></iconify-icon>
+<span class="text-xs font-bold uppercase">更新于 2026-04-02 13:00</span>
+</div>
+<p class="text-[10px] text-slate-400 leading-relaxed">
+                    注：以上数据来源于自动监测系统实时传输，仅供内部参考。若需获取权威统计结果，请以生态环境部门正式公布的月报为准。
+                </p>
+</div>
+</main>
+<!-- Home Indicator (Mock) -->
+<div class="absolute bottom-1 left-1/2 -translate-x-1/2 w-32 h-1.5 bg-slate-900/10 rounded-full"></div>
+</div>
+<script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const params = new URLSearchParams(window.location.search);
+            
+            const name = params.get('name') || '太平沙';
+            const city = params.get('city') || '武汉市';
+            const basin = params.get('basin') || '长江流域';
+            const factor = params.get('factor') || '溶解氧 (低于标准)';
+            const water = params.get('water') || '长江';
+
+            document.getElementById('site-name').textContent = name;
+            document.getElementById('site-city').textContent = city;
+            document.getElementById('site-basin').textContent = basin;
+            document.getElementById('site-factor').textContent = factor;
+            document.getElementById('site-water').textContent = water;
+        });
+    </script>
+</body>
+</html>

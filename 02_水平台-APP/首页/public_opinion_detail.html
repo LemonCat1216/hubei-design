@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>舆情详情 - 环境监测数据仪表盘</title>
+<script src="https://modao.cc/agent-py/static/source/js/tailwindcss.3.4.3.js"></script>
+<script src="https://modao.cc/agent-py/static/source/js/iconify-icon.min.1.0.7.js"></script>
+<style>
+        @font-face {
+            font-family: 'PingFang SC';
+            src: local('PingFang SC');
+        }
+        body {
+            font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            background-color: #F0F2F5;
+            color: #1E293B;
+        }
+        .info-card {
+            background: white;
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+        .label {
+            font-size: 12px;
+            color: #94A3B8;
+            margin-bottom: 4px;
+        }
+        .value {
+            font-size: 14px;
+            font-weight: 600;
+            color: #334155;
+        }
+        .main-value {
+            font-size: 16px;
+            font-weight: 700;
+            color: #0F172A;
+        }
+    </style>
+</head>
+<body class="flex justify-center items-center min-h-screen">
+<div class="w-[375px] h-[812px] bg-[#F0F2F5] relative shadow-2xl rounded-[40px] overflow-hidden border-[8px] border-slate-900 flex flex-col">
+<!-- Status Bar -->
+<div class="h-10 w-full flex justify-between items-center px-8 shrink-0">
+<span class="text-sm font-semibold text-slate-500">2026年04月02日 13:00</span>
+<div class="flex gap-1.5 items-center text-slate-500">
+<iconify-icon icon="mingcute:signal-fill" width="16"></iconify-icon>
+<iconify-icon icon="mingcute:wifi-line" width="16"></iconify-icon>
+<iconify-icon class="rotate-90" icon="mingcute:battery-fill" width="18"></iconify-icon>
+</div>
+</div>
+<!-- Header -->
+<header class="px-4 py-2 flex items-center justify-between shrink-0 bg-white">
+<div class="flex items-center gap-3">
+<a class="w-8 h-8 flex items-center justify-center rounded-full text-slate-600 active:scale-90 transition-transform" href="env_dashboard.html">
+<iconify-icon icon="mingcute:left-line" width="24"></iconify-icon>
+</a>
+<h1 class="text-lg font-bold text-slate-800">舆情详情</h1>
+</div>
+<iconify-icon class="text-slate-400" icon="mingcute:more-2-line" width="20"></iconify-icon>
+</header>
+<!-- Main Content -->
+<main class="flex-1 overflow-y-auto px-4 py-4">
+<!-- Basic Info Card -->
+<div class="info-card">
+<div class="mb-4">
+<div class="label">舆情名称</div>
+<div class="main-value leading-snug" id="opinion-name">--</div>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div>
+<div class="label">舆情时间</div>
+<div class="value" id="opinion-time">--</div>
+</div>
+<div>
+<div class="label">舆情来源</div>
+<div class="value text-blue-600" id="opinion-source">--</div>
+</div>
+</div>
+</div>
+<!-- Media Info Card -->
+<div class="info-card">
+<h3 class="text-xs font-bold text-slate-400 mb-3 uppercase tracking-wider">发布信息</h3>
+<div class="grid grid-cols-2 gap-y-4 gap-x-4">
+<div>
+<div class="label">媒体名称</div>
+<div class="value" id="media-name">今日头条-新闻频道</div>
+</div>
+<div>
+<div class="label">作者昵称</div>
+<div class="value" id="author-name">环保先锋</div>
+</div>
+<div>
+<div class="label">发布地IP</div>
+<div class="value" id="publish-ip">江苏省</div>
+</div>
+<div>
+<div class="label">作者粉丝数</div>
+<div class="value" id="follower-count">15.6W</div>
+</div>
+</div>
+</div>
+<!-- Data Metrics Card -->
+<div class="info-card">
+<h3 class="text-xs font-bold text-slate-400 mb-3 uppercase tracking-wider">传播指标</h3>
+<div class="grid grid-cols-3 gap-y-5">
+<div class="text-center">
+<div class="label">阅读数</div>
+<div class="value text-slate-800 text-lg" id="read-count">125,482</div>
+</div>
+<div class="text-center">
+<div class="label">互动数</div>
+<div class="value text-slate-800 text-lg" id="interaction-count">3,421</div>
+</div>
+<div class="text-center">
+<div class="label">点赞数</div>
+<div class="value text-slate-800 text-lg" id="like-count">2,150</div>
+</div>
+<div class="text-center">
+<div class="label">评论数</div>
+<div class="value text-slate-800 text-lg" id="comment-count">864</div>
+</div>
+<div class="text-center">
+<div class="label">分享数</div>
+<div class="value text-slate-800 text-lg" id="share-count">407</div>
+</div>
+</div>
+</div>
+<!-- Content Analysis -->
+<div class="info-card">
+<h3 class="text-xs font-bold text-slate-400 mb-2 uppercase tracking-wider">内容摘要</h3>
+<p class="text-sm text-slate-600 leading-relaxed">
+                    该舆情信息涉及重点流域的水质安全及大坝运行状态。初步监测显示，相关话题在社交媒体引起了一定讨论。目前舆情趋势平稳，暂未发现明显的负面风险点。建议持续观察其互动数据的变化趋势。
+                </p>
+</div>
+</main>
+<!-- Home Indicator -->
+<div class="h-6 w-full flex justify-center items-center shrink-0">
+<div class="w-32 h-1.5 bg-slate-900/10 rounded-full"></div>
+</div>
+</div>
+<script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const params = new URLSearchParams(window.location.search);
+            
+            // Core fields from URL
+            const name = params.get('name') || '关于大坝长期闭闸导致下游生态流量减少的社会关注';
+            const time = params.get('time') || '2026-03-31 10:45:00';
+            const source = params.get('source') || '今日头条';
+
+            document.getElementById('opinion-name').textContent = name;
+            document.getElementById('opinion-time').textContent = time;
+            document.getElementById('opinion-source').textContent = source;
+
+            // Mock consistent data based on source
+            if (source === '抖音') {
+                document.getElementById('media-name').textContent = '抖音视频';
+                document.getElementById('author-name').textContent = '绿水青山看中国';
+                document.getElementById('publish-ip').textContent = '湖北省';
+                document.getElementById('follower-count').textContent = '28.4W';
+                
+                document.getElementById('read-count').textContent = '89,450';
+                document.getElementById('interaction-count').textContent = '12,302';
+                document.getElementById('like-count').textContent = '11,054';
+                document.getElementById('comment-count').textContent = '963';
+                document.getElementById('share-count').textContent = '285';
+                
+                const sourceEl = document.getElementById('opinion-source');
+                sourceEl.classList.remove('text-blue-600');
+                sourceEl.classList.add('text-rose-500');
+            } else if (source === '微博') {
+                document.getElementById('media-name').textContent = '新浪微博';
+                document.getElementById('author-name').textContent = '环境时评员';
+                document.getElementById('publish-ip').textContent = '北京市';
+                document.getElementById('follower-count').textContent = '52.1W';
+            }
+            
+            // Ensure all fields have data (handling empty states)
+            const fields = [
+                'opinion-name', 'opinion-time', 'opinion-source', 
+                'media-name', 'author-name', 'publish-ip', 'follower-count',
+                'read-count', 'interaction-count', 'like-count', 'comment-count', 'share-count'
+            ];
+            
+            fields.forEach(id => {
+                const el = document.getElementById(id);
+                if (el && (el.textContent === '--' || el.textContent === '')) {
+                    // Fallback mock data if not set above
+                    el.textContent = '加载失败';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

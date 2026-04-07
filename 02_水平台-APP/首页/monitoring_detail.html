@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>实时监测详情 - 环境监测数据仪表盘</title>
+<script src="https://modao.cc/agent-py/static/source/js/tailwindcss.3.4.3.js"></script>
+<script src="https://modao.cc/agent-py/static/source/js/iconify-icon.min.1.0.7.js"></script>
+<style>
+        @font-face {
+            font-family: 'PingFang SC';
+            src: local('PingFang SC');
+        }
+        body {
+            font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            background-color: #F8FAFC;
+            color: #1E293B;
+        }
+        .status-badge {
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body class="flex justify-center items-center min-h-screen">
+<div class="w-[375px] h-[812px] bg-white relative shadow-2xl rounded-[40px] overflow-hidden border-[8px] border-slate-900 flex flex-col">
+<!-- Status Bar (Mock) -->
+<div class="h-10 w-full flex justify-between items-center px-8 shrink-0">
+<span class="text-sm font-semibold text-slate-500">2026年04月02日 13:00</span>
+<div class="flex gap-1.5 items-center text-slate-500">
+<iconify-icon icon="mingcute:signal-fill" width="16"></iconify-icon>
+<iconify-icon icon="mingcute:wifi-line" width="16"></iconify-icon>
+<iconify-icon class="rotate-90" icon="mingcute:battery-fill" width="18"></iconify-icon>
+</div>
+</div>
+<!-- Header -->
+<header class="px-5 py-2 flex items-center gap-4 shrink-0">
+<a class="w-10 h-10 flex items-center justify-center rounded-full bg-slate-100 text-slate-600 active:scale-90 transition-transform" href="env_dashboard.html">
+<iconify-icon icon="mingcute:left-line" width="24"></iconify-icon>
+</a>
+<h1 class="text-xl font-bold tracking-tight text-slate-800" id="page-title">监测数据详情</h1>
+</header>
+<!-- Summary Header -->
+<div class="mx-5 mt-4 p-4 rounded-3xl bg-emerald-50 border border-emerald-100 flex justify-between items-center" id="summary-banner">
+<div>
+<div class="text-xs text-emerald-600 font-bold mb-1 uppercase tracking-wider" id="summary-label">I-III类水质占比</div>
+<div class="text-2xl font-black text-emerald-700" id="summary-value">93.3% <span class="text-sm font-medium opacity-70">/ 83个站点</span></div>
+</div>
+<div class="w-12 h-12 rounded-2xl bg-emerald-100 flex items-center justify-center text-emerald-600" id="summary-icon">
+<iconify-icon icon="mingcute:waves-fill" width="28"></iconify-icon>
+</div>
+</div>
+<!-- Main Content -->
+<main class="flex-1 overflow-y-auto px-5 py-6">
+<div class="flex justify-between items-center mb-4">
+<h2 class="font-bold text-base flex items-center gap-1.5">
+<span class="w-1 h-4 bg-blue-500 rounded-full"></span>
+                    站点详情列表
+                </h2>
+<span class="text-[11px] text-slate-400">2026-04-02 13:00</span>
+</div>
+<div class="bg-white rounded-3xl overflow-hidden border border-slate-100 shadow-sm">
+<table class="w-full text-[11px] text-left">
+<thead>
+<tr class="bg-slate-50 text-slate-400 border-b border-slate-100">
+<th class="p-3 font-semibold">地市</th>
+<th class="p-3 font-semibold">自动站名称</th>
+<th class="p-3 font-semibold">水质类别</th>
+<th class="p-3 font-semibold text-right">水质目标</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-slate-50" id="station-list">
+<!-- Content will be injected by script -->
+</tbody>
+</table>
+</div>
+<div class="mt-6 p-4 bg-slate-50 rounded-2xl border border-slate-100">
+<p class="text-[10px] text-slate-400 leading-relaxed text-center">
+                    注：以上数据来源于 2026年04月02日 自动监测实时传输。数据仅供参考，最终以官方发布的月报、年报为准。
+                </p>
+</div>
+</main>
+<!-- Home Indicator (Mock) -->
+<div class="absolute bottom-1 left-1/2 -translate-x-1/2 w-32 h-1.5 bg-slate-900/10 rounded-full"></div>
+</div>
+<script>
+        const dataMap = {
+            '1': {
+                title: 'I-III类水质详情',
+                bannerColor: 'bg-emerald-50',
+                bannerBorder: 'border-emerald-100',
+                labelColor: 'text-emerald-600',
+                valueColor: 'text-emerald-700',
+                iconBg: 'bg-emerald-100',
+                iconColor: 'text-emerald-600',
+                label: 'I-III类水质占比',
+                value: '93.3% / 83个站点',
+                stations: [
+                    { city: '广州', name: '大沙河口', category: 'II类', target: 'II类' },
+                    { city: '珠海', name: '竹仙洞', category: 'I类', target: 'I类' },
+                    { city: '佛山', name: '沙口', category: 'III类', target: 'III类' },
+                    { city: '东莞', name: '石龙', category: 'II类', target: 'III类' },
+                    { city: '中山', name: '横门', category: 'III类', target: 'III类' },
+                    { city: '肇庆', name: '封开', category: 'I类', target: 'II类' }
+                ]
+            },
+            '5': {
+                title: '劣V类水质详情',
+                bannerColor: 'bg-rose-50',
+                bannerBorder: 'border-rose-100',
+                labelColor: 'text-rose-600',
+                valueColor: 'text-rose-700',
+                iconBg: 'bg-rose-100',
+                iconColor: 'text-rose-600',
+                label: '劣V类水质占比',
+                value: '2.2% / 2个站点',
+                stations: [
+                    { city: '茂名', name: '热水河口', category: '劣V类', target: 'IV类' },
+                    { city: '湛江', name: '九洲江', category: '劣V类', target: 'III类' }
+                ]
+            }
+        };
+
+        const categoryColors = {
+            'I类': { bg: '#34D399', text: '#fff' },
+            'II类': { bg: '#10B981', text: '#fff' },
+            'III类': { bg: '#059669', text: '#fff' },
+            'IV类': { bg: '#FBBF24', text: '#fff' },
+            'V类': { bg: '#F97316', text: '#fff' },
+            '劣V类': { bg: '#EF4444', text: '#fff' }
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const params = new URLSearchParams(window.location.search);
+            const type = params.get('type') || '1';
+            const data = dataMap[type] || dataMap['1'];
+
+            document.getElementById('page-title').textContent = data.title;
+            
+            const banner = document.getElementById('summary-banner');
+            banner.className = `mx-5 mt-4 p-4 rounded-3xl ${data.bannerColor} border ${data.bannerBorder} flex justify-between items-center`;
+            
+            const label = document.getElementById('summary-label');
+            label.className = `text-xs ${data.labelColor} font-bold mb-1 uppercase tracking-wider`;
+            label.textContent = data.label;
+            
+            const value = document.getElementById('summary-value');
+            value.className = `text-2xl font-black ${data.valueColor}`;
+            value.textContent = data.value;
+            
+            const icon = document.getElementById('summary-icon');
+            icon.className = `w-12 h-12 rounded-2xl ${data.iconBg} flex items-center justify-center ${data.iconColor}`;
+
+            const stationList = document.getElementById('station-list');
+            stationList.innerHTML = data.stations.map(station => {
+                const catStyle = categoryColors[station.category] || { bg: '#94A3B8', text: '#fff' };
+                return `
+                    <tr class="active:bg-slate-50 transition-colors">
+                        <td class="p-3 text-slate-700 font-medium">${station.city}</td>
+                        <td class="p-3 text-slate-800 font-bold">${station.name}</td>
+                        <td class="p-3">
+                            <span class="status-badge" style="background-color: ${catStyle.bg}; color: ${catStyle.text};">
+                                ${station.category}
+                            </span>
+                        </td>
+                        <td class="p-3 text-right text-slate-400 font-medium">${station.target}</td>
+                    </tr>
+                `;
+            }).join('');
+        });
+    </script>
+</body>
+</html>

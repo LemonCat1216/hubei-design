@@ -129,25 +129,44 @@
         .page-content { flex: 1; padding: 20px 24px; }
         .page-title { font-size: 18px; font-weight: 600; color: var(--text-primary); margin-bottom: 18px; }
 
-        .filter-bar { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
-        .filter-group {
-            display: inline-flex; align-items: center;
+        /* ===== 筛选器：白色卡片，右侧布局 ===== */
+        .filter-card {
             background: var(--bg-white);
-            border-radius: 6px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-            padding: 3px;
             border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 16px 20px;
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        .filter-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
         .filter-btn {
-            padding: 6px 18px; font-size: 13px; color: var(--text-secondary);
-            cursor: pointer; border-radius: 4px; transition: all 0.2s;
-            border: none; background: transparent; font-family: inherit;
-            white-space: nowrap;
+            padding: 6px 16px;
+            font-size: 13px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.2s;
+            border: none;
+            background: transparent;
+            font-family: inherit;
         }
-        .filter-btn:hover { color: var(--text-primary); background: rgba(0,0,0,0.02); }
+        .filter-btn:hover { color: var(--text-primary); }
         .filter-btn.active {
-            background: var(--accent); color: #fff; font-weight: 500;
-            box-shadow: 0 2px 6px rgba(22,119,255,0.3);
+            background: var(--accent);
+            color: #fff;
+            font-weight: 500;
         }
 
         .stat-cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 20px; }
@@ -380,7 +399,9 @@
         <main class="page-content">
             <div class="page-title anim d1">用户登录统计</div>
 
-            <div class="filter-bar anim d2">
+            <!-- 筛选器：白色卡片，右侧布局 -->
+            <div class="filter-card anim d2">
+                <div class="filter-title">用户登录统计</div>
                 <div class="filter-group">
                     <button class="filter-btn active" onclick="switchTimeFilter(this)">今日</button>
                     <button class="filter-btn" onclick="switchTimeFilter(this)">昨日</button>
@@ -467,14 +488,14 @@
                 <div style="overflow-x:auto;">
                     <table class="data-table">
                         <thead>
-                            <tr>
-                                <th>用户名</th>
-                                <th>登录时间</th>
-                                <th>登录IP</th>
-                                <th>用户级别</th>
-                                <th>登录地市</th>
-                                <th>登录区县</th>
-                            </tr>
+                        <tr>
+                            <th>用户名</th>
+                            <th>登录时间</th>
+                            <th>登录IP</th>
+                            <th>用户级别</th>
+                            <th>登录地市</th>
+                            <th>登录区县</th>
+                        </tr>
                         </thead>
                         <tbody id="tableBody"></tbody>
                     </table>

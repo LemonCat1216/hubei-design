@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>用户登录统计 - 湖北省水生态环境综合管理</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        :root {
+            --bg-page: #f0f2f5;
+            --bg-white: #ffffff;
+            --bg-sidebar: #001529;
+            --bg-sidebar-hover: #002140;
+            --bg-sidebar-active: #003a6e;
+            --bg-table-head: #fafbfc;
+            --bg-table-stripe: #f7f9fb;
+            --border: #e8ecf0;
+            --border-light: #f0f2f5;
+            --border-accent: rgba(24,144,255,0.35);
+            --text-primary: #1f2937;
+            --text-secondary: #6b7280;
+            --text-muted: #9ca3af;
+            --text-sidebar: rgba(255,255,255,0.65);
+            --text-sidebar-active: #ffffff;
+            --accent: #1677ff;
+            --accent-light: #e6f4ff;
+            --accent-bg: rgba(22,119,255,0.06);
+            --success: #22c55e;
+            --success-bg: #f0fdf4;
+            --danger: #ef4444;
+            --danger-bg: #fef2f2;
+            --warning: #f59e0b;
+            --warning-bg: #fffbeb;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.04);
+            --shadow: 0 1px 4px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.06);
+            --radius: 8px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-page);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .app-layout { display: flex; min-height: 100vh; }
+
+        .sidebar {
+            width: 228px; min-width: 228px;
+            background: var(--bg-sidebar);
+            display: flex; flex-direction: column;
+            transition: width 0.3s cubic-bezier(.4,0,.2,1), min-width 0.3s cubic-bezier(.4,0,.2,1);
+            overflow: hidden; z-index: 50;
+        }
+        .sidebar.collapsed { width: 0; min-width: 0; }
+
+        .sidebar-header {
+            padding: 20px 18px 16px;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            white-space: nowrap;
+        }
+        .sidebar-brand { font-size: 17px; font-weight: 700; color: #fff; letter-spacing: 2px; margin-bottom: 4px; }
+        .sidebar-user { font-size: 12px; color: rgba(255,255,255,0.4); }
+
+        .sidebar-nav { flex: 1; padding: 8px 0; overflow-y: auto; white-space: nowrap; }
+
+        .nav-item {
+            display: flex; align-items: center;
+            padding: 10px 24px; font-size: 13.5px; color: var(--text-sidebar);
+            cursor: pointer; transition: all 0.2s;
+            text-decoration: none; border-left: 3px solid transparent;
+        }
+        .nav-item:hover { color: #fff; background: var(--bg-sidebar-hover); }
+        .nav-item.active { color: var(--text-sidebar-active); background: var(--bg-sidebar-active); border-left-color: var(--accent); }
+
+        .nav-item.indent { padding-left: 44px; font-size: 13px; }
+        .nav-item.indent::before {
+            content: ''; display: inline-block;
+            width: 5px; height: 5px; border-radius: 50%;
+            background: rgba(255,255,255,0.25); margin-right: 10px;
+            transition: background 0.2s; flex-shrink: 0;
+        }
+        .nav-item.indent.active::before { background: var(--accent); box-shadow: 0 0 6px rgba(22,119,255,0.5); }
+        .nav-item.indent:hover::before { background: rgba(255,255,255,0.5); }
+
+        .sidebar-footer { padding: 12px 24px; border-top: 1px solid rgba(255,255,255,0.08); white-space: nowrap; }
+        .sidebar-toggle {
+            font-size: 12px; color: rgba(255,255,255,0.4); cursor: pointer;
+            display: flex; align-items: center; gap: 6px; transition: color 0.2s;
+            background: none; border: none; font-family: inherit;
+        }
+        .sidebar-toggle:hover { color: rgba(255,255,255,0.7); }
+
+        .main-content { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+
+        .top-bar {
+            padding: 0 24px; height: 52px;
+            display: flex; align-items: center; justify-content: space-between;
+            background: var(--bg-white); border-bottom: 1px solid var(--border);
+            box-shadow: var(--shadow-sm); position: sticky; top: 0; z-index: 40;
+        }
+        .top-bar-left { display: flex; align-items: center; gap: 14px; }
+        .top-bar-toggle {
+            width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;
+            border: 1px solid var(--border); border-radius: 6px;
+            color: var(--text-secondary); cursor: pointer; background: var(--bg-white);
+            font-size: 14px; transition: all 0.2s;
+        }
+        .top-bar-toggle:hover { border-color: var(--accent); color: var(--accent); }
+        .top-bar-breadcrumb { font-size: 13px; color: var(--text-muted); }
+        .top-bar-breadcrumb span { color: var(--text-primary); font-weight: 500; }
+        .top-bar-right { display: flex; align-items: center; gap: 16px; }
+        .top-bar-time { font-size: 12px; color: var(--text-muted); font-family: 'DM Sans', sans-serif; }
+        .top-bar-icon {
+            width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;
+            border: 1px solid var(--border); border-radius: 6px;
+            color: var(--text-secondary); cursor: pointer; background: var(--bg-white);
+            font-size: 13px; transition: all 0.2s;
+        }
+        .top-bar-icon:hover { border-color: var(--accent); color: var(--accent); }
+
+        .page-content { flex: 1; padding: 20px 24px; }
+        .page-title { font-size: 18px; font-weight: 600; color: var(--text-primary); margin-bottom: 18px; }
+
+        .filter-bar { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+        .filter-group {
+            display: inline-flex; align-items: center;
+            background: var(--bg-white);
+            border-radius: 6px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            padding: 3px;
+            border: 1px solid var(--border);
+        }
+        .filter-btn {
+            padding: 6px 18px; font-size: 13px; color: var(--text-secondary);
+            cursor: pointer; border-radius: 4px; transition: all 0.2s;
+            border: none; background: transparent; font-family: inherit;
+            white-space: nowrap;
+        }
+        .filter-btn:hover { color: var(--text-primary); background: rgba(0,0,0,0.02); }
+        .filter-btn.active {
+            background: var(--accent); color: #fff; font-weight: 500;
+            box-shadow: 0 2px 6px rgba(22,119,255,0.3);
+        }
+
+        .stat-cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 20px; }
+        .stat-card {
+            background: var(--bg-white); border: 1px solid var(--border);
+            border-radius: var(--radius); padding: 20px;
+            box-shadow: var(--shadow-sm); transition: box-shadow 0.3s, transform 0.25s;
+            position: relative; overflow: hidden;
+        }
+        .stat-card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
+        .stat-card::after {
+            content: ''; position: absolute; top: 0; left: 0; right: 0;
+            height: 3px; border-radius: var(--radius) var(--radius) 0 0;
+            opacity: 0; transition: opacity 0.3s;
+        }
+        .stat-card:hover::after { opacity: 1; }
+        .stat-card.card-cyan::after { background: var(--accent); }
+        .stat-card.card-green::after { background: var(--success); }
+        .stat-card.card-amber::after { background: var(--warning); }
+        .stat-card.card-rose::after { background: var(--danger); }
+
+        .stat-card-icon {
+            width: 40px; height: 40px; border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 16px; margin-bottom: 14px;
+        }
+        .stat-card-icon.cyan { background: var(--accent-light); color: var(--accent); }
+        .stat-card-icon.green { background: var(--success-bg); color: var(--success); }
+        .stat-card-icon.amber { background: var(--warning-bg); color: var(--warning); }
+        .stat-card-icon.rose { background: var(--danger-bg); color: var(--danger); }
+
+        .stat-card-label { font-size: 13px; color: var(--text-secondary); margin-bottom: 8px; }
+        .stat-card-value {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 32px; font-weight: 700; color: var(--text-primary);
+            line-height: 1; margin-bottom: 10px; letter-spacing: -0.5px;
+        }
+        .stat-card-change { font-size: 12px; display: flex; align-items: center; gap: 4px; }
+        .stat-card-change.up { color: var(--danger); }
+        .stat-card-change.down { color: var(--success); }
+        .stat-card-change .change-text { color: var(--text-muted); }
+
+        .card {
+            background: var(--bg-white); border: 1px solid var(--border);
+            border-radius: var(--radius); padding: 20px;
+            box-shadow: var(--shadow-sm);
+        }
+        .card-full { margin-bottom: 20px; }
+
+        .card-title {
+            font-size: 14px; font-weight: 600; color: var(--text-primary);
+            margin-bottom: 16px; padding-bottom: 12px;
+            border-bottom: 1px solid var(--border);
+            position: relative;
+        }
+        .card-title::after {
+            content: ''; position: absolute; bottom: -1px; left: 0;
+            width: 40px; height: 2px; background: var(--accent); border-radius: 1px;
+        }
+
+        .table-top .card-title { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+        .table-top .card-title::after { display: none; }
+
+        .chart-tabs {
+            display: flex; gap: 0; margin-bottom: 16px;
+            border-bottom: 1px solid var(--border);
+            justify-content: flex-end;
+        }
+        .chart-tab {
+            padding: 8px 18px; font-size: 13px; color: var(--text-secondary);
+            cursor: pointer; border: none; background: none;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s; font-family: inherit;
+        }
+        .chart-tab:hover { color: var(--text-primary); }
+        .chart-tab.active { color: var(--accent); border-bottom-color: var(--accent); font-weight: 500; }
+
+        .chart-grid { display: grid; grid-template-columns: 1fr 360px; gap: 16px; margin-bottom: 20px; }
+
+        .donut-legend { display: flex; justify-content: center; gap: 40px; margin-top: 16px; }
+        .donut-legend-item { text-align: center; }
+        .donut-legend-dot { width: 8px; height: 8px; border-radius: 50%; margin: 0 auto 6px; }
+        .donut-legend-value { font-family: 'DM Sans', sans-serif; font-size: 22px; font-weight: 700; color: var(--text-primary); }
+        .donut-legend-label { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+
+        .table-top {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 16px; padding-bottom: 12px;
+            border-bottom: 1px solid var(--border);
+            position: relative;
+        }
+        .table-top::after {
+            content: ''; position: absolute; bottom: -1px; left: 0;
+            width: 40px; height: 2px; background: var(--accent); border-radius: 1px;
+        }
+
+        .btn-sm {
+            padding: 6px 14px; font-size: 12.5px; border-radius: 6px;
+            cursor: pointer; border: 1px solid var(--border);
+            background: var(--bg-white); color: var(--text-secondary);
+            font-family: inherit; transition: all 0.2s;
+            display: inline-flex; align-items: center; gap: 5px;
+            box-shadow: var(--shadow-sm);
+        }
+        .btn-sm:hover { border-color: var(--accent); color: var(--accent); }
+
+        .data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        .data-table thead th {
+            background: var(--bg-table-head); color: var(--text-secondary);
+            font-weight: 500; padding: 11px 14px; text-align: left;
+            border-bottom: 1px solid var(--border); white-space: nowrap;
+        }
+        .data-table tbody td {
+            padding: 11px 14px; border-bottom: 1px solid var(--border-light);
+            color: var(--text-primary); white-space: nowrap;
+        }
+        .data-table tbody tr { transition: background 0.15s; }
+        .data-table tbody tr:hover { background: var(--accent-bg); }
+        .data-table tbody tr:nth-child(even) { background: var(--bg-table-stripe); }
+        .data-table tbody tr:nth-child(even):hover { background: var(--accent-bg); }
+
+        .badge { display: inline-block; padding: 2px 10px; border-radius: 4px; font-size: 11.5px; font-weight: 500; }
+        .badge.province { background: var(--accent-light); color: var(--accent); }
+        .badge.city { background: var(--success-bg); color: #16a34a; }
+        .badge.district { background: var(--warning-bg); color: #d97706; }
+
+        .pagination {
+            display: flex; align-items: center; justify-content: space-between;
+            margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--border);
+        }
+        .pagination-info { font-size: 13px; color: var(--text-muted); }
+        .pagination-controls { display: flex; align-items: center; gap: 4px; }
+        .page-btn {
+            width: 30px; height: 30px; display: flex; align-items: center; justify-content: center;
+            font-size: 12px; color: var(--text-secondary); cursor: pointer;
+            border-radius: 6px; border: 1px solid var(--border);
+            background: var(--bg-white); font-family: inherit; transition: all 0.2s;
+        }
+        .page-btn:hover { border-color: var(--accent); color: var(--accent); }
+        .page-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+        .page-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+        .page-size { margin-left: 14px; font-size: 12px; color: var(--text-muted); display: flex; align-items: center; gap: 4px; }
+        .page-size select {
+            background: var(--bg-white); border: 1px solid var(--border);
+            color: var(--text-secondary); padding: 4px 8px; border-radius: 4px;
+            font-size: 12px; font-family: inherit;
+        }
+
+        .page-footer {
+            padding: 14px 24px; text-align: center;
+            font-size: 12px; color: var(--text-muted);
+            border-top: 1px solid var(--border); background: var(--bg-white);
+        }
+
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
+
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+        .anim { opacity: 0; animation: fadeUp 0.4s ease forwards; }
+        .d1 { animation-delay: .03s; } .d2 { animation-delay: .07s; }
+        .d3 { animation-delay: .11s; } .d4 { animation-delay: .15s; }
+        .d5 { animation-delay: .2s; } .d6 { animation-delay: .26s; }
+        .d7 { animation-delay: .32s; }
+
+        @media (max-width: 1280px) {
+            .stat-cards { grid-template-columns: repeat(2, 1fr); }
+            .chart-grid { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 768px) {
+            .sidebar { position: fixed; z-index: 100; height: 100vh; }
+            .sidebar.collapsed { width: 0; min-width: 0; }
+            .stat-cards { grid-template-columns: 1fr; }
+            .page-content { padding: 16px; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-layout">
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-brand">碧水荆灵</div>
+            <div class="sidebar-user">wangyunpeng</div>
+        </div>
+        <nav class="sidebar-nav">
+            <a class="nav-item" href="#"><span>总体概览</span></a>
+            <a class="nav-item" href="#"><span>形势分析</span></a>
+            <a class="nav-item indent" href="#">水环境分析</a>
+            <a class="nav-item indent" href="#">污染物分析</a>
+            <a class="nav-item" href="#"><span>空间分析</span></a>
+            <a class="nav-item" href="#"><span>水污染源</span></a>
+            <a class="nav-item" href="#"><span>问题聚焦</span></a>
+            <a class="nav-item" href="#"><span>专题应用</span></a>
+            <a class="nav-item indent" href="#">洪湖专题</a>
+            <a class="nav-item indent" href="#">梁子湖专题</a>
+            <a class="nav-item indent" href="#">斧头湖专题</a>
+            <a class="nav-item indent" href="#">丹江口水库专题</a>
+            <div style="height:1px;background:rgba(255,255,255,0.08);margin:12px 24px;"></div>
+            <a class="nav-item" href="#"><span>系统管理</span></a>
+            <a class="nav-item indent active" href="#">登录统计</a>
+        </nav>
+        <div class="sidebar-footer">
+            <button class="sidebar-toggle" onclick="toggleSidebar()">
+                <i class="fas fa-angle-left"></i> 收起侧栏
+            </button>
+        </div>
+    </aside>
+
+    <div class="main-content">
+        <header class="top-bar">
+            <div class="top-bar-left">
+                <button class="top-bar-toggle" onclick="toggleSidebar()" aria-label="切换侧边栏">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="top-bar-breadcrumb">系统管理 <span>/</span> <span>登录统计</span></div>
+            </div>
+            <div class="top-bar-right">
+                <div class="top-bar-time" id="topTime"></div>
+                <button class="top-bar-icon" aria-label="全屏" onclick="toggleFullscreen()">
+                    <i class="fas fa-expand"></i>
+                </button>
+            </div>
+        </header>
+
+        <main class="page-content">
+            <div class="page-title anim d1">用户登录统计</div>
+
+            <div class="filter-bar anim d2">
+                <div class="filter-group">
+                    <button class="filter-btn active" onclick="switchTimeFilter(this)">今日</button>
+                    <button class="filter-btn" onclick="switchTimeFilter(this)">昨日</button>
+                    <button class="filter-btn" onclick="switchTimeFilter(this)">近7天</button>
+                    <button class="filter-btn" onclick="switchTimeFilter(this)">近30天</button>
+                </div>
+            </div>
+
+            <div class="stat-cards">
+                <div class="stat-card card-cyan anim d2">
+                    <div class="stat-card-icon cyan"><i class="fas fa-chart-line"></i></div>
+                    <div class="stat-card-label">历史登录次数</div>
+                    <div class="stat-card-value" data-target="24568">0</div>
+                    <div class="stat-card-change up">
+                        <i class="fas fa-arrow-up" style="font-size:10px"></i> 12.5%
+                        <span class="change-text">较上月</span>
+                    </div>
+                </div>
+                <div class="stat-card card-green anim d3">
+                    <div class="stat-card-icon green"><i class="fas fa-sign-in-alt"></i></div>
+                    <div class="stat-card-label">今日登录</div>
+                    <div class="stat-card-value" data-target="1256">0</div>
+                    <div class="stat-card-change up">
+                        <i class="fas fa-arrow-up" style="font-size:10px"></i> 8.2%
+                        <span class="change-text">较昨日</span>
+                    </div>
+                </div>
+                <div class="stat-card card-amber anim d4">
+                    <div class="stat-card-icon amber"><i class="fas fa-users"></i></div>
+                    <div class="stat-card-label">历史登录人数</div>
+                    <div class="stat-card-value" data-target="8567">0</div>
+                    <div class="stat-card-change up">
+                        <i class="fas fa-arrow-up" style="font-size:10px"></i> 23.1%
+                        <span class="change-text">较上月</span>
+                    </div>
+                </div>
+                <div class="stat-card card-rose anim d5">
+                    <div class="stat-card-icon rose"><i class="fas fa-user-plus"></i></div>
+                    <div class="stat-card-label">历史注册人数</div>
+                    <div class="stat-card-value" data-target="328">0</div>
+                    <div class="stat-card-change up">
+                        <i class="fas fa-arrow-up" style="font-size:10px"></i> 15.3%
+                        <span class="change-text">较昨日</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="chart-grid anim d5">
+                <div class="card">
+                    <div class="card-title">登录趋势分析</div>
+                    <div class="chart-tabs">
+                        <button class="chart-tab active" onclick="switchTrendTab(this,'day')">日</button>
+                        <button class="chart-tab" onclick="switchTrendTab(this,'month')">月</button>
+                    </div>
+                    <div style="height:280px;"><canvas id="trendChart"></canvas></div>
+                </div>
+                <div class="card">
+                    <div class="card-title">登录类型分布</div>
+                    <div style="height:200px;"><canvas id="typeChart"></canvas></div>
+                    <div class="donut-legend">
+                        <div class="donut-legend-item">
+                            <div class="donut-legend-dot" style="background:var(--accent)"></div>
+                            <div class="donut-legend-value">72.3%</div>
+                            <div class="donut-legend-label">PC端</div>
+                        </div>
+                        <div class="donut-legend-item">
+                            <div class="donut-legend-dot" style="background:var(--warning)"></div>
+                            <div class="donut-legend-value">27.7%</div>
+                            <div class="donut-legend-label">APP端</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card card-full anim d6">
+                <div class="card-title">湖北省地市登录统计</div>
+                <div style="height:260px;"><canvas id="cityChart"></canvas></div>
+            </div>
+
+            <div class="card anim d7">
+                <div class="table-top">
+                    <div class="card-title">历史登录记录</div>
+                </div>
+                <div style="overflow-x:auto;">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>用户名</th>
+                                <th>登录时间</th>
+                                <th>登录IP</th>
+                                <th>用户级别</th>
+                                <th>登录地市</th>
+                                <th>登录区县</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody"></tbody>
+                    </table>
+                </div>
+                <div class="pagination" id="pagination"></div>
+            </div>
+        </main>
+
+        <footer class="page-footer">
+            &copy; 2026 湖北省生态环境厅 &middot; 版权所有 &nbsp;|&nbsp; 数据每5分钟自动更新
+        </footer>
+    </div>
+</div>
+
+<script>
+    function toggleSidebar() { document.getElementById('sidebar').classList.toggle('collapsed'); }
+
+    function updateTime() {
+        var now = new Date();
+        document.getElementById('topTime').textContent =
+            now.getFullYear() + '-' +
+            String(now.getMonth()+1).padStart(2,'0') + '-' +
+            String(now.getDate()).padStart(2,'0') + ' ' +
+            String(now.getHours()).padStart(2,'0') + ':' +
+            String(now.getMinutes()).padStart(2,'0') + ':' +
+            String(now.getSeconds()).padStart(2,'0');
+    }
+    updateTime(); setInterval(updateTime, 1000);
+
+    function switchTimeFilter(btn) {
+        btn.parentElement.querySelectorAll('.filter-btn').forEach(function(b) { b.classList.remove('active'); });
+        btn.classList.add('active');
+        animateCounters();
+    }
+
+    function animateCounters() {
+        document.querySelectorAll('.stat-card-value[data-target]').forEach(function(el) {
+            var target = parseInt(el.getAttribute('data-target'));
+            var startTime = null;
+            function step(ts) {
+                if (!startTime) startTime = ts;
+                var p = Math.min((ts - startTime) / 750, 1);
+                var ease = p === 1 ? 1 : 1 - Math.pow(2, -10 * p);
+                el.textContent = Math.floor(ease * target).toLocaleString();
+                if (p < 1) requestAnimationFrame(step);
+            }
+            requestAnimationFrame(step);
+        });
+    }
+
+    function toggleFullscreen() {
+        if (!document.fullscreenElement) document.documentElement.requestFullscreen().catch(function(){});
+        else document.exitFullscreen();
+    }
+
+    Chart.defaults.color = '#6b7280';
+    Chart.defaults.borderColor = '#f0f2f5';
+    Chart.defaults.font.family = "'DM Sans', 'Noto Sans SC', sans-serif";
+    Chart.defaults.font.size = 11;
+
+    var dayLabels = [], dayData1 = [], dayData2 = [];
+    for (var i = 29; i >= 0; i--) {
+        var d = new Date(); d.setDate(d.getDate() - i);
+        dayLabels.push((d.getMonth()+1) + '/' + d.getDate());
+        dayData1.push(Math.floor(900 + Math.random() * 600));
+        dayData2.push(Math.floor(700 + Math.random() * 500));
+    }
+    var monthLabels = ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
+    var monthData1 = [18200,21400,24600,22100,26800,28900,31200,29400,27600,30100,32800,24568];
+    var monthData2 = [15800,18200,20900,19300,23100,25200,27600,25800,24100,26300,28900,21400];
+
+    var trendCtx = document.getElementById('trendChart').getContext('2d');
+    var tg1 = trendCtx.createLinearGradient(0, 0, 0, 280);
+    tg1.addColorStop(0, 'rgba(22,119,255,0.15)');
+    tg1.addColorStop(1, 'rgba(22,119,255,0.0)');
+    var tg2 = trendCtx.createLinearGradient(0, 0, 0, 280);
+    tg2.addColorStop(0, 'rgba(34,197,94,0.12)');
+    tg2.addColorStop(1, 'rgba(34,197,94,0.0)');
+
+    var trendChart = new Chart(trendCtx, {
+        type: 'line',
+        data: {
+            labels: dayLabels,
+            datasets: [
+                { label: 'PC端登录', data: dayData1, borderColor: '#1677ff', backgroundColor: tg1, borderWidth: 2, pointRadius: 0, pointHoverRadius: 5, pointHoverBackgroundColor: '#1677ff', pointHoverBorderColor: '#fff', pointHoverBorderWidth: 2, fill: true, tension: 0.35 },
+                { label: 'APP端登录', data: dayData2, borderColor: '#22c55e', backgroundColor: tg2, borderWidth: 2, pointRadius: 0, pointHoverRadius: 5, pointHoverBackgroundColor: '#22c55e', pointHoverBorderColor: '#fff', pointHoverBorderWidth: 2, fill: true, tension: 0.35 }
+            ]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            interaction: { mode: 'index', intersect: false },
+            plugins: {
+                legend: { position: 'top', align: 'end', labels: { boxWidth: 12, boxHeight: 3, padding: 16 } },
+                tooltip: { backgroundColor: '#fff', borderColor: '#e8ecf0', borderWidth: 1, titleColor: '#1f2937', bodyColor: '#6b7280', padding: 12, cornerRadius: 8, boxShadow: '0 4px 12px rgba(0,0,0,0.08)' }
+            },
+            scales: {
+                x: { grid: { display: false }, ticks: { maxRotation: 0, autoSkipPadding: 20 } },
+                y: { grid: { color: '#f5f7fa' }, ticks: { padding: 8 } }
+            }
+        }
+    });
+
+    function switchTrendTab(btn, type) {
+        btn.parentElement.querySelectorAll('.chart-tab').forEach(function(t) { t.classList.remove('active'); });
+        btn.classList.add('active');
+        if (type === 'day') {
+            trendChart.data.labels = dayLabels;
+            trendChart.data.datasets[0].data = dayData1;
+            trendChart.data.datasets[1].data = dayData2;
+        } else {
+            trendChart.data.labels = monthLabels;
+            trendChart.data.datasets[0].data = monthData1;
+            trendChart.data.datasets[1].data = monthData2;
+        }
+        trendChart.update('active');
+    }
+
+    new Chart(document.getElementById('typeChart').getContext('2d'), {
+        type: 'doughnut',
+        data: {
+            labels: ['PC端', 'APP端'],
+            datasets: [{ data: [72.3, 27.7], backgroundColor: ['#1677ff', '#f59e0b'], borderColor: ['#fff', '#fff'], borderWidth: 3, hoverOffset: 6 }]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false, cutout: '68%',
+            plugins: {
+                legend: { display: false },
+                tooltip: { backgroundColor: '#fff', borderColor: '#e8ecf0', borderWidth: 1, titleColor: '#1f2937', bodyColor: '#6b7280', padding: 12, cornerRadius: 8, boxShadow: '0 4px 12px rgba(0,0,0,0.08)', callbacks: { label: function(c) { return c.label + '：' + c.parsed + '%'; } } }
+            }
+        }
+    });
+
+    var cityNames = ['武汉市','襄阳市','宜昌市','荆州市','黄冈市','十堰市','孝感市','荆门市','鄂州市','黄石市','咸宁市','随州市','恩施州','仙桃市','天门市','潜江市','神农架'];
+    var cityValues = [4820,3210,2870,2540,2180,1960,1740,1520,1380,1250,1120,980,860,720,640,510,320];
+    var cityCtx = document.getElementById('cityChart').getContext('2d');
+    var cg = cityCtx.createLinearGradient(0, 0, 0, 260);
+    cg.addColorStop(0, '#1677ff');
+    cg.addColorStop(1, '#69b1ff');
+
+    new Chart(cityCtx, {
+        type: 'bar',
+        data: { labels: cityNames, datasets: [{ label: '登录次数', data: cityValues, backgroundColor: cg, borderRadius: 4, hoverBackgroundColor: '#4096ff', barPercentage: 0.6 }] },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: { legend: { display: false }, tooltip: { backgroundColor: '#fff', borderColor: '#e8ecf0', borderWidth: 1, titleColor: '#1f2937', bodyColor: '#6b7280', padding: 12, cornerRadius: 8, boxShadow: '0 4px 12px rgba(0,0,0,0.08)', callbacks: { label: function(c) { return '登录次数：' + c.parsed.y.toLocaleString(); } } } },
+            scales: {
+                x: { grid: { display: false }, ticks: { maxRotation: 45, minRotation: 30, font: { size: 10 } } },
+                y: { grid: { color: '#f5f7fa' }, ticks: { padding: 8 } }
+            }
+        }
+    });
+
+    var tableData = [
+        { name:'张三', time:'2024-05-20 08:25:36', ip:'192.168.1.101', level:'province', lt:'省级用户', city:'武汉市', dist:'武昌区' },
+        { name:'李四', time:'2024-05-20 08:20:15', ip:'192.168.1.102', level:'city', lt:'市级用户', city:'襄阳市', dist:'襄城区' },
+        { name:'王五', time:'2024-05-20 08:15:22', ip:'192.168.1.103', level:'city', lt:'市级用户', city:'宜昌市', dist:'西陵区' },
+        { name:'赵六', time:'2024-05-20 08:10:45', ip:'192.168.1.104', level:'district', lt:'区县用户', city:'黄石市', dist:'下陆区' },
+        { name:'钱七', time:'2024-05-20 08:05:18', ip:'192.168.1.105', level:'district', lt:'区县用户', city:'十堰市', dist:'茅箭区' },
+        { name:'孙八', time:'2024-05-20 07:58:33', ip:'192.168.1.106', level:'province', lt:'省级用户', city:'武汉市', dist:'洪山区' },
+        { name:'周九', time:'2024-05-20 07:52:10', ip:'192.168.1.107', level:'city', lt:'市级用户', city:'荆州市', dist:'沙市区' },
+        { name:'吴十', time:'2024-05-20 07:45:48', ip:'192.168.1.108', level:'district', lt:'区县用户', city:'黄冈市', dist:'黄州区' },
+        { name:'郑十一', time:'2024-05-20 07:38:22', ip:'192.168.1.109', level:'city', lt:'市级用户', city:'孝感市', dist:'孝南区' },
+        { name:'冯十二', time:'2024-05-20 07:30:05', ip:'192.168.1.110', level:'district', lt:'区县用户', city:'荆门市', dist:'东宝区' },
+        { name:'陈十三', time:'2024-05-20 07:22:41', ip:'192.168.1.111', level:'province', lt:'省级用户', city:'武汉市', dist:'江汉区' },
+        { name:'褚十四', time:'2024-05-20 07:15:18', ip:'192.168.1.112', level:'city', lt:'市级用户', city:'咸宁市', dist:'咸安区' },
+        { name:'卫十五', time:'2024-05-20 07:08:55', ip:'192.168.1.113', level:'district', lt:'区县用户', city:'随州市', dist:'曾都区' },
+        { name:'蒋十六', time:'2024-05-20 07:01:30', ip:'192.168.1.114', level:'city', lt:'市级用户', city:'鄂州市', dist:'鄂城区' },
+        { name:'沈十七', time:'2024-05-20 06:54:12', ip:'192.168.1.115', level:'district', lt:'区县用户', city:'恩施州', dist:'恩施市' }
+    ];
+
+    var currentPage = 1, pageSize = 5;
+    var totalPages = Math.ceil(tableData.length / pageSize);
+
+    function renderTable() {
+        var tbody = document.getElementById('tableBody');
+        var start = (currentPage - 1) * pageSize;
+        var end = Math.min(start + pageSize, tableData.length);
+        var html = '';
+        for (var i = start; i < end; i++) {
+            var r = tableData[i];
+            html += '<tr><td>' + r.name + '</td><td style="font-family:DM Sans,sans-serif;font-size:12px;color:var(--text-secondary)">' + r.time + '</td><td style="font-family:DM Sans,sans-serif;font-size:12px;color:var(--text-secondary)">' + r.ip + '</td><td><span class="badge ' + r.level + '">' + r.lt + '</span></td><td>' + r.city + '</td><td>' + r.dist + '</td></tr>';
+        }
+        tbody.innerHTML = html;
+        renderPagination();
+    }
+
+    function renderPagination() {
+        var pg = document.getElementById('pagination');
+        var html = '<div class="pagination-info">共 ' + tableData.length + ' 条</div><div class="pagination-controls">';
+        html += '<button class="page-btn" onclick="goPage(' + (currentPage-1) + ')"' + (currentPage<=1?' disabled':'') + '><i class="fas fa-chevron-left" style="font-size:10px"></i></button>';
+        for (var i = 1; i <= totalPages; i++) html += '<button class="page-btn' + (i===currentPage?' active':'') + '" onclick="goPage(' + i + ')">' + i + '</button>';
+        html += '<button class="page-btn" onclick="goPage(' + (currentPage+1) + ')"' + (currentPage>=totalPages?' disabled':'') + '><i class="fas fa-chevron-right" style="font-size:10px"></i></button>';
+        html += '<div class="page-size"><select onchange="changePageSize(this.value)"><option value="5"' + (pageSize===5?' selected':'') + '>5条/页</option><option value="10"' + (pageSize===10?' selected':'') + '>10条/页</option><option value="15"' + (pageSize===15?' selected':'') + '>15条/页</option></select></div></div>';
+        pg.innerHTML = html;
+    }
+
+    function goPage(p) { if (p>=1 && p<=totalPages) { currentPage=p; renderTable(); } }
+    function changePageSize(v) { pageSize=parseInt(v); totalPages=Math.ceil(tableData.length/pageSize); currentPage=1; renderTable(); }
+    renderTable();
+
+    window.addEventListener('load', function() { setTimeout(animateCounters, 300); });
+</script>
+</body>
+</html>

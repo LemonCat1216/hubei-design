@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>操作日志记录查询 - 湖北省水生态环境综合管理</title>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+          rel="stylesheet"/>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography,container-queries"></script>
+
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#1d4ed8",
+                        "background-light": "#f1f5f9",
+                        "background-dark": "#0f172a",
+                    },
+                    fontFamily: {
+                        display: ["Inter", "system-ui", "-apple-system", "sans-serif"],
+                    },
+                },
+            },
+        };
+    </script>
+
+    <style type="text/tailwindcss">
+        body {
+            font-family: 'PingFang SC', 'Microsoft YaHei', -apple-system, sans-serif;
+            overflow: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .tabular-nums {
+            font-variant-numeric: tabular-nums;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background-color: rgba(148, 163, 184, 0.4);
+            border-radius: 9999px;
+            border: 2px solid transparent;
+            background-clip: padding-box;
+            transition: background-color 0.3s ease;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background-color: rgba(148, 163, 184, 0.8);
+        }
+
+        .dark .custom-scrollbar::-webkit-scrollbar-thumb {
+            background-color: rgba(71, 85, 105, 0.4);
+        }
+        .dark .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background-color: rgba(71, 85, 105, 0.8);
+        }
+
+        .section-title-bar {
+            width: 4px;
+            height: 16px;
+            background: linear-gradient(180deg, #3b82f6 0%, #1d4ed8 100%);
+            border-radius: 4px;
+            margin-right: 8px;
+            box-shadow: 0 2px 4px rgba(59, 130, 246, 0.3);
+        }
+
+        .card-shadow {
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02),
+            0 4px 12px rgba(0, 0, 0, 0.03),
+            0 12px 24px rgba(0, 0, 0, 0.02);
+        }
+
+        .dark .card-shadow {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2),
+            0 2px 4px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .toggle-group {
+            @apply inline-flex items-center p-[3px] bg-slate-100/80 dark:bg-slate-800/80 rounded-lg border border-slate-200/50 dark:border-slate-700/50 backdrop-blur-md;
+        }
+
+        .toggle-btn {
+            @apply relative flex items-center justify-center px-3 h-[26px] text-[12px] font-medium tracking-wide transition-all duration-300 ease-[cubic-bezier(0.2,0.8,0.2,1)] cursor-pointer select-none rounded-[6px] z-10 focus:outline-none;
+        }
+
+        .toggle-btn.active {
+            @apply bg-gradient-to-b from-white to-slate-50 dark:from-slate-600 dark:to-slate-700 text-blue-600 dark:text-blue-400 font-bold shadow-[0_2px_4px_rgba(0,0,0,0.1),inset_0_1px_0_rgba(255,255,255,0.8)] ring-1 ring-black/[0.04] dark:ring-white/[0.05] transform scale-[1.02];
+        }
+
+        .toggle-btn.inactive {
+            @apply text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-200/50 dark:hover:bg-slate-700/50 active:scale-95;
+        }
+
+        .stat-card {
+            @apply bg-white dark:bg-slate-800/80 border border-slate-100 dark:border-slate-700/60 rounded-xl p-5 flex flex-col relative overflow-hidden transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            border-radius: 12px 12px 0 0;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .stat-card:hover::before {
+            opacity: 1;
+        }
+
+        .stat-card.blue::before { background: #3b82f6; }
+        .stat-card.green::before { background: #22c55e; }
+        .stat-card.amber::before { background: #f59e0b; }
+        .stat-card.red::before { background: #ef4444; }
+
+        .data-table {
+            @apply w-full border-collapse text-[13px];
+        }
+
+        .data-table thead th {
+            @apply bg-slate-50/80 dark:bg-slate-800/80 text-slate-500 dark:text-slate-400 font-semibold py-3 px-4 text-left border-b border-slate-200/60 dark:border-slate-700/80 whitespace-nowrap backdrop-blur-sm;
+        }
+
+        .data-table tbody td {
+            @apply py-3 px-4 border-b border-slate-100/50 dark:border-slate-800/50 text-slate-600 dark:text-slate-300 whitespace-nowrap;
+        }
+
+        .data-table tbody tr {
+            @apply transition-colors duration-200;
+        }
+
+        .data-table tbody tr:hover {
+            @apply bg-blue-50/40 dark:bg-slate-700/40;
+        }
+
+        .badge {
+            @apply inline-flex items-center px-2.5 py-0.5 rounded text-[11px] font-medium;
+        }
+
+        .badge-blue {
+            @apply bg-blue-50/80 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 border border-blue-100/50 dark:border-blue-800/50;
+        }
+
+        .badge-green {
+            @apply bg-green-50/80 dark:bg-green-900/30 text-green-600 dark:text-green-400 border border-green-100/50 dark:border-green-800/50;
+        }
+
+        .badge-amber {
+            @apply bg-amber-50/80 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 border border-amber-100/50 dark:border-amber-800/50;
+        }
+
+        .badge-red {
+            @apply bg-red-50/80 dark:bg-red-900/30 text-red-600 dark:text-red-400 border border-red-100/50 dark:border-red-800/50;
+        }
+
+        .page-btn {
+            @apply w-8 h-8 flex items-center justify-center text-[12px] text-slate-500 dark:text-slate-400 cursor-pointer rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 transition-all duration-200 hover:border-blue-500 hover:text-blue-500;
+        }
+
+        .page-btn.active {
+            @apply bg-blue-500 border-blue-500 text-white;
+        }
+
+        .page-btn:disabled {
+            @apply opacity-40 cursor-not-allowed;
+        }
+
+        .filter-select {
+            @apply bg-slate-50 dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700 rounded-lg px-3 py-1.5 text-[13px] text-slate-600 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all cursor-pointer;
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .anim { opacity: 0; animation: fadeUp 0.4s ease forwards; }
+        .d1 { animation-delay: .03s; } .d2 { animation-delay: .07s; }
+        .d3 { animation-delay: .11s; } .d4 { animation-delay: .15s; }
+        .d5 { animation-delay: .2s; } .d6 { animation-delay: .26s; }
+        .d7 { animation-delay: .32s; }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-800 dark:text-slate-100 h-screen flex flex-col overflow-hidden">
+
+<header class="bg-primary h-14 flex items-center justify-between px-4 text-white shrink-0 shadow-md z-50">
+    <div class="flex items-center space-x-3">
+        <div class="w-8 h-8 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full flex items-center justify-center">
+            <span class="material-symbols-outlined text-white text-[20px]">water_drop</span>
+        </div>
+        <h1 class="text-[18px] font-bold tracking-wide">湖北省水生态环境综合管理</h1>
+    </div>
+    <nav class="flex h-full">
+        <a class="px-6 flex items-center space-x-2 hover:bg-white/5 transition-colors text-white/80 hover:text-white" href="./总体概览.html">
+            <span class="material-symbols-outlined text-[18px]">home</span>
+            <span class="text-[14px]">总体概览</span>
+        </a>
+        <a class="px-6 flex items-center space-x-2 hover:bg-white/5 transition-colors text-white/80 hover:text-white" href="#">
+            <span class="material-symbols-outlined text-[18px]">assessment</span>
+            <span class="text-[14px]">形势分析</span>
+        </a>
+        <a class="px-6 flex items-center space-x-2 hover:bg-white/5 transition-colors text-white/80 hover:text-white" href="#">
+            <span class="material-symbols-outlined text-[18px]">map</span>
+            <span class="text-[14px]">空间分析</span>
+        </a>
+        <a class="px-6 flex items-center space-x-2 hover:bg-white/5 transition-colors text-white/80 hover:text-white" href="#">
+            <span class="material-symbols-outlined text-[18px]">waves</span>
+            <span class="text-[14px]">水污染源</span>
+        </a>
+        <a class="px-6 flex items-center space-x-2 hover:bg-white/5 transition-colors text-white/80 hover:text-white" href="#">
+            <span class="material-symbols-outlined text-[18px]">report_problem</span>
+            <span class="text-[14px]">问题聚焦</span>
+        </a>
+        <a class="px-6 flex items-center space-x-2 hover:bg-white/5 transition-colors text-white/80 hover:text-white" href="#">
+            <span class="material-symbols-outlined text-[18px]">apps</span>
+            <span class="text-[14px]">专题应用</span>
+        </a>
+    </nav>
+    <div class="flex items-center space-x-6">
+        <div class="flex items-center space-x-2 text-[13px] opacity-80 cursor-pointer hover:opacity-100 transition-opacity">
+            <span class="material-symbols-outlined text-[18px]">public</span>
+            <span>碧水荆灵</span>
+        </div>
+        <div class="flex items-center space-x-2 text-[13px] opacity-80 cursor-pointer hover:opacity-100 transition-opacity">
+            <span class="material-symbols-outlined text-[18px]">account_circle</span>
+            <span class="font-medium">wangyunpeng</span>
+        </div>
+    </div>
+</header>
+
+<main class="flex-1 flex flex-col gap-4 p-4 min-h-0 overflow-hidden relative z-10">
+    <!-- 页面标题 -->
+    <div class="flex items-center justify-between shrink-0 anim d1">
+        <div class="flex items-center gap-2">
+            <div class="section-title-bar"></div>
+            <h2 class="text-[16px] font-bold text-slate-800 dark:text-white tracking-tight">操作日志记录查询</h2>
+        </div>
+        <div class="flex items-center gap-2 text-[13px] text-slate-500 dark:text-slate-400">
+            <span class="material-symbols-outlined text-[16px]">home</span>
+            <span>/</span>
+            <span>系统管理</span>
+            <span>/</span>
+            <span class="text-slate-800 dark:text-slate-200 font-medium">操作日志</span>
+        </div>
+    </div>
+
+    <!-- 独立筛选栏 -->
+    <div class="bg-white dark:bg-slate-900 rounded-[16px] border border-slate-200/60 dark:border-slate-800 card-shadow p-4 anim d2">
+        <div class="flex items-center justify-between mb-3">
+            <div class="flex items-center gap-2">
+                <span class="relative flex h-2.5 w-2.5 ml-1">
+                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-blue-500"></span>
+                </span>
+                <h3 class="text-[14px] font-bold text-slate-800 dark:text-slate-200">操作日志查询</h3>
+            </div>
+        </div>
+        <div class="flex items-center justify-center gap-3">
+            <select class="filter-select min-w-[140px]">
+                <option value="">系统</option>
+                <option value="water">水环境管理系统</option>
+                <option value="air">空气质量监测系统</option>
+                <option value="soil">土壤监测系统</option>
+            </select>
+            <select class="filter-select min-w-[140px]">
+                <option value="">一级模块</option>
+                <option value="overview">总体概览</option>
+                <option value="analysis">形势分析</option>
+                <option value="spatial">空间分析</option>
+            </select>
+            <select class="filter-select min-w-[120px]">
+                <option value="">操作类型</option>
+                <option value="query">查询</option>
+                <option value="add">新增</option>
+                <option value="edit">修改</option>
+                <option value="delete">删除</option>
+            </select>
+            <input type="text" class="filter-select min-w-[140px]" placeholder="开始时间" onfocus="this.type='date'" onblur="if(!this.value)this.type='text'"/>
+            <input type="text" class="filter-select min-w-[140px]" placeholder="结束时间" onfocus="this.type='date'" onblur="if(!this.value)this.type='text'"/>
+            <button class="px-5 py-1.5 bg-blue-500 hover:bg-blue-600 text-white text-[13px] font-medium rounded-lg transition-colors flex items-center gap-1">
+                <span class="material-symbols-outlined text-[16px]">search</span>
+                查询
+            </button>
+        </div>
+    </div>
+
+    <!-- 统计卡片 -->
+    <div class="grid grid-cols-4 gap-4 shrink-0 anim d3">
+        <div class="stat-card blue">
+            <div class="flex items-center justify-between mb-3">
+                <span class="text-[13px] text-slate-500 dark:text-slate-400 font-medium">本月操作次数</span>
+                <div class="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-900/30 flex items-center justify-center">
+                    <span class="material-symbols-outlined text-blue-600 dark:text-blue-400 text-[20px]">today</span>
+                </div>
+            </div>
+            <div class="text-[28px] font-black text-slate-800 dark:text-white tabular-nums tracking-tight">35,672</div>
+            <div class="text-[11px] text-slate-400 mt-1 flex items-center gap-1">
+                <span class="text-green-500 flex items-center"><i class="ri-arrow-up-line"></i> 8.5%</span>
+                <span>较上月</span>
+            </div>
+        </div>
+        <div class="stat-card green">
+            <div class="flex items-center justify-between mb-3">
+                <span class="text-[13px] text-slate-500 dark:text-slate-400 font-medium">本月操作人数</span>
+                <div class="w-10 h-10 rounded-xl bg-green-50 dark:bg-green-900/30 flex items-center justify-center">
+                    <span class="material-symbols-outlined text-green-600 dark:text-green-400 text-[20px]">date_range</span>
+                </div>
+            </div>
+            <div class="text-[28px] font-black text-slate-800 dark:text-white tabular-nums tracking-tight">892</div>
+            <div class="text-[11px] text-slate-400 mt-1 flex items-center gap-1">
+                <span class="text-green-500 flex items-center"><i class="ri-arrow-up-line"></i> 12.3%</span>
+                <span>较上月</span>
+            </div>
+        </div>
+        <div class="stat-card amber">
+            <div class="flex items-center justify-between mb-3">
+                <span class="text-[13px] text-slate-500 dark:text-slate-400 font-medium">本月登录次数</span>
+                <div class="w-10 h-10 rounded-xl bg-amber-50 dark:bg-amber-900/30 flex items-center justify-center">
+                    <span class="material-symbols-outlined text-amber-600 dark:text-amber-400 text-[20px]">calendar_month</span>
+                </div>
+            </div>
+            <div class="text-[28px] font-black text-slate-800 dark:text-white tabular-nums tracking-tight">12,456</div>
+            <div class="text-[11px] text-slate-400 mt-1 flex items-center gap-1">
+                <span class="text-red-500 flex items-center"><i class="ri-arrow-down-line"></i> 2.1%</span>
+                <span>较上月</span>
+            </div>
+        </div>
+        <div class="stat-card red">
+            <div class="flex items-center justify-between mb-3">
+                <span class="text-[13px] text-slate-500 dark:text-slate-400 font-medium">本月登录人数</span>
+                <div class="w-10 h-10 rounded-xl bg-red-50 dark:bg-red-900/30 flex items-center justify-center">
+                    <span class="material-symbols-outlined text-red-600 dark:text-red-400 text-[20px]">warning</span>
+                </div>
+            </div>
+            <div class="text-[28px] font-black text-slate-800 dark:text-white tabular-nums tracking-tight">1,256</div>
+            <div class="text-[11px] text-slate-400 mt-1 flex items-center gap-1">
+                <span class="text-green-500 flex items-center"><i class="ri-arrow-down-line"></i> 15.2%</span>
+                <span>较上月</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- 数据表格 -->
+    <div class="flex-1 bg-white dark:bg-slate-900 rounded-[16px] border border-slate-200/60 dark:border-slate-800 card-shadow p-4 flex flex-col min-h-0 anim d3">
+        <div class="flex items-center gap-2 mb-4 shrink-0">
+            <div class="section-title-bar"></div>
+            <h3 class="text-[14px] font-bold text-slate-800 dark:text-slate-200">日志列表</h3>
+        </div>
+        <div class="flex-1 overflow-auto custom-scrollbar min-h-0">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th class="text-center w-16">序号</th>
+                        <th>用户名</th>
+                        <th>系统模块</th>
+                        <th>操作类型</th>
+                        <th>操作内容</th>
+                        <th>IP地址</th>
+                        <th class="text-center">操作结果</th>
+                        <th>操作时间</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="text-center text-slate-400">1</td>
+                        <td>zhangsan</td>
+                        <td>水环境管理系统</td>
+                        <td><span class="badge badge-blue">查询</span></td>
+                        <td>查询国控断面水质数据</td>
+                        <td class="tabular-nums">192.168.1.105</td>
+                        <td class="text-center"><span class="badge badge-green">成功</span></td>
+                        <td class="tabular-nums">2025-12-20 14:32:18</td>
+                    </tr>
+                    <tr>
+                        <td class="text-center text-slate-400">2</td>
+                        <td>lisi</td>
+                        <td>水质监测系统</td>
+                        <td><span class="badge badge-green">导出</span></td>
+                        <td>导出月度水质报表</td>
+                        <td class="tabular-nums">192.168.1.112</td>
+                        <td class="text-center"><span class="badge badge-green">成功</span></td>
+                        <td class="tabular-nums">2025-12-20 14:28:45</td>
+                    </tr>
+                    <tr>
+                        <td class="text-center text-slate-400">3</td>
+                        <td>wangwu</td>
+                        <td>污染源管理系统</td>
+                        <td><span class="badge badge-amber">修改</span></td>
+                        <td>修改企业排污许可证信息</td>
+                        <td class="tabular-nums">192.168.1.128</td>
+                        <td class="text-center"><span class="badge badge-green">成功</span></td>
+                        <td class="tabular-nums">2025-12-20 14:15:22</td>
+                    </tr>
+                    <tr>
+                        <td class="text-center text-slate-400">4</td>
+                        <td>zhaoliu</td>
+                        <td>预警管理系统</td>
+                        <td><span class="badge badge-blue">查询</span></td>
+                        <td>查询水质超标预警信息</td>
+                        <td class="tabular-nums">192.168.1.135</td>
+                        <td class="text-center"><span class="badge badge-green">成功</span></td>
+                        <td class="tabular-nums">2025-12-20 14:08:56</td>
+                    </tr>
+                    <tr>
+                        <td class="text-center text-slate-400">5</td>
+                        <td>qianqi</td>
+                        <td>数据报送系统</td>
+                        <td><span class="badge badge-green">新增</span></td>
+                        <td>新增监测站点数据</td>
+                        <td class="tabular-nums">192.168.1.142</td>
+                        <td class="text-center"><span class="badge badge-green">成功</span></td>
+                        <td class="tabular-nums">2025-12-20 13:55:41</td>
+                    </tr>
+                    <tr>
+                        <td class="text-center text-slate-400">6</td>
+                        <td>sunba</td>
+                        <td>用户管理系统</td>
+                        <td><span class="badge badge-red">删除</span></td>
+                        <td>删除过期临时账号</td>
+                        <td class="tabular-nums">192.168.1.158</td>
+                        <td class="text-center"><span class="badge badge-red">失败</span></td>
+                        <td class="tabular-nums">2025-12-20 13:42:19</td>
+                    </tr>
+                    <tr>
+                        <td class="text-center text-slate-400">7</td>
+                        <td>zhoujiu</td>
+                        <td>统计分析系统</td>
+                        <td><span class="badge badge-blue">查询</span></td>
+                        <td>查询年度统计报表</td>
+                        <td class="tabular-nums">192.168.1.165</td>
+                        <td class="text-center"><span class="badge badge-green">成功</span></td>
+                        <td class="tabular-nums">2025-12-20 13:38:07</td>
+                    </tr>
+                    <tr>
+                        <td class="text-center text-slate-400">8</td>
+                        <td>wushi</td>
+                        <td>水质监测系统</td>
+                        <td><span class="badge badge-amber">修改</span></td>
+                        <td>修改监测数据状态</td>
+                        <td class="tabular-nums">192.168.1.172</td>
+                        <td class="text-center"><span class="badge badge-green">成功</span></td>
+                        <td class="tabular-nums">2025-12-20 13:25:33</td>
+                    </tr>
+                    <tr>
+                        <td class="text-center text-slate-400">9</td>
+                        <td>zhengshi</td>
+                        <td>报表管理系统</td>
+                        <td><span class="badge badge-green">导出</span></td>
+                        <td>导出季度汇总报表</td>
+                        <td class="tabular-nums">192.168.1.189</td>
+                        <td class="text-center"><span class="badge badge-green">成功</span></td>
+                        <td class="tabular-nums">2025-12-20 13:18:52</td>
+                    </tr>
+                    <tr>
+                        <td class="text-center text-slate-400">10</td>
+                        <td class="tabular-nums">2025-12-20 13:05:28</td>
+                        <td>chenshiyi</td>
+                        <td>咸宁市生态环境局</td>
+                        <td>空间分析系统</td>
+                        <td><span class="badge badge-blue">查询</span></td>
+                        <td>查询流域分布地图</td>
+                        <td class="tabular-nums">192.168.1.195</td>
+                        <td class="text-center"><span class="badge badge-green">成功</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- 分页 -->
+        <div class="flex items-center justify-between mt-4 pt-4 border-t border-slate-200/60 dark:border-slate-700/60 shrink-0">
+            <div class="text-[13px] text-slate-500 dark:text-slate-400">
+                共 <span class="font-semibold text-slate-800 dark:text-slate-200">256</span> 条记录，每页显示
+                <select class="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded px-2 py-1 text-[12px] ml-1">
+                    <option>10</option>
+                    <option>20</option>
+                    <option>50</option>
+                </select>
+                条
+            </div>
+            <div class="flex items-center gap-1">
+                <button class="page-btn" disabled>
+                    <span class="material-symbols-outlined text-[16px]">chevron_left</span>
+                </button>
+                <button class="page-btn active">1</button>
+                <button class="page-btn">2</button>
+                <button class="page-btn">3</button>
+                <button class="page-btn">4</button>
+                <button class="page-btn">5</button>
+                <span class="px-2 text-slate-400">...</span>
+                <button class="page-btn">26</button>
+                <button class="page-btn">
+                    <span class="material-symbols-outlined text-[16px]">chevron_right</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</main>
+
+<script>
+    // 实时时间更新
+    function updateTime() {
+        const now = new Date();
+        const timeString = now.toLocaleString('zh-CN', {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit'
+        });
+        const timeEl = document.getElementById('topTime');
+        if (timeEl) timeEl.textContent = timeString;
+    }
+    setInterval(updateTime, 1000);
+    updateTime();
+</script>
+
+</body>
+</html>

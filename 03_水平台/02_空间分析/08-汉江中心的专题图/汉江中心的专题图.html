@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>湖北省水生态环境综合管理 - 空间分析</title>
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
+
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography,container-queries"></script>
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#3b82f6",
+                        "background-light": "#f6f9fc",
+                        "surface-light": "#ffffff",
+                    },
+                    fontFamily: {
+                        display: ["Inter", "system-ui", "-apple-system", "sans-serif"],
+                    },
+                },
+            },
+        };
+    </script>
+
+    <style>
+        :root {
+            --bg-base: #F5F5F7;
+            --text-primary: #1D1D1F;
+            --text-secondary: #86868B;
+            --accent-red: #FF3B30;
+            --accent-blue: #007AFF;
+
+            --color-qj: #FF2D55;
+            --color-tm: #FFCC00;
+            --color-xt: #5AC8FA;
+
+            --glass-bg: rgba(255, 255, 255, 0.75);
+            --glass-blur: blur(20px) saturate(180%);
+            --glass-border: 1px solid rgba(255, 255, 255, 0.8);
+            --glass-shadow: 0 12px 32px rgba(0, 0, 0, 0.08), inset 0 1px 1px rgba(255, 255, 255, 0.5);
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: 'PingFang SC', 'Microsoft YaHei', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bg-base);
+            overflow: hidden;
+        }
+
+        .leaflet-control-attribution { display: none; }
+
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+
+        /* 图标样式 */
+        .marker-star-solid { color: var(--accent-red); font-size: 20px; text-shadow: 0 2px 6px rgba(255,59,48,0.4); }
+        .marker-star-hollow { color: transparent; -webkit-text-stroke: 1.5px var(--accent-red); font-size: 18px; filter: drop-shadow(0 2px 4px rgba(255,59,48,0.3)); }
+        .marker-circle-solid { width: 14px; height: 14px; border-radius: 50%; background: var(--accent-red); border: 2px solid rgba(255,255,255,0.9); box-shadow: 0 3px 8px rgba(255,59,48,0.4); }
+        .marker-circle-hollow { width: 12px; height: 12px; border-radius: 50%; background: rgba(255,255,255,0.5); border: 2.5px solid var(--accent-red); box-shadow: 0 3px 8px rgba(0,0,0,0.1); backdrop-filter: blur(4px); }
+        .marker-triangle { width: 0; height: 0; border-left: 8px solid transparent; border-right: 8px solid transparent; border-bottom: 14px solid var(--accent-red); filter: drop-shadow(0 3px 6px rgba(255,59,48,0.3)); }
+        .marker-qy { width: 12px; height: 12px; background: rgba(255,255,255,0.7); border: 2.5px solid var(--accent-red); border-radius: 4px; box-shadow: 0 3px 8px rgba(0,0,0,0.12); backdrop-filter: blur(4px); }
+
+        .marker-cluster { background: rgba(255, 59, 48, 0.15) !important; border-radius: 50% !important; box-shadow: 0 4px 16px rgba(255, 59, 48, 0.2) !important; }
+        .marker-cluster div { background: rgba(255, 59, 48, 0.85) !important; backdrop-filter: blur(8px) !important; color: white !important; font-weight: 600 !important; font-size: 14px !important; border: 1px solid rgba(255, 255, 255, 0.4) !important; box-shadow: inset 0 1px 2px rgba(255,255,255,0.3); }
+
+        .leaflet-popup { margin-bottom: 15px !important; }
+        .leaflet-popup-content-wrapper { background: var(--glass-bg) !important; backdrop-filter: var(--glass-blur) !important; border: var(--glass-border) !important; border-radius: 12px !important; box-shadow: var(--glass-shadow) !important; padding: 2px !important; }
+        .leaflet-popup-content { margin: 10px 14px !important; font-size: 13px !important; font-weight: 600 !important; color: var(--text-primary) !important; text-align: center; }
+        .leaflet-popup-tip-container { display: none !important; }
+
+        .legend-panel {
+            background: var(--glass-bg);
+            backdrop-filter: var(--glass-blur);
+            border: var(--glass-border);
+            box-shadow: var(--glass-shadow);
+        }
+
+        .fade-transition { transition: opacity 0.2s ease-in-out, visibility 0.2s ease-in-out; }
+        .fade-hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+
+        /* 下拉菜单动画过渡 */
+        .submenu-transition { transition: max-height 0.3s ease, opacity 0.3s ease; }
+    </style>
+</head>
+<body class="flex flex-col h-screen overflow-hidden">
+
+<header class="bg-primary h-14 flex items-center justify-between px-4 text-white shrink-0 shadow-md relative z-[2000]">
+    <div class="flex items-center space-x-3">
+        <div class="w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-sm">
+            <span class="material-symbols-outlined text-primary text-xl">water_drop</span>
+        </div>
+        <h1 class="text-xl font-bold tracking-tight">湖北省水生态环境综合管理</h1>
+    </div>
+    <nav class="flex h-full">
+        <a class="px-6 flex items-center space-x-2 hover:bg-white/10 transition-colors" href="#">
+            <span class="material-symbols-outlined text-[18px]">home</span>
+            <span class="text-sm">总体概览</span>
+        </a>
+        <a class="px-6 flex items-center space-x-2 hover:bg-white/10 transition-colors" href="#">
+            <span class="material-symbols-outlined text-[18px]">assessment</span>
+            <span class="text-sm">形势分析</span>
+        </a>
+        <a class="px-6 flex items-center space-x-2 bg-white/20 border-b-2 border-white transition-colors" href="#">
+            <span class="material-symbols-outlined text-[18px]">map</span>
+            <span class="text-sm font-bold">空间分析</span>
+        </a>
+        <a class="px-6 flex items-center space-x-2 hover:bg-white/10 transition-colors" href="#">
+            <span class="material-symbols-outlined text-[18px]">waves</span>
+            <span class="text-sm">水污染源</span>
+        </a>
+        <a class="px-6 flex items-center space-x-2 hover:bg-white/10 transition-colors" href="#">
+            <span class="material-symbols-outlined text-[18px]">report_problem</span>
+            <span class="text-sm">问题聚焦</span>
+        </a>
+        <a class="px-6 flex items-center space-x-2 hover:bg-white/10 transition-colors" href="#">
+            <span class="material-symbols-outlined text-[18px]">apps</span>
+            <span class="text-sm">专题应用</span>
+        </a>
+    </nav>
+    <div class="flex items-center space-x-6">
+        <div class="flex items-center space-x-2 text-sm opacity-90 hover:opacity-100 cursor-pointer">
+            <span class="material-symbols-outlined text-[18px]">public</span>
+            <span>碧水荆灵</span>
+        </div>
+        <div class="flex items-center space-x-2 text-sm hover:opacity-100 cursor-pointer">
+            <span class="material-symbols-outlined text-[18px]">account_circle</span>
+            <span>wangyunpeng</span>
+        </div>
+    </div>
+</header>
+<div class="flex-1 relative w-full h-full bg-[#f0f4f8]">
+
+    <div class="absolute left-4 top-4 z-[1000] flex flex-col space-y-4">
+        <div class="bg-white rounded-lg shadow-lg w-[50px] flex flex-col items-center py-3 space-y-4 border border-slate-100">
+            <div class="w-10 h-10 rounded flex items-center justify-center text-blue-600 bg-blue-50 cursor-pointer shadow-sm transition-colors mb-2">
+                <span class="material-symbols-outlined text-[24px]">deployed_code</span>
+            </div>
+
+            <div id="btn-layers" class="flex flex-col items-center cursor-pointer group" onclick="togglePanel('layers')">
+                <div class="icon-wrap w-8 h-8 rounded flex items-center justify-center bg-blue-50 text-blue-600 transition-colors">
+                    <span class="material-symbols-outlined text-[20px]">layers</span>
+                </div>
+                <span class="btn-text text-[10px] mt-0.5 text-blue-600 font-medium transition-colors">图层</span>
+            </div>
+
+            <div id="btn-area" class="flex flex-col items-center cursor-pointer group" onclick="togglePanel('area')">
+                <div class="icon-wrap w-8 h-8 rounded flex items-center justify-center hover:bg-blue-50 text-slate-500 hover:text-blue-600 transition-colors">
+                    <span class="material-symbols-outlined text-[20px]">dashboard</span>
+                </div>
+                <span class="btn-text text-[10px] mt-0.5 text-slate-500 group-hover:text-blue-600 transition-colors">区域</span>
+            </div>
+
+            <div id="btn-tools" class="flex flex-col items-center cursor-pointer group" onclick="togglePanel('tools')">
+                <div class="icon-wrap w-8 h-8 rounded flex items-center justify-center hover:bg-blue-50 text-slate-500 hover:text-blue-600 transition-colors">
+                    <span class="material-symbols-outlined text-[20px]">build</span>
+                </div>
+                <span class="btn-text text-[10px] mt-0.5 text-slate-500 group-hover:text-blue-600 transition-colors">工具</span>
+            </div>
+
+            <div id="btn-map" class="flex flex-col items-center cursor-pointer group" onclick="togglePanel('map')">
+                <div class="icon-wrap w-8 h-8 rounded flex items-center justify-center bg-blue-50 text-blue-600 transition-colors">
+                    <span class="material-symbols-outlined text-[20px]">map</span>
+                </div>
+                <span class="btn-text text-[10px] mt-0.5 text-blue-600 font-medium transition-colors">地图</span>
+            </div>
+
+            <div id="btn-stats" class="flex flex-col items-center cursor-pointer group" onclick="togglePanel('stats')">
+                <div class="icon-wrap w-8 h-8 rounded flex items-center justify-center bg-blue-50 text-blue-600 transition-colors">
+                    <span class="material-symbols-outlined text-[20px]">bar_chart</span>
+                </div>
+                <span class="btn-text text-[10px] mt-0.5 text-blue-600 font-medium transition-colors">统计</span>
+            </div>
+        </div>
+    </div>
+
+    <div id="panel-layers" class="fade-transition absolute left-[70px] top-4 z-[1000] w-[260px] bg-white rounded-lg shadow-lg border border-slate-100 flex flex-col max-h-[calc(100vh-100px)]">
+        <div class="px-4 py-3 border-b border-slate-100 flex items-center justify-between rounded-t-lg bg-white sticky top-0 z-10">
+            <span class="font-bold text-slate-800 text-sm">业务专题图层</span>
+            <span class="material-symbols-outlined text-slate-400 text-[18px] cursor-pointer hover:text-blue-500 transition-colors" onclick="togglePanel('layers')">format_list_bulleted</span>
+        </div>
+        <div class="flex-1 overflow-y-auto custom-scrollbar p-2">
+            <ul class="space-y-1 text-[13px] text-slate-600">
+                <li class="flex flex-col">
+                    <div class="flex items-center px-2 py-2.5 bg-blue-50/50 text-blue-600 font-medium cursor-pointer rounded transition-colors" onclick="toggleSubMenu(this)">
+                        <span class="material-symbols-outlined text-[18px] text-blue-500 mr-1.5 transition-transform duration-300">arrow_drop_down</span>空间框架(18)
+                    </div>
+                    <ul class="pl-6 pr-1 py-1 space-y-1 submenu-transition" style="max-height: 500px; opacity: 1;">
+                        <li id="btn-toggle-hanjiang" class="flex items-center justify-between px-2 py-2 bg-blue-50 text-blue-700 rounded cursor-pointer border border-blue-100/50 shadow-sm transition-all">
+                            <div class="flex items-center font-medium">
+                                <span class="material-symbols-outlined text-[16px] text-blue-500 mr-2">map</span>汉江专题图
+                            </div>
+                            <span class="icon-check material-symbols-outlined text-[18px] text-blue-500">check_box</span>
+                        </li>
+                        <li class="flex items-center px-2 py-1.5 hover:bg-slate-50 text-slate-500 rounded cursor-pointer transition-colors">
+                            <div class="flex items-center">
+                                <span class="material-symbols-outlined text-[16px] text-slate-400 mr-2">public</span>水系
+                            </div>
+                        </li>
+                    </ul>
+                </li>
+
+                <li class="flex flex-col mt-1">
+                    <div class="flex items-center px-2 py-2.5 bg-blue-50/50 text-blue-600 font-medium cursor-pointer rounded transition-colors" onclick="toggleSubMenu(this)">
+                        <span class="material-symbols-outlined text-[18px] text-blue-500 mr-1.5 transition-transform duration-300">arrow_drop_down</span>水环境(25)
+                    </div>
+                    <ul class="pl-6 pr-1 py-1 space-y-1 submenu-transition" style="max-height: 500px; opacity: 1;">
+                        <li class="btn-toggle-hubei flex items-center justify-between px-2 py-2 hover:bg-slate-50 text-slate-500 rounded cursor-pointer transition-all" data-layer="hubeiGkSection">
+                            <div class="flex items-center">
+                                <span class="material-symbols-outlined text-[16px] text-slate-400 mr-2">fiber_manual_record</span>国控断面
+                            </div>
+                            <span class="icon-check material-symbols-outlined text-[18px] text-slate-400">check_box_outline_blank</span>
+                        </li>
+                        <li class="btn-toggle-hubei flex items-center justify-between px-2 py-2 hover:bg-slate-50 text-slate-500 rounded cursor-pointer transition-all" data-layer="hubeiSkSection">
+                            <div class="flex items-center">
+                                <span class="material-symbols-outlined text-[16px] text-slate-400 mr-2">radio_button_unchecked</span>省控断面
+                            </div>
+                            <span class="icon-check material-symbols-outlined text-[18px] text-slate-400">check_box_outline_blank</span>
+                        </li>
+                        <li class="btn-toggle-hubei flex items-center justify-between px-2 py-2 hover:bg-slate-50 text-slate-500 rounded cursor-pointer transition-all" data-layer="hubeiGkAuto">
+                            <div class="flex items-center">
+                                <span class="material-symbols-outlined text-[16px] text-slate-400 mr-2">star</span>国控自动站
+                            </div>
+                            <span class="icon-check material-symbols-outlined text-[18px] text-slate-400">check_box_outline_blank</span>
+                        </li>
+                        <li class="btn-toggle-hubei flex items-center justify-between px-2 py-2 hover:bg-slate-50 text-slate-500 rounded cursor-pointer transition-all" data-layer="hubeiSkAuto">
+                            <div class="flex items-center">
+                                <span class="material-symbols-outlined text-[16px] text-slate-400 mr-2">star_border</span>省控自动站
+                            </div>
+                            <span class="icon-check material-symbols-outlined text-[18px] text-slate-400">check_box_outline_blank</span>
+                        </li>
+                    </ul>
+                </li>
+
+                <li class="flex items-center px-2 py-2.5 hover:bg-slate-50 cursor-pointer rounded transition-colors mt-1" onclick="toggleSubMenu(this)"><span class="material-symbols-outlined text-[18px] text-slate-400 mr-1.5 transition-transform duration-300">arrow_right</span>水资源(3)</li>
+                <li class="flex items-center px-2 py-2.5 hover:bg-slate-50 cursor-pointer rounded transition-colors" onclick="toggleSubMenu(this)"><span class="material-symbols-outlined text-[18px] text-slate-400 mr-1.5 transition-transform duration-300">arrow_right</span>水生态(2)</li>
+                <li class="flex items-center px-2 py-2.5 hover:bg-slate-50 cursor-pointer rounded transition-colors" onclick="toggleSubMenu(this)"><span class="material-symbols-outlined text-[18px] text-slate-400 mr-1.5 transition-transform duration-300">arrow_right</span>水污染源(10)</li>
+            </ul>
+        </div>
+    </div>
+
+    <div id="panel-area" class="fade-transition fade-hidden absolute left-[340px] top-4 z-[1000] flex flex-col space-y-2 text-[12px]">
+        <button class="w-[110px] px-3 py-2 bg-white rounded shadow border border-slate-100 flex items-center font-medium text-slate-700 hover:text-blue-500 transition-colors">
+            <span class="material-symbols-outlined text-[16px] text-blue-500 mr-2">public</span>湖北省
+        </button>
+        <button class="w-[110px] px-3 py-2 bg-white rounded shadow border border-slate-100 flex items-center text-slate-600 hover:text-teal-500 transition-colors">
+            <span class="material-symbols-outlined text-[16px] text-teal-500 mr-2">waves</span>流域
+        </button>
+        <button class="w-[110px] px-3 py-2 bg-white rounded shadow border border-slate-100 flex items-center text-slate-600 hover:text-red-500 transition-colors">
+            <span class="material-symbols-outlined text-[16px] text-red-500 mr-2">water_drop</span>重要水体
+        </button>
+        <button class="w-[110px] px-3 py-2 bg-white rounded shadow border border-slate-100 flex items-center text-slate-600 hover:text-green-500 transition-colors">
+            <span class="material-symbols-outlined text-[16px] text-green-500 mr-2">grid_view</span>控制单元
+        </button>
+        <button class="w-[110px] px-3 py-2 bg-white rounded shadow border border-slate-100 flex items-center text-slate-600 hover:text-blue-400 transition-colors">
+            <span class="material-symbols-outlined text-[16px] text-blue-400 mr-2">share</span>汇水范围
+        </button>
+        <button class="w-[110px] px-3 py-2 bg-white rounded shadow border border-slate-100 flex items-center text-slate-600 hover:text-orange-500 transition-colors">
+            <span class="material-symbols-outlined text-[16px] text-orange-500 mr-2">map</span>行政区域
+        </button>
+        <button class="w-[110px] px-3 py-2 bg-white rounded shadow border border-slate-100 text-center text-slate-500 hover:bg-slate-50 transition-colors" onclick="togglePanel('area')">
+            收起
+        </button>
+    </div>
+
+    <div class="absolute left-[480px] top-4 z-[1000] flex space-x-3">
+        <div class="flex items-start space-x-2">
+            <div class="flex bg-white rounded shadow-sm border border-blue-100 overflow-hidden text-[13px]">
+                <button class="px-5 py-2 border-r border-slate-100 hover:bg-slate-50 text-blue-600 font-medium transition-colors">2026年</button>
+                <button class="px-5 py-2 border-r border-slate-100 hover:bg-slate-50 text-blue-600 font-medium transition-colors">3月</button>
+                <button id="time-day-btn" class="px-5 py-2 border-r border-slate-100 hover:bg-slate-50 text-blue-600 font-medium transition-colors transition-all duration-300">15日</button>
+                <button class="px-5 py-2 border-r border-slate-100 hover:bg-slate-50 text-slate-600 transition-colors">断面总体情况</button>
+                <button class="px-5 py-2 border-r border-slate-100 hover:bg-slate-50 text-slate-400 flex items-center transition-colors">I 类 <span class="bg-slate-100 text-slate-500 text-[10px] px-1 ml-1 rounded">+5</span></button>
+                <button class="px-5 py-2 bg-blue-500 text-white font-medium transition-colors">当前<span id="time-unit-label">日</span></button>
+                <button class="px-5 py-2 hover:bg-slate-50 text-slate-600 transition-colors">累计<span id="time-unit-accum-label">日</span></button>
+            </div>
+        </div>
+    </div>
+
+    <div id="panel-tools" class="fade-transition fade-hidden absolute right-4 top-4 z-[1000] bg-white rounded shadow-sm border border-slate-100 flex flex-row text-[13px] overflow-hidden items-center">
+        <button class="px-4 py-2 flex items-center border-r border-slate-100 hover:bg-slate-50 text-slate-600 transition-colors">
+            <span class="material-symbols-outlined text-[16px] text-blue-500 mr-1.5">straighten</span>测距
+        </button>
+        <button class="px-4 py-2 flex items-center border-r border-slate-100 hover:bg-slate-50 text-slate-600 transition-colors">
+            <span class="material-symbols-outlined text-[16px] text-blue-500 mr-1.5">radar</span>周边
+        </button>
+        <button class="px-4 py-2 flex items-center border-r border-slate-100 hover:bg-slate-50 text-slate-600 transition-colors">
+            <span class="material-symbols-outlined text-[16px] text-purple-500 mr-1.5">layers</span>中观层
+        </button>
+        <button class="px-4 py-2 flex items-center hover:bg-red-50 text-slate-600 hover:text-red-600 transition-colors group">
+            <span class="material-symbols-outlined text-[16px] text-slate-400 group-hover:text-red-500 mr-1.5 transition-colors">delete_sweep</span>清屏
+        </button>
+    </div>
+
+    <div id="panel-stats" class="fade-transition absolute right-4 top-[64px] z-[1000] bg-white/95 backdrop-blur-sm rounded-lg shadow-md border border-slate-100 p-4 w-[280px]">
+        <div class="flex justify-between items-center border-b border-slate-100 pb-2 mb-3">
+            <div class="text-[15px] font-bold text-slate-800">数据统计</div>
+            <div class="text-slate-400 hover:text-red-500 cursor-pointer transition-colors" onclick="togglePanel('stats')">
+                <span class="material-symbols-outlined text-[18px]">close</span>
+            </div>
+        </div>
+        <div class="grid grid-cols-2 gap-y-3 gap-x-3 text-center" id="stats-grid">
+            <div id="card-gkSection" class="bg-blue-50/50 rounded-lg p-3 border border-blue-100/50 relative group transition-all duration-300">
+                <span id="btn-vis-gkSection" class="material-symbols-outlined absolute top-1.5 right-1.5 text-[16px] text-blue-400 cursor-pointer hover:text-blue-600 transition-colors" onclick="toggleMarkerVis('gkSection')">visibility</span>
+                <div class="text-3xl font-black text-blue-500 mt-2" id="stat-gkSection">0</div>
+                <div class="text-[11px] text-slate-500 mt-1">国控断面</div>
+            </div>
+            <div id="card-skSection" class="bg-teal-50/50 rounded-lg p-3 border border-teal-100/50 relative group transition-all duration-300">
+                <span id="btn-vis-skSection" class="material-symbols-outlined absolute top-1.5 right-1.5 text-[16px] text-teal-400 cursor-pointer hover:text-teal-600 transition-colors" onclick="toggleMarkerVis('skSection')">visibility</span>
+                <div class="text-3xl font-black text-teal-500 mt-2" id="stat-skSection">0</div>
+                <div class="text-[11px] text-slate-500 mt-1">省控断面</div>
+            </div>
+            <div id="card-gkAuto" class="bg-orange-50/50 rounded-lg p-3 border border-orange-100/50 relative group transition-all duration-300">
+                <span id="btn-vis-gkAuto" class="material-symbols-outlined absolute top-1.5 right-1.5 text-[16px] text-orange-400 cursor-pointer hover:text-orange-600 transition-colors" onclick="toggleMarkerVis('gkAuto')">visibility</span>
+                <div class="text-3xl font-black text-orange-500 mt-2" id="stat-gkAuto">0</div>
+                <div class="text-[11px] text-slate-500 mt-1">国控自动站</div>
+            </div>
+            <div id="card-skAuto" class="bg-red-50/50 rounded-lg p-3 border border-red-100/50 relative group transition-all duration-300">
+                <span id="btn-vis-skAuto" class="material-symbols-outlined absolute top-1.5 right-1.5 text-[16px] text-red-400 cursor-pointer hover:text-red-600 transition-colors" onclick="toggleMarkerVis('skAuto')">visibility</span>
+                <div class="text-3xl font-black text-red-500 mt-2" id="stat-skAuto">0</div>
+                <div class="text-[11px] text-slate-500 mt-1">省控自动站</div>
+            </div>
+            <div id="card-pwk" class="bg-purple-50/50 rounded-lg p-3 border border-purple-100/50 relative group transition-all duration-300">
+                <span id="btn-vis-pwk" class="material-symbols-outlined absolute top-1.5 right-1.5 text-[16px] text-purple-400 cursor-pointer hover:text-purple-600 opacity-50 transition-all" onclick="toggleMarkerVis('pwk')">visibility_off</span>
+                <div class="text-3xl font-black text-purple-500 mt-2" id="stat-pwk">0</div>
+                <div class="text-[11px] text-slate-500 mt-1">排污口</div>
+            </div>
+            <div id="card-qy" class="bg-indigo-50/50 rounded-lg p-3 border border-indigo-100/50 relative group transition-all duration-300">
+                <span id="btn-vis-qy" class="material-symbols-outlined absolute top-1.5 right-1.5 text-[16px] text-indigo-400 cursor-pointer hover:text-indigo-600 opacity-50 transition-all" onclick="toggleMarkerVis('qy')">visibility_off</span>
+                <div class="text-3xl font-black text-indigo-500 mt-2" id="stat-qy">0</div>
+                <div class="text-[11px] text-slate-500 mt-1">检测企业</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="absolute left-[80px] bottom-6 z-[1000] group">
+        <button class="bg-white px-4 py-2 rounded shadow-md border border-slate-100 text-[13px] text-slate-700 font-medium hover:bg-slate-50 flex items-center transition-colors">显示图例</button>
+        <div class="absolute bottom-full left-0 mb-3 w-[260px] legend-panel rounded-xl p-4 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300">
+            <div class="text-[12px] font-bold text-slate-500 border-b border-slate-200/50 mb-3 pb-2 text-center uppercase tracking-wider">水环境监测图例</div>
+            <div class="grid grid-cols-2 gap-y-3 gap-x-2 text-[12px] font-medium text-slate-700">
+                <div class="flex items-center"><div class="w-6 flex justify-center mr-1"><span class="marker-star-solid">★</span></div>国控自动站</div>
+                <div class="flex items-center"><div class="w-6 flex justify-center mr-1"><span class="marker-star-hollow">★</span></div>省控自动站</div>
+                <div class="flex items-center"><div class="w-6 flex justify-center mr-1"><div class="marker-circle-solid"></div></div>国控断面</div>
+                <div class="flex items-center"><div class="w-6 flex justify-center mr-1"><div class="marker-circle-hollow"></div></div>省控断面</div>
+                <div class="flex items-center"><div class="w-6 flex justify-center mr-1"><div class="marker-triangle"></div></div>排污口</div>
+                <div class="flex items-center"><div class="w-6 flex justify-center mr-1"><div class="marker-qy"></div></div>检测企业</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="panel-map" class="fade-transition absolute right-6 bottom-6 z-[1000] group flex flex-col items-end">
+        <div class="flex space-x-2 mb-2 opacity-0 translate-y-3 pointer-events-none group-hover:opacity-100 group-hover:translate-y-0 group-hover:pointer-events-auto transition-all duration-300 ease-out bg-white/95 backdrop-blur-md p-1.5 rounded-lg shadow-[0_10px_30px_rgba(0,0,0,0.1)] border border-slate-100 origin-bottom-right">
+            <div class="basemap-option relative w-[84px] h-[56px] rounded overflow-hidden cursor-pointer border-2 border-transparent hover:border-blue-400 transition-colors" onclick="changeBasemap(this, '卫星底图', 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/4/6/13')">
+                <img src="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/4/6/13" class="w-full h-full object-cover" alt="卫星底图">
+                <div class="absolute bottom-0 inset-x-0 bg-black/50 text-white text-[10px] text-center py-0.5">卫星底图</div>
+            </div>
+            <div class="basemap-option relative w-[84px] h-[56px] rounded overflow-hidden cursor-pointer border-2 border-blue-500 shadow-[0_0_0_2px_rgba(59,130,246,0.3)]" onclick="changeBasemap(this, '矢量底图', 'https://a.basemaps.cartocdn.com/light_all/4/13/6.png')">
+                <img src="https://a.basemaps.cartocdn.com/light_all/4/13/6.png" class="w-full h-full object-cover" alt="矢量底图">
+                <div class="absolute top-1 right-1 bg-blue-500 text-white rounded-full w-3.5 h-3.5 flex items-center justify-center basemap-check"><span class="material-symbols-outlined text-[10px]">check</span></div>
+                <div class="absolute bottom-0 inset-x-0 bg-white/80 text-blue-600 font-bold text-[10px] text-center py-0.5">矢量底图</div>
+            </div>
+            <div class="basemap-option relative w-[84px] h-[56px] rounded overflow-hidden cursor-pointer border-2 border-transparent hover:border-blue-400 transition-colors" onclick="changeBasemap(this, '边界底图', '')">
+                <div class="w-full h-full bg-gradient-to-br from-indigo-200 via-purple-200 to-pink-200"></div>
+                <div class="absolute bottom-0 inset-x-0 bg-black/40 text-white text-[10px] text-center py-0.5">边界底图</div>
+            </div>
+            <div class="basemap-option relative w-[84px] h-[56px] rounded overflow-hidden cursor-pointer border-2 border-transparent hover:border-blue-400 transition-colors" onclick="changeBasemap(this, '地形图', 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Terrain_Base/MapServer/tile/4/6/13')">
+                <img src="https://server.arcgisonline.com/ArcGIS/rest/services/World_Terrain_Base/MapServer/tile/4/6/13" class="w-full h-full object-cover" alt="地形图">
+                <div class="absolute bottom-0 inset-x-0 bg-black/40 text-white text-[10px] text-center py-0.5">地形图</div>
+            </div>
+        </div>
+
+        <div class="relative w-24 h-16 rounded-lg overflow-hidden border-2 border-blue-500 shadow-lg cursor-pointer bg-white z-10 hover:shadow-xl transition-shadow">
+            <img id="current-basemap-img" src="https://a.basemaps.cartocdn.com/light_all/4/13/6.png" class="w-full h-full object-cover">
+            <div id="current-basemap-bg" class="absolute inset-0 hidden"></div>
+
+            <div class="absolute top-0 right-0 bg-black/40 rounded-bl text-white p-0.5 backdrop-blur-sm">
+                <span class="material-symbols-outlined text-[16px] block">layers</span>
+            </div>
+            <div id="current-basemap-text" class="absolute bottom-0 inset-x-0 bg-white/90 text-blue-600 font-bold text-[11px] text-center py-0.5 shadow-sm">矢量底图</div>
+        </div>
+    </div>
+
+    <div id="map" class="absolute inset-0 z-0"></div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+<script>
+    // 菜单侧边栏切换
+    function togglePanel(panelName) {
+        const btn = document.getElementById('btn-' + panelName);
+        const panel = document.getElementById('panel-' + panelName);
+        const iconWrap = btn.querySelector('.icon-wrap');
+        const textBtn = btn.querySelector('.btn-text');
+        const isHidden = panel.classList.contains('fade-hidden');
+
+        if (isHidden) {
+            panel.classList.remove('fade-hidden');
+            iconWrap.classList.remove('text-slate-500', 'hover:bg-blue-50', 'hover:text-blue-600');
+            iconWrap.classList.add('bg-blue-50', 'text-blue-600');
+            textBtn.classList.remove('text-slate-500', 'group-hover:text-blue-600');
+            textBtn.classList.add('text-blue-600', 'font-medium');
+        } else {
+            panel.classList.add('fade-hidden');
+            iconWrap.classList.remove('bg-blue-50', 'text-blue-600');
+            iconWrap.classList.add('text-slate-500', 'hover:bg-blue-50', 'hover:text-blue-600');
+            textBtn.classList.remove('text-blue-600', 'font-medium');
+            textBtn.classList.add('text-slate-500', 'group-hover:text-blue-600');
+        }
+    }
+
+    // 需求3: 业务专题图层展开折叠功能
+    function toggleSubMenu(element) {
+        const icon = element.querySelector('.material-symbols-outlined');
+        const ul = element.nextElementSibling;
+
+        if (ul && ul.tagName === 'UL') {
+            if (ul.style.maxHeight === '0px' || !ul.style.maxHeight) {
+                ul.style.maxHeight = '500px';
+                ul.style.opacity = '1';
+                icon.style.transform = 'rotate(0deg)';
+            } else {
+                ul.style.maxHeight = '0px';
+                ul.style.opacity = '0';
+                icon.style.transform = 'rotate(-90deg)';
+            }
+        }
+    }
+
+    // 1. 初始化地图
+    const map = L.map('map', { zoomControl: false }).setView([30.45, 113.1], 8);
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', { maxZoom: 19 }).addTo(map);
+
+    // 2. 初始化聚类图层
+    const markers = L.markerClusterGroup({
+        spiderfyOnMaxZoom: true,
+        showCoverageOnHover: false,
+        maxClusterRadius: 45
+    });
+    map.addLayer(markers);
+
+    // 3. 构建图标模板
+    const iconHtmls = {
+        'gkAuto': '<span class="marker-star-solid">★</span>',
+        'skAuto': '<span class="marker-star-hollow">★</span>',
+        'gkSection': '<div class="marker-circle-solid"></div>',
+        'skSection': '<div class="marker-circle-hollow"></div>',
+        'pwk': '<div class="marker-triangle"></div>',
+        'qy': '<div class="marker-qy"></div>'
+    };
+    const createIcon = (html) => L.divIcon({ className: '', html: html, iconSize: [24, 24], iconAnchor: [12, 12] });
+    const icons = {};
+    for (let key in iconHtmls) { icons[key] = createIcon(iconHtmls[key]); }
+
+    // 4. 定义数据源
+    const locations = [
+        { lat: 30.66, lng: 113.10, type: 'gkAuto', name: '天门河口 (国控自动站)', city: '天门' },
+        { lat: 30.66, lng: 113.10, type: 'skAuto', name: '天门河口 (省控自动站)', city: '天门' },
+        { lat: 30.66, lng: 113.10, type: 'gkSection', name: '天门河口 (国控断面)', city: '天门' },
+        { lat: 30.66, lng: 113.10, type: 'skSection', name: '天门河口 (省控断面)', city: '天门' },
+        { lat: 30.30, lng: 113.55, type: 'gkSection', name: '仙桃南城 (国控断面)', city: '仙桃' },
+        { lat: 30.30, lng: 113.55, type: 'skAuto', name: '仙桃南城 (省控自动站)', city: '仙桃' },
+        { lat: 30.72, lng: 113.00, type: 'qy', name: '天门纺织产业园企业', city: '天门' },
+        { lat: 30.68, lng: 113.25, type: 'skSection', name: '皂市河省控断面', city: '天门' },
+        { lat: 30.42, lng: 112.89, type: 'gkAuto', name: '潜江汉江段国控站', city: '潜江' },
+        { lat: 30.35, lng: 112.82, type: 'qy', name: '潜江制药企业排污监控', city: '潜江' },
+        { lat: 30.28, lng: 112.92, type: 'pwk', name: '返湾湖排污口', city: '潜江' },
+        { lat: 30.32, lng: 113.40, type: 'qy', name: '仙桃化工监控企业', city: '仙桃' },
+        { lat: 30.25, lng: 113.60, type: 'pwk', name: '排湖排污口', city: '仙桃' },
+
+        { lat: 30.60, lng: 114.30, type: 'gkSection', name: '武汉长江段国控断面', city: '武汉' },
+        { lat: 30.70, lng: 111.30, type: 'gkSection', name: '宜昌长江段国控断面', city: '宜昌' },
+        { lat: 32.00, lng: 112.10, type: 'skSection', name: '襄阳汉江段省控断面', city: '襄阳' },
+        { lat: 30.00, lng: 112.20, type: 'skAuto', name: '荆州长江段省控站', city: '荆州' }
+    ];
+
+    // 5. 核心：全局状态对象管理
+    const layerState = {
+        hanjiangMap: true,
+        hubeiGkSection: false,
+        hubeiSkSection: false,
+        hubeiGkAuto: false,
+        hubeiSkAuto: false
+    };
+
+    const markerVisibility = {
+        gkSection: true,
+        skSection: true,
+        gkAuto: true,
+        skAuto: true,
+        pwk: false,
+        qy: false
+    };
+
+    function updateLayerLockState() {
+        const otherToggles = document.querySelectorAll('.btn-toggle-hubei');
+        if (layerState.hanjiangMap) {
+            otherToggles.forEach(btn => {
+                btn.classList.add('opacity-40', 'cursor-not-allowed', 'pointer-events-none', 'grayscale');
+            });
+        } else {
+            otherToggles.forEach(btn => {
+                btn.classList.remove('opacity-40', 'cursor-not-allowed', 'pointer-events-none', 'grayscale');
+            });
+        }
+    }
+
+    // 优化：时间栏联动控制
+    function updateTimeSelector() {
+        const timeDayBtn = document.getElementById('time-day-btn');
+        const unitLabel = document.getElementById('time-unit-label');
+        const unitAccumLabel = document.getElementById('time-unit-accum-label');
+
+        // 如果勾选了"汉江专题图"(包含自动站)，或者单独勾选了自动站，就展示按日筛选
+        const hasAutoStationActive = layerState.hanjiangMap || layerState.hubeiGkAuto || layerState.hubeiSkAuto;
+
+        if (hasAutoStationActive) {
+            timeDayBtn.classList.remove('hidden');
+            unitLabel.innerText = '日';
+            unitAccumLabel.innerText = '日';
+        } else {
+            timeDayBtn.classList.add('hidden');
+            unitLabel.innerText = '月';
+            unitAccumLabel.innerText = '月';
+        }
+    }
+
+    // 优化：底图切换主按钮更新
+    function changeBasemap(element, name, imgSrc) {
+        const mainImg = document.getElementById('current-basemap-img');
+        const mainBg = document.getElementById('current-basemap-bg');
+        const mainText = document.getElementById('current-basemap-text');
+
+        // 更新主卡片封面
+        if (imgSrc) {
+            mainImg.src = imgSrc;
+            mainImg.style.display = 'block';
+            mainBg.style.display = 'none';
+        } else {
+            // 处理特殊边界底图没有图片的情况
+            mainImg.style.display = 'none';
+            mainBg.className = 'absolute inset-0 bg-gradient-to-br from-indigo-200 via-purple-200 to-pink-200';
+            mainBg.style.display = 'block';
+        }
+        mainText.innerText = name;
+
+        // 更新列表选中状态（取消所有蓝框和勾选）
+        const options = document.querySelectorAll('.basemap-option');
+        options.forEach(opt => {
+            opt.classList.remove('border-blue-500', 'shadow-[0_0_0_2px_rgba(59,130,246,0.3)]');
+            opt.classList.add('border-transparent', 'hover:border-blue-400');
+            const check = opt.querySelector('.basemap-check');
+            if(check) check.remove();
+        });
+
+        // 为当前点击项增加蓝框和勾选
+        element.classList.remove('border-transparent', 'hover:border-blue-400');
+        element.classList.add('border-blue-500', 'shadow-[0_0_0_2px_rgba(59,130,246,0.3)]');
+        element.insertAdjacentHTML('beforeend', '<div class="absolute top-1 right-1 bg-blue-500 text-white rounded-full w-3.5 h-3.5 flex items-center justify-center basemap-check"><span class="material-symbols-outlined text-[10px]">check</span></div>');
+
+        // 实际上线时可以在此调用 Leaflet 的图层切换 API
+    }
+
+    function toggleMarkerVis(type) {
+        markerVisibility[type] = !markerVisibility[type];
+        const btn = document.getElementById('btn-vis-' + type);
+
+        if (markerVisibility[type]) {
+            btn.textContent = 'visibility';
+            btn.classList.remove('opacity-50');
+        } else {
+            btn.textContent = 'visibility_off';
+            btn.classList.add('opacity-50');
+        }
+        renderMarkers();
+    }
+
+    function updateStatsPanel(availableLocations) {
+        const counts = { gkSection: 0, skSection: 0, gkAuto: 0, skAuto: 0, pwk: 0, qy: 0 };
+        availableLocations.forEach(p => {
+            if (counts[p.type] !== undefined) counts[p.type]++;
+        });
+
+        for (let type in counts) {
+            const statEl = document.getElementById('stat-' + type);
+            if (statEl) statEl.innerText = counts[type];
+        }
+
+        const cardsToShow = {
+            gkSection: layerState.hanjiangMap || layerState.hubeiGkSection,
+            skSection: layerState.hanjiangMap || layerState.hubeiSkSection,
+            gkAuto: layerState.hanjiangMap || layerState.hubeiGkAuto,
+            skAuto: layerState.hanjiangMap || layerState.hubeiSkAuto,
+            pwk: layerState.hanjiangMap,
+            qy: layerState.hanjiangMap
+        };
+
+        for (let type in cardsToShow) {
+            const cardEl = document.getElementById('card-' + type);
+            if (cardEl) {
+                cardEl.style.display = cardsToShow[type] ? 'block' : 'none';
+            }
+        }
+    }
+
+    function renderMarkers() {
+        markers.clearLayers();
+        const groupedLocations = {};
+
+        const availableLocations = locations.filter(p => {
+            const isHanjiangCity = ['天门', '仙桃', '潜江'].includes(p.city);
+            if (layerState.hanjiangMap && isHanjiangCity) return true;
+            if (layerState.hubeiGkSection && p.type === 'gkSection') return true;
+            if (layerState.hubeiSkSection && p.type === 'skSection') return true;
+            if (layerState.hubeiGkAuto && p.type === 'gkAuto') return true;
+            if (layerState.hubeiSkAuto && p.type === 'skAuto') return true;
+            return false;
+        });
+
+        updateStatsPanel(availableLocations);
+
+        const activeLocations = availableLocations.filter(p => markerVisibility[p.type]);
+
+        activeLocations.forEach(p => {
+            const key = `${p.lat},${p.lng}`;
+            if (!groupedLocations[key]) groupedLocations[key] = [];
+            groupedLocations[key].push(p);
+        });
+
+        Object.values(groupedLocations).forEach(group => {
+            if (group.length === 1) {
+                const p = group[0];
+                const marker = L.marker([p.lat, p.lng], { icon: icons[p.type] }).bindPopup(`<span>${p.name}</span>`);
+                markers.addLayer(marker);
+            } else {
+                const centerPoint = group[0];
+                const sidePoints = group.slice(1);
+                const combinedHtml = `
+                    <div style="display: flex; align-items: center; width: max-content;">
+                        <div style="width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; position: relative; z-index: 10;">
+                            ${iconHtmls[centerPoint.type]}
+                        </div>
+                        <div style="display: flex; align-items: center; background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.9); border-radius: 16px; padding: 2px 6px 2px 10px; margin-left: -8px; box-shadow: 0 4px 12px rgba(0,0,0,0.08);">
+                            ${sidePoints.map(p => `
+                                <div style="width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; margin: 0 2px; transform: scale(0.85);" title="${p.name}">
+                                    ${iconHtmls[p.type]}
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+                const combinedIcon = L.divIcon({ className: '', html: combinedHtml, iconSize: [24, 24], iconAnchor: [12, 12] });
+                const popupContent = group.map(p => `<div style="padding: 4px 0;"><strong>${p.name}</strong></div>`).join('<div style="height: 1px; background: rgba(0,0,0,0.05); margin: 2px 0;"></div>');
+                const marker = L.marker([centerPoint.lat, centerPoint.lng], { icon: combinedIcon }).bindPopup(popupContent);
+                markers.addLayer(marker);
+            }
+        });
+    }
+
+    let hanjiangBoundaryLayer = null;
+    fetch('export.geojson')
+        .then(res => res.json())
+        .then(data => {
+            hanjiangBoundaryLayer = L.geoJSON(data, {
+                style: function(feature) {
+                    let fillColor = "#3b82f6";
+                    const name = feature.properties.name || "";
+                    if (name.includes("潜江")) fillColor = "var(--color-qj)";
+                    else if (name.includes("天门")) fillColor = "var(--color-tm)";
+                    else if (name.includes("仙桃")) fillColor = "var(--color-xt)";
+                    return { fillColor: fillColor, fillOpacity: 0.1, color: fillColor, weight: 2, opacity: 0.6, dashArray: '4, 6', lineCap: 'round' };
+                }
+            });
+            if (layerState.hanjiangMap) {
+                hanjiangBoundaryLayer.addTo(map);
+            }
+        }).catch(err => console.log("未找到 export.geojson，跳过边界渲染。"));
+
+    function updateMenuUI(element, isActive) {
+        const icon = element.querySelector('.icon-check');
+        if (isActive) {
+            icon.textContent = 'check_box';
+            icon.classList.replace('text-slate-400', 'text-blue-500');
+            element.classList.remove('hover:bg-slate-50', 'text-slate-500');
+            element.classList.add('bg-blue-50', 'text-blue-700', 'border', 'border-blue-100/50', 'shadow-sm');
+        } else {
+            icon.textContent = 'check_box_outline_blank';
+            icon.classList.replace('text-blue-500', 'text-slate-400');
+            element.classList.remove('bg-blue-50', 'text-blue-700', 'border', 'border-blue-100/50', 'shadow-sm');
+            element.classList.add('hover:bg-slate-50', 'text-slate-500');
+        }
+    }
+
+    document.getElementById('btn-toggle-hanjiang').addEventListener('click', function(e) {
+        e.stopPropagation();
+        layerState.hanjiangMap = !layerState.hanjiangMap;
+        updateMenuUI(this, layerState.hanjiangMap);
+        updateLayerLockState();
+
+        if (hanjiangBoundaryLayer) {
+            if (layerState.hanjiangMap) map.addLayer(hanjiangBoundaryLayer);
+            else map.removeLayer(hanjiangBoundaryLayer);
+        }
+
+        updateTimeSelector(); // 联动时间选择器
+        renderMarkers();
+    });
+
+    document.querySelectorAll('.btn-toggle-hubei').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            if (this.classList.contains('cursor-not-allowed')) return;
+
+            const layerKey = this.getAttribute('data-layer');
+            layerState[layerKey] = !layerState[layerKey];
+            updateMenuUI(this, layerState[layerKey]);
+
+            updateTimeSelector(); // 联动时间选择器
+            renderMarkers();
+        });
+    });
+
+    // 初始加载时调用一次联动检查
+    updateLayerLockState();
+    updateTimeSelector();
+    renderMarkers();
+
+</script>
+</body>
+</html>

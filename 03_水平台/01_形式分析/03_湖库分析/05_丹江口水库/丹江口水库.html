@@ -1,0 +1,1703 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>湖北省水生态环境综合管理 - 丹江口水库</title>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography,container-queries"></script>
+
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#3b82f6",
+                        "background-light": "#f4f7fb",
+                        "background-dark": "#0f172a",
+                    },
+                    fontFamily: {
+                        display: ["Inter", "system-ui", "-apple-system", "sans-serif"],
+                    },
+                },
+            },
+        };
+    </script>
+
+    <style type="text/tailwindcss">
+        body { font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif; }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+        .section-title-bar {
+            width: 4px;
+            height: 16px;
+            background: linear-gradient(to bottom, #93c5fd, #3b82f6);
+            border-radius: 4px;
+            margin-right: 8px;
+        }
+
+        #sidebar { transition: width 0.3s ease; }
+        .sidebar-text { transition: opacity 0.2s ease; white-space: nowrap; }
+        .hide-text .sidebar-text { display: none; opacity: 0; }
+        .collapsed-sidebar .nav-item { justify-content: center; padding-left: 0; padding-right: 0; }
+        .collapsed-sidebar .nav-item i { margin-right: 0; }
+
+        .card-shadow { box-shadow: 0 2px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05); }
+
+        .chart-action-icon {
+            @apply text-lg cursor-pointer text-slate-400 hover:text-primary transition-colors p-1.5 rounded hover:bg-blue-50 dark:hover:bg-slate-800;
+        }
+
+        .toggle-btn {
+            @apply h-full px-4 flex items-center justify-center text-xs font-bold rounded-md transition-colors cursor-pointer select-none;
+        }
+        .toggle-btn.active { @apply bg-primary text-white shadow-sm; }
+        .toggle-btn.inactive { @apply text-slate-500 hover:text-slate-700 hover:bg-slate-200 dark:text-slate-400 dark:hover:bg-slate-700/50; }
+
+        /* 复杂表格专业样式 */
+        .data-table { border-spacing: 0; width: 100%; }
+        .data-table th, .data-table td {
+            @apply border-b border-slate-200/60 dark:border-slate-700/50 align-middle;
+            background-clip: padding-box;
+        }
+        .data-table th {
+            @apply bg-[#f4f7fb] dark:bg-slate-800/80 text-slate-700 dark:text-slate-200 font-bold px-4 py-3.5 text-center text-[13px] sticky top-0 z-10;
+        }
+        .data-table td {
+            @apply px-4 py-3.5 text-center text-[13px] text-slate-600 dark:text-slate-300;
+        }
+        .data-table tbody tr:hover { @apply bg-blue-50/60 dark:bg-slate-700/50 transition-colors; }
+
+        /* 表格上方标签页按钮样式 */
+        .tab-btn { @apply px-6 py-1.5 rounded-full text-[14px] font-bold transition-all border; }
+        .tab-btn.active { @apply bg-blue-600 text-white border-blue-600 shadow-sm; }
+        .tab-btn.inactive { @apply bg-white text-slate-600 border border-slate-200 hover:bg-slate-50; }
+
+        /* 分页按钮样式 */
+        .pagination-btn {
+            @apply relative inline-flex items-center justify-center px-3 py-1.5 text-sm font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-700 transition-colors rounded-md min-w-[32px] cursor-pointer select-none;
+        }
+        .pagination-btn.active {
+            @apply bg-blue-600 text-white hover:bg-blue-700 hover:text-white shadow-sm;
+        }
+        .pagination-btn.disabled {
+            @apply opacity-50 cursor-not-allowed hover:bg-transparent hover:text-slate-500;
+        }
+
+        /* 排序图标组合样式 */
+        .sort-icon-group { @apply inline-flex flex-col ml-1 align-middle; }
+        .sort-icon-group i { @apply text-[10px] leading-[0.4] text-slate-400; }
+
+        /* 表格内分类颜色标签 */
+        .wq-badge { @apply inline-block px-4 py-1 text-white font-bold text-xs rounded shadow-sm w-[60px] text-center; }
+
+        .hydro-card {
+            @apply rounded-xl border p-4 shadow-sm transition-all duration-300;
+        }
+        .hydro-card-primary {
+            background: linear-gradient(145deg, #eff8ff 0%, #ffffff 70%);
+            @apply border-[#cfe4ff] hover:border-[#95c5ff] hover:shadow-md;
+        }
+        .hydro-card-secondary {
+            background: linear-gradient(145deg, #f1fbff 0%, #ffffff 70%);
+            @apply border-[#caecf9] hover:border-[#8fd5ef] hover:shadow-md;
+        }
+        .hydro-card-tertiary {
+            background: linear-gradient(145deg, #f1f7ff 0%, #ffffff 70%);
+            @apply border-[#d7e6ff] hover:border-[#a7c4ff] hover:shadow-md;
+        }
+        .hydro-card-quaternary {
+            background: linear-gradient(145deg, #f3fcfa 0%, #ffffff 70%);
+            @apply border-[#cdeee4] hover:border-[#8fd8c1] hover:shadow-md;
+        }
+        .hydro-metric { @apply text-[26px] font-black leading-none tracking-normal; }
+        .hydro-metric-primary { color: #1d4ed8; }
+        .hydro-metric-secondary { color: #0891b2; }
+        .hydro-metric-tertiary { color: #2563eb; }
+        .hydro-metric-quaternary { color: #0f766e; }
+        .hydro-icon-chip {
+            @apply w-10 h-10 rounded-lg flex items-center justify-center text-[22px] shadow-sm;
+        }
+        .hydro-icon-primary { @apply bg-blue-100 text-blue-600; }
+        .hydro-icon-secondary { @apply bg-cyan-100 text-cyan-600; }
+        .hydro-icon-tertiary { @apply bg-indigo-100 text-indigo-600; }
+        .hydro-icon-quaternary { @apply bg-emerald-100 text-emerald-600; }
+        .hydro-tab-btn { @apply h-9 px-4 rounded-md text-[13px] font-bold border border-slate-200 text-slate-600 bg-white hover:bg-blue-50 hover:text-blue-600 transition-colors; }
+        .hydro-tab-btn.active { @apply bg-blue-600 text-white border-blue-600 shadow-sm hover:bg-blue-600 hover:text-white; }
+        .hydro-panel { @apply hidden; }
+        .hydro-panel.active { @apply block; }
+        .hydro-table { @apply w-full border-collapse text-center text-[13px]; }
+        .hydro-table th { @apply bg-[#f4f7fb] text-slate-700 font-bold px-4 py-3 border-b border-slate-200 whitespace-nowrap; }
+        .hydro-table td { @apply px-4 py-3 border-b border-slate-100 text-slate-600 whitespace-nowrap; }
+        .hydro-table tbody tr:nth-child(even) { @apply bg-blue-50/40; }
+        .history-modal-shell {
+            @apply bg-white rounded shadow-2xl w-11/12 max-w-[1580px] h-[86vh] flex flex-col border border-slate-200 overflow-hidden;
+        }
+        .history-modal-tab {
+            @apply h-11 px-5 text-[14px] font-bold text-slate-600 bg-white border border-slate-200 hover:bg-slate-50 hover:text-blue-600 transition-colors whitespace-nowrap rounded-t-md min-w-[220px];
+        }
+        .history-modal-tab.active {
+            @apply text-blue-600 bg-blue-50 border-blue-200;
+        }
+        .history-modal-table {
+            @apply w-full text-sm text-center text-slate-600 border-collapse data-table;
+        }
+        .history-modal-table thead th {
+            @apply sticky top-0 z-10 text-slate-700 bg-[#f4f7fb] px-6 py-4 font-bold border-b border-slate-100 whitespace-nowrap;
+        }
+        .history-modal-table tbody td {
+            @apply px-6 py-4 border-b border-slate-100 whitespace-nowrap;
+        }
+        .history-page-btn {
+            @apply relative inline-flex items-center justify-center min-w-[38px] h-[38px] px-3 text-sm font-medium text-slate-500 bg-white border border-slate-200 rounded-md hover:bg-slate-50 hover:text-slate-700 transition-colors cursor-pointer select-none;
+        }
+        .history-page-btn.active {
+            @apply bg-blue-600 text-white border-blue-600 hover:bg-blue-700 hover:text-white shadow-sm;
+        }
+        .history-page-btn.disabled {
+            @apply opacity-50 cursor-not-allowed hover:bg-transparent hover:text-slate-500;
+        }
+        .history-page-input, .history-page-size {
+            @apply border border-slate-200 rounded-md bg-white text-slate-700 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500;
+        }
+        .history-page-input {
+            @apply w-12 h-[34px] text-center text-sm;
+        }
+        .history-page-size {
+            @apply h-[34px] px-3 min-w-[108px] text-sm;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-800 dark:text-slate-100 h-screen overflow-hidden flex flex-col">
+
+<header class="bg-primary h-14 flex items-center justify-between px-4 text-white shrink-0 shadow-md z-50">
+    <div class="flex items-center space-x-3">
+        <div class="w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-inner">
+            <span class="material-symbols-outlined text-primary text-xl">water_drop</span>
+        </div>
+        <h1 class="text-xl font-bold tracking-tight">湖北省水生态环境综合管理</h1>
+    </div>
+    <nav class="flex h-full">
+        <a class="px-6 flex items-center space-x-2 hover:bg-white/10 transition-colors" href="#"><i class="ri-dashboard-line text-[18px]"></i><span class="text-sm">总体概览</span></a>
+        <a class="px-6 flex items-center space-x-2 bg-white/20 border-b-2 border-white transition-colors" href="#"><i class="ri-bar-chart-box-line text-[18px]"></i><span class="text-sm font-bold">形势分析</span></a>
+        <a class="px-6 flex items-center space-x-2 hover:bg-white/10 transition-colors" href="#"><i class="ri-map-pin-line text-[18px]"></i><span class="text-sm">空间分析</span></a>
+        <a class="px-6 flex items-center space-x-2 hover:bg-white/10 transition-colors" href="#"><i class="ri-water-flash-line text-[18px]"></i><span class="text-sm">水污染源</span></a>
+        <a class="px-6 flex items-center space-x-2 hover:bg-white/10 transition-colors" href="#"><i class="ri-error-warning-line text-[18px]"></i><span class="text-sm">问题聚焦</span></a>
+        <a class="px-6 flex items-center space-x-2 hover:bg-white/10 transition-colors" href="#"><i class="ri-apps-line text-[18px]"></i><span class="text-sm">专题应用</span></a>
+    </nav>
+    <div class="flex items-center space-x-6">
+        <div class="flex items-center space-x-2 text-sm opacity-90"><i class="ri-earth-line text-[18px]"></i><span>碧水荆灵</span></div>
+        <div class="flex items-center space-x-2 text-sm"><i class="ri-user-smile-line text-[18px]"></i><span>wangyunpeng</span></div>
+    </div>
+</header>
+
+<div class="flex flex-1 overflow-hidden">
+    <aside id="sidebar" class="w-[270px] bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 flex flex-col shrink-0 transition-all duration-300">
+        <div class="flex-1 py-4 overflow-y-auto custom-scrollbar flex flex-col gap-1 px-3">
+            <a class="nav-item w-full flex items-center px-4 py-3 text-[16px] font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg transition-colors group" href="#">
+                <i class="ri-layout-grid-line mr-3 text-lg text-slate-400 group-hover:text-primary"></i>
+                <span class="sidebar-text">湖库概览</span>
+            </a>
+            <a class="nav-item w-full flex items-center justify-between px-4 py-2.5 text-[16px] font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg transition-colors group" href="#">
+                <div class="flex items-center"><i class="ri-landscape-line mr-3 text-lg text-slate-400 group-hover:text-primary"></i><span class="sidebar-text">洪湖专题</span></div>
+                <i class="ri-arrow-right-s-line text-slate-400 sidebar-chevron"></i>
+            </a>
+            <a class="nav-item w-full flex items-center px-4 py-2.5 text-[16px] font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg transition-colors group" href="#">
+                <i class="ri-water-percent-line mr-3 text-lg text-slate-400 group-hover:text-primary"></i><span class="sidebar-text">梁子湖专题</span>
+            </a>
+            <a class="nav-item w-full flex items-center px-4 py-2.5 text-[16px] font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg transition-colors group" href="#">
+                <i class="ri-drop-line mr-3 text-lg text-slate-400 group-hover:text-primary"></i><span class="sidebar-text">斧头湖专题</span>
+            </a>
+            <a class="nav-item w-full flex items-center px-4 py-2.5 text-[16px] font-bold text-blue-700 bg-blue-50 dark:bg-blue-900/30 rounded-lg transition-all relative mt-1 shadow-sm" href="#">
+                <i class="ri-folder-add-line mr-3 text-lg text-blue-600"></i>
+                <span class="sidebar-text">丹江口水库专题</span>
+                <div class="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-5 bg-blue-600 rounded-r-full sidebar-text"></div>
+            </a>
+        </div>
+        <button id="toggleSidebarBtn" class="h-12 border-t border-slate-200 dark:border-slate-800 flex items-center justify-center space-x-2 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all text-slate-500 hover:text-primary group">
+            <i id="toggleIcon" class="ri-arrow-left-s-line text-xl transition-transform duration-300"></i>
+            <span class="sidebar-text text-sm font-medium tracking-wide">收起侧栏</span>
+        </button>
+    </aside>
+
+    <main class="flex-1 overflow-y-auto custom-scrollbar p-6 relative">
+
+        <div class="h-16 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-6 flex items-center justify-between shrink-0 card-shadow mb-6">
+            <div class="flex items-center gap-3">
+                <span class="relative flex h-3 w-3 shrink-0">
+                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-3 w-3 bg-blue-500"></span>
+                </span>
+                <h2 class="text-[17px] font-bold text-slate-800 dark:text-white tracking-tight flex items-center">丹江口水库专题分析</h2>
+            </div>
+            <div class="flex items-center space-x-3">
+                <a href="http://10.42.73.35:8888/lego-generated-apps/lego_file/app/src/4c3dcffa71b1448abfd26e424e941773/index.html#/root" target="_blank" rel="noopener" class="inline-flex items-center gap-2 h-8 px-4 rounded-lg bg-blue-600 text-white text-sm font-bold shadow-sm hover:bg-blue-700 transition-colors">
+                    <i class="ri-external-link-line text-[16px]"></i>
+                    净水北送看板
+                </a>
+                <div class="relative">
+                    <select id="year-select" class="appearance-none bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 pr-10 py-1.5 text-sm font-medium text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all cursor-pointer hover:bg-white min-w-[100px]" onchange="handlePeriodChange()">
+                        <option selected>2026年</option>
+                        <option>2025年</option>
+                        <option>2024年</option>
+                    </select>
+                </div>
+                <div class="relative">
+                    <select id="month-select" class="appearance-none bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 pr-10 py-1.5 text-sm font-medium text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all cursor-pointer hover:bg-white min-w-[90px]" onchange="handlePeriodChange()">
+                        <option selected>3月</option>
+                        <option>2月</option>
+                        <option>1月</option>
+                    </select>
+                </div>
+                <div class="flex bg-slate-100 dark:bg-slate-800 p-0 rounded-lg border border-slate-200 dark:border-slate-700 h-8 ml-2">
+                    <button id="btn-current" class="toggle-btn active" onclick="setMonthMode('current')">当前月</button>
+                    <button id="btn-cumulative" class="toggle-btn inactive" onclick="setMonthMode('cumulative')">累计月</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 card-shadow p-6 mb-6">
+            <div class="mb-5 border-b border-slate-100 dark:border-slate-800 pb-4">
+                <div class="flex items-center text-[16px] xl:text-[18px] text-slate-700 dark:text-slate-200 font-medium">
+                    <i class="ri-water-flash-fill text-blue-500 mr-2 text-xl"></i>
+                    丹江口水库监测断面：<span id="summary-section-count" class="text-blue-600 font-bold mx-1.5 text-xl">4</span> 个
+                    <span class="mx-4 text-slate-300 dark:text-slate-600">|</span>
+                    自动站：<span id="summary-auto-count" class="text-blue-600 font-bold mx-1.5 text-xl">2</span> 个
+                    <span class="mx-4 text-slate-300 dark:text-slate-600">|</span>
+                    首要污染物：<span id="summary-primary-factor" class="text-orange-500 font-bold ml-2">总磷、高锰酸盐指数</span>
+                </div>
+                <p id="summary-copy" class="mt-3 text-[14px] text-slate-500 dark:text-slate-400 leading-relaxed pl-7">
+                    监测的4个断面中：无Ⅰ类，无Ⅱ类，无Ⅲ类，<span class="text-yellow-500 font-bold mx-1">Ⅳ类</span>水质断面比例占<span class="text-yellow-500 font-bold mx-1">75%</span>，<span class="text-orange-500 font-bold mx-1">Ⅴ类</span>水质断面比例占<span class="text-orange-500 font-bold mx-1">25%</span>，无劣Ⅴ类。<br>
+                    监测的2个自动站中：<span class="text-blue-500 font-bold mx-1">Ⅰ类</span>水质断面比例占<span class="text-blue-500 font-bold mx-1">100%</span>，无Ⅱ类，无Ⅲ类，无Ⅳ类，无Ⅴ类，无劣Ⅴ类。
+                </p>
+            </div>
+
+            <div class="flex flex-col lg:flex-row items-center gap-6">
+                <div class="w-full lg:w-[260px] h-[160px] flex-shrink-0 relative">
+                    <div id="chart-water-donut" class="w-full h-full"></div>
+                    <div class="absolute inset-0 pointer-events-none flex items-center justify-center text-center text-slate-500 dark:text-slate-400 font-bold">
+                        <div class="leading-tight">
+                            <div id="water-donut-center-count" class="text-[17px] leading-[18px]">4个</div>
+                            <div class="text-[13px] leading-[18px]">断面总数</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="w-full flex-1 grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-4">
+                    <div class="bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-xl p-4 flex flex-col items-center hover:shadow-lg transition-all duration-300 cursor-pointer shadow-sm" onclick="openQualityListModal('Ⅰ类')">
+                        <div class="w-10/12 py-1.5 bg-[#eff6ff] text-[#3b82f6] rounded text-[13px] font-bold text-center mb-3">I 类</div>
+                        <div id="quality-i-percent" class="text-[32px] font-black text-[#3b82f6] mb-1 leading-none tracking-tight">0%</div>
+                        <div id="quality-i-count" class="text-[13px] text-slate-500 mt-1 flex items-center">0 个</div>
+                    </div>
+                    <div class="bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-xl p-4 flex flex-col items-center hover:shadow-lg transition-all duration-300 cursor-pointer shadow-sm" onclick="openQualityListModal('Ⅱ类')">
+                        <div class="w-10/12 py-1.5 bg-[#ecfeff] text-[#06b6d4] rounded text-[13px] font-bold text-center mb-3">II 类</div>
+                        <div id="quality-ii-percent" class="text-[32px] font-black text-[#06b6d4] mb-1 leading-none tracking-tight">100%</div>
+                        <div id="quality-ii-count" class="text-[13px] text-slate-500 mt-1 flex items-center">2 个</div>
+                    </div>
+                    <div class="bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-xl p-4 flex flex-col items-center hover:shadow-lg transition-all duration-300 cursor-pointer shadow-sm" onclick="openQualityListModal('Ⅲ类')">
+                        <div class="w-10/12 py-1.5 bg-[#ecfdf5] text-[#10b981] rounded text-[13px] font-bold text-center mb-3">III 类</div>
+                        <div id="quality-iii-percent" class="text-[32px] font-black text-[#10b981] mb-1 leading-none tracking-tight">0%</div>
+                        <div id="quality-iii-count" class="text-[13px] text-slate-500 mt-1 flex items-center">0 个</div>
+                    </div>
+                    <div class="bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-xl p-4 flex flex-col items-center hover:shadow-lg transition-all duration-300 cursor-pointer shadow-sm" onclick="openQualityListModal('Ⅳ类')">
+                        <div class="w-10/12 py-1.5 bg-[#fefce8] text-[#eab308] rounded text-[13px] font-bold text-center mb-3">IV 类</div>
+                        <div id="quality-iv-percent" class="text-[32px] font-black text-[#eab308] mb-1 leading-none tracking-tight">75%</div>
+                        <div id="quality-iv-count" class="text-[13px] text-slate-500 mt-1 flex items-center">3 个</div>
+                    </div>
+                    <div class="bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-xl p-4 flex flex-col items-center hover:shadow-lg transition-all duration-300 cursor-pointer shadow-sm" onclick="openQualityListModal('Ⅴ类')">
+                        <div class="w-10/12 py-1.5 bg-[#fff7ed] text-[#f97316] rounded text-[13px] font-bold text-center mb-3">V 类</div>
+                        <div id="quality-v-percent" class="text-[32px] font-black text-[#f97316] mb-1 leading-none tracking-tight">25%</div>
+                        <div id="quality-v-count" class="text-[13px] text-slate-500 mt-1 flex items-center">1 个</div>
+                    </div>
+                    <div class="bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-xl p-4 flex flex-col items-center hover:shadow-lg transition-all duration-300 cursor-pointer shadow-sm" onclick="openQualityListModal('劣Ⅴ类')">
+                        <div class="w-10/12 py-1.5 bg-[#fef2f2] text-[#ef4444] rounded text-[13px] font-bold text-center mb-3">劣V 类</div>
+                        <div id="quality-badv-percent" class="text-[32px] font-black text-[#ef4444] mb-1 leading-none tracking-tight">0%</div>
+                        <div id="quality-badv-count" class="text-[13px] text-slate-500 mt-1 flex items-center">0 个</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 card-shadow p-5 mb-6">
+            <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center space-x-2">
+                    <div class="section-title-bar m-0"></div>
+                    <h3 class="font-bold text-slate-800 dark:text-slate-200 text-[15px]">丹江口水库水文</h3>
+                </div>
+                <span class="text-xs text-slate-400">更新时间：2026-05-12 14:00</span>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 mb-5">
+                <button class="hydro-card hydro-card-primary text-left" onclick="openHydroHistoryModal(1)">
+                    <div class="flex items-center justify-between mb-5">
+                        <span class="text-sm font-bold text-slate-600 dark:text-slate-300">陶岔进水口水量</span>
+                        <span class="hydro-icon-chip hydro-icon-primary"><i class="ri-water-flash-line"></i></span>
+                    </div>
+                    <div class="flex items-end gap-2">
+                        <span class="hydro-metric hydro-metric-primary">6.56</span>
+                        <span class="text-sm font-bold text-slate-500 mb-1">亿m³</span>
+                    </div>
+                    <div class="mt-3 text-xs text-slate-500">较上月 +0.38 亿m³</div>
+                </button>
+                <button class="hydro-card hydro-card-secondary text-left" onclick="openHydroHistoryModal(2)">
+                    <div class="flex items-center justify-between mb-5">
+                        <span class="text-sm font-bold text-slate-600 dark:text-slate-300">丹江口水位</span>
+                        <span class="hydro-icon-chip hydro-icon-secondary"><i class="ri-ruler-line"></i></span>
+                    </div>
+                    <div class="flex items-end gap-2">
+                        <span class="hydro-metric hydro-metric-secondary">160.81</span>
+                        <span class="text-sm font-bold text-slate-500 mb-1">m</span>
+                    </div>
+                    <div class="mt-3 text-xs text-slate-500">库水位保持稳定运行</div>
+                </button>
+                <button class="hydro-card hydro-card-tertiary text-left" onclick="openHydroHistoryModal(2)">
+                    <div class="flex items-center justify-between mb-5">
+                        <span class="text-sm font-bold text-slate-600 dark:text-slate-300">入库 / 出库流量</span>
+                        <span class="hydro-icon-chip hydro-icon-tertiary"><i class="ri-flow-chart"></i></span>
+                    </div>
+                    <div class="flex items-end gap-2">
+                        <span class="hydro-metric hydro-metric-tertiary">289 / 720</span>
+                        <span class="text-sm font-bold text-slate-500 mb-1">m³/s</span>
+                    </div>
+                    <div class="mt-3 text-xs text-slate-500">出库高于入库 431 m³/s</div>
+                </button>
+                <button class="hydro-card hydro-card-quaternary text-left" onclick="openHydroHistoryModal(3)">
+                    <div class="flex items-center justify-between mb-5">
+                        <span class="text-sm font-bold text-slate-600 dark:text-slate-300">当前蓄量</span>
+                        <span class="hydro-icon-chip hydro-icon-quaternary"><i class="ri-database-2-line"></i></span>
+                    </div>
+                    <div class="flex items-end gap-2">
+                        <span class="hydro-metric hydro-metric-quaternary">186.47</span>
+                        <span class="text-sm font-bold text-slate-500 mb-1">亿m³</span>
+                    </div>
+                    <div class="mt-3 text-xs text-slate-500">支撑北送调度与水质研判</div>
+                </button>
+            </div>
+            <div class="border-t border-slate-100 dark:border-slate-800 pt-4">
+                <div class="flex flex-wrap items-center gap-2">
+                    <button class="hydro-tab-btn" id="hydro-tab-1" onclick="switchHydroTab(1)">陶岔进水口水量</button>
+                    <button class="hydro-tab-btn" id="hydro-tab-2" onclick="switchHydroTab(2)">丹江口(汉江)水位入出库</button>
+                    <button class="hydro-tab-btn" id="hydro-tab-3" onclick="switchHydroTab(3)">其他河流水位流量</button>
+                    <button class="hydro-tab-btn" id="hydro-tab-4" onclick="switchHydroTab(4)">陶岔固定站和三号浮标船水质</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 card-shadow h-[380px] mb-6 flex flex-col relative overflow-hidden">
+            <div class="absolute inset-0 flex items-center justify-center opacity-40 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] pointer-events-none"></div>
+            <div class="flex-1 flex flex-col items-center justify-center z-10 text-slate-400">
+                <i class="ri-map-2-line text-6xl mb-3 opacity-50"></i>
+                <h3 class="text-lg font-bold tracking-widest">地图占位区域</h3>
+                <p class="text-sm mt-2 opacity-80">展示丹江口水库、入出库河流及国控断面空间分布</p>
+            </div>
+            <div class="absolute right-4 top-4 flex gap-2 z-20">
+                <button class="bg-blue-500 text-white px-4 py-1.5 rounded text-sm shadow hover:bg-blue-600 transition-colors">下载</button>
+                <button class="bg-blue-500 text-white w-8 h-8 flex items-center justify-center rounded text-sm shadow hover:bg-blue-600 transition-colors"><i class="ri-fullscreen-line"></i></button>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 xl:grid-cols-2 gap-6 mb-6">
+            <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 card-shadow p-5 h-[360px] flex flex-col hover:shadow-md transition-shadow">
+                <div class="flex items-center justify-between mb-2">
+                    <div class="flex items-center space-x-2">
+                        <div class="section-title-bar m-0"></div>
+                        <h3 class="font-bold text-slate-800 dark:text-slate-200 text-[15px]">水质占比变化</h3>
+                    </div>
+                    <div class="flex gap-2">
+                        <i class="ri-table-2 chart-action-icon" title="查看数据表" onclick="showChartData('chartQuality', '水质占比变化')"></i>
+                        <i class="ri-download-2-line chart-action-icon" title="下载图表" onclick="downloadChart('chartQuality')"></i>
+                    </div>
+                </div>
+                <div id="chart-quality-bar" class="flex-1 w-full"></div>
+            </div>
+
+            <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 card-shadow p-5 h-[360px] flex flex-col hover:shadow-md transition-shadow">
+                <div class="flex items-center justify-between mb-2">
+                    <div class="flex items-center space-x-2">
+                        <div class="section-title-bar m-0"></div>
+                        <h3 class="font-bold text-slate-800 dark:text-slate-200 text-[15px]">自动站水质占比变化</h3>
+                        <div class="ml-4 bg-[#f2f3f5] dark:bg-slate-800 rounded text-[#4e5969] dark:text-slate-300 flex items-center px-3 py-1.0 cursor-pointer hover:bg-[#e5e6eb] dark:hover:bg-slate-700 transition-colors">
+                            <input id="auto-station-date-range" type="text" value="2026/05/01 - 2026/05/12" class="border-none p-0 text-[12px] bg-transparent w-[150px] cursor-pointer focus:ring-0 outline-none" readonly>
+                            <i class="ri-calendar-line text-slate-400 ml-1"></i>
+                        </div>
+                    </div>
+                    <div class="flex gap-2">
+                        <i class="ri-table-2 chart-action-icon" title="查看数据表" onclick="showChartData('chartAutoStation', '自动站水质占比变化')"></i>
+                        <i class="ri-download-2-line chart-action-icon" title="下载图表" onclick="downloadChart('chartAutoStation')"></i>
+                    </div>
+                </div>
+                <div id="chart-auto-station" class="flex-1 w-full"></div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 xl:grid-cols-2 gap-6 mb-6">
+            <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 card-shadow p-5 h-[360px] flex flex-col hover:shadow-md transition-shadow">
+                <div class="flex items-center justify-between mb-2">
+                    <div class="flex items-center space-x-2">
+                        <div class="section-title-bar m-0"></div>
+                        <h3 class="font-bold text-slate-800 dark:text-slate-200 text-[15px]">湖库内断面污染物情况</h3>
+                        <div class="ml-4 relative bg-[#f2f3f5] dark:bg-slate-800 rounded hover:bg-[#e5e6eb] dark:hover:bg-slate-700 transition-colors w-[120px]">
+                            <select id="pollutant-route-factor" onchange="handlePollutantFactorChange('route')" class="appearance-none bg-transparent border-none py-0.5 pl-3 pr-8 text-[12px] text-[#4e5969] dark:text-slate-300 focus:outline-none focus:ring-0 cursor-pointer w-full">
+                                <option>高锰酸盐指数</option>
+                                <option>总氮</option>
+                                <option>总磷</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="flex gap-2">
+                        <i class="ri-table-2 chart-action-icon" title="查看数据表" onclick="showChartData('chartPollutantRoute', '湖库内断面污染物情况')"></i>
+                        <i class="ri-download-2-line chart-action-icon" title="下载图表" onclick="downloadChart('chartPollutantRoute')"></i>
+                    </div>
+                </div>
+                <div id="chart-pollutant-route" class="flex-1 w-full"></div>
+            </div>
+
+            <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 card-shadow p-5 h-[360px] flex flex-col hover:shadow-md transition-shadow">
+                <div class="flex items-center justify-between mb-2">
+                    <div class="flex items-center space-x-2">
+                        <div class="section-title-bar m-0"></div>
+                        <h3 class="font-bold text-slate-800 dark:text-slate-200 text-[15px]">污染物同比变化情况</h3>
+                        <div class="ml-4 relative bg-[#f2f3f5] dark:bg-slate-800 rounded hover:bg-[#e5e6eb] dark:hover:bg-slate-700 transition-colors w-[120px]">
+                            <select id="pollutant-trend-factor" onchange="handlePollutantFactorChange('trend')" class="appearance-none bg-transparent border-none py-0.5 pl-3 pr-8 text-[12px] text-[#4e5969] dark:text-slate-300 focus:outline-none focus:ring-0 cursor-pointer w-full">
+                                <option>高锰酸盐指数</option>
+                                <option>总氮</option>
+                                <option>总磷</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="flex gap-2">
+                        <i class="ri-table-2 chart-action-icon" title="查看数据表" onclick="showChartData('chartPollutant', '污染物同比变化情况')"></i>
+                        <i class="ri-download-2-line chart-action-icon" title="下载图表" onclick="downloadChart('chartPollutant')"></i>
+                    </div>
+                </div>
+                <div id="chart-pollutant-line" class="flex-1 w-full"></div>
+            </div>
+        </div>
+
+        <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 card-shadow flex flex-col overflow-hidden mb-6">
+
+            <div class="flex flex-col xl:flex-row xl:items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-slate-800 gap-4">
+                <div class="flex items-center gap-3 shrink-0">
+                    <button id="tab-btn-1" class="tab-btn active" onclick="switchTableTab(1)">断面清单</button>
+                    <button id="tab-btn-2" class="tab-btn inactive" onclick="switchTableTab(2)">自动站(日)</button>
+                    <button id="tab-btn-3" class="tab-btn inactive" onclick="switchTableTab(3)">自动站(时)</button>
+                </div>
+
+                <div id="search-bar-container" class="hidden items-center gap-3 flex-wrap ml-auto">
+                    <div class="relative">
+                        <input type="text" placeholder="请输入断面名称" class="border border-slate-200 dark:border-slate-700 rounded-md px-3 py-1.5 text-[13px] w-56 focus:outline-none focus:border-blue-500 placeholder-slate-400 bg-white dark:bg-slate-800">
+                    </div>
+                    <div class="flex items-center border border-slate-200 dark:border-slate-700 rounded-md bg-white dark:bg-slate-800 px-3 py-1.5">
+                        <i class="ri-calendar-line text-slate-400 mr-2 text-[14px]"></i>
+                        <input id="table-date-start" type="date" value="2026-05-12" class="border-none p-0 text-[13px] text-slate-600 dark:text-slate-300 focus:ring-0 bg-transparent w-24 text-center text-slate-500">
+                        <span class="text-slate-300 mx-2">-</span>
+                        <input id="table-date-end" type="date" value="2026-05-12" class="border-none p-0 text-[13px] text-slate-600 dark:text-slate-300 focus:ring-0 bg-transparent w-24 text-center text-slate-500">
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-1.5 rounded-md shadow-sm text-[13px] transition-colors">搜索</button>
+                        <button class="bg-white hover:bg-slate-50 border border-slate-200 text-slate-600 px-5 py-1.5 rounded-md shadow-sm text-[13px] transition-colors">重置</button>
+                        <button class="bg-white hover:bg-slate-50 border border-slate-200 text-slate-600 px-5 py-1.5 rounded-md shadow-sm text-[13px] transition-colors">导出</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="overflow-x-auto custom-scrollbar">
+                <table class="w-full data-table min-w-[1000px]" id="main-data-table">
+                    <thead id="table-head"></thead>
+                    <tbody id="table-body"></tbody>
+                </table>
+            </div>
+
+            <div class="px-6 py-4 bg-white dark:bg-slate-900 flex items-center justify-between select-none border-t border-slate-100">
+                <div id="total-count-display" class="text-sm text-slate-500 pl-1"></div>
+                <div id="pagination-container" class="flex items-center gap-1"></div>
+            </div>
+        </div>
+
+        <footer class="mt-4 border-t border-slate-200 dark:border-slate-800 text-center text-xs text-slate-400 pb-2 pt-4">
+            <p>&copy; 2026 湖北省生态环境厅 · 版权所有</p>
+        </footer>
+    </main>
+</div>
+
+<div id="data-table-modal" class="fixed inset-0 z-[100] hidden bg-slate-900/50 backdrop-blur-sm flex items-center justify-center transition-opacity opacity-0 duration-300">
+    <div class="bg-white dark:bg-slate-800 rounded shadow-2xl w-11/12 max-w-6xl flex flex-col max-h-[85vh] transform transition-transform scale-95 duration-300">
+        <div class="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-slate-700 shrink-0">
+            <div class="flex items-center space-x-2">
+                <div class="section-title-bar m-0"></div>
+                <h3 id="modal-title" class="text-base font-bold text-slate-800 dark:text-white">数据表</h3>
+            </div>
+            <button onclick="closeModal()" class="text-slate-400 hover:text-red-500 transition-colors flex items-center justify-center">
+                <i class="ri-close-line text-2xl"></i>
+            </button>
+        </div>
+        <div class="overflow-auto flex-1 custom-scrollbar">
+            <table class="w-full text-sm text-center text-slate-600 dark:text-slate-300 border-collapse data-table">
+                <thead class="text-slate-700 bg-[#f4f7fb] dark:bg-slate-700 dark:text-slate-200 sticky top-0 z-10" id="modal-thead"></thead>
+                <tbody id="modal-tbody"></tbody>
+            </table>
+        </div>
+        <div class="px-6 py-4 border-t border-slate-100 dark:border-slate-700 bg-white dark:bg-slate-800 shrink-0 flex justify-center space-x-4">
+            <button onclick="closeModal()" class="px-6 py-1.5 bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded text-sm text-slate-600 dark:text-slate-200 hover:bg-slate-50 transition-colors">取消</button>
+            <button onclick="exportExcel()" class="px-6 py-1.5 bg-blue-500 text-white border border-blue-500 rounded text-sm hover:bg-blue-600 transition-colors">导出</button>
+        </div>
+    </div>
+</div>
+
+<div id="quality-list-modal" class="fixed inset-0 z-[100] hidden bg-slate-900/50 backdrop-blur-sm flex items-center justify-center transition-opacity opacity-0 duration-300">
+    <div class="bg-white dark:bg-slate-800 rounded shadow-2xl w-11/12 max-w-6xl flex flex-col max-h-[90vh] h-[80vh] transform transition-transform scale-95 duration-300">
+        <div class="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-slate-700 shrink-0">
+            <h3 id="quality-modal-title" class="text-[15px] font-bold text-slate-800 dark:text-white flex items-center">
+                <div class="w-1 h-4 bg-blue-500 mr-2 rounded"></div>
+                <span id="quality-title-text">I 类水质占比清单</span>
+            </h3>
+            <button onclick="closeQualityListModal()" class="text-slate-400 hover:text-red-500 transition-colors">
+                <i class="ri-close-line text-2xl"></i>
+            </button>
+        </div>
+        <div class="px-6 py-4 border-b border-slate-100 dark:border-slate-700 shrink-0 flex space-x-3">
+            <input type="text" placeholder="请输入地市、断面名称" class="border border-slate-200 rounded px-3 py-1.5 text-sm w-64 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
+            <button class="bg-[#3b82f6] hover:bg-blue-600 text-white px-5 py-1.5 rounded text-sm transition-colors">搜索</button>
+            <button class="bg-slate-100 hover:bg-slate-200 text-slate-600 border border-slate-200 px-5 py-1.5 rounded text-sm transition-colors">重置</button>
+        </div>
+        <div class="overflow-auto flex-1 custom-scrollbar">
+            <table class="w-full data-table border-collapse">
+                <thead class="sticky top-0 z-10 shadow-sm bg-[#f4f7fb]">
+                <tr>
+                    <th class="w-16">序号</th>
+                    <th class="cursor-pointer hover:bg-slate-200 transition-colors">地市名称 <div class="sort-icon-group"><i class="ri-arrow-up-s-fill"></i><i class="ri-arrow-down-s-fill"></i></div></th>
+                    <th class="cursor-pointer hover:bg-slate-200 transition-colors">断面名称 <div class="sort-icon-group"><i class="ri-arrow-up-s-fill"></i><i class="ri-arrow-down-s-fill"></i></div></th>
+                    <th class="cursor-pointer hover:bg-slate-200 transition-colors">流域名称 <div class="sort-icon-group"><i class="ri-arrow-up-s-fill"></i><i class="ri-arrow-down-s-fill"></i></div></th>
+                    <th class="cursor-pointer hover:bg-slate-200 transition-colors">所在水体 <div class="sort-icon-group"><i class="ri-arrow-up-s-fill"></i><i class="ri-arrow-down-s-fill"></i></div></th>
+                    <th class="cursor-pointer hover:bg-slate-200 transition-colors">水质类别 <div class="sort-icon-group"><i class="ri-arrow-up-s-fill"></i><i class="ri-arrow-down-s-fill"></i></div></th>
+                    <th class="cursor-pointer hover:bg-slate-200 transition-colors">水质目标 <div class="sort-icon-group"><i class="ri-arrow-up-s-fill"></i><i class="ri-arrow-down-s-fill"></i></div></th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody id="quality-modal-tbody">
+                </tbody>
+            </table>
+        </div>
+        <div class="px-6 py-3 border-t border-slate-100 dark:border-slate-700 shrink-0 flex items-center justify-center space-x-4 text-sm text-slate-500">
+            <span id="quality-modal-total">共 4 条</span>
+            <select class="border border-slate-200 rounded px-3 py-1.5 text-sm bg-white outline-none w-[120px] cursor-pointer">
+                <option>15条/页</option>
+                <option>30条/页</option>
+                <option>50条/页</option>
+            </select>
+            <div class="flex items-center space-x-1">
+                <button class="px-2 py-1 text-slate-400 hover:text-blue-500 disabled:opacity-50"><i class="ri-arrow-left-s-line"></i></button>
+                <button class="px-2.5 py-1 text-blue-600 font-bold">1</button>
+                <button class="px-2 py-1 text-slate-400 hover:text-blue-500 disabled:opacity-50"><i class="ri-arrow-right-s-line"></i></button>
+            </div>
+            <div class="flex items-center space-x-2">
+                <span>前往</span>
+                <input type="text" value="1" class="border border-slate-200 rounded w-10 text-center py-1 text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
+                <span>页</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="hydro-history-modal" class="fixed inset-0 z-[120] hidden bg-slate-900/50 backdrop-blur-sm flex items-center justify-center transition-opacity opacity-0 duration-300">
+    <div class="history-modal-shell transform transition-transform scale-95 duration-300">
+        <div class="h-full flex flex-col">
+            <div class="flex items-center justify-between px-6 py-4 border-b border-slate-100 shrink-0">
+                <div class="flex items-center space-x-2">
+                    <div class="section-title-bar m-0"></div>
+                    <h3 class="text-base font-bold text-slate-800">历史数据</h3>
+                </div>
+                <button onclick="closeHydroHistoryModal()" class="text-slate-400 hover:text-red-500 transition-colors flex items-center justify-center">
+                    <i class="ri-close-line text-[26px]"></i>
+                </button>
+            </div>
+            <div class="px-6 pt-4 shrink-0">
+                <div id="hydro-history-tabs" class="flex gap-2 overflow-x-auto custom-scrollbar"></div>
+            </div>
+            <div class="px-6 pt-4 flex-1 min-h-0">
+                <div class="h-full overflow-auto custom-scrollbar rounded-lg border border-slate-100 bg-white">
+                    <table class="history-modal-table min-w-full">
+                        <thead id="hydro-history-thead"></thead>
+                        <tbody id="hydro-history-tbody"></tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="px-6 py-4 border-t border-slate-100 shrink-0 flex items-center justify-between gap-4 text-slate-500 text-sm">
+                <div id="hydro-history-total" class="min-w-[120px] pl-1"></div>
+                <div id="hydro-history-pagination" class="flex items-center gap-1 flex-wrap justify-center"></div>
+                <div class="flex items-center gap-3 whitespace-nowrap">
+                    <span>前往</span>
+                    <input id="hydro-history-page-input" class="history-page-input" value="1" onchange="jumpHydroHistoryPage(this.value)" onkeydown="if (event.key === 'Enter') jumpHydroHistoryPage(this.value)">
+                    <span>页</span>
+                    <span id="hydro-history-row-total"></span>
+                    <select id="hydro-history-page-size" class="history-page-size" onchange="setHydroHistoryPageSize(this.value)">
+                        <option value="10" selected>10条/页</option>
+                        <option value="20">20条/页</option>
+                        <option value="50">50条/页</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const sidebar = document.getElementById('sidebar');
+    const toggleBtn = document.getElementById('toggleSidebarBtn');
+    const toggleIcon = document.getElementById('toggleIcon');
+    let isCollapsed = false;
+
+    toggleBtn.addEventListener('click', () => {
+        isCollapsed = !isCollapsed;
+        if (isCollapsed) {
+            sidebar.classList.remove('w-[240px]');
+            sidebar.classList.add('w-[80px]', 'hide-text', 'collapsed-sidebar');
+            toggleIcon.classList.replace('ri-arrow-left-s-line', 'ri-arrow-right-s-line');
+        } else {
+            sidebar.classList.remove('w-[80px]', 'hide-text', 'collapsed-sidebar');
+            sidebar.classList.add('w-[240px]');
+            toggleIcon.classList.replace('ri-arrow-right-s-line', 'ri-arrow-left-s-line');
+        }
+        setTimeout(() => resizeAllCharts(), 300);
+    });
+
+    function setMonthMode(mode) {
+        const btnCurrent = document.getElementById('btn-current');
+        const btnCumulative = document.getElementById('btn-cumulative');
+        const monthSelect = document.getElementById('month-select');
+        currentMonthMode = mode;
+
+        if (mode === 'current') {
+            btnCurrent.classList.remove('inactive'); btnCurrent.classList.add('active');
+            btnCumulative.classList.remove('active'); btnCumulative.classList.add('inactive');
+            Array.from(monthSelect.options).forEach(opt => { opt.text = opt.text.replace('1-', ''); });
+        } else {
+            btnCumulative.classList.remove('inactive'); btnCumulative.classList.add('active');
+            btnCurrent.classList.remove('active'); btnCurrent.classList.add('inactive');
+            Array.from(monthSelect.options).forEach(opt => {
+                if (!opt.text.startsWith('1-')) opt.text = '1-' + opt.text;
+            });
+        }
+        handlePeriodChange();
+    }
+
+    let hydroHistoryActiveTab = 1;
+    let hydroHistoryPage = 1;
+    let hydroHistoryPageSize = 10;
+
+    const chartInstances = {};
+    const charts = [];
+    const textCol = '#64748b';
+    const axisLineCol = '#e2e8f0';
+    const commonTooltip = { trigger: 'axis', backgroundColor: 'rgba(255, 255, 255, 0.95)', extraCssText: 'box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); border-radius: 6px;' };
+
+    let currentMonthMode = 'current';
+    const QUALITY_ORDER = ['Ⅰ类', 'Ⅱ类', 'Ⅲ类', 'Ⅳ类', 'Ⅴ类', '劣Ⅴ类'];
+    const QUALITY_META = {
+        'Ⅰ类': { key: 'i', color: '#3b82f6', textClass: 'text-blue-500' },
+        'Ⅱ类': { key: 'ii', color: '#06b6d4', textClass: 'text-cyan-500' },
+        'Ⅲ类': { key: 'iii', color: '#10b981', textClass: 'text-emerald-500' },
+        'Ⅳ类': { key: 'iv', color: '#eab308', textClass: 'text-yellow-500' },
+        'Ⅴ类': { key: 'v', color: '#f97316', textClass: 'text-orange-500' },
+        '劣Ⅴ类': { key: 'badv', color: '#ef4444', textClass: 'text-red-500' }
+    };
+    const SECTION_YEAR_DATA = {
+        2026: {
+            primaryFactors: ['总磷', '高锰酸盐指数'],
+            sections: [
+                { city: '十堰市', name: '五龙泉', watershed: '汉江流域', waterbody: '丹江口水库', target: 'Ⅱ类', current: 'Ⅱ类', previous: 'Ⅰ类', factor: '高锰酸盐指数', overFactor: '-' },
+                { city: '十堰市', name: '丹江口水库坝上中', watershed: '汉江流域', waterbody: '丹江口水库', target: 'Ⅱ类', current: 'Ⅲ类', previous: 'Ⅱ类', factor: '总磷、高锰酸盐指数', overFactor: '总磷' }
+            ],
+            autoStations: [
+                { name: '陶岔固定站', quality: 'Ⅱ类', watershed: '汉江流域', waterbody: '丹江口水库' },
+                { name: '三号浮标船', quality: 'Ⅱ类', watershed: '汉江流域', waterbody: '丹江口水库' }
+            ],
+            pollutantRoute: {
+                '高锰酸盐指数': { unit: 'mg/L', target: 4, max: 5, interval: 1, values: [2.6, 3.1] },
+                '总氮': { unit: 'mg/L', target: 1.0, max: 1.2, interval: 0.2, values: [0.82, 0.96] },
+                '总磷': { unit: 'mg/L', target: 0.025, max: 0.04, interval: 0.01, values: [0.018, 0.029] }
+            },
+            pollutantTrend: {
+                '高锰酸盐指数': { unit: 'mg/L', target: 4, max: 5, interval: 1, current: [3.1, 3.0, 2.9, 2.8, 2.8, 2.7, 2.8, 2.9, 2.9, 3.0, 3.1, 3.0], previous: [3.4, 3.3, 3.2, 3.1, 3.0, 3.0, 3.1, 3.2, 3.2, 3.1, 3.0, 2.9] },
+                '总氮': { unit: 'mg/L', target: 1.0, max: 1.2, interval: 0.2, current: [0.96, 0.94, 0.92, 0.89, 0.87, 0.85, 0.83, 0.82, 0.81, 0.83, 0.85, 0.88], previous: [1.02, 1.00, 0.98, 0.96, 0.94, 0.92, 0.91, 0.90, 0.89, 0.90, 0.92, 0.95] },
+                '总磷': { unit: 'mg/L', target: 0.025, max: 0.04, interval: 0.01, current: [0.029, 0.028, 0.027, 0.026, 0.025, 0.024, 0.023, 0.022, 0.021, 0.022, 0.023, 0.024], previous: [0.031, 0.030, 0.029, 0.028, 0.027, 0.026, 0.025, 0.024, 0.024, 0.025, 0.026, 0.027] }
+            }
+        },
+        2025: {
+            primaryFactors: ['总磷'],
+            sections: [
+                { city: '十堰市', name: '五龙泉', watershed: '汉江流域', waterbody: '丹江口水库', target: 'Ⅱ类', current: 'Ⅰ类', previous: 'Ⅰ类', factor: '溶解氧', overFactor: '-' },
+                { city: '十堰市', name: '江北大桥', watershed: '汉江流域', waterbody: '丹江口水库', target: 'Ⅱ类', current: 'Ⅱ类', previous: 'Ⅰ类', factor: '高锰酸盐指数', overFactor: '-' },
+                { city: '十堰市', name: '何家湾', watershed: '汉江流域', waterbody: '丹江口水库', target: 'Ⅱ类', current: 'Ⅱ类', previous: 'Ⅱ类', factor: '高锰酸盐指数', overFactor: '-' },
+                { city: '十堰市', name: '丹江口水库坝上中', watershed: '汉江流域', waterbody: '丹江口水库', target: 'Ⅱ类', current: 'Ⅲ类', previous: 'Ⅱ类', factor: '总磷', overFactor: '总磷' }
+            ],
+            autoStations: [
+                { name: '陶岔固定站', quality: 'Ⅰ类', watershed: '汉江流域', waterbody: '丹江口水库' },
+                { name: '三号浮标船', quality: 'Ⅱ类', watershed: '汉江流域', waterbody: '丹江口水库' }
+            ],
+            pollutantRoute: {
+                '高锰酸盐指数': { unit: 'mg/L', target: 4, max: 5, interval: 1, values: [2.4, 2.7, 2.9, 3.3] },
+                '总氮': { unit: 'mg/L', target: 1.0, max: 1.2, interval: 0.2, values: [0.79, 0.86, 0.91, 1.01] },
+                '总磷': { unit: 'mg/L', target: 0.025, max: 0.04, interval: 0.01, values: [0.017, 0.020, 0.023, 0.028] }
+            },
+            pollutantTrend: {
+                '高锰酸盐指数': { unit: 'mg/L', target: 4, max: 5, interval: 1, current: [3.3, 3.2, 3.1, 3.0, 2.9, 2.9, 3.0, 3.1, 3.1, 3.0, 2.9, 2.8], previous: [2.9, 2.8, 2.7, 2.7, 2.6, 2.5, 2.6, 2.7, 2.7, 2.8, 2.8, 2.9] },
+                '总氮': { unit: 'mg/L', target: 1.0, max: 1.2, interval: 0.2, current: [1.01, 0.99, 0.97, 0.95, 0.93, 0.91, 0.89, 0.88, 0.87, 0.88, 0.90, 0.92], previous: [0.92, 0.90, 0.88, 0.86, 0.84, 0.82, 0.81, 0.80, 0.79, 0.80, 0.82, 0.84] },
+                '总磷': { unit: 'mg/L', target: 0.025, max: 0.04, interval: 0.01, current: [0.028, 0.027, 0.026, 0.025, 0.024, 0.023, 0.022, 0.021, 0.021, 0.022, 0.023, 0.024], previous: [0.023, 0.022, 0.021, 0.020, 0.019, 0.018, 0.018, 0.017, 0.017, 0.018, 0.019, 0.020] }
+            }
+        },
+        2024: {
+            primaryFactors: ['无明显超标因子'],
+            sections: [
+                { city: '十堰市', name: '五龙泉', watershed: '汉江流域', waterbody: '丹江口水库', target: 'Ⅱ类', current: 'Ⅰ类', previous: 'Ⅰ类', factor: '溶解氧', overFactor: '-' },
+                { city: '十堰市', name: '江北大桥', watershed: '汉江流域', waterbody: '丹江口水库', target: 'Ⅱ类', current: 'Ⅰ类', previous: 'Ⅱ类', factor: '溶解氧', overFactor: '-' },
+                { city: '十堰市', name: '何家湾', watershed: '汉江流域', waterbody: '丹江口水库', target: 'Ⅱ类', current: 'Ⅱ类', previous: 'Ⅱ类', factor: '高锰酸盐指数', overFactor: '-' },
+                { city: '十堰市', name: '丹江口水库坝上中', watershed: '汉江流域', waterbody: '丹江口水库', target: 'Ⅱ类', current: 'Ⅱ类', previous: 'Ⅱ类', factor: '高锰酸盐指数', overFactor: '-' }
+            ],
+            autoStations: [
+                { name: '陶岔固定站', quality: 'Ⅰ类', watershed: '汉江流域', waterbody: '丹江口水库' },
+                { name: '三号浮标船', quality: 'Ⅰ类', watershed: '汉江流域', waterbody: '丹江口水库' }
+            ],
+            pollutantRoute: {
+                '高锰酸盐指数': { unit: 'mg/L', target: 4, max: 5, interval: 1, values: [2.2, 2.4, 2.6, 2.8] },
+                '总氮': { unit: 'mg/L', target: 1.0, max: 1.2, interval: 0.2, values: [0.72, 0.80, 0.85, 0.89] },
+                '总磷': { unit: 'mg/L', target: 0.025, max: 0.04, interval: 0.01, values: [0.015, 0.017, 0.019, 0.022] }
+            },
+            pollutantTrend: {
+                '高锰酸盐指数': { unit: 'mg/L', target: 4, max: 5, interval: 1, current: [2.9, 2.8, 2.7, 2.7, 2.6, 2.5, 2.6, 2.7, 2.7, 2.8, 2.8, 2.9], previous: [3.1, 3.0, 2.9, 2.9, 2.8, 2.7, 2.8, 2.9, 2.9, 3.0, 3.0, 3.1] },
+                '总氮': { unit: 'mg/L', target: 1.0, max: 1.2, interval: 0.2, current: [0.92, 0.90, 0.88, 0.86, 0.84, 0.82, 0.81, 0.80, 0.79, 0.80, 0.82, 0.84], previous: [0.98, 0.96, 0.94, 0.92, 0.90, 0.88, 0.87, 0.86, 0.85, 0.86, 0.88, 0.90] },
+                '总磷': { unit: 'mg/L', target: 0.025, max: 0.04, interval: 0.01, current: [0.023, 0.022, 0.021, 0.020, 0.019, 0.018, 0.018, 0.017, 0.017, 0.018, 0.019, 0.020], previous: [0.026, 0.025, 0.024, 0.023, 0.022, 0.021, 0.020, 0.020, 0.019, 0.020, 0.021, 0.022] }
+            }
+        }
+    };
+    const QUALITY_HISTORY_BY_YEAR = {
+        2026: { 'Ⅰ类': 0, 'Ⅱ类': 1, 'Ⅲ类': 1, 'Ⅳ类': 0, 'Ⅴ类': 0, '劣Ⅴ类': 0 },
+        2025: { 'Ⅰ类': 1, 'Ⅱ类': 2, 'Ⅲ类': 1, 'Ⅳ类': 0, 'Ⅴ类': 0, '劣Ⅴ类': 0 },
+        2024: { 'Ⅰ类': 2, 'Ⅱ类': 2, 'Ⅲ类': 0, 'Ⅳ类': 0, 'Ⅴ类': 0, '劣Ⅴ类': 0 },
+        2023: { 'Ⅰ类': 1, 'Ⅱ类': 3, 'Ⅲ类': 0, 'Ⅳ类': 0, 'Ⅴ类': 0, '劣Ⅴ类': 0 },
+        2022: { 'Ⅰ类': 1, 'Ⅱ类': 2, 'Ⅲ类': 1, 'Ⅳ类': 0, 'Ⅴ类': 0, '劣Ⅴ类': 0 }
+    };
+    const HYDRO_HISTORY_TAB_CONFIG = {
+        1: {
+            title: '陶岔进水口水量',
+            columns: [
+                { key: 'date', label: '日期' },
+                { key: 'volume', label: '陶岔进水口水量(亿m³)' }
+            ]
+        },
+        2: {
+            title: '丹江口(汉江)水位入出库流量过程报表',
+            columns: [
+                { key: 'date', label: '日期' },
+                { key: 'level', label: '水位（m）' },
+                { key: 'inflow', label: '入库(m³/s)' },
+                { key: 'outflow', label: '出库(m³/s)' },
+                { key: 'storage', label: '蓄量(亿m³)' }
+            ]
+        },
+        3: {
+            title: '其他河流水位入出库流量过程报表',
+            columns: [
+                { key: 'date', label: '日期' },
+                { key: 'baiheLevel', label: '白河_水位（m）' },
+                { key: 'baiheFlow', label: '白河_流量(m³/s)' },
+                { key: 'huangjiagangLevel', label: '黄家港_水位（m）' },
+                { key: 'huangjiagangFlow', label: '黄家港_流量(m³/s)' },
+                { key: 'moyuwanLevel', label: '磨峪湾_水位(m)' },
+                { key: 'moyuwanFlow', label: '磨峪湾_流量(m³/s)' }
+            ]
+        },
+        4: {
+            title: '陶岔固定站和三号浮标船水质',
+            columns: [
+                { key: 'date', label: '日期' },
+                { key: 'station', label: '站点名称' },
+                { key: 'quality', label: '水质类别' },
+                { key: 'temperature', label: '水温(℃)' },
+                { key: 'ph', label: 'pH值' },
+                { key: 'turbidity', label: '浊度(NTU)' },
+                { key: 'oxygen', label: '含氧量(mg/L)' },
+                { key: 'conductivity', label: '电导率(μS/cm)' },
+                { key: 'chlorophyll', label: '叶绿素(μg/L)' },
+                { key: 'nh3', label: '氨氮(mg/L)' },
+                { key: 'tp', label: '总磷(mg/L)' },
+                { key: 'tn', label: '总氮(mg/L)' },
+                { key: 'cod', label: '化学需氧量(mg/L)' }
+            ]
+        }
+    };
+    const AUTO_STATION_MONTHLY_SHARE = {
+        2026: { 1: { i: 50 }, 2: { i: 50 }, 3: { i: 0 } },
+        2025: { 1: { i: 100 }, 2: { i: 50 }, 3: { i: 50 } },
+        2024: { 1: { i: 100 }, 2: { i: 100 }, 3: { i: 100 } },
+        2023: { 1: { i: 50 }, 2: { i: 100 }, 3: { i: 50 } },
+        2022: { 1: { i: 50 }, 2: { i: 50 }, 3: { i: 50 } }
+    };
+
+    function selectedYear() {
+        const select = document.getElementById('year-select');
+        return select ? parseInt(select.value, 10) : 2026;
+    }
+
+    function selectedMonth() {
+        const select = document.getElementById('month-select');
+        const rawText = select ? (select.value || select.options[select.selectedIndex]?.text || '3月') : '3月';
+        const matches = String(rawText).match(/\d+/g);
+        return matches ? parseInt(matches[matches.length - 1], 10) : 3;
+    }
+
+    function isModernSectionScope() {
+        return selectedYear() >= 2026;
+    }
+
+    function pad2(value) {
+        return String(value).padStart(2, '0');
+    }
+
+    function daysInMonth(year, month) {
+        return new Date(year, month, 0).getDate();
+    }
+
+    function getSelectedYearData() {
+        return SECTION_YEAR_DATA[selectedYear()] || SECTION_YEAR_DATA[2026];
+    }
+
+    function getSectionRows() {
+        return getSelectedYearData().sections.map((row, index) => ({ id: index + 1, ...row }));
+    }
+
+    function getAutoStationRows() {
+        return getSelectedYearData().autoStations.map((row, index) => ({ id: index + 1, ...row }));
+    }
+
+    function normalizeDistribution(distribution) {
+        const normalized = {};
+        QUALITY_ORDER.forEach((quality) => {
+            normalized[quality] = distribution[quality] || 0;
+        });
+        return normalized;
+    }
+
+    function buildQualityCounts(rows, field) {
+        const counts = normalizeDistribution({});
+        rows.forEach((row) => {
+            const quality = row[field];
+            if (counts[quality] !== undefined) counts[quality] += 1;
+        });
+        return counts;
+    }
+
+    function buildQualityStats(rows, field) {
+        const counts = buildQualityCounts(rows, field);
+        const total = rows.length;
+        const stats = {};
+        QUALITY_ORDER.forEach((quality) => {
+            const count = counts[quality];
+            stats[quality] = {
+                percent: total ? `${Math.round((count / total) * 100)}%` : '0%',
+                count: `${count} 个`,
+                value: count,
+                color: QUALITY_META[quality].color
+            };
+        });
+        return { total, counts, stats };
+    }
+
+    function buildSummarySentence(total, counts, subject) {
+        if (!total) return `当前${subject}暂无监测数据。`;
+        const parts = QUALITY_ORDER.map((quality) => {
+            const count = counts[quality] || 0;
+            if (!count) return `无${quality}`;
+            const percent = Math.round((count / total) * 100);
+            const textClass = QUALITY_META[quality].textClass;
+            return `<span class="${textClass} font-bold mx-1">${quality}</span>水质类别比例占<span class="${textClass} font-bold mx-1">${percent}%</span>`;
+        });
+        return `监测的${total}个${subject}中：${parts.join('，')}。`;
+    }
+
+    function getDistributionPercentArray(year) {
+        const distribution = normalizeDistribution(QUALITY_HISTORY_BY_YEAR[year] || QUALITY_HISTORY_BY_YEAR[2026]);
+        const total = QUALITY_ORDER.reduce((sum, quality) => sum + distribution[quality], 0);
+        return QUALITY_ORDER.map((quality) => total ? Math.round((distribution[quality] / total) * 100) : 0);
+    }
+
+    function getMonthPeriodLabel(year) {
+        const month = selectedMonth();
+        return currentMonthMode === 'cumulative' ? `${year}年1-${month}月` : `${year}年${month}月`;
+    }
+
+    function getPeriodDateBounds() {
+        const year = selectedYear();
+        const month = selectedMonth();
+        if (currentMonthMode === 'cumulative') {
+            return { start: `${year}-01-01`, end: `${year}-${pad2(month)}-${pad2(daysInMonth(year, month))}` };
+        }
+        const endDay = Math.min(daysInMonth(year, month), 12);
+        return { start: `${year}-${pad2(month)}-01`, end: `${year}-${pad2(month)}-${pad2(endDay)}` };
+    }
+
+    function formatSlashDate(dateText) {
+        return dateText.replace(/-/g, '/');
+    }
+
+    function getHydroHistoryData(tabId) {
+        if (tabId === 1) {
+            return [
+                { date: '2026-04', volume: '6.56' }, { date: '2026-03', volume: '6.18' }, { date: '2026-02', volume: '5.03' }, { date: '2026-01', volume: '5.64' },
+                { date: '2025-12', volume: '5.71' }, { date: '2025-11', volume: '5.44' }, { date: '2025-10', volume: '6.53' }, { date: '2025-09', volume: '5.55' },
+                { date: '2025-08', volume: '4.93' }, { date: '2025-07', volume: '5.37' }, { date: '2025-06', volume: '5.12' }, { date: '2025-05', volume: '5.26' },
+                { date: '2025-04', volume: '5.08' }, { date: '2025-03', volume: '4.85' }, { date: '2025-02', volume: '4.72' }, { date: '2025-01', volume: '4.94' },
+                { date: '2024-12', volume: '5.18' }, { date: '2024-11', volume: '5.03' }, { date: '2024-10', volume: '5.46' }
+            ];
+        }
+        if (tabId === 2) {
+            return [
+                ['2026-05-12 14', 160.81, 289, 720, 186.47], ['2026-05-12 08', 160.82, 308, 542, 186.55], ['2026-05-12 02', 160.83, 1400, 542, 186.64],
+                ['2026-05-11 20', 160.82, 220, 1120, 186.55], ['2026-05-11 14', 160.84, 582, 761, 186.72], ['2026-05-11 08', 160.84, 956, 545, 186.72],
+                ['2026-05-11 02', 160.83, 1380, 570, 186.64], ['2026-05-10 20', 160.82, 886, 1410, 186.55], ['2026-05-10 14', 160.82, 862, 799, 186.55],
+                ['2026-05-10 08', 160.84, 1900, 627, 186.72], ['2026-05-10 02', 160.85, 1760, 604, 186.81], ['2026-05-09 20', 160.84, 1215, 688, 186.72],
+                ['2026-05-09 14', 160.83, 1108, 701, 186.64], ['2026-05-09 08', 160.82, 985, 635, 186.55], ['2026-05-09 02', 160.81, 760, 580, 186.47],
+                ['2026-05-08 20', 160.80, 640, 556, 186.39], ['2026-05-08 14', 160.79, 615, 544, 186.30], ['2026-05-08 08', 160.79, 580, 520, 186.30]
+            ].map(([date, level, inflow, outflow, storage]) => ({ date, level, inflow, outflow, storage }));
+        }
+        if (tabId === 3) {
+            return [
+                ['2026-05-12 14', 177.53, 343, 88.29, 345, 165.11, 22.4], ['2026-05-12 08', 177.56, 317, 88.30, 321, 165.11, 22.4],
+                ['2026-05-12 02', 177.63, 635, 88.31, 304, 165.11, 22.4], ['2026-05-11 20', 177.53, 735, 88.51, 855, 165.11, 22.4],
+                ['2026-05-11 14', 177.58, 370, 88.26, 360, 165.02, 14.8], ['2026-05-11 08', 177.87, 562, 88.28, 283, 165.09, 20.6],
+                ['2026-05-11 02', 178.24, 562, 88.33, 283, 165.13, 24.3], ['2026-05-10 20', 178.72, 574, 88.61, 1110, 165.18, 29.4],
+                ['2026-05-10 14', 179.16, 555, 88.28, 312, 165.24, 35.1], ['2026-05-10 08', 179.47, 777, 88.27, 347, 165.46, 61.2],
+                ['2026-05-10 02', 179.52, 802, 88.18, 362, 165.62, 58.7], ['2026-05-09 20', 179.26, 693, 88.16, 358, 165.54, 48.2]
+            ].map(([date, baiheLevel, baiheFlow, huangjiagangLevel, huangjiagangFlow, moyuwanLevel, moyuwanFlow]) => ({
+                date, baiheLevel, baiheFlow, huangjiagangLevel, huangjiagangFlow, moyuwanLevel, moyuwanFlow
+            }));
+        }
+        return [
+            ['2026-05-10', '三号浮标船', 'Ⅱ', 23.12, 8.7, 2.059, 9.765, 258.5, 0.0008, 0.006, 0.013, 1.17, 1.804],
+            ['2026-05-10', '陶岔固定站', 'Ⅱ', 23.35, 8.7, 2.519, 9.163, 285.371, 0.0010, 0.014, 0.013, 1.103, 1.948],
+            ['2026-05-09', '三号浮标船', 'Ⅱ', 22.44, 8.7, 1.729, 10.033, 259.221, 0.0007, 0.006, 0.014, 1.167, 1.918],
+            ['2026-05-09', '陶岔固定站', 'Ⅱ', 22.71, 8.7, 2.173, 9.422, 285.758, 0.0015, 0.015, 0.013, 1.122, 1.890],
+            ['2026-05-08', '三号浮标船', 'Ⅱ', 21.88, 8.7, 1.716, 9.508, 260.254, 0.0009, 0.006, 0.014, 1.165, 1.905],
+            ['2026-05-08', '陶岔固定站', 'Ⅱ', 22.29, 8.8, 2.011, 9.245, 285.654, 0.0014, 0.016, 0.013, 1.113, 1.762],
+            ['2026-05-07', '三号浮标船', 'Ⅱ', 21.95, 8.7, 1.973, 9.470, 259.688, 0.0009, 0.006, 0.013, 1.177, 1.865],
+            ['2026-05-07', '陶岔固定站', 'Ⅱ', 22.23, 8.8, 1.933, 9.445, 283.329, 0.0015, 0.013, 0.013, 1.102, 1.797],
+            ['2026-05-06', '三号浮标船', 'Ⅱ', 22.29, 8.6, 3.349, 9.287, 258.470, 0.0007, 0.005, 0.013, 1.152, 2.285],
+            ['2026-05-06', '陶岔固定站', 'Ⅱ', 23.50, 8.7, 2.228, 8.969, 280.263, 0.0015, 0.016, 0.016, 1.097, 1.783],
+            ['2026-05-05', '三号浮标船', 'Ⅱ', 22.62, 8.7, 2.214, 9.312, 257.842, 0.0008, 0.005, 0.013, 1.145, 1.962],
+            ['2026-05-05', '陶岔固定站', 'Ⅱ', 23.68, 8.8, 2.441, 9.054, 281.744, 0.0013, 0.014, 0.014, 1.088, 1.841]
+        ].map(([date, station, quality, temperature, ph, turbidity, oxygen, conductivity, chlorophyll, nh3, tp, tn, cod]) => ({
+            date, station, quality, temperature, ph, turbidity, oxygen, conductivity, chlorophyll, nh3, tp, tn, cod
+        }));
+    }
+
+    function getHydroHistoryValue(row, columnKey) {
+        if (columnKey === 'quality') {
+            return `<span class="inline-flex items-center justify-center min-w-[68px] h-7 rounded-md bg-cyan-400 text-slate-950 font-bold">${row[columnKey]}</span>`;
+        }
+        return row[columnKey];
+    }
+
+    function getHydroHistoryPageCount() {
+        const rows = getHydroHistoryData(hydroHistoryActiveTab);
+        return Math.max(1, Math.ceil(rows.length / hydroHistoryPageSize));
+    }
+
+    function renderHydroHistoryTabs() {
+        const tabs = document.getElementById('hydro-history-tabs');
+        tabs.innerHTML = Object.entries(HYDRO_HISTORY_TAB_CONFIG).map(([tabId, config]) => {
+            const activeClass = Number(tabId) === hydroHistoryActiveTab ? 'active' : '';
+            return `<button class="history-modal-tab ${activeClass}" onclick="switchHydroTab(${tabId})">${config.title}</button>`;
+        }).join('');
+    }
+
+    function renderHydroHistoryTable() {
+        const config = HYDRO_HISTORY_TAB_CONFIG[hydroHistoryActiveTab];
+        const rows = getHydroHistoryData(hydroHistoryActiveTab);
+        const totalPages = getHydroHistoryPageCount();
+        hydroHistoryPage = Math.min(Math.max(1, hydroHistoryPage), totalPages);
+        const start = (hydroHistoryPage - 1) * hydroHistoryPageSize;
+        const pageRows = rows.slice(start, start + hydroHistoryPageSize);
+
+        document.getElementById('hydro-history-thead').innerHTML = `<tr>${config.columns.map((col) => `<th>${col.label}</th>`).join('')}</tr>`;
+        document.getElementById('hydro-history-tbody').innerHTML = pageRows.map((row) => (
+            `<tr>${config.columns.map((col) => `<td>${getHydroHistoryValue(row, col.key)}</td>`).join('')}</tr>`
+        )).join('');
+
+        const totalRows = rows.length;
+        document.getElementById('hydro-history-total').innerText = `第 ${hydroHistoryPage} / ${totalPages} 页`;
+        document.getElementById('hydro-history-row-total').innerText = `共 ${totalRows} 条`;
+        document.getElementById('hydro-history-page-input').value = String(hydroHistoryPage);
+        renderHydroHistoryPagination(totalPages, totalRows);
+    }
+
+    function renderHydroHistoryPagination(totalPages, totalRows) {
+        const pagination = document.getElementById('hydro-history-pagination');
+        const pages = [];
+        pages.push(1);
+        for (let i = Math.max(2, hydroHistoryPage - 4); i <= Math.min(totalPages - 1, hydroHistoryPage + 4); i++) pages.push(i);
+        if (totalPages > 1) pages.push(totalPages);
+        const uniquePages = [...new Set(pages)].sort((a, b) => a - b);
+
+        let html = `<button class="history-page-btn ${hydroHistoryPage === 1 ? 'disabled' : ''}" ${hydroHistoryPage === 1 ? '' : `onclick="changeHydroHistoryPage(${hydroHistoryPage - 1})"`}><i class="ri-arrow-left-s-line"></i></button>`;
+        uniquePages.forEach((page, index) => {
+            if (index > 0 && page - uniquePages[index - 1] > 1) {
+                html += `<span class="px-1 text-white/70 font-bold">...</span>`;
+            }
+            html += `<button class="history-page-btn ${page === hydroHistoryPage ? 'active' : ''}" onclick="changeHydroHistoryPage(${page})">${page}</button>`;
+        });
+        html += `<button class="history-page-btn ${hydroHistoryPage === totalPages ? 'disabled' : ''}" ${hydroHistoryPage === totalPages ? '' : `onclick="changeHydroHistoryPage(${hydroHistoryPage + 1})"`}><i class="ri-arrow-right-s-line"></i></button>`;
+        pagination.innerHTML = html;
+        document.getElementById('hydro-history-page-size').value = String(hydroHistoryPageSize);
+    }
+
+    function openHydroHistoryModal(tabId) {
+        hydroHistoryActiveTab = tabId;
+        hydroHistoryPage = 1;
+        renderHydroHistoryTabs();
+        renderHydroHistoryTable();
+        const modal = document.getElementById('hydro-history-modal');
+        modal.classList.remove('hidden');
+        void modal.offsetWidth;
+        modal.classList.remove('opacity-0');
+        modal.querySelector('.history-modal-shell').classList.remove('scale-95');
+    }
+
+    function closeHydroHistoryModal() {
+        const modal = document.getElementById('hydro-history-modal');
+        modal.classList.add('opacity-0');
+        modal.querySelector('.history-modal-shell').classList.add('scale-95');
+        setTimeout(() => { modal.classList.add('hidden'); }, 300);
+    }
+
+    function switchHydroTab(tabIndex) {
+        if (hydroHistoryActiveTab !== tabIndex) {
+            hydroHistoryActiveTab = tabIndex;
+            hydroHistoryPage = 1;
+        }
+        if (document.getElementById('hydro-history-modal').classList.contains('hidden')) {
+            openHydroHistoryModal(tabIndex);
+            return;
+        }
+        renderHydroHistoryTabs();
+        renderHydroHistoryTable();
+    }
+
+    function changeHydroHistoryPage(page) {
+        const totalPages = getHydroHistoryPageCount();
+        if (page < 1 || page > totalPages) return;
+        hydroHistoryPage = page;
+        renderHydroHistoryTable();
+    }
+
+    function jumpHydroHistoryPage(value) {
+        const page = parseInt(value, 10);
+        if (Number.isNaN(page)) return;
+        changeHydroHistoryPage(page);
+    }
+
+    function setHydroHistoryPageSize(value) {
+        hydroHistoryPageSize = parseInt(value, 10) || 10;
+        hydroHistoryPage = 1;
+        renderHydroHistoryTable();
+    }
+
+    function updateDateFields() {
+        const bounds = getPeriodDateBounds();
+        const rangeInput = document.getElementById('auto-station-date-range');
+        const tableDateStart = document.getElementById('table-date-start');
+        const tableDateEnd = document.getElementById('table-date-end');
+        if (rangeInput) rangeInput.value = `${formatSlashDate(bounds.start)} - ${formatSlashDate(bounds.end)}`;
+        if (tableDateStart) tableDateStart.value = bounds.start;
+        if (tableDateEnd) tableDateEnd.value = bounds.end;
+    }
+
+    function updateSummaryForYear() {
+        const sectionRows = getSectionRows();
+        const autoStationRows = getAutoStationRows();
+        const sectionData = buildQualityStats(sectionRows, 'current');
+        const autoData = buildQualityStats(autoStationRows, 'quality');
+        const yearData = getSelectedYearData();
+        const summaryCount = document.getElementById('summary-section-count');
+        const summaryAutoCount = document.getElementById('summary-auto-count');
+        const summaryCopy = document.getElementById('summary-copy');
+        const centerCount = document.getElementById('water-donut-center-count');
+        const primaryFactor = document.getElementById('summary-primary-factor');
+
+        if (summaryCount) summaryCount.innerText = String(sectionData.total);
+        if (summaryAutoCount) summaryAutoCount.innerText = String(autoData.total);
+        if (centerCount) centerCount.innerText = `${sectionData.total}个`;
+        if (primaryFactor) {
+            const primaryText = yearData.primaryFactors.join('、');
+            primaryFactor.innerText = primaryText;
+            primaryFactor.classList.remove('text-orange-500', 'text-slate-500');
+            primaryFactor.classList.add(primaryText.includes('无') ? 'text-slate-500' : 'text-orange-500');
+        }
+        if (summaryCopy) {
+            summaryCopy.innerHTML = `${buildSummarySentence(sectionData.total, sectionData.counts, '断面')}<br>${buildSummarySentence(autoData.total, autoData.counts, '自动站')}`;
+        }
+        QUALITY_ORDER.forEach((quality) => {
+            const meta = QUALITY_META[quality];
+            const percent = document.getElementById(`quality-${meta.key}-percent`);
+            const count = document.getElementById(`quality-${meta.key}-count`);
+            if (percent) percent.innerText = sectionData.stats[quality].percent;
+            if (count) count.innerText = sectionData.stats[quality].count;
+        });
+        const donut = chartInstances['waterDonut'];
+        if (donut) {
+            donut.setOption({
+                series: [{
+                    data: QUALITY_ORDER.filter((quality) => sectionData.stats[quality].value > 0).map((quality) => ({
+                        value: sectionData.stats[quality].value,
+                        name: quality,
+                        itemStyle: { color: sectionData.stats[quality].color }
+                    }))
+                }]
+            });
+        }
+    }
+
+    function updateQualityTrendChart() {
+        const chart = chartInstances['chartQuality'];
+        if (!chart) return;
+        const baseYear = selectedYear();
+        const colors = ['#3b82f6', '#06b6d4', '#facc15'];
+        chart.setOption({
+            xAxis: { data: QUALITY_ORDER },
+            series: [baseYear, baseYear - 1, baseYear - 2].map((year, index) => ({
+                name: getMonthPeriodLabel(year),
+                type: 'bar',
+                barWidth: '15%',
+                data: getDistributionPercentArray(year),
+                itemStyle: { color: colors[index], borderRadius: [2, 2, 0, 0] }
+            }))
+        });
+    }
+
+    function getAutoStationMonthlyShare(year, month) {
+        const yearShare = AUTO_STATION_MONTHLY_SHARE[year] || AUTO_STATION_MONTHLY_SHARE[2026];
+        return yearShare[month] || yearShare[3];
+    }
+
+    function buildDailyShareSeries(baseValue, totalDays) {
+        if (baseValue === 0 || baseValue === 100) return Array.from({ length: totalDays }, () => baseValue);
+        return Array.from({ length: totalDays }, (_, index) => {
+            if (index === 2 || index === 8) return 100;
+            if (index === 5) return 0;
+            return baseValue;
+        });
+    }
+
+    function updateAutoStationChart() {
+        const chart = chartInstances['chartAutoStation'];
+        if (!chart) return;
+        const year = selectedYear();
+        const month = selectedMonth();
+        let categories = [];
+        let iClassShare = [];
+        if (currentMonthMode === 'cumulative') {
+            categories = Array.from({ length: month }, (_, index) => `${year}-${pad2(index + 1)}`);
+            iClassShare = categories.map((_, index) => getAutoStationMonthlyShare(year, index + 1).i);
+        } else {
+            const totalDays = Math.min(daysInMonth(year, month), 12);
+            categories = Array.from({ length: totalDays }, (_, index) => `${year}-${pad2(month)}-${pad2(index + 1)}`);
+            iClassShare = buildDailyShareSeries(getAutoStationMonthlyShare(year, month).i, totalDays);
+        }
+        const iiClassShare = iClassShare.map((value) => 100 - value);
+        chart.setOption({
+            xAxis: {
+                data: categories,
+                axisLabel: {
+                    color: textCol,
+                    formatter: function (val, index) {
+                        if (currentMonthMode === 'cumulative') return val;
+                        return index % 3 === 0 ? val : '';
+                    }
+                }
+            },
+            series: [
+                { name: 'Ⅰ类占比', type: 'line', data: iClassShare, symbol: 'emptyCircle', symbolSize: 6, itemStyle: { color: '#3b82f6' }, lineStyle: { width: 2 } },
+                { name: 'Ⅱ类占比', type: 'line', data: iiClassShare, symbol: 'emptyCircle', symbolSize: 6, itemStyle: { color: '#06b6d4' }, lineStyle: { width: 2 } }
+            ]
+        });
+    }
+
+    function getSelectedPollutantFactor(selectId) {
+        const select = document.getElementById(selectId);
+        return select ? select.value : '高锰酸盐指数';
+    }
+
+    function updatePollutantRouteChart() {
+        const chart = chartInstances['chartPollutantRoute'];
+        if (!chart) return;
+        const factor = getSelectedPollutantFactor('pollutant-route-factor');
+        const yearData = getSelectedYearData();
+        const rows = getSectionRows();
+        const route = yearData.pollutantRoute[factor];
+        chart.setOption({
+            xAxis: { data: rows.map((row) => `${row.name}\n湖北省\n${row.city}`), axisLabel: { color: textCol, interval: 0, lineHeight: 16 }, axisLine: { lineStyle: { color: axisLineCol } } },
+            yAxis: { type: 'value', min: 0, max: route.max, interval: route.interval, axisLabel: { formatter: '{value}', color: textCol }, name: route.unit, nameTextStyle: { color: textCol, padding: [0, 30, 0, 0] }, splitLine: { lineStyle: { color: '#f1f5f9', type: 'dashed' } } },
+            series: [
+                { name: '浓度', type: 'bar', barWidth: '25%', data: route.values, itemStyle: { color: '#3b82f6', borderRadius: [4, 4, 0, 0] } },
+                { type: 'line', markLine: { data: [{ yAxis: route.target, name: `目标${route.target}` }], lineStyle: { color: '#ef4444', type: 'solid', width: 1 }, label: { formatter: `目标\n${route.target}`, color: '#ef4444', position: 'end' }, symbol: ['none', 'arrow'] } }
+            ]
+        });
+    }
+
+    function updatePollutantTrendChart() {
+        const chart = chartInstances['chartPollutant'];
+        if (!chart) return;
+        const factor = getSelectedPollutantFactor('pollutant-trend-factor');
+        const year = selectedYear();
+        const trend = getSelectedYearData().pollutantTrend[factor];
+        chart.setOption({
+            yAxis: { type: 'value', min: 0, max: trend.max, interval: trend.interval, axisLabel: { formatter: '{value}', color: textCol }, name: trend.unit, nameTextStyle: { color: textCol, padding: [0, 30, 0, 0] }, splitLine: { lineStyle: { color: '#f1f5f9', type: 'dashed' } } },
+            series: [
+                { name: `${year}年`, type: 'line', data: trend.current, symbol: 'emptyCircle', symbolSize: 6, itemStyle: { color: '#3b82f6' }, lineStyle: { width: 2 } },
+                { name: `${year - 1}年`, type: 'line', data: trend.previous, symbol: 'emptyCircle', symbolSize: 6, itemStyle: { color: '#facc15' }, lineStyle: { width: 2 } },
+                { type: 'line', markLine: { data: [{ yAxis: trend.target, name: `目标${trend.target}` }], lineStyle: { color: '#ef4444', type: 'solid', width: 1 }, label: { formatter: `目标\n${trend.target}`, color: '#ef4444', position: 'end' }, symbol: ['none', 'arrow'] } }
+            ]
+        });
+    }
+
+    function handlePollutantFactorChange(chartType) {
+        if (chartType === 'route') {
+            updatePollutantRouteChart();
+        } else {
+            updatePollutantTrendChart();
+        }
+    }
+
+    function handlePeriodChange() {
+        tableCurrentPage = 1;
+        updateDateFields();
+        updateSummaryForYear();
+        updateQualityTrendChart();
+        updateAutoStationChart();
+        updatePollutantRouteChart();
+        updatePollutantTrendChart();
+        mockTableData = generateTableData(currentTabIndex);
+        renderTableHead(currentTabIndex);
+        renderTableBody();
+    }
+
+    function initCharts() {
+        const donutChart = echarts.init(document.getElementById('chart-water-donut'));
+        chartInstances['waterDonut'] = donutChart;
+        donutChart.setOption({
+            tooltip: { trigger: 'item', formatter: '{b}: {c}个 ({d}%)', backgroundColor: 'rgba(255,255,255,0.9)' },
+            legend: { show: false },
+            series: [{
+                name: '水质分布',
+                type: 'pie',
+                radius: ['60%', '90%'],
+                center: ['50%', '50%'],
+                avoidLabelOverlap: false,
+                label: { show: false },
+                itemStyle: { borderRadius: 4, borderColor: '#fff', borderWidth: 2, shadowBlur: 8, shadowColor: 'rgba(0, 0, 0, 0.05)' },
+                data: []
+            }]
+        });
+        charts.push(donutChart);
+
+        const c1 = echarts.init(document.getElementById('chart-quality-bar'));
+        chartInstances['chartQuality'] = c1;
+        charts.push(c1);
+        c1.setOption({
+            tooltip: { ...commonTooltip, axisPointer: { type: 'shadow' } },
+            legend: { top: 0, right: 0, itemWidth: 12, itemHeight: 8, icon: 'roundRect', textStyle: { fontSize: 11, color: textCol } },
+            grid: { top: '15%', left: '2%', right: '2%', bottom: '5%', containLabel: true },
+            xAxis: { type: 'category', data: QUALITY_ORDER, axisLabel: { fontSize: 12, color: textCol }, axisLine: { lineStyle: { color: axisLineCol } } },
+            yAxis: { type: 'value', max: 100, interval: 20, axisLabel: { formatter: '{value}%', color: textCol }, splitLine: { lineStyle: { color: '#f1f5f9', type: 'dashed' } } },
+            series: []
+        });
+
+        const cAuto = echarts.init(document.getElementById('chart-auto-station'));
+        chartInstances['chartAutoStation'] = cAuto;
+        charts.push(cAuto);
+        cAuto.setOption({
+            tooltip: { ...commonTooltip, axisPointer: { type: 'line' } },
+            legend: { top: 0, right: 0, itemWidth: 16, icon: 'circle', textStyle: { fontSize: 11, color: textCol } },
+            grid: { top: '15%', left: '2%', right: '3%', bottom: '5%', containLabel: true },
+            xAxis: { type: 'category', data: [], axisLabel: { color: textCol }, axisLine: { lineStyle: { color: axisLineCol } } },
+            yAxis: { type: 'value', min: 0, max: 100, interval: 20, axisLabel: { formatter: '{value}', color: textCol }, name: '%', nameTextStyle: { color: textCol, padding: [0, 30, 0, 0] }, splitLine: { lineStyle: { color: '#f1f5f9', type: 'dashed' } } },
+            series: []
+        });
+
+        const cRoute = echarts.init(document.getElementById('chart-pollutant-route'));
+        chartInstances['chartPollutantRoute'] = cRoute;
+        charts.push(cRoute);
+        cRoute.setOption({
+            tooltip: { ...commonTooltip, axisPointer: { type: 'shadow' } },
+            legend: { top: 0, right: 0, itemWidth: 14, itemHeight: 8, icon: 'roundRect', textStyle: { fontSize: 11, color: textCol } },
+            grid: { top: '15%', left: '2%', right: '10%', bottom: '10%', containLabel: true },
+            xAxis: { type: 'category', data: [], axisLabel: { color: textCol, interval: 0, lineHeight: 16 }, axisLine: { lineStyle: { color: axisLineCol } } },
+            yAxis: { type: 'value', min: 0, max: 1, interval: 0.2, axisLabel: { formatter: '{value}', color: textCol }, name: 'mg/L', nameTextStyle: { color: textCol, padding: [0, 30, 0, 0] }, splitLine: { lineStyle: { color: '#f1f5f9', type: 'dashed' } } },
+            series: []
+        });
+
+        const c2 = echarts.init(document.getElementById('chart-pollutant-line'));
+        chartInstances['chartPollutant'] = c2;
+        charts.push(c2);
+        c2.setOption({
+            tooltip: { ...commonTooltip, axisPointer: { type: 'line' } },
+            legend: { top: 0, right: 0, itemWidth: 16, icon: 'circle', textStyle: { fontSize: 11, color: textCol } },
+            grid: { top: '15%', left: '2%', right: '10%', bottom: '5%', containLabel: true },
+            xAxis: { type: 'category', data: ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'], boundaryGap: false, axisLabel: { color: textCol }, axisLine: { lineStyle: { color: axisLineCol } } },
+            yAxis: { type: 'value', min: 0, max: 1, interval: 0.2, axisLabel: { formatter: '{value}', color: textCol }, name: 'mg/L', nameTextStyle: { color: textCol, padding: [0, 30, 0, 0] }, splitLine: { lineStyle: { color: '#f1f5f9', type: 'dashed' } } },
+            series: []
+        });
+    }
+
+    // --- 表格分页渲染与数据处理逻辑 ---
+    let currentTabIndex = 1;
+    let tableCurrentPage = 1;
+    const PAGE_SIZE = 8;
+    let mockTableData = [];
+
+    function generateTableData(tabIndex) {
+        if (tabIndex === 1) {
+            return getSectionRows().map((row, index) => ({ id: index + 1, ...row }));
+        }
+
+        const autoStations = getAutoStationRows();
+        const dateBounds = getPeriodDateBounds();
+        const endDate = new Date(`${dateBounds.end}T00:00:00`);
+        const hourlySlots = ['02', '08', '14', '20'];
+        const qualityRank = { 'Ⅰ类': 0, 'Ⅱ类': 1, 'Ⅲ类': 2, 'Ⅳ类': 3, 'Ⅴ类': 4, '劣Ⅴ类': 5 };
+        const dailyRows = [];
+
+        for (let dayOffset = 0; dayOffset < 6; dayOffset++) {
+            const currentDate = new Date(endDate);
+            currentDate.setDate(endDate.getDate() - dayOffset);
+            const dateText = `${currentDate.getFullYear()}-${pad2(currentDate.getMonth() + 1)}-${pad2(currentDate.getDate())}`;
+            autoStations.forEach((station, stationIndex) => {
+                const qualityIndex = qualityRank[station.quality] || 0;
+                const variation = dayOffset * 0.01 + stationIndex * 0.02;
+                dailyRows.push({
+                    id: dailyRows.length + 1,
+                    name: station.name,
+                    province: '湖北省',
+                    city: '十堰市',
+                    date: dateText,
+                    wq: station.quality,
+                    ph: (8.2 + stationIndex * 0.1 + (dayOffset % 3) * 0.1).toFixed(1),
+                    do: (9.8 - qualityIndex * 0.35 - dayOffset * 0.08 + stationIndex * 0.12).toFixed(2),
+                    permanganate: (1.55 + qualityIndex * 0.26 + variation).toFixed(3),
+                    nh3: (0.004 + qualityIndex * 0.004 + dayOffset * 0.0005 + stationIndex * 0.0003).toFixed(3),
+                    tp: (0.011 + qualityIndex * 0.004 + dayOffset * 0.0004 + stationIndex * 0.0003).toFixed(3)
+                });
+            });
+        }
+
+        if (tabIndex === 2) return dailyRows;
+
+        const hourlyRows = [];
+        dailyRows.slice(0, 6).forEach((row, rowIndex) => {
+            hourlySlots.forEach((hour, hourIndex) => {
+                hourlyRows.push({
+                    id: hourlyRows.length + 1,
+                    name: row.name,
+                    province: row.province,
+                    city: row.city,
+                    date: `${row.date} ${hour}:00`,
+                    wq: row.wq,
+                    ph: (parseFloat(row.ph) + (hourIndex - 1.5) * 0.03).toFixed(1),
+                    do: (parseFloat(row.do) + (1.5 - hourIndex) * 0.09).toFixed(2),
+                    permanganate: (parseFloat(row.permanganate) + hourIndex * 0.015 + rowIndex * 0.002).toFixed(3),
+                    nh3: (parseFloat(row.nh3) + hourIndex * 0.0004).toFixed(3),
+                    tp: (parseFloat(row.tp) + hourIndex * 0.0003).toFixed(3)
+                });
+            });
+        });
+
+        return hourlyRows;
+    }
+
+    function renderTableHead(tabIndex) {
+        const thead = document.getElementById('table-head');
+        const sortIcon = `<div class="sort-icon-group"><i class="ri-arrow-up-s-fill"></i><i class="ri-arrow-down-s-fill"></i></div>`;
+        if (tabIndex === 1) {
+            const year = selectedYear();
+            const currentLabel = getMonthPeriodLabel(year);
+            const previousLabel = getMonthPeriodLabel(year - 1);
+            thead.innerHTML = `<tr>
+                <th class="w-16"></th>
+                <th class="cursor-pointer">地市 ${sortIcon}</th>
+                <th class="cursor-pointer">断面名称 ${sortIcon}</th>
+                <th class="cursor-pointer w-64">水质目标 ${sortIcon}</th>
+                <th class="cursor-pointer">${currentLabel} ${sortIcon}</th>
+                <th class="cursor-pointer">${previousLabel} ${sortIcon}</th>
+                <th class="cursor-pointer">定类因子 ${sortIcon}</th>
+                <th class="cursor-pointer">超标因子 ${sortIcon}</th>
+                <th>操作</th>
+            </tr>`;
+        } else {
+            thead.innerHTML = `<tr>
+                <th class="w-16">序号</th>
+                <th class="cursor-pointer">断面名称 ${sortIcon}</th>
+                <th class="cursor-pointer">所在省 ${sortIcon}</th>
+                <th class="cursor-pointer">所在地市 ${sortIcon}</th>
+                <th class="cursor-pointer">监测时间 ${sortIcon}</th>
+                <th class="cursor-pointer">水质类别 ${sortIcon}</th>
+                <th class="cursor-pointer">PH值(mg/L) ${sortIcon}</th>
+                <th class="cursor-pointer">溶解氧(mg/L) ${sortIcon}</th>
+                <th class="cursor-pointer">高锰酸盐指数<br>(mg/L) ${sortIcon}</th>
+                <th class="cursor-pointer">氨氮(mg/L) ${sortIcon}</th>
+                <th class="cursor-pointer">总磷(mg/L) ${sortIcon}</th>
+            </tr>`;
+        }
+    }
+
+    function renderTableBody() {
+        const tbody = document.getElementById('table-body');
+        const start = (tableCurrentPage - 1) * PAGE_SIZE;
+        const pageData = mockTableData.slice(start, start + PAGE_SIZE);
+
+        if (pageData.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="11" class="text-slate-400 py-8">暂无数据...</td></tr>`;
+            return;
+        }
+
+        let html = '';
+        pageData.forEach((item, index) => {
+            const actualIndex = start + index + 1;
+            if (currentTabIndex === 1) {
+                // 色块匹配
+                const badgeClass = (wq) => {
+                    if (wq === 'Ⅰ类') return 'bg-blue-500';
+                    if (wq === 'Ⅱ类') return 'bg-cyan-500';
+                    if (wq === 'Ⅲ类') return 'bg-emerald-500';
+                    if (wq === 'Ⅳ类') return 'bg-yellow-400';
+                    if (wq === 'Ⅴ类') return 'bg-orange-500';
+                    return 'bg-red-500';
+                };
+                const currentBadge = `<span class="wq-badge ${badgeClass(item.current)}">${item.current}</span>`;
+                const previousBadge = item.previous === '-' ? '-' : `<span class="wq-badge ${badgeClass(item.previous)}">${item.previous}</span>`;
+                html += `<tr>
+                    <td class="font-bold text-slate-700">${actualIndex}</td>
+                    <td>${item.city}</td><td class="font-medium text-slate-700">${item.name}</td>
+                    <td class="text-[12px] leading-relaxed text-slate-500">${item.target}</td>
+                    <td>${currentBadge}</td><td>${previousBadge}</td>
+                    <td>${item.factor}</td><td>${item.overFactor}</td>
+                    <td><button class="bg-[#3b82f6] hover:bg-blue-600 text-white px-4 py-1.5 rounded text-[12px] transition-colors shadow-sm">断面分析</button></td>
+                </tr>`;
+            } else {
+                html += `<tr>
+                    <td class="font-bold text-slate-700">${actualIndex}</td>
+                    <td class="font-medium text-slate-700">${item.name}</td>
+                    <td>${item.province}</td><td>${item.city}</td><td>${item.date}</td>
+                    <td>${item.wq}</td><td>${item.ph}</td><td>${item.do}</td>
+                    <td>${item.permanganate}</td><td>${item.nh3}</td><td>${item.tp}</td>
+                </tr>`;
+            }
+        });
+        tbody.innerHTML = html;
+        renderPagination();
+    }
+
+    function renderPagination() {
+        const container = document.getElementById('pagination-container');
+        const countDisplay = document.getElementById('total-count-display');
+        const totalPages = Math.ceil(mockTableData.length / PAGE_SIZE);
+
+        countDisplay.innerHTML = `共 <span class="font-bold text-slate-700 dark:text-slate-300 mx-1">${mockTableData.length}</span> 条数据`;
+
+        let btnsHtml = '';
+        const prevDisabled = tableCurrentPage === 1 ? 'disabled' : '';
+        const prevClick = tableCurrentPage === 1 ? '' : `onclick="changePage(${tableCurrentPage - 1})"`;
+        btnsHtml += `<button class="pagination-btn rounded-l-md ${prevDisabled}" ${prevClick}><i class="ri-arrow-left-s-line"></i></button>`;
+
+        const generateBtn = (pageNum) => {
+            const activeClass = pageNum === tableCurrentPage ? 'active' : '';
+            return `<button onclick="changePage(${pageNum})" class="pagination-btn ${activeClass}">${pageNum}</button>`;
+        };
+
+        if (totalPages <= 7) {
+            for (let i = 1; i <= totalPages; i++) {
+                btnsHtml += generateBtn(i);
+            }
+        } else {
+            btnsHtml += generateBtn(1);
+            if (tableCurrentPage > 4) btnsHtml += `<span class="text-slate-400 text-xs px-1">...</span>`;
+
+            let start = Math.max(2, tableCurrentPage - 1);
+            let end = Math.min(totalPages - 1, tableCurrentPage + 1);
+            if (tableCurrentPage <= 4) end = 5;
+            if (tableCurrentPage >= totalPages - 3) start = totalPages - 4;
+
+            for (let i = start; i <= end; i++) btnsHtml += generateBtn(i);
+
+            if (tableCurrentPage < totalPages - 3) btnsHtml += `<span class="text-slate-400 text-xs px-1">...</span>`;
+            btnsHtml += generateBtn(totalPages);
+        }
+
+        const nextDisabled = tableCurrentPage === totalPages ? 'disabled' : '';
+        const nextClick = tableCurrentPage === totalPages ? '' : `onclick="changePage(${tableCurrentPage + 1})"`;
+        btnsHtml += `<button class="pagination-btn rounded-r-md ${nextDisabled}" ${nextClick}><i class="ri-arrow-right-s-line"></i></button>`;
+
+        container.innerHTML = btnsHtml;
+    }
+
+    function changePage(page) {
+        if (page < 1 || page > Math.ceil(mockTableData.length / PAGE_SIZE)) return;
+        tableCurrentPage = page;
+        renderTableBody();
+    }
+
+    function switchTableTab(tabIndex) {
+        currentTabIndex = tabIndex;
+        tableCurrentPage = 1;
+
+        for(let i=1; i<=3; i++) {
+            const btn = document.getElementById(`tab-btn-${i}`);
+            if(i === tabIndex) {
+                btn.classList.replace('inactive', 'active');
+            } else {
+                btn.classList.replace('active', 'inactive');
+            }
+        }
+
+        // 动态显示隐藏搜索工具栏
+        const searchBar = document.getElementById('search-bar-container');
+        if (tabIndex === 1) {
+            searchBar.classList.add('hidden');
+            searchBar.classList.remove('flex');
+        } else {
+            searchBar.classList.remove('hidden');
+            searchBar.classList.add('flex');
+        }
+
+        mockTableData = generateTableData(tabIndex);
+        renderTableHead(tabIndex);
+        renderTableBody();
+    }
+
+    function showChartData(chartKey, titleText) {
+        const chart = chartInstances[chartKey];
+        if (!chart) return;
+        const option = chart.getOption();
+        const series = option.series.filter(s => !s.markLine);
+        let categories = option.xAxis[0].data || [];
+        document.getElementById('modal-title').innerText = titleText;
+
+        const thead = document.getElementById('modal-thead');
+        let theadHTML = `<tr><th class="px-6 py-4 font-bold whitespace-nowrap w-16">序号</th><th class="px-6 py-4 font-bold w-48">分类</th>`;
+        series.forEach(s => { theadHTML += `<th class="px-6 py-4 font-bold">${s.name || '数值'}</th>`; });
+        theadHTML += '</tr>';
+        thead.innerHTML = theadHTML;
+
+        const tbody = document.getElementById('modal-tbody');
+        let tbodyHTML = '';
+        categories.forEach((cat, idx) => {
+            const cleanCat = typeof cat === 'string' ? cat.replace(/\n/g, ' ') : cat;
+            const bgClass = idx % 2 === 0 ? 'bg-white dark:bg-slate-800' : 'bg-[#fcfcfc] dark:bg-slate-800/50';
+            tbodyHTML += `<tr class="${bgClass} hover:bg-blue-50/50 dark:hover:bg-slate-700/50 transition-colors">
+                            <td class="px-6 py-4 text-slate-500 border-b border-slate-100">${idx + 1}</td>
+                            <td class="px-6 py-4 text-slate-700 dark:text-slate-300 border-b border-slate-100">${cleanCat}</td>`;
+            series.forEach(s => { const val = (s.data[idx] !== undefined && s.data[idx] !== null) ? s.data[idx] : '-'; tbodyHTML += `<td class="px-6 py-4 border-b border-slate-100">${val}</td>`; });
+            tbodyHTML += '</tr>';
+        });
+        tbody.innerHTML = tbodyHTML;
+
+        const modal = document.getElementById('data-table-modal');
+        modal.classList.remove('hidden');
+        void modal.offsetWidth;
+        modal.classList.remove('opacity-0');
+        modal.querySelector('div').classList.remove('scale-95');
+    }
+
+    function closeModal() {
+        const modal = document.getElementById('data-table-modal');
+        modal.classList.add('opacity-0');
+        modal.querySelector('div').classList.add('scale-95');
+        setTimeout(() => { modal.classList.add('hidden'); }, 300);
+    }
+
+    function downloadChart(chartKey) {
+        const chart = chartInstances[chartKey];
+        if (!chart) return;
+        const url = chart.getDataURL({ type: 'png', pixelRatio: 2, backgroundColor: '#ffffff' });
+        const a = document.createElement('a'); a.href = url; a.download = chartKey + '.png'; a.click();
+    }
+
+    function exportExcel() {
+        const table = document.querySelector('#data-table-modal table');
+        if (!table) return;
+        let csv = [];
+        const rows = table.querySelectorAll('tr');
+        for (let i = 0; i < rows.length; i++) {
+            let row = [];
+            const cols = rows[i].querySelectorAll('td, th');
+            for (let j = 0; j < cols.length; j++) {
+                row.push('"' + cols[j].innerText.trim().replace(/"/g, '""') + '"');
+            }
+            csv.push(row.join(','));
+        }
+        const csvFile = new Blob(['\uFEFF' + csv.join('\n')], {type: 'text/csv;charset=utf-8;'});
+        const downloadLink = document.createElement("a");
+        downloadLink.download = (document.getElementById('modal-title').innerText || '导出数据') + ".csv";
+        downloadLink.href = window.URL.createObjectURL(csvFile);
+        downloadLink.click();
+    }
+
+    function openQualityListModal(qualityType) {
+        document.getElementById('quality-title-text').innerText = qualityType + ' 占比清单';
+        const tbody = document.getElementById('quality-modal-tbody');
+        const totalLabel = document.getElementById('quality-modal-total');
+        const rows = getSectionRows().filter((row) => row.current === qualityType);
+        let html = '';
+        rows.forEach((row, index) => {
+            const qualityClass = QUALITY_META[qualityType]?.textClass || 'text-blue-600';
+            html += `<tr>
+                <td class="px-4 py-3.5 text-slate-500">${index + 1}</td>
+                <td class="px-4 py-3.5 text-slate-700">${row.city}</td>
+                <td class="px-4 py-3.5 text-slate-700">${row.name}</td>
+                <td class="px-4 py-3.5 text-slate-700">${row.watershed}</td>
+                <td class="px-4 py-3.5 text-slate-700">${row.waterbody}</td>
+                <td class="px-4 py-3.5 font-bold ${qualityClass}">${qualityType}</td>
+                <td class="px-4 py-3.5 text-slate-700">${row.target}</td>
+                <td class="px-4 py-3.5"><button class="bg-[#3b82f6] hover:bg-blue-600 text-white text-xs px-3 py-1.5 rounded transition-colors shadow-sm">断面分析</button></td>
+            </tr>`;
+        });
+        if (!rows.length) {
+            html = `<tr><td colspan="8" class="px-4 py-10 text-slate-400 text-center">当前时间范围内暂无${qualityType}断面</td></tr>`;
+        }
+        tbody.innerHTML = html;
+        if (totalLabel) totalLabel.innerText = `共 ${rows.length} 条`;
+
+        const modal = document.getElementById('quality-list-modal');
+        modal.classList.remove('hidden');
+        void modal.offsetWidth;
+        modal.classList.remove('opacity-0');
+        modal.querySelector('div').classList.remove('scale-95');
+    }
+
+    function closeQualityListModal() {
+        const modal = document.getElementById('quality-list-modal');
+        modal.classList.add('opacity-0');
+        modal.querySelector('div').classList.add('scale-95');
+        setTimeout(() => { modal.classList.add('hidden'); }, 300);
+    }
+
+    function resizeAllCharts() { charts.forEach(chart => { if (chart) chart.resize(); }); }
+
+    window.addEventListener('load', () => {
+        initCharts();
+        updateDateFields();
+        updateSummaryForYear();
+        updateQualityTrendChart();
+        updateAutoStationChart();
+        updatePollutantRouteChart();
+        updatePollutantTrendChart();
+        switchTableTab(1); // 初始化默认显示断面清单，自动隐藏搜索栏
+    });
+    window.addEventListener('resize', resizeAllCharts);
+</script>
+
+</body>
+</html>

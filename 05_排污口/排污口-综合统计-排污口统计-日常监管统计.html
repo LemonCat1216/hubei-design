@@ -1,0 +1,1045 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>水体填报任务统计表</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft Yahei", SimHei, sans-serif;
+        }
+        body {
+            padding: 24px;
+            background-color: #ffffff;
+        }
+        /* 顶部筛选操作栏 */
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        .filter-group {
+            display: flex;
+            gap: 12px;
+        }
+        select {
+            height: 36px;
+            padding: 0 14px;
+            border: 1px solid #d0d7e3;
+            border-radius: 6px;
+            font-size: 14px;
+            background: #fff;
+            min-width: 160px;
+        }
+        .export-btn {
+            height: 36px;
+            padding: 0 18px;
+            background-color: #3671d9;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        .export-btn:hover {
+            background-color: #2b5ebf;
+        }
+        /* 表格全局样式 */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            border: 1px solid #e2e8f0;
+        }
+        th, td {
+            border: 1px solid #e2e8f0;
+            padding: 12px 10px;
+            text-align: center;
+            font-size: 14px;
+        }
+        th {
+            background-color: #f2f6fe !important;
+            font-weight: 600;
+        }
+        /* 表体全部白色背景 */
+        tbody tr {
+            background-color: #ffffff !important;
+        }
+        /* 数字蓝色 */
+        .num-blue {
+            color: #235cb7;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+        .num-blue:hover {
+            color: #1a4a9c;
+            background-color: #f0f5ff;
+        }
+        
+        /* 弹窗样式 */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-overlay.active {
+            display: flex;
+        }
+        .modal-content {
+            background: #fff;
+            border-radius: 12px;
+            width: 95%;
+            max-width: 1600px;
+            max-height: 90vh;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            display: flex;
+            flex-direction: column;
+        }
+        .modal-body-wrapper {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+        .modal-list-section {
+            width: 100%;
+            border-right: none;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            transition: width 0.3s ease;
+        }
+        .modal-list-section.has-detail {
+            width: 60%;
+            border-right: 1px solid #e2e8f0;
+        }
+        .modal-detail-section {
+            width: 40%;
+            background: #f8fafc;
+            overflow-y: auto;
+            padding: 20px;
+            display: none;
+        }
+        .modal-detail-section.active {
+            display: block;
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 24px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .modal-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1e293b;
+        }
+        .modal-close {
+            width: 32px;
+            height: 32px;
+            background: #f1f5f9;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 20px;
+            color: #64748b;
+        }
+        .modal-close:hover {
+            background: #e2e8f0;
+            color: #1e293b;
+        }
+        /* 弹框内筛选区域 */
+        .modal-filter {
+            padding: 16px 24px;
+            border-bottom: 1px solid #e2e8f0;
+            background: #f8fafc;
+        }
+        .modal-filter .filter-group {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .modal-filter select {
+            height: 32px;
+            padding: 0 12px;
+            border: 1px solid #d0d7e3;
+            border-radius: 4px;
+            font-size: 13px;
+            background: #fff;
+            min-width: 140px;
+        }
+        .modal-filter .search-input {
+            height: 32px;
+            padding: 0 12px;
+            border: 1px solid #d0d7e3;
+            border-radius: 4px;
+            font-size: 13px;
+            width: 200px;
+        }
+        .modal-filter .btn-group {
+            display: flex;
+            gap: 8px;
+            margin-left: 12px;
+        }
+        .modal-filter .btn-search {
+            height: 32px;
+            padding: 0 16px;
+            background: #3671d9;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+        .modal-filter .btn-reset {
+            height: 32px;
+            padding: 0 16px;
+            background: #fff;
+            color: #64748b;
+            border: 1px solid #d0d7e3;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 24px;
+            background: #f2f6fe;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .modal-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+        .modal-close {
+            width: 32px;
+            height: 32px;
+            border: none;
+            background: transparent;
+            font-size: 24px;
+            cursor: pointer;
+            color: #666;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-close:hover {
+            background: #e0e0e0;
+        }
+        .modal-body {
+            overflow-y: auto;
+        }
+        .detail-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 0;
+        }
+        .detail-table th, .detail-table td {
+            border: 1px solid #e2e8f0;
+            padding: 8px 10px;
+            text-align: center;
+            font-size: 12px;
+            white-space: nowrap;
+        }
+        .detail-table th {
+            background: #f2f6fe;
+            font-weight: 600;
+        }
+        .detail-table tbody tr:hover {
+            background: #f8fafc;
+        }
+        .view-btn {
+            color: #3671d9;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+        .view-btn:hover {
+            color: #2b5ebf;
+        }
+        .view-btn.active {
+            color: #1e40af;
+            font-weight: 600;
+        }
+        /* 右侧详情卡片 */
+        .detail-card {
+            background: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        .detail-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .detail-card-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #1e293b;
+        }
+        .detail-card-close {
+            color: #64748b;
+            cursor: pointer;
+            font-size: 18px;
+        }
+        .detail-card-close:hover {
+            color: #1e293b;
+        }
+        .detail-card-section {
+            margin-bottom: 20px;
+        }
+        .detail-card-section-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #475569;
+            margin-bottom: 12px;
+            padding-left: 8px;
+            border-left: 3px solid #3671d9;
+        }
+        .detail-card-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        .detail-card-item {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .detail-card-item.full-width {
+            grid-column: 1 / -1;
+        }
+        .detail-card-label {
+            font-size: 12px;
+            color: #64748b;
+        }
+        .detail-card-value {
+            font-size: 14px;
+            color: #1e293b;
+        }
+        .detail-card-value.highlight {
+            font-weight: 600;
+            color: #3671d9;
+        }
+        .status-tag {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+        .status-filled {
+            background: #dcfce7;
+            color: #166534;
+        }
+        .status-pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        .status-saved {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+        
+        /* 分页样式 */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px 0;
+            margin-top: 16px;
+            border-top: 1px solid #e2e8f0;
+            gap: 8px;
+            flex-wrap: nowrap;
+        }
+        .pagination-info {
+            font-size: 13px;
+            color: #666;
+            white-space: nowrap;
+            margin-right: 12px;
+        }
+        .pagination-btn {
+            min-width: 32px;
+            height: 32px;
+            padding: 0 8px;
+            border: 1px solid #d0d7e3;
+            background: #fff;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            color: #333;
+            white-space: nowrap;
+        }
+        }
+        .pagination-btn:hover:not(.disabled):not(.active) {
+            background: #f0f5ff;
+            border-color: #3671d9;
+            color: #3671d9;
+        }
+        .pagination-btn.active {
+            background: #3671d9;
+            border-color: #3671d9;
+            color: #fff;
+        }
+        .pagination-btn.disabled {
+            cursor: not-allowed;
+            color: #ccc;
+            background: #f5f5f5;
+        }
+        .pagination-jump {
+            display: flex;
+            align-items: center;
+            margin-left: 12px;
+            font-size: 13px;
+            color: #666;
+            gap: 6px;
+            white-space: nowrap;
+        }
+        .pagination-jump input {
+            width: 50px;
+            height: 32px;
+            border: 1px solid #d0d7e3;
+            border-radius: 4px;
+            text-align: center;
+            font-size: 13px;
+        }
+        .pagination-jump button {
+            height: 32px;
+            padding: 0 12px;
+            background: #3671d9;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            white-space: nowrap;
+        }
+        .pagination-jump button:hover {
+            background: #2b5ebf;
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部筛选区域 -->
+    <div class="top-bar">
+        <div class="filter-group">
+            <select id="monitorType">
+                <option>月度监测</option>
+                <option>季度监测</option>
+                <option>半年监测</option>
+            </select>
+            <select id="cutOffDate">
+                <option>截止2026-06-30</option>
+                <option>截止2026-07-30</option>
+            </select>
+        </div>
+        <button class="export-btn">数据导出</button>
+    </div>
+
+    <!-- 主表格 -->
+    <table>
+        <thead>
+            <tr>
+                <th>地市</th>
+                <th>水体管理级别</th>
+                <th>任务数量</th>
+                <th>已暂存</th>
+                <th>已填报</th>
+                <th>未填报</th>
+                <th>已填报（有水）</th>
+                <th>已填报（无水）</th>
+                <th>包含特征污染物</th>
+                <th>填报率</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- 第一组武汉市 -->
+            <tr>
+                <td rowspan="5">武汉市</td>
+                <td>A</td>
+                <td>--</td>
+                <td>--</td>
+                <td>--</td>
+                <td>--</td>
+                <td>--</td>
+                <td>--</td>
+                <td>--</td>
+                <td>--</td>
+            </tr>
+            <tr>
+                <td>B</td>
+                <td class="num-blue" data-city="武汉市" data-level="B" data-type="发布任务">300</td>
+                <td class="num-blue" data-city="武汉市" data-level="B" data-type="已暂存">50</td>
+                <td class="num-blue" data-city="武汉市" data-level="B" data-type="已填报">200</td>
+                <td class="num-blue" data-city="武汉市" data-level="B" data-type="未填报">50</td>
+                <td class="num-blue" data-city="武汉市" data-level="B" data-type="已填报（有水）">100</td>
+                <td class="num-blue" data-city="武汉市" data-level="B" data-type="已填报（无水）">100</td>
+                <td class="num-blue" data-city="武汉市" data-level="B" data-type="特征污染物">50</td>
+                <td class="num-blue" data-city="武汉市" data-level="B" data-type="填报率">66.66%</td>
+            </tr>
+            <tr>
+                <td>C</td>
+                <td class="num-blue" data-city="武汉市" data-level="C" data-type="发布任务">100</td>
+                <td class="num-blue" data-city="武汉市" data-level="C" data-type="已暂存">0</td>
+                <td class="num-blue" data-city="武汉市" data-level="C" data-type="已填报">0</td>
+                <td class="num-blue" data-city="武汉市" data-level="C" data-type="未填报">0</td>
+                <td class="num-blue" data-city="武汉市" data-level="C" data-type="已填报（有水）">0</td>
+                <td class="num-blue" data-city="武汉市" data-level="C" data-type="已填报（无水）">0</td>
+                <td class="num-blue" data-city="武汉市" data-level="C" data-type="特征污染物">0</td>
+                <td class="num-blue" data-city="武汉市" data-level="C" data-type="填报率">0%</td>
+            </tr>
+            <tr>
+                <td>D</td>
+                <td class="num-blue" data-city="武汉市" data-level="D" data-type="发布任务">200</td>
+                <td class="num-blue" data-city="武汉市" data-level="D" data-type="已暂存">0</td>
+                <td class="num-blue" data-city="武汉市" data-level="D" data-type="已填报">0</td>
+                <td class="num-blue" data-city="武汉市" data-level="D" data-type="未填报">0</td>
+                <td class="num-blue" data-city="武汉市" data-level="D" data-type="已填报（有水）">0</td>
+                <td class="num-blue" data-city="武汉市" data-level="D" data-type="已填报（无水）">0</td>
+                <td class="num-blue" data-city="武汉市" data-level="D" data-type="特征污染物">0</td>
+                <td class="num-blue" data-city="武汉市" data-level="D" data-type="填报率">0%</td>
+            </tr>
+            <tr>
+                <td>全部</td>
+                <td class="num-blue" data-city="武汉市" data-level="全部" data-type="发布任务">800</td>
+                <td class="num-blue" data-city="武汉市" data-level="全部" data-type="已暂存">50</td>
+                <td class="num-blue" data-city="武汉市" data-level="全部" data-type="已填报">200</td>
+                <td class="num-blue" data-city="武汉市" data-level="全部" data-type="未填报">50</td>
+                <td class="num-blue" data-city="武汉市" data-level="全部" data-type="已填报（有水）">100</td>
+                <td class="num-blue" data-city="武汉市" data-level="全部" data-type="已填报（无水）">100</td>
+                <td class="num-blue" data-city="武汉市" data-level="全部" data-type="特征污染物">50</td>
+                <td class="num-blue" data-city="武汉市" data-level="全部" data-type="填报率">25.00%</td>
+            </tr>
+
+            <!-- 第二组黄石市 -->
+            <tr>
+                <td rowspan="5">黄石市</td>
+                <td>A</td>
+                <td>--</td>
+                <td>--</td>
+                <td>--</td>
+                <td>--</td>
+                <td>--</td>
+                <td>--</td>
+                <td>--</td>
+                <td>--</td>
+            </tr>
+            <tr>
+                <td>B</td>
+                <td class="num-blue" data-city="黄石市" data-level="B" data-type="发布任务">300</td>
+                <td class="num-blue" data-city="黄石市" data-level="B" data-type="已暂存">50</td>
+                <td class="num-blue" data-city="黄石市" data-level="B" data-type="已填报">200</td>
+                <td class="num-blue" data-city="黄石市" data-level="B" data-type="未填报">50</td>
+                <td class="num-blue" data-city="黄石市" data-level="B" data-type="已填报（有水）">100</td>
+                <td class="num-blue" data-city="黄石市" data-level="B" data-type="已填报（无水）">100</td>
+                <td class="num-blue" data-city="黄石市" data-level="B" data-type="特征污染物">50</td>
+                <td class="num-blue" data-city="黄石市" data-level="B" data-type="填报率">66.66%</td>
+            </tr>
+            <tr>
+                <td>C</td>
+                <td class="num-blue" data-city="黄石市" data-level="C" data-type="发布任务">100</td>
+                <td class="num-blue" data-city="黄石市" data-level="C" data-type="已暂存">0</td>
+                <td class="num-blue" data-city="黄石市" data-level="C" data-type="已填报">0</td>
+                <td class="num-blue" data-city="黄石市" data-level="C" data-type="未填报">0</td>
+                <td class="num-blue" data-city="黄石市" data-level="C" data-type="已填报（有水）">0</td>
+                <td class="num-blue" data-city="黄石市" data-level="C" data-type="已填报（无水）">0</td>
+                <td class="num-blue" data-city="黄石市" data-level="C" data-type="特征污染物">0</td>
+                <td class="num-blue" data-city="黄石市" data-level="C" data-type="填报率">0%</td>
+            </tr>
+            <tr>
+                <td>D</td>
+                <td class="num-blue" data-city="黄石市" data-level="D" data-type="发布任务">200</td>
+                <td class="num-blue" data-city="黄石市" data-level="D" data-type="已暂存">0</td>
+                <td class="num-blue" data-city="黄石市" data-level="D" data-type="已填报">0</td>
+                <td class="num-blue" data-city="黄石市" data-level="D" data-type="未填报">0</td>
+                <td class="num-blue" data-city="黄石市" data-level="D" data-type="已填报（有水）">0</td>
+                <td class="num-blue" data-city="黄石市" data-level="D" data-type="已填报（无水）">0</td>
+                <td class="num-blue" data-city="黄石市" data-level="D" data-type="特征污染物">0</td>
+                <td class="num-blue" data-city="黄石市" data-level="D" data-type="填报率">0%</td>
+            </tr>
+            <tr>
+                <td>全部</td>
+                <td class="num-blue" data-city="黄石市" data-level="全部" data-type="发布任务">800</td>
+                <td class="num-blue" data-city="黄石市" data-level="全部" data-type="已暂存">50</td>
+                <td class="num-blue" data-city="黄石市" data-level="全部" data-type="已填报">200</td>
+                <td class="num-blue" data-city="黄石市" data-level="全部" data-type="未填报">50</td>
+                <td class="num-blue" data-city="黄石市" data-level="全部" data-type="已填报（有水）">100</td>
+                <td class="num-blue" data-city="黄石市" data-level="全部" data-type="已填报（无水）">100</td>
+                <td class="num-blue" data-city="黄石市" data-level="全部" data-type="特征污染物">50</td>
+                <td class="num-blue" data-city="黄石市" data-level="全部" data-type="填报率">25.00%</td>
+            </tr>
+
+            <!-- 全省合计 -->
+            <tr>
+                <td rowspan="4">全省合计</td>
+                <td>A</td>
+                <td>--</td>
+                <td>--</td>
+                <td>--</td>
+                <td>--</td>
+                <td>--</td>
+                <td>--</td>
+                <td>--</td>
+                <td>--</td>
+            </tr>
+            <tr>
+                <td>B</td>
+                <td class="num-blue" data-city="全省合计" data-level="B" data-type="发布任务">600</td>
+                <td class="num-blue" data-city="全省合计" data-level="B" data-type="已暂存">100</td>
+                <td class="num-blue" data-city="全省合计" data-level="B" data-type="已填报">400</td>
+                <td class="num-blue" data-city="全省合计" data-level="B" data-type="未填报">100</td>
+                <td class="num-blue" data-city="全省合计" data-level="B" data-type="已填报（有水）">200</td>
+                <td class="num-blue" data-city="全省合计" data-level="B" data-type="已填报（无水）">200</td>
+                <td class="num-blue" data-city="全省合计" data-level="B" data-type="特征污染物">100</td>
+                <td class="num-blue" data-city="全省合计" data-level="B" data-type="填报率">66.67%</td>
+            </tr>
+            <tr>
+                <td>C</td>
+                <td class="num-blue" data-city="全省合计" data-level="C" data-type="发布任务">200</td>
+                <td class="num-blue" data-city="全省合计" data-level="C" data-type="已暂存">0</td>
+                <td class="num-blue" data-city="全省合计" data-level="C" data-type="已填报">0</td>
+                <td class="num-blue" data-city="全省合计" data-level="C" data-type="未填报">0</td>
+                <td class="num-blue" data-city="全省合计" data-level="C" data-type="已填报（有水）">0</td>
+                <td class="num-blue" data-city="全省合计" data-level="C" data-type="已填报（无水）">0</td>
+                <td class="num-blue" data-city="全省合计" data-level="C" data-type="特征污染物">0</td>
+                <td class="num-blue" data-city="全省合计" data-level="C" data-type="填报率">0%</td>
+            </tr>
+            <tr>
+                <td>D</td>
+                <td class="num-blue" data-city="全省合计" data-level="D" data-type="发布任务">400</td>
+                <td class="num-blue" data-city="全省合计" data-level="D" data-type="已暂存">0</td>
+                <td class="num-blue" data-city="全省合计" data-level="D" data-type="已填报">0</td>
+                <td class="num-blue" data-city="全省合计" data-level="D" data-type="未填报">0</td>
+                <td class="num-blue" data-city="全省合计" data-level="D" data-type="已填报（有水）">0</td>
+                <td class="num-blue" data-city="全省合计" data-level="D" data-type="已填报（无水）">0</td>
+                <td class="num-blue" data-city="全省合计" data-level="D" data-type="特征污染物">0</td>
+                <td class="num-blue" data-city="全省合计" data-level="D" data-type="填报率">0%</td>
+            </tr>
+            <tr>
+                <td>全省合计</td>
+                <td>全部</td>
+                <td class="num-blue" data-city="全省合计" data-level="全部" data-type="发布任务">1200</td>
+                <td class="num-blue" data-city="全省合计" data-level="全部" data-type="已暂存">100</td>
+                <td class="num-blue" data-city="全省合计" data-level="全部" data-type="已填报">400</td>
+                <td class="num-blue" data-city="全省合计" data-level="全部" data-type="未填报">100</td>
+                <td class="num-blue" data-city="全省合计" data-level="全部" data-type="已填报（有水）">200</td>
+                <td class="num-blue" data-city="全省合计" data-level="全部" data-type="已填报（无水）">200</td>
+                <td class="num-blue" data-city="全省合计" data-level="全部" data-type="特征污染物">100</td>
+                <td class="num-blue" data-city="全省合计" data-level="全部" data-type="填报率">33.33%</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- 详情弹窗 -->
+    <div class="modal-overlay" id="detailModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="modal-title" id="modalTitle">详情信息</span>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body-wrapper">
+                <div class="modal-list-section" id="modalListSection">
+                    <!-- 左侧列表内容 -->
+                </div>
+                <div class="modal-detail-section" id="modalDetailSection">
+                    <!-- 右侧详情内容 -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 分页配置
+        const pageSize = 10; // 每页显示条数
+        let currentPage = 1; // 当前页码
+        let currentData = []; // 当前数据
+        let currentCity = '';
+        let currentLevel = '';
+        let currentType = '';
+        let currentValue = '';
+
+        // 模拟详情数据（生成更多数据用于分页演示）
+        function generateMockData(city, level, type, count) {
+            const data = [];
+            const townships = ['盐池河镇', '大坝办事处', '三官殿办事处', '浪河镇', '土关垭镇', '蒿坪镇', '龙山镇', '赵路办事处'];
+            const types = ['污水处理厂', '生活垃圾填埋场', '工业企业', '农业养殖', '其他'];
+            
+            for (let i = 1; i <= count; i++) {
+                const township = townships[Math.floor(Math.random() * townships.length)];
+                const typeName = types[Math.floor(Math.random() * types.length)];
+                const hasProblem = Math.random() > 0.7 ? '是' : '否';
+                const needMonitor = Math.random() > 0.3 ? '是' : '否';
+                const hasCondition = Math.random() > 0.4 ? '有' : '无';
+                const status = Math.random() > 0.2 ? '已填报' : (Math.random() > 0.5 ? '已暂存' : '未填报');
+                
+                data.push({
+                    name: `十堰市丹江口市${township}${typeName}`,
+                    province: '湖北省',
+                    city: '十堰市',
+                    district: '丹江口市',
+                    hasProblem: hasProblem,
+                    needMonitor: needMonitor,
+                    hasCondition: hasCondition,
+                    fillPerson: status !== '未填报' ? '唐文峰' : '-',
+                    contact: status !== '未填报' ? '13997826482' : '-',
+                    monitorTime: status !== '未填报' ? `2026-04-${String(Math.floor(Math.random() * 10) + 20).padStart(2, '0')}` : '-',
+                    deadline: '2026-06-30',
+                    status: status,
+                    timeoutReason: '-'
+                });
+            }
+            return data;
+        }
+
+        // 获取详情数据
+        function getDetailData(city, level, type, value) {
+            // 根据数值生成对应数量的模拟数据
+            const count = parseInt(value) || 10;
+            return generateMockData(city, level, type, count);
+        }
+
+        // 渲染表格内容
+        function renderTable() {
+            const start = (currentPage - 1) * pageSize;
+            const end = start + pageSize;
+            const pageData = currentData.slice(start, end);
+            
+            let tbodyHtml = '';
+            pageData.forEach((item, index) => {
+                const statusClass = item.status === '已填报' ? 'status-filled' : 
+                                   item.status === '已暂存' ? 'status-saved' : 'status-pending';
+                const globalIndex = (currentPage - 1) * pageSize + index;
+                tbodyHtml += `
+                    <tr class="data-row" data-index="${globalIndex}">
+                        <td>${item.name}</td>
+                        <td>${item.province} ${item.city} ${item.district}</td>
+                        <td>${item.hasProblem}</td>
+                        <td>${item.needMonitor}</td>
+                        <td>${item.hasCondition}</td>
+                        <td>${item.fillPerson}</td>
+                        <td>${item.contact}</td>
+                        <td>${item.monitorTime}</td>
+                        <td>${item.deadline}</td>
+                        <td><span class="status-tag ${statusClass}">${item.status}</span></td>
+                        <td>${item.timeoutReason}</td>
+                        <td><span class="view-btn" onclick="showDetail(${globalIndex})">查看</span></td>
+                    </tr>
+                `;
+            });
+            
+            document.querySelector('.detail-table tbody').innerHTML = tbodyHtml;
+        }
+
+        // 显示右侧详情
+        let currentDetailIndex = -1;
+        function showDetail(index) {
+            const item = currentData[index];
+            const detailSection = document.getElementById('modalDetailSection');
+            const listSection = document.getElementById('modalListSection');
+            const statusClass = item.status === '已填报' ? 'status-filled' : 
+                               item.status === '已暂存' ? 'status-saved' : 'status-pending';
+            
+            // 更新查看按钮状态
+            document.querySelectorAll('.view-btn').forEach(btn => btn.classList.remove('active'));
+            const currentBtn = document.querySelector(`.data-row[data-index="${index}"] .view-btn`);
+            if (currentBtn) currentBtn.classList.add('active');
+            
+            currentDetailIndex = index;
+            listSection.classList.add('has-detail');
+            detailSection.classList.add('active');
+            
+            detailSection.innerHTML = `
+                <div class="detail-card">
+                    <div class="detail-card-header">
+                        <span class="detail-card-title">${item.name}</span>
+                        <span class="detail-card-close" onclick="closeDetail()">✕</span>
+                    </div>
+                    
+                    <div class="detail-card-section">
+                        <div class="detail-card-section-title">基本信息</div>
+                        <div class="detail-card-grid">
+                            <div class="detail-card-item full-width">
+                                <span class="detail-card-label">排污口名称</span>
+                                <span class="detail-card-value highlight">${item.name}</span>
+                            </div>
+                            <div class="detail-card-item full-width">
+                                <span class="detail-card-label">省市区县</span>
+                                <span class="detail-card-value">${item.province} ${item.city} ${item.district}</span>
+                            </div>
+                            <div class="detail-card-item">
+                                <span class="detail-card-label">是否存在问题</span>
+                                <span class="detail-card-value">${item.hasProblem}</span>
+                            </div>
+                            <div class="detail-card-item">
+                                <span class="detail-card-label">是否需要监测</span>
+                                <span class="detail-card-value">${item.needMonitor}</span>
+                            </div>
+                            <div class="detail-card-item">
+                                <span class="detail-card-label">有无监测条件</span>
+                                <span class="detail-card-value">${item.hasCondition}</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="detail-card-section">
+                        <div class="detail-card-section-title">填报信息</div>
+                        <div class="detail-card-grid">
+                            <div class="detail-card-item">
+                                <span class="detail-card-label">填报人员</span>
+                                <span class="detail-card-value">${item.fillPerson}</span>
+                            </div>
+                            <div class="detail-card-item">
+                                <span class="detail-card-label">填报人联系方式</span>
+                                <span class="detail-card-value">${item.contact}</span>
+                            </div>
+                            <div class="detail-card-item">
+                                <span class="detail-card-label">监测时间</span>
+                                <span class="detail-card-value">${item.monitorTime}</span>
+                            </div>
+                            <div class="detail-card-item">
+                                <span class="detail-card-label">截止时间</span>
+                                <span class="detail-card-value">${item.deadline}</span>
+                            </div>
+                            <div class="detail-card-item">
+                                <span class="detail-card-label">状态</span>
+                                <span class="detail-card-value"><span class="status-tag ${statusClass}">${item.status}</span></span>
+                            </div>
+                            <div class="detail-card-item">
+                                <span class="detail-card-label">超时原因</span>
+                                <span class="detail-card-value">${item.timeoutReason}</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="detail-card-section">
+                        <div class="detail-card-section-title">其他信息</div>
+                        <div class="detail-card-grid">
+                            <div class="detail-card-item">
+                                <span class="detail-card-label">水体管理级别</span>
+                                <span class="detail-card-value">${currentLevel}级</span>
+                            </div>
+                            <div class="detail-card-item">
+                                <span class="detail-card-label">统计类型</span>
+                                <span class="detail-card-value">${currentType}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // 关闭详情
+        function closeDetail() {
+            const detailSection = document.getElementById('modalDetailSection');
+            const listSection = document.getElementById('modalListSection');
+            detailSection.innerHTML = '';
+            detailSection.classList.remove('active');
+            listSection.classList.remove('has-detail');
+            document.querySelectorAll('.view-btn').forEach(btn => btn.classList.remove('active'));
+            currentDetailIndex = -1;
+        }
+
+        // 渲染分页
+        function renderPagination() {
+            const totalPages = Math.ceil(currentData.length / pageSize);
+            const paginationDiv = document.querySelector('.pagination');
+            
+            let html = `
+                <span class="pagination-info">共 ${currentData.length} 条，第 ${currentPage}/${totalPages} 页</span>
+                <button class="pagination-btn ${currentPage === 1 ? 'disabled' : ''}" onclick="goToPage(1)">首页</button>
+                <button class="pagination-btn ${currentPage === 1 ? 'disabled' : ''}" onclick="goToPage(${currentPage - 1})">上一页</button>
+            `;
+            
+            // 显示页码按钮
+            const maxButtons = 5;
+            let startPage = Math.max(1, currentPage - Math.floor(maxButtons / 2));
+            let endPage = Math.min(totalPages, startPage + maxButtons - 1);
+            
+            if (endPage - startPage < maxButtons - 1) {
+                startPage = Math.max(1, endPage - maxButtons + 1);
+            }
+            
+            for (let i = startPage; i <= endPage; i++) {
+                html += `<button class="pagination-btn ${i === currentPage ? 'active' : ''}" onclick="goToPage(${i})">${i}</button>`;
+            }
+            
+            html += `
+                <button class="pagination-btn ${currentPage === totalPages ? 'disabled' : ''}" onclick="goToPage(${currentPage + 1})">下一页</button>
+                <button class="pagination-btn ${currentPage === totalPages ? 'disabled' : ''}" onclick="goToPage(${totalPages})">末页</button>
+                <div class="pagination-jump">
+                    跳至<input type="number" min="1" max="${totalPages}" value="${currentPage}" id="jumpPage">页
+                    <button onclick="jumpToPage()">确定</button>
+                </div>
+            `;
+            
+            paginationDiv.innerHTML = html;
+        }
+
+        // 跳转到指定页
+        function goToPage(page) {
+            const totalPages = Math.ceil(currentData.length / pageSize);
+            if (page < 1 || page > totalPages) return;
+            currentPage = page;
+            closeDetail();
+            renderTable();
+            renderPagination();
+        }
+
+        // 跳转页码
+        function jumpToPage() {
+            const input = document.getElementById('jumpPage');
+            const page = parseInt(input.value);
+            if (page) goToPage(page);
+        }
+
+        // 打开详情弹窗
+        function openModal(city, level, type, value) {
+            currentCity = city;
+            currentLevel = level;
+            currentType = type;
+            currentValue = value;
+            currentPage = 1;
+            currentData = getDetailData(city, level, type, value);
+            
+            const modal = document.getElementById('detailModal');
+            const title = document.getElementById('modalTitle');
+            const listSection = document.getElementById('modalListSection');
+            const detailSection = document.getElementById('modalDetailSection');
+            
+            title.textContent = `${city} - ${level}级 - ${type}详情`;
+            
+            // 左侧列表内容
+            let listHtml = `
+                <div class="modal-filter">
+                    <div class="filter-group">
+                        <input type="text" class="search-input" placeholder="请输入排污口名称">
+                        <select id="modalProvince">
+                            <option>省市区县</option>
+                            <option>湖北省 十堰市 丹江口市</option>
+                        </select>
+                        <select id="modalStatus">
+                            <option>请选择状态</option>
+                            <option>已填报</option>
+                            <option>已暂存</option>
+                            <option>未填报</option>
+                        </select>
+                        <select id="modalType">
+                            <option>排污口分类</option>
+                            <option>工业排污口</option>
+                            <option>生活排污口</option>
+                        </select>
+                        <select id="modalLevel">
+                            <option>水体管理级别</option>
+                            <option>国家级</option>
+                            <option>省级</option>
+                            <option>市级</option>
+                        </select>
+                        <div class="btn-group">
+                            <button class="btn-search">🔍 搜索</button>
+                            <button class="btn-reset">↻ 重置</button>
+                            <button class="btn-export" style="background:#3671d9;color:#fff;border:none;padding:0 16px;border-radius:4px;height:32px;cursor:pointer;font-size:13px;"> 导出</button>
+                        </div>
+                    </div>
+                </div>
+                <div style="padding:0 16px 16px;">
+                    <table class="detail-table">
+                        <thead>
+                            <tr>
+                                <th>排污口名称</th>
+                                <th>省市区县</th>
+                                <th>是否存在问题</th>
+                                <th>是否需要监测</th>
+                                <th>有无监测条件</th>
+                                <th>填报人员</th>
+                                <th>填报人联系方式</th>
+                                <th>监测时间</th>
+                                <th>截止时间</th>
+                                <th>状态</th>
+                                <th>超时原因</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                    <div class="pagination"></div>
+                </div>
+            `;
+            
+            listSection.innerHTML = listHtml;
+            listSection.classList.remove('has-detail');
+            detailSection.innerHTML = '';
+            detailSection.classList.remove('active');
+            
+            renderTable();
+            renderPagination();
+            modal.classList.add('active');
+        }
+
+        // 关闭弹窗
+        function closeModal() {
+            document.getElementById('detailModal').classList.remove('active');
+        }
+
+        // 点击弹窗外部关闭
+        document.getElementById('detailModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+
+        // ESC键关闭弹窗
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeModal();
+            }
+        });
+
+        // 为所有数字单元格添加点击事件
+        document.querySelectorAll('.num-blue').forEach(function(cell) {
+            cell.addEventListener('click', function() {
+                const city = this.dataset.city;
+                const level = this.dataset.level;
+                const type = this.dataset.type;
+                const value = this.textContent;
+                openModal(city, level, type, value);
+            });
+        });
+
+        // 下拉切换监听
+        document.getElementById('monitorType').addEventListener('change', function(){
+            console.log('监测周期：', this.value);
+        });
+        document.getElementById('cutOffDate').addEventListener('change', function(){
+            console.log('截止时间：', this.value);
+        });
+        
+        // 导出按钮点击事件
+        document.querySelector('.export-btn').addEventListener('click', function(){
+            alert('执行数据导出操作');
+        });
+    </script>
+</body>
+</html>

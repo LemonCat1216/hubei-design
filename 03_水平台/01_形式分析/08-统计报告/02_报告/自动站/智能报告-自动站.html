@@ -371,6 +371,7 @@
   var tr = function(cells, cls) { return '<tr' + (cls ? ' class="' + cls + '"' : '') + '>' + cells.join('') + '</tr>'; };
   var td = function(content, cls) { return '<td' + (cls ? ' class="' + cls + '"' : '') + '>' + esc(content) + '</td>'; };
   var th = function(content, attrs) { return '<th' + (attrs || '') + '>' + esc(content) + '</th>'; };
+  var saf = function(arr) { return Array.isArray(arr) && arr.length > 0 ? arr : []; };
 
   function renderQualityStrip(items, total) {
     var spans = [];
@@ -383,10 +384,12 @@
   }
 
   function renderFactorChart(factors) {
-    var max = factors[0] ? factors[0].count : 1;
+    var items = saf(factors);
+    if (!items.length) return '<p>今日无超标因子，所有自动站均达标。</p>';
+    var max = items[0] ? items[0].count : 1;
     var rows = [];
-    for (var i = 0; i < factors.length; i++) {
-      var f = factors[i];
+    for (var i = 0; i < items.length; i++) {
+      var f = items[i];
       var pct = (f.count / max * 100).toFixed(2);
       rows.push('<div class="factor-row"><span>' + esc(f.name) + '</span><b><i style="width:' + pct + '%"></i></b><em>' + f.count + '</em></div>');
     }
@@ -394,9 +397,11 @@
   }
 
   function renderCalendarCards(items) {
+    var arr = saf(items);
+    if (!arr.length) return '<p>近30天无超标超过5天断面。</p>';
     var cards = [];
-    for (var i = 0; i < items.length; i++) {
-      var it = items[i];
+    for (var i = 0; i < arr.length; i++) {
+      var it = arr[i];
       var days = [];
       for (var j = 0; j < it.calendar.length; j++) {
         var d = it.calendar[j];
@@ -409,9 +414,11 @@
   }
 
   function renderContinuousSection(items) {
+    var arr = saf(items);
+    if (!arr.length) return '<p>本日无连续不达标断面记录。</p>';
     var parts = [];
-    for (var i = 0; i < items.length; i++) {
-      var it = items[i];
+    for (var i = 0; i < arr.length; i++) {
+      var it = arr[i];
       parts.push('<p><span class="highlight">' + esc(it.name) + '：</span>' + esc(it.city) + '，<span class="highlight">连续' + it.days + '天不达标</span>。</p>');
       var rows = [];
       for (var j = 0; j < it.detail.length; j++) {
@@ -452,22 +459,26 @@
   }
 
   function renderReportTable(rows) {
+    var arr = saf(rows);
+    if (!arr.length) return '<p>暂无可显示数据。</p>';
     var bodyRows = [];
-    for (var i = 0; i < rows.length; i++) {
-      var r = rows[i];
+    for (var i = 0; i < arr.length; i++) {
+      var r = arr[i];
       bodyRows.push(tr([td(r.seq), td(r.river), td(r.attr), td(r.name), td(r.city), td(r.dailyClass, levelClass(r.dailyLevel)), td(r.dailyChange), td(r.dailyFactors), td(r.monthlyClass, levelClass(r.monthlyLevel)), td(r.monthlyFactors), td(r.target, levelClass(r.targetLevel))]));
     }
     return '<table class="report-table"><thead>' + tr([th('序号', ' rowspan="2"'), th('所在河流', ' rowspan="2"'), th('自动站属性', ' rowspan="2"'), th('点位名称', ' rowspan="2"'), th('责任城市', ' rowspan="2"'), th('当日', ' colspan="3"'), th('本月累计', ' colspan="2"'), th('十四五考核<br>目标', ' rowspan="2"')]) + tr([th('水质类别'), th('环比变化'), th('主要超标项目'), th('水质类别'), th('主要超标项目')]) + '</thead><tbody>' + bodyRows.join('') + '</tbody></table>';
   }
 
   function renderDataTable(rows, isCompliant) {
+    var arr = saf(rows);
+    if (!arr.length) return '<p>' + (isCompliant ? '本日所有自动站均有有效监测数据。' : '本表暂无数据记录。') + '</p>';
     var dateCol = isCompliant ? th('监测时间') : '';
     var headerCells = [th('序号'), th('自动站名称'), th('所在地市')];
     if (isCompliant) headerCells.push(dateCol);
     headerCells.push(th('水质类别'), th('水质目标'), th('是否达标'), th('溶解氧'), th('总氮(mg/L)'), th('电导率'), th('总磷(mg/L)'), th('水温'), th('高锰酸盐指数(mg/L)'), th('PH值'), th('浊度'), th('氨氮(mg/L)'), th('超标因子'));
     var bodyRows = [];
-    for (var i = 0; i < rows.length; i++) {
-      var r = rows[i];
+    for (var i = 0; i < arr.length; i++) {
+      var r = arr[i];
       var cells = [td(r.seq), td(r.name), td(r.city)];
       if (isCompliant) cells.push(td(r.date));
       cells.push(td(r.cls, levelClass(r.level)), td(r.target, levelClass(r.targetLevel)), td(r.compliant), td(r["do"]), td(r.tn), td(r.cond), td(r.tp), td(r.temp), td(r.codmn), td(r.ph), td(r.turb), td(r.nh3n), td(r.factors));
@@ -477,9 +488,11 @@
   }
 
   function renderNoDataTable(rows) {
+    var arr = saf(rows);
+    if (!arr.length) return '<p>暂无可显示数据。</p>';
     var bodyRows = [];
-    for (var i = 0; i < rows.length; i++) {
-      var r = rows[i];
+    for (var i = 0; i < arr.length; i++) {
+      var r = arr[i];
       bodyRows.push(tr([td(r.seq), td(r.source), td(r.station), td(r.city), td(r.target), td(r.date), td(r.note)]));
     }
     return '<table class="missing-table"><thead>' + tr([th('序号'), th('数据来源'), th('自动站/断面名称'), th('责任地市'), th('水质目标'), th('监测时间'), th('无数据说明')]) + '</thead><tbody>' + bodyRows.join('') + '</tbody></table>';
@@ -494,7 +507,7 @@
   page1.innerHTML =
     '<div class="header-title">湖北省水生态环境综合管理系统</div>' +
     '<div class="header-line"></div>' +
-    '<h1>湖北省地表水水质自动站实时形势分析日报</h1>' +
+    '<h1>地表水水质自动站实时形势分析日报</h1>' +
     '<div class="report-info"><span>数据日期：' + esc(R.meta.reportDate) + '</span></div>' +
     '<h2>一、 总体情况</h2>' +
     '<p>' + esc(R.meta.reportDate) + '，国控、省控自动站共收集有效数据' + s.totalValid + '条，无监测数据自动站' + s.noData + '条。<span class="highlight">本日超标自动站' + s.dailyExceed + '个，本月累计超标自动站' + s.monthlyExceed + '个</span>。</p>' +
@@ -506,7 +519,9 @@
     '<h3>2.1 Ⅴ类及劣Ⅴ类自动站</h3>' +
     '<p>省控自动站中<span class="highlight">Ⅴ类及劣Ⅴ类不达标记录' + R.focusClass5.count + '条</span>，<span class="highlight">需优先关注</span>。</p>' +
     (function() {
-      var rows = [], sts = R.focusClass5.stations;
+      var sts = saf(R.focusClass5.stations);
+      if (!sts.length) return '<p>今日省控自动站中无Ⅴ类及劣Ⅴ类不达标记录，整体水质状况良好。</p>';
+      var rows = [];
       for (var i = 0; i < sts.length; i++) {
         var st = sts[i];
         rows.push(tr([td(i + 1), td(st.name), td(st.city), td(st.cls, levelClass(st.level)), td(st.target, levelClass(st.targetLevel)), td(st.factors)]));

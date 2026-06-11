@@ -62,7 +62,7 @@ window.__REPORT_DATA__ = (function() {
 
   /* 污染因子图 */
   D.pollutionFactors = {
-    description: "省控自动站不达标记录主要集中在溶解氧（29次）、总磷（26次）、高锰酸盐指数（22次）。",
+    description: "省控自动站超标因子主要集中在溶解氧（29次）、总磷（26次）、高锰酸盐指数（22次）。",
     factors: [
       { name: "溶解氧", count: 29 },
       { name: "总磷", count: 26 },
@@ -94,81 +94,81 @@ window.__REPORT_DATA__ = (function() {
     ]
   };
 
-  /* 2.2 近30天超标超过5天断面（月历） */
+  /* 2.2 近30日超标超过5天自动站（月历） */
   D.calendarExceed = [
     {
       name: "泗河口", city: "十堰市", exceedDays: 11,
       calendar: [
-        { day: 1, cls: "劣Ⅴ类", level: "bad-5" }, { day: 2, cls: "", level: "" }, { day: 3, cls: "劣Ⅴ类", level: "bad-5" },
-        { day: 4, cls: "", level: "" }, { day: 5, cls: "", level: "" }, { day: 6, cls: "劣Ⅴ类", level: "bad-5" },
-        { day: 7, cls: "", level: "" }, { day: 8, cls: "劣Ⅴ类", level: "bad-5" }, { day: 9, cls: "", level: "" },
-        { day: 10, cls: "", level: "" }, { day: 11, cls: "劣Ⅴ类", level: "bad-5" }, { day: 12, cls: "", level: "" },
-        { day: 13, cls: "劣Ⅴ类", level: "bad-5" }, { day: 14, cls: "", level: "" }, { day: 15, cls: "", level: "" },
-        { day: 16, cls: "劣Ⅴ类", level: "bad-5" }, { day: 17, cls: "", level: "" }, { day: 18, cls: "", level: "" },
-        { day: 19, cls: "劣Ⅴ类", level: "bad-5" }, { day: 20, cls: "", level: "" }, { day: 21, cls: "", level: "" },
-        { day: 22, cls: "劣Ⅴ类", level: "bad-5" }, { day: 23, cls: "", level: "" }, { day: 24, cls: "", level: "" },
-        { day: 25, cls: "", level: "" }, { day: 26, cls: "劣Ⅴ类", level: "bad-5" }, { day: 27, cls: "", level: "" },
-        { day: 28, cls: "", level: "" }, { day: 29, cls: "", level: "" }, { day: 30, cls: "劣Ⅴ类", level: "bad-5" }
+        { day: 1, cls: "", level: "" }, { day: 2, cls: "", level: "" }, { day: 3, cls: "", level: "" },
+        { day: 4, cls: "Ⅳ类", level: 4 }, { day: 5, cls: "Ⅴ类", level: 5 }, { day: 6, cls: "Ⅴ类", level: 5 },
+        { day: 7, cls: "劣Ⅴ类", level: "bad-5" }, { day: 8, cls: "Ⅳ类", level: 4 }, { day: 9, cls: "Ⅴ类", level: 5 },
+        { day: 10, cls: "劣Ⅴ类", level: "bad-5" }, { day: 11, cls: "", level: "" }, { day: 12, cls: "", level: "" },
+        { day: 13, cls: "", level: "" }, { day: 14, cls: "", level: "" }, { day: 15, cls: "", level: "" },
+        { day: 16, cls: "", level: "" }, { day: 17, cls: "", level: "" }, { day: 18, cls: "Ⅳ类", level: 4 },
+        { day: 19, cls: "Ⅴ类", level: 5 }, { day: 20, cls: "", level: "" }, { day: 21, cls: "", level: "" },
+        { day: 22, cls: "", level: "" }, { day: 23, cls: "", level: "" }, { day: 24, cls: "", level: "" },
+        { day: 25, cls: "", level: "" }, { day: 26, cls: "", level: "" }, { day: 27, cls: "", level: "" },
+        { day: 28, cls: "", level: "" }, { day: 29, cls: "Ⅳ类", level: 4 }, { day: 30, cls: "劣Ⅴ类", level: "bad-5" }
       ]
     },
     {
       name: "黄龙滩水库", city: "十堰市", exceedDays: 9,
       calendar: [
-        { day: 1, cls: "", level: "" }, { day: 2, cls: "劣Ⅴ类", level: "bad-5" }, { day: 3, cls: "", level: "" },
-        { day: 4, cls: "", level: "" }, { day: 5, cls: "劣Ⅴ类", level: "bad-5" }, { day: 6, cls: "", level: "" },
-        { day: 7, cls: "劣Ⅴ类", level: "bad-5" }, { day: 8, cls: "", level: "" }, { day: 9, cls: "", level: "" },
-        { day: 10, cls: "劣Ⅴ类", level: "bad-5" }, { day: 11, cls: "", level: "" }, { day: 12, cls: "", level: "" },
-        { day: 13, cls: "", level: "" }, { day: 14, cls: "劣Ⅴ类", level: "bad-5" }, { day: 15, cls: "", level: "" },
-        { day: 16, cls: "", level: "" }, { day: 17, cls: "", level: "" }, { day: 18, cls: "劣Ⅴ类", level: "bad-5" },
-        { day: 19, cls: "", level: "" }, { day: 20, cls: "", level: "" }, { day: 21, cls: "劣Ⅴ类", level: "bad-5" },
-        { day: 22, cls: "", level: "" }, { day: 23, cls: "", level: "" }, { day: 24, cls: "", level: "" },
-        { day: 25, cls: "劣Ⅴ类", level: "bad-5" }, { day: 26, cls: "", level: "" }, { day: 27, cls: "", level: "" },
-        { day: 28, cls: "", level: "" }, { day: 29, cls: "劣Ⅴ类", level: "bad-5" }, { day: 30, cls: "", level: "" }
+        { day: 1, cls: "", level: "" }, { day: 2, cls: "", level: "" }, { day: 3, cls: "", level: "" },
+        { day: 4, cls: "", level: "" }, { day: 5, cls: "", level: "" }, { day: 6, cls: "", level: "" },
+        { day: 7, cls: "Ⅳ类", level: 4 }, { day: 8, cls: "Ⅴ类", level: 5 }, { day: 9, cls: "劣Ⅴ类", level: "bad-5" },
+        { day: 10, cls: "Ⅴ类", level: 5 }, { day: 11, cls: "", level: "" }, { day: 12, cls: "", level: "" },
+        { day: 13, cls: "", level: "" }, { day: 14, cls: "Ⅳ类", level: 4 }, { day: 15, cls: "Ⅴ类", level: 5 },
+        { day: 16, cls: "", level: "" }, { day: 17, cls: "", level: "" }, { day: 18, cls: "", level: "" },
+        { day: 19, cls: "", level: "" }, { day: 20, cls: "", level: "" }, { day: 21, cls: "", level: "" },
+        { day: 22, cls: "Ⅳ类", level: 4 }, { day: 23, cls: "Ⅴ类", level: 5 }, { day: 24, cls: "劣Ⅴ类", level: "bad-5" },
+        { day: 25, cls: "", level: "" }, { day: 26, cls: "", level: "" }, { day: 27, cls: "", level: "" },
+        { day: 28, cls: "", level: "" }, { day: 29, cls: "", level: "" }, { day: 30, cls: "", level: "" }
       ]
     },
     {
       name: "两河口(草埠湖）", city: "宜昌市", exceedDays: 8,
       calendar: [
-        { day: 1, cls: "劣Ⅴ类", level: "bad-5" }, { day: 2, cls: "", level: "" }, { day: 3, cls: "", level: "" },
-        { day: 4, cls: "劣Ⅴ类", level: "bad-5" }, { day: 5, cls: "", level: "" }, { day: 6, cls: "", level: "" },
-        { day: 7, cls: "", level: "" }, { day: 8, cls: "", level: "" }, { day: 9, cls: "劣Ⅴ类", level: "bad-5" },
-        { day: 10, cls: "", level: "" }, { day: 11, cls: "", level: "" }, { day: 12, cls: "劣Ⅴ类", level: "bad-5" },
+        { day: 1, cls: "", level: "" }, { day: 2, cls: "", level: "" }, { day: 3, cls: "", level: "" },
+        { day: 4, cls: "", level: "" }, { day: 5, cls: "", level: "" }, { day: 6, cls: "", level: "" },
+        { day: 7, cls: "Ⅳ类", level: 4 }, { day: 8, cls: "Ⅴ类", level: 5 }, { day: 9, cls: "Ⅴ类", level: 5 },
+        { day: 10, cls: "劣Ⅴ类", level: "bad-5" }, { day: 11, cls: "", level: "" }, { day: 12, cls: "", level: "" },
         { day: 13, cls: "", level: "" }, { day: 14, cls: "", level: "" }, { day: 15, cls: "", level: "" },
-        { day: 16, cls: "", level: "" }, { day: 17, cls: "劣Ⅴ类", level: "bad-5" }, { day: 18, cls: "", level: "" },
-        { day: 19, cls: "", level: "" }, { day: 20, cls: "劣Ⅴ类", level: "bad-5" }, { day: 21, cls: "", level: "" },
-        { day: 22, cls: "", level: "" }, { day: 23, cls: "", level: "" }, { day: 24, cls: "劣Ⅴ类", level: "bad-5" },
-        { day: 25, cls: "", level: "" }, { day: 26, cls: "", level: "" }, { day: 27, cls: "", level: "" },
-        { day: 28, cls: "劣Ⅴ类", level: "bad-5" }, { day: 29, cls: "", level: "" }, { day: 30, cls: "", level: "" }
+        { day: 16, cls: "", level: "" }, { day: 17, cls: "Ⅳ类", level: 4 }, { day: 18, cls: "Ⅴ类", level: 5 },
+        { day: 19, cls: "", level: "" }, { day: 20, cls: "", level: "" }, { day: 21, cls: "", level: "" },
+        { day: 22, cls: "", level: "" }, { day: 23, cls: "", level: "" }, { day: 24, cls: "", level: "" },
+        { day: 25, cls: "Ⅴ类", level: 5 }, { day: 26, cls: "Ⅳ类", level: 4 }, { day: 27, cls: "", level: "" },
+        { day: 28, cls: "", level: "" }, { day: 29, cls: "", level: "" }, { day: 30, cls: "", level: "" }
       ]
     },
     {
       name: "排水闸", city: "荆州市", exceedDays: 7,
       calendar: [
-        { day: 1, cls: "", level: "" }, { day: 2, cls: "", level: "" }, { day: 3, cls: "劣Ⅴ类", level: "bad-5" },
-        { day: 4, cls: "", level: "" }, { day: 5, cls: "", level: "" }, { day: 6, cls: "劣Ⅴ类", level: "bad-5" },
-        { day: 7, cls: "", level: "" }, { day: 8, cls: "", level: "" }, { day: 9, cls: "", level: "" },
+        { day: 1, cls: "", level: "" }, { day: 2, cls: "", level: "" }, { day: 3, cls: "", level: "" },
+        { day: 4, cls: "", level: "" }, { day: 5, cls: "", level: "" }, { day: 6, cls: "", level: "" },
+        { day: 7, cls: "", level: "" }, { day: 8, cls: "Ⅳ类", level: 4 }, { day: 9, cls: "Ⅴ类", level: 5 },
         { day: 10, cls: "劣Ⅴ类", level: "bad-5" }, { day: 11, cls: "", level: "" }, { day: 12, cls: "", level: "" },
-        { day: 13, cls: "", level: "" }, { day: 14, cls: "", level: "" }, { day: 15, cls: "劣Ⅴ类", level: "bad-5" },
+        { day: 13, cls: "", level: "" }, { day: 14, cls: "Ⅳ类", level: 4 }, { day: 15, cls: "Ⅴ类", level: 5 },
         { day: 16, cls: "", level: "" }, { day: 17, cls: "", level: "" }, { day: 18, cls: "", level: "" },
-        { day: 19, cls: "劣Ⅴ类", level: "bad-5" }, { day: 20, cls: "", level: "" }, { day: 21, cls: "", level: "" },
-        { day: 22, cls: "", level: "" }, { day: 23, cls: "劣Ⅴ类", level: "bad-5" }, { day: 24, cls: "", level: "" },
-        { day: 25, cls: "", level: "" }, { day: 26, cls: "", level: "" }, { day: 27, cls: "劣Ⅴ类", level: "bad-5" },
+        { day: 19, cls: "", level: "" }, { day: 20, cls: "", level: "" }, { day: 21, cls: "Ⅳ类", level: 4 },
+        { day: 22, cls: "劣Ⅴ类", level: "bad-5" }, { day: 23, cls: "", level: "" }, { day: 24, cls: "", level: "" },
+        { day: 25, cls: "", level: "" }, { day: 26, cls: "", level: "" }, { day: 27, cls: "", level: "" },
         { day: 28, cls: "", level: "" }, { day: 29, cls: "", level: "" }, { day: 30, cls: "", level: "" }
       ]
     },
     {
       name: "五龙泉", city: "十堰市", exceedDays: 6,
       calendar: [
-        { day: 1, cls: "", level: "" }, { day: 2, cls: "Ⅴ类", level: 5 }, { day: 3, cls: "", level: "" },
+        { day: 1, cls: "", level: "" }, { day: 2, cls: "", level: "" }, { day: 3, cls: "", level: "" },
         { day: 4, cls: "", level: "" }, { day: 5, cls: "", level: "" }, { day: 6, cls: "", level: "" },
-        { day: 7, cls: "", level: "" }, { day: 8, cls: "Ⅴ类", level: 5 }, { day: 9, cls: "", level: "" },
-        { day: 10, cls: "", level: "" }, { day: 11, cls: "", level: "" }, { day: 12, cls: "", level: "" },
-        { day: 13, cls: "Ⅴ类", level: 5 }, { day: 14, cls: "", level: "" }, { day: 15, cls: "", level: "" },
-        { day: 16, cls: "", level: "" }, { day: 17, cls: "", level: "" }, { day: 18, cls: "Ⅴ类", level: 5 },
+        { day: 7, cls: "", level: "" }, { day: 8, cls: "Ⅳ类", level: 4 }, { day: 9, cls: "Ⅴ类", level: 5 },
+        { day: 10, cls: "Ⅴ类", level: 5 }, { day: 11, cls: "", level: "" }, { day: 12, cls: "", level: "" },
+        { day: 13, cls: "", level: "" }, { day: 14, cls: "", level: "" }, { day: 15, cls: "", level: "" },
+        { day: 16, cls: "Ⅳ类", level: 4 }, { day: 17, cls: "Ⅴ类", level: 5 }, { day: 18, cls: "", level: "" },
         { day: 19, cls: "", level: "" }, { day: 20, cls: "", level: "" }, { day: 21, cls: "", level: "" },
         { day: 22, cls: "", level: "" }, { day: 23, cls: "", level: "" }, { day: 24, cls: "Ⅴ类", level: 5 },
         { day: 25, cls: "", level: "" }, { day: 26, cls: "", level: "" }, { day: 27, cls: "", level: "" },
-        { day: 28, cls: "", level: "" }, { day: 29, cls: "", level: "" }, { day: 30, cls: "Ⅴ类", level: 5 }
+        { day: 28, cls: "", level: "" }, { day: 29, cls: "", level: "" }, { day: 30, cls: "", level: "" }
       ]
     }
   ];
@@ -178,44 +178,44 @@ window.__REPORT_DATA__ = (function() {
     {
       name: "泗河口", city: "十堰市", days: 5,
       detail: [
-        { date: "2026-06-06", cls: "劣Ⅴ类", level: "bad-5", target: "Ⅱ类", targetLevel: 2, compliant: "否", pollutant: "化学需氧量(0.49)" },
+        { date: "2026-06-06", cls: "Ⅴ类", level: 5, target: "Ⅱ类", targetLevel: 2, compliant: "否", pollutant: "化学需氧量(0.32)、总磷(0.18)" },
         { date: "2026-06-07", cls: "劣Ⅴ类", level: "bad-5", target: "Ⅱ类", targetLevel: 2, compliant: "否", pollutant: "化学需氧量(0.49)" },
-        { date: "2026-06-08", cls: "劣Ⅴ类", level: "bad-5", target: "Ⅱ类", targetLevel: 2, compliant: "否", pollutant: "化学需氧量(0.49)" },
-        { date: "2026-06-09", cls: "劣Ⅴ类", level: "bad-5", target: "Ⅱ类", targetLevel: 2, compliant: "否", pollutant: "化学需氧量(0.49)" },
+        { date: "2026-06-08", cls: "Ⅳ类", level: 4, target: "Ⅱ类", targetLevel: 2, compliant: "否", pollutant: "总磷(0.16)" },
+        { date: "2026-06-09", cls: "Ⅴ类", level: 5, target: "Ⅱ类", targetLevel: 2, compliant: "否", pollutant: "溶解氧(0.21)、化学需氧量(0.28)" },
         { date: "2026-06-10", cls: "劣Ⅴ类", level: "bad-5", target: "Ⅱ类", targetLevel: 2, compliant: "否", pollutant: "化学需氧量(0.49)" }
       ]
     },
     {
       name: "黄龙滩水库", city: "十堰市", days: 4,
       detail: [
-        { date: "2026-06-07", cls: "劣Ⅴ类", level: "bad-5", target: "Ⅲ类", targetLevel: 3, compliant: "否", pollutant: "溶解氧(0.52)" },
-        { date: "2026-06-08", cls: "劣Ⅴ类", level: "bad-5", target: "Ⅲ类", targetLevel: 3, compliant: "否", pollutant: "溶解氧(0.52)" },
-        { date: "2026-06-09", cls: "劣Ⅴ类", level: "bad-5", target: "Ⅲ类", targetLevel: 3, compliant: "否", pollutant: "溶解氧(0.52)" },
-        { date: "2026-06-10", cls: "劣Ⅴ类", level: "bad-5", target: "Ⅲ类", targetLevel: 3, compliant: "否", pollutant: "溶解氧(0.52)" }
+        { date: "2026-06-07", cls: "Ⅳ类", level: 4, target: "Ⅲ类", targetLevel: 3, compliant: "否", pollutant: "总磷(0.11)" },
+        { date: "2026-06-08", cls: "Ⅴ类", level: 5, target: "Ⅲ类", targetLevel: 3, compliant: "否", pollutant: "溶解氧(0.26)" },
+        { date: "2026-06-09", cls: "劣Ⅴ类", level: "bad-5", target: "Ⅲ类", targetLevel: 3, compliant: "否", pollutant: "溶解氧(0.47)" },
+        { date: "2026-06-10", cls: "Ⅴ类", level: 5, target: "Ⅲ类", targetLevel: 3, compliant: "否", pollutant: "溶解氧(0.52)" }
       ]
     },
     {
       name: "两河口(草埠湖）", city: "宜昌市", days: 4,
       detail: [
-        { date: "2026-06-07", cls: "劣Ⅴ类", level: "bad-5", target: "Ⅱ类", targetLevel: 2, compliant: "否", pollutant: "溶解氧(0.34)" },
-        { date: "2026-06-08", cls: "劣Ⅴ类", level: "bad-5", target: "Ⅱ类", targetLevel: 2, compliant: "否", pollutant: "溶解氧(0.34)" },
-        { date: "2026-06-09", cls: "劣Ⅴ类", level: "bad-5", target: "Ⅱ类", targetLevel: 2, compliant: "否", pollutant: "溶解氧(0.34)" },
+        { date: "2026-06-07", cls: "Ⅳ类", level: 4, target: "Ⅱ类", targetLevel: 2, compliant: "否", pollutant: "总磷(0.12)" },
+        { date: "2026-06-08", cls: "Ⅴ类", level: 5, target: "Ⅱ类", targetLevel: 2, compliant: "否", pollutant: "溶解氧(0.22)" },
+        { date: "2026-06-09", cls: "Ⅴ类", level: 5, target: "Ⅱ类", targetLevel: 2, compliant: "否", pollutant: "溶解氧(0.27)、氨氮(0.19)" },
         { date: "2026-06-10", cls: "劣Ⅴ类", level: "bad-5", target: "Ⅱ类", targetLevel: 2, compliant: "否", pollutant: "溶解氧(0.34)" }
       ]
     },
     {
       name: "排水闸", city: "荆州市", days: 3,
       detail: [
-        { date: "2026-06-08", cls: "劣Ⅴ类", level: "bad-5", target: "Ⅲ类", targetLevel: 3, compliant: "否", pollutant: "高锰酸盐指数(0.44)" },
-        { date: "2026-06-09", cls: "劣Ⅴ类", level: "bad-5", target: "Ⅲ类", targetLevel: 3, compliant: "否", pollutant: "高锰酸盐指数(0.44)" },
+        { date: "2026-06-08", cls: "Ⅳ类", level: 4, target: "Ⅲ类", targetLevel: 3, compliant: "否", pollutant: "总磷(0.10)" },
+        { date: "2026-06-09", cls: "Ⅴ类", level: 5, target: "Ⅲ类", targetLevel: 3, compliant: "否", pollutant: "高锰酸盐指数(0.31)" },
         { date: "2026-06-10", cls: "劣Ⅴ类", level: "bad-5", target: "Ⅲ类", targetLevel: 3, compliant: "否", pollutant: "高锰酸盐指数(0.44)" }
       ]
     },
     {
       name: "五龙泉", city: "十堰市", days: 3,
       detail: [
-        { date: "2026-06-08", cls: "Ⅴ类", level: 5, target: "Ⅲ类", targetLevel: 3, compliant: "否", pollutant: "溶解氧(0.26)" },
-        { date: "2026-06-09", cls: "Ⅴ类", level: 5, target: "Ⅲ类", targetLevel: 3, compliant: "否", pollutant: "溶解氧(0.26)" },
+        { date: "2026-06-08", cls: "Ⅳ类", level: 4, target: "Ⅲ类", targetLevel: 3, compliant: "否", pollutant: "高锰酸盐指数(0.12)" },
+        { date: "2026-06-09", cls: "Ⅴ类", level: 5, target: "Ⅲ类", targetLevel: 3, compliant: "否", pollutant: "溶解氧(0.19)" },
         { date: "2026-06-10", cls: "Ⅴ类", level: 5, target: "Ⅲ类", targetLevel: 3, compliant: "否", pollutant: "溶解氧(0.26)" }
       ]
     }
@@ -331,11 +331,11 @@ window.__REPORT_DATA__ = (function() {
       name: "省直管县市及林区",
       isSpecial: true,
       subCities: [
-        { name: "仙桃市", provincialCount: 5, nonCompliantCount: 1 },
-        { name: "潜江市", provincialCount: 5, nonCompliantCount: 3 },
-        { name: "天门市", provincialCount: 3, nonCompliantCount: 0 },
-        { name: "神农架", provincialCount: 1, nonCompliantCount: 1 },
-        { name: "其他/未明确地市", provincialCount: 1, nonCompliantCount: 1 }
+        { name: "仙桃市", provincialCount: 5, nonCompliantCount: 1, stations: [{ name: "姚嘴王岭村", cls: "Ⅲ类" }] },
+        { name: "潜江市", provincialCount: 5, nonCompliantCount: 3, stations: [{ name: "潜江大桥", cls: "Ⅲ类" }, { name: "丫角桥", cls: "Ⅳ类" }, { name: "积玉口荷花村", cls: "Ⅲ类" }] },
+        { name: "天门市", provincialCount: 3, nonCompliantCount: 0, stations: [] },
+        { name: "神农架", provincialCount: 1, nonCompliantCount: 1, stations: [{ name: "阳日湾", cls: "Ⅲ类" }] },
+        { name: "其他/未明确地市", provincialCount: 1, nonCompliantCount: 1, stations: [{ name: "湖北省水质监测船", cls: "Ⅳ类" }] }
       ]
     }
   ];

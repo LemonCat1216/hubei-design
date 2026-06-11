@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
     <meta charset="utf-8"/>
-    <title>湖北省地表水水质自动站实时形势分析日报</title>
+    <title>湖北省地表水水质自动站日报</title>
     <style>
         /* ================= 基础公文样式设定 ================= */
         :root {
@@ -101,17 +101,46 @@
             position: relative;
             overflow: hidden;
         }
+        .document-container::before {
+            content: "碧水荆灵 AI 生成，仅供参考";
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%) rotate(-28deg);
+            font-family: "SimHei", "黑体", sans-serif;
+            font-size: 30pt;
+            color: rgba(120, 120, 120, 0.16);
+            white-space: nowrap;
+            pointer-events: none;
+            z-index: 0;
+        }
+        .document-container > * {
+            position: relative;
+            z-index: 1;
+        }
+        .page-number {
+            position: absolute;
+            left: 50%;
+            bottom: 10mm;
+            transform: translateX(-50%);
+            font-family: "SimHei", "黑体", sans-serif;
+            font-size: 11pt;
+            color: #333;
+            line-height: 1;
+            pointer-events: none;
+            z-index: 2;
+        }
 
         .portrait-page {
             width: var(--a4-portrait-width);
             height: var(--a4-portrait-height);
-            padding: var(--portrait-padding-y) var(--portrait-padding-x);
+            padding: var(--portrait-padding-y) var(--portrait-padding-x) calc(var(--portrait-padding-y) + 10mm);
         }
 
         .landscape-page {
             width: var(--a4-landscape-width);
             height: var(--a4-landscape-height);
-            padding: var(--landscape-padding-y) var(--landscape-padding-x);
+            padding: var(--landscape-padding-y) var(--landscape-padding-x) calc(var(--landscape-padding-y) + 10mm);
         }
 
         @media print {
@@ -158,14 +187,14 @@
                 page: portrait_layout;
                 width: var(--a4-portrait-width) !important;
                 height: var(--a4-portrait-height) !important;
-                padding: var(--portrait-padding-y) var(--portrait-padding-x) !important;
+                padding: var(--portrait-padding-y) var(--portrait-padding-x) calc(var(--portrait-padding-y) + 10mm) !important;
             }
 
             .landscape-page {
                 page: landscape_layout;
                 width: var(--a4-landscape-width) !important;
                 height: var(--a4-landscape-height) !important;
-                padding: var(--landscape-padding-y) var(--landscape-padding-x) !important;
+                padding: var(--landscape-padding-y) var(--landscape-padding-x) calc(var(--landscape-padding-y) + 10mm) !important;
             }
         }
 
@@ -368,6 +397,7 @@
     return '';
   };
   var esc = function(s) { return String(s == null ? '' : s); };
+  var hl = function(s) { return '<span class="highlight">' + esc(s) + '</span>'; };
   var tr = function(cells, cls) { return '<tr' + (cls ? ' class="' + cls + '"' : '') + '>' + cells.join('') + '</tr>'; };
   var td = function(content, cls) { return '<td' + (cls ? ' class="' + cls + '"' : '') + '>' + esc(content) + '</td>'; };
   var th = function(content, attrs) { return '<th' + (attrs || '') + '>' + esc(content) + '</th>'; };
@@ -396,9 +426,18 @@
     return '<div class="factor-chart">' + rows.join('') + '</div>';
   }
 
+  function renderPollutionFactorText(data) {
+    var items = saf(data && data.factors).slice(0, 3);
+    if (!items.length) return esc(data && data.description);
+    var factorText = items.map(function(f) {
+      return hl(f.name + '（' + f.count + '次）');
+    }).join('、');
+    return '省控自动站超标因子主要集中在' + factorText + '。';
+  }
+
   function renderCalendarCards(items) {
     var arr = saf(items);
-    if (!arr.length) return '<p>近30天无超标超过5天断面。</p>';
+    if (!arr.length) return '<p>近30日无累计超标5天及以上自动站。</p>';
     var cards = [];
     for (var i = 0; i < arr.length; i++) {
       var it = arr[i];
@@ -408,24 +447,24 @@
         var cls = d.level ? levelClass(d.level) : '';
         days.push('<span class="cal-day ' + cls + '">' + d.day + '</span>');
       }
-      cards.push('<div class="calendar-card"><div class="calendar-title">' + (i + 1) + '. ' + esc(it.name) + '（' + esc(it.city) + '）近30天超标' + it.exceedDays + '天</div><div class="calendar-grid">' + days.join('') + '</div></div>');
+      cards.push('<div class="calendar-card"><div class="calendar-title">' + (i + 1) + '. ' + esc(it.name) + '（' + esc(it.city) + '）近30日累计超标' + it.exceedDays + '天</div><div class="calendar-grid">' + days.join('') + '</div></div>');
     }
     return '<div class="calendar-panel">' + cards.join('') + '</div>';
   }
 
   function renderContinuousSection(items) {
     var arr = saf(items);
-    if (!arr.length) return '<p>本日无连续不达标断面记录。</p>';
+    if (!arr.length) return '<p>本日无连续不达标自动站记录。</p>';
     var parts = [];
     for (var i = 0; i < arr.length; i++) {
       var it = arr[i];
-      parts.push('<p><span class="highlight">' + esc(it.name) + '：</span>' + esc(it.city) + '，<span class="highlight">连续' + it.days + '天不达标</span>。</p>');
+      parts.push('<p>' + hl(it.name + '：') + esc(it.city) + '，已连续' + hl(it.days + '天不达标') + '。</p>');
       var rows = [];
       for (var j = 0; j < it.detail.length; j++) {
         var d = it.detail[j];
         rows.push(tr([td(d.date), td(d.cls, levelClass(d.level)), td(d.target, levelClass(d.targetLevel)), td(d.compliant), td(d.pollutant)]));
       }
-      parts.push('<table class="continuous-table"><thead>' + tr([th('日期'), th('水质类别'), th('水质目标'), th('是否达标'), th('主要污染指标')]) + '</thead><tbody>' + rows.join('') + '</tbody></table>');
+      parts.push('<table class="continuous-table"><thead>' + tr([th('日期'), th('水质类别'), th('水质目标'), th('是否达标'), th('主要超标因子')]) + '</thead><tbody>' + rows.join('') + '</tbody></table>');
     }
     return parts.join('');
   }
@@ -438,24 +477,47 @@
         var subs = [];
         for (var j = 0; j < c.subCities.length; j++) {
           var sc = c.subCities[j];
-          subs.push(esc(sc.name) + sc.provincialCount + '条、不达标' + sc.nonCompliantCount + '条');
+          var stationDescs = [];
+          for (var k = 0; k < saf(sc.stations).length; k++) {
+            var st = sc.stations[k];
+            stationDescs.push(esc(st.name) + '（' + esc(st.cls) + '）');
+          }
+          var suffix = sc.nonCompliantCount > 0 ? '不达标自动站为：' + stationDescs.join('、') : '当日无不达标自动站';
+          subs.push(esc(sc.name) + '省控自动站' + sc.provincialCount + '个，不达标' + sc.nonCompliantCount + '个；' + suffix);
         }
-        parts.push('<p><span class="highlight">省直管县市及林区：</span>' + subs.join('；') + '。</p>');
+        parts.push('<p>' + hl('省直管县市及林区：') + subs.join('；') + '。</p>');
       } else {
         var stationDescs = [];
         for (var j = 0; j < c.stations.length; j++) {
           var s = c.stations[j];
-          if (s.highlight) {
-            stationDescs.push('<span class="highlight">' + esc(s.name) + '（' + esc(s.cls) + '）</span>');
-          } else {
-            stationDescs.push(esc(s.name) + '（' + esc(s.cls) + '）');
-          }
+          var stationText = s.name + '（' + s.cls + '）';
+          stationDescs.push(s.highlight ? hl(stationText) : esc(stationText));
         }
-        var class5Part = c.class5Count > 0 ? '，其中<span class="highlight">Ⅴ类及劣Ⅴ类' + c.class5Count + '条</span>' : '，其中Ⅴ类及劣Ⅴ类0条';
-        parts.push('<p><span class="highlight">' + esc(c.name) + '：</span>国控自动站' + c.nationalCount + '个；省控自动站' + c.provincialCount + '条，优良' + c.goodCount + '条，<span class="highlight">不达标' + c.nonCompliantCount + '条</span>' + class5Part + '，涉及' + stationDescs.join('、') + '。</p>');
+        parts.push('<p>' + hl(c.name + '：') + '涉及国控自动站' + c.nationalCount + '个、省控自动站' + c.provincialCount + '个。当日Ⅰ-Ⅲ类' + c.goodCount + '个，不达标' + c.nonCompliantCount + '个，其中Ⅴ类及劣Ⅴ类' + c.class5Count + '个。需关注站点为：' + stationDescs.join('、') + '。</p>');
       }
     }
     return parts.join('');
+  }
+
+  function renderCitySummaryParagraph(cities) {
+    var regularCities = saf(cities).filter(function(c) { return !c.isSpecial; });
+    if (!regularCities.length) return '';
+
+    var topCities = regularCities.slice().sort(function(a, b) {
+      return (b.nonCompliantCount || 0) - (a.nonCompliantCount || 0);
+    }).slice(0, 3);
+    var focusCity = regularCities.slice().sort(function(a, b) {
+      return (b.class5Count || 0) - (a.class5Count || 0);
+    })[0];
+
+    var topText = topCities.map(function(c) {
+      return '<span class="highlight">' + esc(c.name) + (c.nonCompliantCount || 0) + '个</span>';
+    }).join('、');
+    var focusText = focusCity && focusCity.class5Count > 0
+      ? '；其中<span class="highlight">' + esc(focusCity.name) + 'Ⅴ类及劣Ⅴ类站点' + focusCity.class5Count + '个</span>，风险相对突出'
+      : '';
+
+    return '<p>从地市分布看，不达标站点主要集中在' + topText + focusText + '。</p>';
   }
 
   function renderReportTable(rows) {
@@ -466,7 +528,7 @@
       var r = arr[i];
       bodyRows.push(tr([td(r.seq), td(r.river), td(r.attr), td(r.name), td(r.city), td(r.dailyClass, levelClass(r.dailyLevel)), td(r.dailyChange), td(r.dailyFactors), td(r.monthlyClass, levelClass(r.monthlyLevel)), td(r.monthlyFactors), td(r.target, levelClass(r.targetLevel))]));
     }
-    return '<table class="report-table"><thead>' + tr([th('序号', ' rowspan="2"'), th('所在河流', ' rowspan="2"'), th('自动站属性', ' rowspan="2"'), th('点位名称', ' rowspan="2"'), th('责任城市', ' rowspan="2"'), th('当日', ' colspan="3"'), th('本月累计', ' colspan="2"'), th('十四五考核<br>目标', ' rowspan="2"')]) + tr([th('水质类别'), th('环比变化'), th('主要超标项目'), th('水质类别'), th('主要超标项目')]) + '</thead><tbody>' + bodyRows.join('') + '</tbody></table>';
+    return '<table class="report-table"><thead>' + tr([th('序号', ' rowspan="2"'), th('所在河流', ' rowspan="2"'), th('自动站属性', ' rowspan="2"'), th('点位名称', ' rowspan="2"'), th('责任城市', ' rowspan="2"'), th('当日', ' colspan="3"'), th('本月累计', ' colspan="2"'), th('十四五考核<br>目标', ' rowspan="2"')]) + tr([th('水质类别'), th('较前一日变化'), th('主要超标因子'), th('水质类别'), th('主要超标因子')]) + '</thead><tbody>' + bodyRows.join('') + '</tbody></table>';
   }
 
   function renderDataTable(rows, isCompliant) {
@@ -495,7 +557,7 @@
       var r = arr[i];
       bodyRows.push(tr([td(r.seq), td(r.source), td(r.station), td(r.city), td(r.target), td(r.date), td(r.note)]));
     }
-    return '<table class="missing-table"><thead>' + tr([th('序号'), th('数据来源'), th('自动站/断面名称'), th('责任地市'), th('水质目标'), th('监测时间'), th('无数据说明')]) + '</thead><tbody>' + bodyRows.join('') + '</tbody></table>';
+    return '<table class="missing-table"><thead>' + tr([th('序号'), th('数据来源'), th('自动站名称'), th('责任地市'), th('水质目标'), th('监测时间'), th('无数据说明')]) + '</thead><tbody>' + bodyRows.join('') + '</tbody></table>';
   }
 
   var page1 = document.getElementById('page1');
@@ -507,20 +569,20 @@
   page1.innerHTML =
     '<div class="header-title">湖北省水生态环境综合管理系统</div>' +
     '<div class="header-line"></div>' +
-    '<h1>地表水水质自动站实时形势分析日报</h1>' +
+    '<h1>湖北省地表水水质自动站日报</h1>' +
     '<div class="report-info"><span>数据日期：' + esc(R.meta.reportDate) + '</span></div>' +
     '<h2>一、 总体情况</h2>' +
-    '<p>' + esc(R.meta.reportDate) + '，国控、省控自动站共收集有效数据' + s.totalValid + '条，无监测数据自动站' + s.noData + '条。<span class="highlight">本日超标自动站' + s.dailyExceed + '个，本月累计超标自动站' + s.monthlyExceed + '个</span>。</p>' +
-    '<p>其中，国控自动站' + nat.total + '个，达标' + nat.compliant + '条、<span class="highlight">不达标' + nat.nonCompliant + '条</span>，Ⅰ-Ⅲ类水质' + nat.class1to3 + '个，占比' + nat.ratio1to3 + '%，<span class="highlight">环比下降' + nat.declined + '个</span>、好转' + nat.improved + '个，<span class="highlight">主要污染指标为' + nat.mainPollutants + '</span>；省控自动站' + prov.total + '个，达标' + prov.compliant + '条、<span class="highlight">不达标' + prov.nonCompliant + '条</span>，Ⅰ-Ⅲ类水质' + prov.class1to3 + '条，占比' + prov.ratio1to3 + '%，<span class="highlight">环比下降' + prov.declined + '个</span>、好转' + prov.improved + '个，<span class="highlight">主要污染指标为' + prov.mainPollutants + '</span>。</p>' +
+    '<p>' + esc(R.meta.reportDate) + '，全省国控、省控自动站实测' + s.totalValid + '个，无监测数据自动站' + s.noData + '个（详见附表5）。当日超标自动站' + hl(s.dailyExceed + '个') + '，其中国控' + nat.nonCompliant + '个、省控' + prov.nonCompliant + '个；本月累计超标自动站' + hl(s.monthlyExceed + '个') + '（详见附表1、附表2）。</p>' +
+    '<p>国控自动站中，达标' + nat.compliant + '个，不达标' + hl(nat.nonCompliant + '个') + '，Ⅰ-Ⅲ类水质' + nat.class1to3 + '个，占比' + nat.ratio1to3 + '%；较前一日水质下降' + nat.declined + '个、改善' + nat.improved + '个，主要超标因子为' + hl(nat.mainPollutants) + '。省控自动站中，达标' + prov.compliant + '个，不达标' + hl(prov.nonCompliant + '个') + '，Ⅰ-Ⅲ类水质' + prov.class1to3 + '个，占比' + prov.ratio1to3 + '%；较前一日水质下降' + prov.declined + '个、改善' + prov.improved + '个，主要超标因子为' + hl(prov.mainPollutants) + '。</p>' +
     '<div class="mini-panel"><div class="mini-title">国控自动站水质分布</div>' + renderQualityStrip(qd.national, nat.total) + '<div class="mini-title">省控自动站水质分布</div>' + renderQualityStrip(qd.provincial, prov.total) + '</div>' +
-    '<p><span class="highlight">超标因子：</span>' + esc(R.pollutionFactors.description) + '</p>' +
-    '<div class="mini-panel"><div class="mini-title">主要污染指标出现次数</div>' + renderFactorChart(R.pollutionFactors.factors) + '</div>' +
-    '<h2>二、 需重点关注自动站</h2>' +
+    '<p>' + hl('全省主要超标因子：') + renderPollutionFactorText(R.pollutionFactors) + '</p>' +
+    '<div class="mini-panel"><div class="mini-title">主要超标因子出现次数</div>' + renderFactorChart(R.pollutionFactors.factors) + '</div>' +
+    '<h2>二、 重点关注自动站</h2>' +
     '<h3>2.1 Ⅴ类及劣Ⅴ类自动站</h3>' +
-    '<p>省控自动站中<span class="highlight">Ⅴ类及劣Ⅴ类不达标记录' + R.focusClass5.count + '条</span>，<span class="highlight">需优先关注</span>。</p>' +
+    '<p>全省自动站中' + hl('Ⅴ类及劣Ⅴ类自动站' + R.focusClass5.count + '个') + '，建议' + hl('重点关注') + '。</p>' +
     (function() {
       var sts = saf(R.focusClass5.stations);
-      if (!sts.length) return '<p>今日省控自动站中无Ⅴ类及劣Ⅴ类不达标记录，整体水质状况良好。</p>';
+      if (!sts.length) return '<p>今日全省自动站中无Ⅴ类及劣Ⅴ类自动站，整体水质状况良好。</p>';
       var rows = [];
       for (var i = 0; i < sts.length; i++) {
         var st = sts[i];
@@ -528,23 +590,23 @@
       }
       return '<table class="focus-table"><thead>' + tr([th('序号'), th('自动站名称'), th('所在地市'), th('水质类别'), th('水质目标'), th('超标因子')]) + '</thead><tbody>' + rows.join('') + '</tbody></table>';
     })() +
-    '<h3>2.2 近30天超标超过5天断面</h3>' +
-    '<p>近30天超标超过5天断面按月历形式展示，着色日期表示超标日，颜色对应当日水质类别。</p>' +
+    '<h3>2.2 近30日累计超标5天及以上自动站</h3>' +
+    '<p><span class="highlight">近30日累计超标5天及以上</span>的自动站如下，着色日期表示超标日期，颜色对应当日水质类别。</p>' +
     renderCalendarCards(R.calendarExceed) +
-    '<h3>2.3 连续不达标断面</h3>' +
-    '<p>选取<span class="highlight">连续不达标自动站5个</span>进行重点展示，按连续天数从高到低排序。</p>' +
+    '<h3>2.3 连续不达标自动站</h3>' +
+    '<p><span class="highlight">连续3天及以上不达标</span>的自动站如下，按连续天数从高到低排序。</p>' +
     renderContinuousSection(R.continuousNonCompliance);
 
-  page2.innerHTML = '<h2>三、 各地市水质情况</h2>' + renderCityParagraphs(R.cities);
+  page2.innerHTML = '<h2>三、 各地市自动站水质情况</h2>' + renderCitySummaryParagraph(R.cities) + renderCityParagraphs(R.cities);
 
   page3.innerHTML =
-    '<h1>附表及数据明细</h1>' +
-    '<div class="table-title">附表1：超标自动站报表</div>' + renderReportTable(R.exceedReport) +
-    '<div class="table-title">附表2：超标自动站数据表</div>' + renderDataTable(R.exceedData, false) +
-    '<div class="table-title">附表3：未超标自动站报表</div>' + renderReportTable(R.compliantReport) +
-    '<div class="table-title">附表4：未超标自动站数据表</div>' + renderDataTable(R.compliantData, true) +
-    '<div class="table-title">附表5：无监测数据自动站表</div>' + renderNoDataTable(R.noData) +
-    '<p class="note">' + esc(R.note) + '</p>';
+    '<h1>附表及监测明细</h1>' +
+    '<div class="table-title">附表1：超标自动站汇总表</div>' + renderReportTable(R.exceedReport) +
+    '<div class="table-title">附表2：超标自动站监测明细表</div>' + renderDataTable(R.exceedData, false) +
+    '<div class="table-title">附表3：未超标自动站汇总表</div>' + renderReportTable(R.compliantReport) +
+    '<div class="table-title">附表4：未超标自动站监测明细表</div>' + renderDataTable(R.compliantData, true) +
+    '<div class="table-title">附表5：无监测数据自动站明细表</div>' + renderNoDataTable(R.noData) +
+    (R.note ? '<p class="note">' + esc(R.note) + '</p>' : '');
 })();
 </script>
 <script>
@@ -572,6 +634,20 @@
 
         function getPages() {
             return Array.prototype.slice.call(document.querySelectorAll('.document-container'));
+        }
+
+        function decoratePages() {
+            var pages = getPages();
+            for (var i = 0; i < pages.length; i++) {
+                var oldNumber = pages[i].querySelector('.page-number');
+                if (oldNumber) {
+                    oldNumber.parentNode.removeChild(oldNumber);
+                }
+                var pageNumber = document.createElement('div');
+                pageNumber.className = 'page-number';
+                pageNumber.textContent = '- ' + (i + 1) + ' -';
+                pages[i].appendChild(pageNumber);
+            }
         }
 
         function overflows(page) {
@@ -713,6 +789,7 @@
             if (group.length) {
                 paginateGroup(group);
             }
+            decoratePages();
             isPaginating = false;
             window.__reportPaginationReady = true;
             window.__reportPageCount = getPages().length;

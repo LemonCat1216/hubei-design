@@ -35,6 +35,27 @@
             background: #fff;
             min-width: 160px;
         }
+        .search-input {
+            height: 36px;
+            padding: 0 14px;
+            border: 1px solid #d0d7e3;
+            border-radius: 6px;
+            font-size: 14px;
+            width: 200px;
+        }
+        .search-btn {
+            height: 36px;
+            padding: 0 18px;
+            background-color: #3671d9;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        .search-btn:hover {
+            background-color: #2b5ebf;
+        }
         .export-btn {
             height: 36px;
             padding: 0 18px;
@@ -455,6 +476,7 @@
                 <option>截止2026-06-30</option>
                 <option>截止2026-07-30</option>
             </select>
+            <button class="search-btn">查询</button>
         </div>
         <button class="export-btn">数据导出</button>
     </div>
@@ -466,9 +488,9 @@
                 <th>地市</th>
                 <th>水体管理级别</th>
                 <th>任务数量</th>
-                <th>已暂存</th>
                 <th>已填报</th>
                 <th>未填报</th>
+                <th>已暂存</th>
                 <th>已填报（有水）</th>
                 <th>已填报（无水）</th>
                 <th>包含特征污染物</th>
@@ -492,9 +514,9 @@
             <tr>
                 <td>B</td>
                 <td class="num-blue" data-city="武汉市" data-level="B" data-type="发布任务">300</td>
-                <td class="num-blue" data-city="武汉市" data-level="B" data-type="已暂存">50</td>
                 <td class="num-blue" data-city="武汉市" data-level="B" data-type="已填报">200</td>
                 <td class="num-blue" data-city="武汉市" data-level="B" data-type="未填报">50</td>
+                <td class="num-blue" data-city="武汉市" data-level="B" data-type="已暂存">50</td>
                 <td class="num-blue" data-city="武汉市" data-level="B" data-type="已填报（有水）">100</td>
                 <td class="num-blue" data-city="武汉市" data-level="B" data-type="已填报（无水）">100</td>
                 <td class="num-blue" data-city="武汉市" data-level="B" data-type="特征污染物">50</td>
@@ -503,9 +525,9 @@
             <tr>
                 <td>C</td>
                 <td class="num-blue" data-city="武汉市" data-level="C" data-type="发布任务">100</td>
-                <td class="num-blue" data-city="武汉市" data-level="C" data-type="已暂存">0</td>
                 <td class="num-blue" data-city="武汉市" data-level="C" data-type="已填报">0</td>
                 <td class="num-blue" data-city="武汉市" data-level="C" data-type="未填报">0</td>
+                <td class="num-blue" data-city="武汉市" data-level="C" data-type="已暂存">0</td>
                 <td class="num-blue" data-city="武汉市" data-level="C" data-type="已填报（有水）">0</td>
                 <td class="num-blue" data-city="武汉市" data-level="C" data-type="已填报（无水）">0</td>
                 <td class="num-blue" data-city="武汉市" data-level="C" data-type="特征污染物">0</td>
@@ -514,9 +536,9 @@
             <tr>
                 <td>D</td>
                 <td class="num-blue" data-city="武汉市" data-level="D" data-type="发布任务">200</td>
-                <td class="num-blue" data-city="武汉市" data-level="D" data-type="已暂存">0</td>
                 <td class="num-blue" data-city="武汉市" data-level="D" data-type="已填报">0</td>
                 <td class="num-blue" data-city="武汉市" data-level="D" data-type="未填报">0</td>
+                <td class="num-blue" data-city="武汉市" data-level="D" data-type="已暂存">0</td>
                 <td class="num-blue" data-city="武汉市" data-level="D" data-type="已填报（有水）">0</td>
                 <td class="num-blue" data-city="武汉市" data-level="D" data-type="已填报（无水）">0</td>
                 <td class="num-blue" data-city="武汉市" data-level="D" data-type="特征污染物">0</td>
@@ -525,9 +547,9 @@
             <tr>
                 <td>全部</td>
                 <td class="num-blue" data-city="武汉市" data-level="全部" data-type="发布任务">800</td>
-                <td class="num-blue" data-city="武汉市" data-level="全部" data-type="已暂存">50</td>
                 <td class="num-blue" data-city="武汉市" data-level="全部" data-type="已填报">200</td>
                 <td class="num-blue" data-city="武汉市" data-level="全部" data-type="未填报">50</td>
+                <td class="num-blue" data-city="武汉市" data-level="全部" data-type="已暂存">50</td>
                 <td class="num-blue" data-city="武汉市" data-level="全部" data-type="已填报（有水）">100</td>
                 <td class="num-blue" data-city="武汉市" data-level="全部" data-type="已填报（无水）">100</td>
                 <td class="num-blue" data-city="武汉市" data-level="全部" data-type="特征污染物">50</td>
@@ -550,9 +572,9 @@
             <tr>
                 <td>B</td>
                 <td class="num-blue" data-city="黄石市" data-level="B" data-type="发布任务">300</td>
-                <td class="num-blue" data-city="黄石市" data-level="B" data-type="已暂存">50</td>
                 <td class="num-blue" data-city="黄石市" data-level="B" data-type="已填报">200</td>
                 <td class="num-blue" data-city="黄石市" data-level="B" data-type="未填报">50</td>
+                <td class="num-blue" data-city="黄石市" data-level="B" data-type="已暂存">50</td>
                 <td class="num-blue" data-city="黄石市" data-level="B" data-type="已填报（有水）">100</td>
                 <td class="num-blue" data-city="黄石市" data-level="B" data-type="已填报（无水）">100</td>
                 <td class="num-blue" data-city="黄石市" data-level="B" data-type="特征污染物">50</td>
@@ -561,9 +583,9 @@
             <tr>
                 <td>C</td>
                 <td class="num-blue" data-city="黄石市" data-level="C" data-type="发布任务">100</td>
-                <td class="num-blue" data-city="黄石市" data-level="C" data-type="已暂存">0</td>
                 <td class="num-blue" data-city="黄石市" data-level="C" data-type="已填报">0</td>
                 <td class="num-blue" data-city="黄石市" data-level="C" data-type="未填报">0</td>
+                <td class="num-blue" data-city="黄石市" data-level="C" data-type="已暂存">0</td>
                 <td class="num-blue" data-city="黄石市" data-level="C" data-type="已填报（有水）">0</td>
                 <td class="num-blue" data-city="黄石市" data-level="C" data-type="已填报（无水）">0</td>
                 <td class="num-blue" data-city="黄石市" data-level="C" data-type="特征污染物">0</td>
@@ -572,9 +594,9 @@
             <tr>
                 <td>D</td>
                 <td class="num-blue" data-city="黄石市" data-level="D" data-type="发布任务">200</td>
-                <td class="num-blue" data-city="黄石市" data-level="D" data-type="已暂存">0</td>
                 <td class="num-blue" data-city="黄石市" data-level="D" data-type="已填报">0</td>
                 <td class="num-blue" data-city="黄石市" data-level="D" data-type="未填报">0</td>
+                <td class="num-blue" data-city="黄石市" data-level="D" data-type="已暂存">0</td>
                 <td class="num-blue" data-city="黄石市" data-level="D" data-type="已填报（有水）">0</td>
                 <td class="num-blue" data-city="黄石市" data-level="D" data-type="已填报（无水）">0</td>
                 <td class="num-blue" data-city="黄石市" data-level="D" data-type="特征污染物">0</td>
@@ -583,9 +605,9 @@
             <tr>
                 <td>全部</td>
                 <td class="num-blue" data-city="黄石市" data-level="全部" data-type="发布任务">800</td>
-                <td class="num-blue" data-city="黄石市" data-level="全部" data-type="已暂存">50</td>
                 <td class="num-blue" data-city="黄石市" data-level="全部" data-type="已填报">200</td>
                 <td class="num-blue" data-city="黄石市" data-level="全部" data-type="未填报">50</td>
+                <td class="num-blue" data-city="黄石市" data-level="全部" data-type="已暂存">50</td>
                 <td class="num-blue" data-city="黄石市" data-level="全部" data-type="已填报（有水）">100</td>
                 <td class="num-blue" data-city="黄石市" data-level="全部" data-type="已填报（无水）">100</td>
                 <td class="num-blue" data-city="黄石市" data-level="全部" data-type="特征污染物">50</td>
@@ -594,7 +616,7 @@
 
             <!-- 全省合计 -->
             <tr>
-                <td rowspan="4">全省合计</td>
+                <td rowspan="5">全省合计</td>
                 <td>A</td>
                 <td>--</td>
                 <td>--</td>
@@ -608,9 +630,9 @@
             <tr>
                 <td>B</td>
                 <td class="num-blue" data-city="全省合计" data-level="B" data-type="发布任务">600</td>
-                <td class="num-blue" data-city="全省合计" data-level="B" data-type="已暂存">100</td>
                 <td class="num-blue" data-city="全省合计" data-level="B" data-type="已填报">400</td>
                 <td class="num-blue" data-city="全省合计" data-level="B" data-type="未填报">100</td>
+                <td class="num-blue" data-city="全省合计" data-level="B" data-type="已暂存">100</td>
                 <td class="num-blue" data-city="全省合计" data-level="B" data-type="已填报（有水）">200</td>
                 <td class="num-blue" data-city="全省合计" data-level="B" data-type="已填报（无水）">200</td>
                 <td class="num-blue" data-city="全省合计" data-level="B" data-type="特征污染物">100</td>
@@ -619,9 +641,9 @@
             <tr>
                 <td>C</td>
                 <td class="num-blue" data-city="全省合计" data-level="C" data-type="发布任务">200</td>
-                <td class="num-blue" data-city="全省合计" data-level="C" data-type="已暂存">0</td>
                 <td class="num-blue" data-city="全省合计" data-level="C" data-type="已填报">0</td>
                 <td class="num-blue" data-city="全省合计" data-level="C" data-type="未填报">0</td>
+                <td class="num-blue" data-city="全省合计" data-level="C" data-type="已暂存">0</td>
                 <td class="num-blue" data-city="全省合计" data-level="C" data-type="已填报（有水）">0</td>
                 <td class="num-blue" data-city="全省合计" data-level="C" data-type="已填报（无水）">0</td>
                 <td class="num-blue" data-city="全省合计" data-level="C" data-type="特征污染物">0</td>
@@ -630,21 +652,20 @@
             <tr>
                 <td>D</td>
                 <td class="num-blue" data-city="全省合计" data-level="D" data-type="发布任务">400</td>
-                <td class="num-blue" data-city="全省合计" data-level="D" data-type="已暂存">0</td>
                 <td class="num-blue" data-city="全省合计" data-level="D" data-type="已填报">0</td>
                 <td class="num-blue" data-city="全省合计" data-level="D" data-type="未填报">0</td>
+                <td class="num-blue" data-city="全省合计" data-level="D" data-type="已暂存">0</td>
                 <td class="num-blue" data-city="全省合计" data-level="D" data-type="已填报（有水）">0</td>
                 <td class="num-blue" data-city="全省合计" data-level="D" data-type="已填报（无水）">0</td>
                 <td class="num-blue" data-city="全省合计" data-level="D" data-type="特征污染物">0</td>
                 <td class="num-blue" data-city="全省合计" data-level="D" data-type="填报率">0%</td>
             </tr>
             <tr>
-                <td>全省合计</td>
                 <td>全部</td>
                 <td class="num-blue" data-city="全省合计" data-level="全部" data-type="发布任务">1200</td>
-                <td class="num-blue" data-city="全省合计" data-level="全部" data-type="已暂存">100</td>
                 <td class="num-blue" data-city="全省合计" data-level="全部" data-type="已填报">400</td>
                 <td class="num-blue" data-city="全省合计" data-level="全部" data-type="未填报">100</td>
+                <td class="num-blue" data-city="全省合计" data-level="全部" data-type="已暂存">100</td>
                 <td class="num-blue" data-city="全省合计" data-level="全部" data-type="已填报（有水）">200</td>
                 <td class="num-blue" data-city="全省合计" data-level="全部" data-type="已填报（无水）">200</td>
                 <td class="num-blue" data-city="全省合计" data-level="全部" data-type="特征污染物">100</td>

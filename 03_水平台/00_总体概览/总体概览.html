@@ -74,10 +74,10 @@
         .section-title-bar {
             width: 4px;
             height: 16px;
-            background: linear-gradient(180deg, #3b82f6 0%, #1d4ed8 100%);
+            background: linear-gradient(180deg, #2463eb 0%, #1a4fd0 100%);
             border-radius: 4px;
             margin-right: 8px;
-            box-shadow: 0 2px 4px rgba(59, 130, 246, 0.3); /* 增加微发光效果 */
+            box-shadow: 0 2px 4px rgba(36, 99, 235, 0.3); /* 增加微发光效果 */
         }
 
         .section-title-bar-orange {
@@ -698,46 +698,70 @@
                         <h3 class="font-bold text-slate-800 dark:text-slate-100 text-[14px] leading-none">饮用水源地</h3>
                     </div>
                     <div class="flex gap-1 text-slate-400">
-                        <button class="action-btn-wrapper" onclick="showChartData('waterSource', '饮用水源地数据')">
+                        <button class="action-btn-wrapper" onclick="showChartData('waterSource', '饮用水源地')">
                             <i class="ri-table-2 chart-action-icon text-[16px]"></i>
                         </button>
-                        <button class="action-btn-wrapper" onclick="exportDataDirectly('waterSource', '饮用水源地数据')">
+                        <button class="action-btn-wrapper" onclick="exportDataDirectly('waterSource', '饮用水源地')">
                             <i class="ri-download-2-line chart-action-icon text-[16px]"></i>
                         </button>
                     </div>
                 </div>
 
-                <div class="flex-1 flex flex-col gap-3 min-h-0">
-                    <div class="flex-1 bg-slate-50/80 dark:bg-slate-800/40 hover:bg-blue-50/50 dark:hover:bg-slate-800/70 transition-all duration-300 ease-[cubic-bezier(0.2,0.8,0.2,1)] rounded-xl border border-slate-100 dark:border-slate-700/80 p-3 flex items-center justify-between min-h-0 group cursor-default">
-                        <div class="flex flex-col justify-center gap-1.5">
-                            <div class="text-[13px] font-bold text-slate-700 dark:text-slate-200 flex items-baseline gap-1.5">
-                                城市及以上
-                                <span class="text-[22px] font-black text-blue-600 dark:text-blue-400 leading-none tracking-tight tabular-nums">114</span>
-                                <span class="text-[11px] text-slate-400 font-normal">个</span>
+                <div class="flex-1 flex flex-col gap-2 min-h-0">
+                    <!-- 水源地类型 -->
+                    <div class="flex-1 bg-slate-50/80 dark:bg-slate-800/40 hover:bg-blue-50/50 dark:hover:bg-slate-800/70 transition-all duration-300 ease-[cubic-bezier(0.2,0.8,0.2,1)] rounded-xl border border-slate-100 dark:border-slate-700/80 p-2.5 flex items-center justify-between min-h-0 group cursor-default">
+                        <div class="flex flex-col gap-2 flex-1 min-w-0">
+                            <div class="flex items-center gap-2">
+                                <span class="text-[12px] font-medium text-slate-600 dark:text-slate-400 w-16 shrink-0">河流型</span>
+                                <div class="flex-1 bg-slate-200/60 dark:bg-slate-700/60 rounded-full h-2 overflow-hidden">
+                                    <div class="bg-[#2463eb] h-full rounded-full" style="width: 55.6%"></div>
+                                </div>
+                                <span class="text-[13px] font-bold text-slate-700 dark:text-slate-300 tabular-nums w-8 text-right">150</span>
                             </div>
-                            <div class="text-[11px] text-slate-500 flex items-center gap-2.5 bg-white/80 dark:bg-slate-900/50 px-2 py-0.5 rounded shadow-sm border border-slate-100 dark:border-slate-700/50">
-                                <span class="font-medium">I-III类 <strong class="text-slate-700 dark:text-slate-300 ml-0.5 tabular-nums">114</strong></span>
-                                <span class="w-px h-2.5 bg-slate-200 dark:bg-slate-700"></span>
-                                <span class="font-medium">实测 <strong class="text-slate-700 dark:text-slate-300 ml-0.5 tabular-nums">114</strong></span>
+                            <div class="flex items-center gap-2">
+                                <span class="text-[12px] font-medium text-slate-600 dark:text-slate-400 w-16 shrink-0">湖库型</span>
+                                <div class="flex-1 bg-slate-200/60 dark:bg-slate-700/60 rounded-full h-2 overflow-hidden">
+                                    <div class="bg-[#0891b2] h-full rounded-full" style="width: 33.3%"></div>
+                                </div>
+                                <span class="text-[13px] font-bold text-slate-700 dark:text-slate-300 tabular-nums w-8 text-right">90</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="text-[12px] font-medium text-slate-600 dark:text-slate-400 w-16 shrink-0">地下水型</span>
+                                <div class="flex-1 bg-slate-200/60 dark:bg-slate-700/60 rounded-full h-2 overflow-hidden">
+                                    <div class="bg-[#12b981] h-full rounded-full" style="width: 11.1%"></div>
+                                </div>
+                                <span class="text-[13px] font-bold text-slate-700 dark:text-slate-300 tabular-nums w-8 text-right">30</span>
                             </div>
                         </div>
-                        <div class="w-16 h-16 relative shrink-0 opacity-90 group-hover:opacity-100 group-hover:scale-105 transition-all duration-300 ease-[cubic-bezier(0.2,0.8,0.2,1)]" id="chart-drink1"></div>
+                        <div class="w-16 h-16 relative shrink-0 opacity-90 group-hover:opacity-100 group-hover:scale-105 transition-all duration-300 ease-[cubic-bezier(0.2,0.8,0.2,1)] ml-2" id="chart-drink1"></div>
                     </div>
 
-                    <div class="flex-1 bg-slate-50/80 dark:bg-slate-800/40 hover:bg-blue-50/50 dark:hover:bg-slate-800/70 transition-all duration-300 ease-[cubic-bezier(0.2,0.8,0.2,1)] rounded-xl border border-slate-100 dark:border-slate-700/80 p-3 flex items-center justify-between min-h-0 group cursor-default">
-                        <div class="flex flex-col justify-center gap-1.5">
-                            <div class="text-[13px] font-bold text-slate-700 dark:text-slate-200 flex items-baseline gap-1.5">
-                                县级水源地
-                                <span class="text-[22px] font-black text-blue-600 dark:text-blue-400 leading-none tracking-tight tabular-nums">156</span>
-                                <span class="text-[11px] text-slate-400 font-normal">个</span>
+                    <!-- 水源地级别 -->
+                    <div class="flex-1 bg-slate-50/80 dark:bg-slate-800/40 hover:bg-blue-50/50 dark:hover:bg-slate-800/70 transition-all duration-300 ease-[cubic-bezier(0.2,0.8,0.2,1)] rounded-xl border border-slate-100 dark:border-slate-700/80 p-2.5 flex items-center justify-between min-h-0 group cursor-default">
+                        <div class="flex flex-col gap-2 flex-1 min-w-0">
+                            <div class="flex items-center gap-2">
+                                <span class="text-[12px] font-medium text-slate-600 dark:text-slate-400 w-16 shrink-0">省级</span>
+                                <div class="flex-1 bg-slate-200/60 dark:bg-slate-700/60 rounded-full h-2 overflow-hidden">
+                                    <div class="bg-[#2463eb] h-full rounded-full" style="width: 14.8%"></div>
+                                </div>
+                                <span class="text-[13px] font-bold text-slate-700 dark:text-slate-300 tabular-nums w-8 text-right">40</span>
                             </div>
-                            <div class="text-[11px] text-slate-500 flex items-center gap-2.5 bg-white/80 dark:bg-slate-900/50 px-2 py-0.5 rounded shadow-sm border border-slate-100 dark:border-slate-700/50">
-                                <span class="font-medium">I-III类 <strong class="text-slate-700 dark:text-slate-300 ml-0.5 tabular-nums">155</strong></span>
-                                <span class="w-px h-2.5 bg-slate-200 dark:bg-slate-700"></span>
-                                <span class="font-medium">实测 <strong class="text-slate-700 dark:text-slate-300 ml-0.5 tabular-nums">156</strong></span>
+                            <div class="flex items-center gap-2">
+                                <span class="text-[12px] font-medium text-slate-600 dark:text-slate-400 w-16 shrink-0">市级</span>
+                                <div class="flex-1 bg-slate-200/60 dark:bg-slate-700/60 rounded-full h-2 overflow-hidden">
+                                    <div class="bg-[#0891b2] h-full rounded-full" style="width: 29.6%"></div>
+                                </div>
+                                <span class="text-[13px] font-bold text-slate-700 dark:text-slate-300 tabular-nums w-8 text-right">80</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="text-[12px] font-medium text-slate-600 dark:text-slate-400 w-16 shrink-0">县级及以下</span>
+                                <div class="flex-1 bg-slate-200/60 dark:bg-slate-700/60 rounded-full h-2 overflow-hidden">
+                                    <div class="bg-[#12b981] h-full rounded-full" style="width: 55.6%"></div>
+                                </div>
+                                <span class="text-[13px] font-bold text-slate-700 dark:text-slate-300 tabular-nums w-8 text-right">150</span>
                             </div>
                         </div>
-                        <div class="w-16 h-16 relative shrink-0 opacity-90 group-hover:opacity-100 group-hover:scale-105 transition-all duration-300 ease-[cubic-bezier(0.2,0.8,0.2,1)]" id="chart-drink2"></div>
+                        <div class="w-16 h-16 relative shrink-0 opacity-90 group-hover:opacity-100 group-hover:scale-105 transition-all duration-300 ease-[cubic-bezier(0.2,0.8,0.2,1)] ml-2" id="chart-drink2"></div>
                     </div>
                 </div>
             </div>
@@ -1049,42 +1073,37 @@
             }]
         });
 
-        // 3. 饮用水源地1 (更新为 100%)
+        // 3. 水源地类型环形图
         const domDrink1 = document.getElementById('chart-drink1');
         const chartDrink1 = echarts.init(domDrink1);
-        chartInstances['waterSource'] = chartDrink1;
+        chartInstances['waterSourceType'] = chartDrink1;
         charts.push(chartDrink1);
         chartDrink1.setOption({
             series: [{
-                type: 'pie', radius: ['65%', '90%'], hoverAnimation: false,
-                label: {
-                    show: true,
-                    position: 'center',
-                    formatter: '100%',
-                    fontSize: 14,
-                    fontWeight: 'bold',
-                    color: '#3b82f6', fontFamily: 'system-ui'
-                },
-                data: [{value: 100, itemStyle: {color: '#3b82f6'}}, {value: 0, itemStyle: {color: '#bfdbfe'}}]
+                type: 'pie', radius: ['60%', '88%'], hoverAnimation: false,
+                label: { show: false },
+                data: [
+                    {value: 150, name: '河流型', itemStyle: {color: '#2463eb'}},
+                    {value: 90, name: '湖库型', itemStyle: {color: '#0891b2'}},
+                    {value: 30, name: '地下水型', itemStyle: {color: '#12b981'}}
+                ]
             }]
         });
 
-        // 4. 饮用水源地2 (更新为 99.3%)
+        // 4. 水源地级别环形图
         const domDrink2 = document.getElementById('chart-drink2');
         const chartDrink2 = echarts.init(domDrink2);
+        chartInstances['waterSourceLevel'] = chartDrink2;
         charts.push(chartDrink2);
         chartDrink2.setOption({
             series: [{
-                type: 'pie', radius: ['65%', '90%'], hoverAnimation: false,
-                label: {
-                    show: true,
-                    position: 'center',
-                    formatter: '99.3%',
-                    fontSize: 14,
-                    fontWeight: 'bold',
-                    color: '#3b82f6', fontFamily: 'system-ui'
-                },
-                data: [{value: 99.3, itemStyle: {color: '#3b82f6'}}, {value: 0.7, itemStyle: {color: '#bfdbfe'}}]
+                type: 'pie', radius: ['60%', '88%'], hoverAnimation: false,
+                label: { show: false },
+                data: [
+                    {value: 40, name: '省级', itemStyle: {color: '#2463eb'}},
+                    {value: 80, name: '市级', itemStyle: {color: '#0891b2'}},
+                    {value: 150, name: '县级及以下', itemStyle: {color: '#12b981'}}
+                ]
             }]
         });
     }
@@ -1112,10 +1131,14 @@
                 ['3', '县级', '29', '11', '18', '37.9%']
             ];
         } else if (chartKey === 'waterSource') {
-            headers = ['序号', '水源地级别', '水源地总数', 'I-III类个数', '实测个数'];
+            headers = ['序号', '维度', '分类', '数量(个)', '占比'];
             rows = [
-                ['1', '城市及以上饮用水源地', '114', '114', '114'],
-                ['2', '县级饮用水源地', '156', '155', '156']
+                ['1', '水源地类型', '河流型', '150', '55.6%'],
+                ['2', '水源地类型', '湖库型', '90', '33.3%'],
+                ['3', '水源地类型', '地下水型', '30', '11.1%'],
+                ['4', '水源地级别', '省级', '40', '14.8%'],
+                ['5', '水源地级别', '市级', '80', '29.6%'],
+                ['6', '水源地级别', '县级及以下', '150', '55.6%']
             ];
         }
         return {headers, rows};

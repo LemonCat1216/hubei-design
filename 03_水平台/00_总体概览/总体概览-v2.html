@@ -1,0 +1,1230 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>湖北省水生态环境综合管理 - 总体概览</title>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+          rel="stylesheet"/>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography,container-queries"></script>
+
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#1d4ed8",
+                        "background-light": "#f1f5f9",
+                        "background-dark": "#0f172a",
+                    },
+                    fontFamily: {
+                        display: ["Inter", "system-ui", "-apple-system", "sans-serif"],
+                    },
+                },
+            },
+        };
+    </script>
+
+    <style type="text/tailwindcss">
+        body {
+            font-family: 'PingFang SC', 'Microsoft YaHei', -apple-system, sans-serif;
+            overflow: hidden;
+            -webkit-font-smoothing: antialiased; /* 字体抗锯齿优化 */
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* 统一数字为等宽字体，防止数据更新时宽度跳动 */
+        .tabular-nums {
+            font-variant-numeric: tabular-nums;
+        }
+
+        /* 优化后的 macOS 风格滚动条，带有更宽的不可见点击热区 */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background-color: rgba(148, 163, 184, 0.4);
+            border-radius: 9999px;
+            border: 2px solid transparent;
+            background-clip: padding-box;
+            transition: background-color 0.3s ease;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background-color: rgba(148, 163, 184, 0.8);
+        }
+
+        /* 暗色模式滚动条适配 */
+        .dark .custom-scrollbar::-webkit-scrollbar-thumb {
+            background-color: rgba(71, 85, 105, 0.4);
+        }
+        .dark .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background-color: rgba(71, 85, 105, 0.8);
+        }
+
+        .section-title-bar {
+            width: 4px;
+            height: 16px;
+            background: linear-gradient(180deg, #2463eb 0%, #1a4fd0 100%);
+            border-radius: 4px;
+            margin-right: 8px;
+            box-shadow: 0 2px 4px rgba(36, 99, 235, 0.3); /* 增加微发光效果 */
+        }
+
+        .section-title-bar-orange {
+            width: 4px;
+            height: 16px;
+            background: linear-gradient(180deg, #fb923c 0%, #ea580c 100%);
+            border-radius: 4px;
+            margin-right: 8px;
+            box-shadow: 0 2px 4px rgba(249, 115, 22, 0.3);
+        }
+
+        /* 升级为顶级多层弥散阴影 */
+        .card-shadow {
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02),
+            0 4px 12px rgba(0, 0, 0, 0.03),
+            0 12px 24px rgba(0, 0, 0, 0.02);
+        }
+
+        .dark .card-shadow {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2),
+            0 2px 4px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .toggle-group {
+            @apply inline-flex items-center p-[3px] bg-slate-100/80 dark:bg-slate-800/80 rounded-lg border border-slate-200/50 dark:border-slate-700/50 backdrop-blur-md;
+        }
+
+        /* 按钮增加质感和动画 */
+        .toggle-btn {
+            @apply relative flex items-center justify-center px-3 h-[26px] text-[12px] font-medium tracking-wide transition-all duration-300 ease-[cubic-bezier(0.2,0.8,0.2,1)] cursor-pointer select-none rounded-[6px] z-10 focus:outline-none;
+        }
+
+        .toggle-btn.active {
+            @apply bg-gradient-to-b from-white to-slate-50 dark:from-slate-600 dark:to-slate-700 text-blue-600 dark:text-blue-400 font-bold shadow-[0_2px_4px_rgba(0,0,0,0.1),inset_0_1px_0_rgba(255,255,255,0.8)] ring-1 ring-black/[0.04] dark:ring-white/[0.05] transform scale-[1.02];
+        }
+
+        .toggle-btn.inactive {
+            @apply text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-200/50 dark:hover:bg-slate-700/50 active:scale-95;
+        }
+
+        .tab-btn {
+            @apply relative flex-1 flex items-center justify-center px-4 py-1.5 text-[13px] font-medium tracking-wide transition-all duration-300 ease-[cubic-bezier(0.2,0.8,0.2,1)] cursor-pointer select-none rounded-[6px] z-10 focus:outline-none;
+        }
+
+        .tab-btn.active {
+            @apply bg-gradient-to-b from-white to-slate-50 dark:from-slate-600 dark:to-slate-700 text-orange-600 dark:text-orange-400 font-bold shadow-[0_2px_4px_rgba(0,0,0,0.1),inset_0_1px_0_rgba(255,255,255,0.8)] ring-1 ring-black/[0.04] dark:ring-white/[0.05] transform scale-[1.02];
+        }
+
+        .tab-btn.inactive {
+            @apply text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-200/50 dark:hover:bg-slate-700/50 active:scale-95;
+        }
+
+        .chart-action-icon {
+            @apply text-[20px] cursor-pointer text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200;
+        }
+
+        /* 交互按钮容器 */
+        .action-btn-wrapper {
+            @apply w-7 h-7 flex items-center justify-center rounded-md hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors duration-200 focus:outline-none;
+        }
+
+        .wq-card {
+            @apply flex-1 bg-white dark:bg-slate-800/80 border border-slate-100 dark:border-slate-700/60 rounded-xl p-3 flex flex-col items-center justify-center shadow-sm relative overflow-hidden transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md;
+        }
+
+        /* 标签增加 mt-1.5 与顶部留出距离 */
+        .wq-tag-blue {
+            @apply mt-1.5 text-[13px] font-bold text-blue-600 bg-blue-50/80 dark:bg-blue-900/30 rounded px-6 py-1 mb-2 inline-block border border-blue-100/50 dark:border-blue-800/50;
+        }
+
+        .wq-tag-red {
+            @apply mt-1.5 text-[13px] font-bold text-red-600 bg-red-50/80 dark:bg-red-900/30 rounded px-5 py-1 mb-2 inline-block border border-red-100/50 dark:border-red-800/50;
+        }
+
+        .wq-tag-gray {
+            @apply mt-1.5 text-[13px] font-bold text-slate-600 bg-slate-50 dark:bg-slate-700/50 rounded px-4 py-1 mb-2 inline-block border border-slate-200/50 dark:border-slate-600/50;
+        }
+
+        .scroll-table-header {
+            @apply w-full table-fixed text-[13px] text-slate-500 dark:text-slate-400 bg-slate-50/80 dark:bg-slate-800/80 font-medium border-b border-slate-200/60 dark:border-slate-700/80 backdrop-blur-sm;
+        }
+
+        .scroll-table-header th {
+            @apply py-2.5 px-2 text-center font-semibold;
+        }
+
+        .scroll-table-row {
+            @apply w-full table-fixed text-[13px] text-slate-600 dark:text-slate-300 border-b border-slate-50/50 dark:border-slate-800/50 hover:bg-blue-50/40 dark:hover:bg-slate-700/40 transition-colors duration-200;
+        }
+
+        .scroll-table-row td {
+            @apply py-2.5 px-2 text-center tabular-nums;
+        }
+
+        /* 为 JS 滚动容器开启 GPU 加速，提升流畅度 */
+        .marquee-container {
+            will-change: scroll-position;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-800 dark:text-slate-100 h-screen flex flex-col overflow-hidden">
+
+<header class="bg-primary h-14 flex items-center justify-between px-4 text-white shrink-0 shadow-md z-50">
+    <div class="flex items-center space-x-3">
+        <div class="w-8 h-8 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full flex items-center justify-center">
+            <span class="material-symbols-outlined text-white text-[20px]">water_drop</span>
+        </div>
+        <h1 class="text-[18px] font-bold tracking-wide">湖北省水生态环境综合管理</h1>
+    </div>
+    <nav class="flex h-full">
+        <a class="px-6 flex items-center space-x-2 bg-white/10 border-b-[3px] border-white transition-colors" href="#">
+            <span class="material-symbols-outlined text-[18px]">home</span>
+            <span class="text-[14px] font-bold">总体概览</span>
+        </a>
+        <a class="px-6 flex items-center space-x-2 hover:bg-white/5 transition-colors text-white/80 hover:text-white" href="#">
+            <span class="material-symbols-outlined text-[18px]">assessment</span>
+            <span class="text-[14px]">形势分析</span>
+        </a>
+        <a class="px-6 flex items-center space-x-2 hover:bg-white/5 transition-colors text-white/80 hover:text-white" href="#">
+            <span class="material-symbols-outlined text-[18px]">map</span>
+            <span class="text-[14px]">空间分析</span>
+        </a>
+        <a class="px-6 flex items-center space-x-2 hover:bg-white/5 transition-colors text-white/80 hover:text-white" href="#">
+            <span class="material-symbols-outlined text-[18px]">waves</span>
+            <span class="text-[14px]">水污染源</span>
+        </a>
+        <a class="px-6 flex items-center space-x-2 hover:bg-white/5 transition-colors text-white/80 hover:text-white" href="#">
+            <span class="material-symbols-outlined text-[18px]">report_problem</span>
+            <span class="text-[14px]">问题聚焦</span>
+        </a>
+        <a class="px-6 flex items-center space-x-2 hover:bg-white/5 transition-colors text-white/80 hover:text-white" href="#">
+            <span class="material-symbols-outlined text-[18px]">apps</span>
+            <span class="text-[14px]">专题应用</span>
+        </a>
+    </nav>
+    <div class="flex items-center space-x-6">
+        <div class="flex items-center space-x-2 text-[13px] opacity-80 cursor-pointer hover:opacity-100 transition-opacity">
+            <span class="material-symbols-outlined text-[18px]">public</span>
+            <span>碧水荆灵</span>
+        </div>
+        <div class="flex items-center space-x-2 text-[13px] opacity-80 cursor-pointer hover:opacity-100 transition-opacity">
+            <span class="material-symbols-outlined text-[18px]">account_circle</span>
+            <span class="font-medium">wangyunpeng</span>
+        </div>
+    </div>
+</header>
+
+<main class="flex-1 flex gap-4 p-4 min-h-0 overflow-hidden relative z-10">
+
+    <div class="flex-1 flex flex-col gap-4 min-w-0 min-h-0">
+
+        <div class="flex-[1.1] bg-white dark:bg-slate-900 rounded-[16px] border border-slate-200/60 dark:border-slate-800 card-shadow p-4 flex flex-col min-h-0 relative">
+
+            <div class="flex items-center justify-between mb-3 shrink-0">
+                <div class="flex items-center gap-2">
+                    <span class="relative flex h-2.5 w-2.5 ml-1">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-blue-500"></span>
+                    </span>
+                    <h2 class="text-[16px] font-bold text-slate-800 dark:text-white tracking-tight">全省总体水质情况</h2>
+                </div>
+
+                <div class="flex items-center space-x-3">
+                    <input type="month" id="month-picker"
+                           class="bg-slate-50 dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700 rounded-lg px-2.5 py-[4px] text-[13px] font-medium text-slate-600 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all cursor-pointer tabular-nums"
+                           value="2025-12">
+                    <div class="toggle-group">
+                        <button id="btn-current" class="toggle-btn inactive" onclick="setMonthMode('current')">当前月</button>
+                        <button id="btn-cumulative" class="toggle-btn active" onclick="setMonthMode('cumulative')">累计月</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex-1 flex gap-6 min-h-0 bg-[#f8fafc]/80 dark:bg-slate-800/30 rounded-xl p-3.5 border border-slate-100 dark:border-slate-800/80">
+                <div class="w-[45%] flex flex-col min-h-0">
+                    <div class="flex items-center justify-between mb-2 pl-1">
+                        <h3 class="text-[13px] font-bold text-slate-700 dark:text-slate-300">国控断面水质总体情况</h3>
+                        <div class="toggle-group">
+                            <button class="toggle-btn inactive" onclick="switchTab(this)">非合并</button>
+                            <button class="toggle-btn active" onclick="switchTab(this)">合并</button>
+                        </div>
+                    </div>
+
+                    <div class="flex-1 flex gap-3 mb-2 min-h-0">
+                        <div class="wq-card">
+                            <div class="wq-tag-blue w-full text-center">I-III类</div>
+                            <div class="text-center tabular-nums mt-1">
+                                <span class="text-[32px] font-black text-blue-600 dark:text-blue-500 leading-none tracking-tight">95.2</span><span class="text-[14px] text-blue-600 dark:text-blue-500 font-bold ml-0.5">%</span>
+                            </div>
+                            <div class="text-[11px] font-medium text-slate-400 text-center mt-1.5 flex items-center justify-center tabular-nums">
+                                同比: -0.6% <i class="ri-arrow-down-line text-red-500 ml-0.5 text-[14px]"></i>
+                            </div>
+                        </div>
+                        <div class="wq-card">
+                            <div class="wq-tag-red w-full text-center">劣V类</div>
+                            <div class="text-center tabular-nums mt-1">
+                                <span class="text-[32px] font-black text-red-600 dark:text-red-500 leading-none tracking-tight">0</span><span class="text-[14px] text-red-600 dark:text-red-500 font-bold ml-0.5">%</span>
+                            </div>
+                            <div class="text-[11px] font-medium text-slate-400 text-center mt-1.5 tabular-nums">
+                                同比: 0%
+                            </div>
+                        </div>
+                        <div class="wq-card justify-between pb-2">
+                            <div class="wq-tag-gray w-full text-center">断面数量</div>
+                            <div class="w-full flex justify-between items-center text-[12px] px-2 mb-1 mt-1">
+                                <span class="text-slate-500 font-medium">I-III类</span>
+                                <span class="font-bold text-blue-600 dark:text-blue-500 text-[18px] tabular-nums tracking-tight">180</span>
+                            </div>
+                            <div class="w-full flex justify-between items-center text-[12px] px-2">
+                                <span class="text-slate-500 font-medium">劣V类</span>
+                                <span class="font-bold text-red-600 dark:text-red-500 text-[18px] tabular-nums tracking-tight">0</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="text-center text-[12px] font-medium text-slate-500 shrink-0 mt-1 tabular-nums">
+                        总数 <span class="font-bold text-slate-800 dark:text-slate-200 mx-1 text-[13px]">190</span> <span class="text-slate-300 dark:text-slate-600 mx-1">|</span>
+                        实测个数 <span class="font-bold text-blue-600 dark:text-blue-400 mx-1 text-[13px]">190</span> <span class="text-slate-300 dark:text-slate-600 mx-1">|</span>
+                        超标个数 <span class="font-bold text-red-500 mx-1 text-[13px]">6</span>
+                    </div>
+                </div>
+
+                <div class="w-[55%] flex flex-col min-h-0 border-l border-slate-200/60 dark:border-slate-700/60 pl-6 relative">
+                    <div class="absolute inset-0 opacity-80 dark:opacity-40 pointer-events-none" style="background-image: url('./image_3a11f4.png'); background-repeat: no-repeat; background-position: 60px -20px; background-size: 85% auto;"></div>
+
+                    <h3 class="text-[13px] font-bold text-slate-700 dark:text-slate-300 mb-2 relative z-10">当前排名情况</h3>
+
+                    <div class="flex-1 flex items-center justify-between relative z-10">
+                        <div class="flex-1 flex flex-col items-center justify-center">
+                            <div class="text-[14px] text-blue-600 dark:text-blue-400 font-medium mb-1">第 <span class="text-[32px] font-black mx-1 tabular-nums tracking-tight">18</span> 位</div>
+                            <div class="text-[12px] text-slate-500 font-medium text-center leading-relaxed">全国各省<br><span class="scale-90 inline-block opacity-80">(自治区、直辖市)</span></div>
+                        </div>
+
+                        <div class="w-[180px] h-[160px] relative flex flex-col shrink-0 mx-2 bg-no-repeat bg-center bg-contain">
+                            <div class="absolute bottom-1 w-full flex flex-col items-center text-center">
+                                <div class="text-[14px] text-blue-600 dark:text-blue-400 font-medium mb-1 drop-shadow-sm">第 <span class="text-[32px] font-black mx-1 tabular-nums tracking-tight">4</span> 位</div>
+                                <div class="text-[12px] font-medium text-slate-500 drop-shadow-sm">中部六省排名</div>
+                            </div>
+                        </div>
+
+                        <div class="flex-1 flex flex-col items-center justify-center">
+                            <div class="text-[14px] text-blue-600 dark:text-blue-400 font-medium mb-1">第 <span class="text-[32px] font-black mx-1 tabular-nums tracking-tight">9</span> 位</div>
+                            <div class="text-[12px] text-slate-500 font-medium text-center leading-relaxed">长江经济带11省<br><span class="scale-90 inline-block opacity-80">(直辖市)</span></div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="flex-[1.2] grid grid-cols-1 lg:grid-cols-3 gap-4 min-h-0">
+            <div class="bg-white dark:bg-slate-900 rounded-[16px] border border-slate-200/60 dark:border-slate-800 card-shadow p-3.5 flex flex-col min-h-0">
+                <div class="flex items-center justify-between mb-3 pl-1 shrink-0">
+                    <div class="flex items-center space-x-2">
+                        <div class="section-title-bar m-0"></div>
+                        <h3 class="text-[14px] font-bold text-slate-800 dark:text-slate-200 truncate">省控断面水质总体情况</h3>
+                    </div>
+                    <div class="toggle-group">
+                        <button class="toggle-btn active" onclick="switchTab(this)">非合并</button>
+                        <button class="toggle-btn inactive" onclick="switchTab(this)">合并</button>
+                    </div>
+                </div>
+
+                <div class="flex-1 flex gap-1.5 mb-2 min-h-0">
+                    <div class="wq-card px-1.5 py-2 overflow-hidden flex flex-col justify-center">
+                        <div class="wq-tag-blue w-full text-center text-[12px] px-0">I-III类</div>
+                        <div class="text-center mt-1 tabular-nums">
+                            <span class="text-[22px] font-black text-blue-600 dark:text-blue-500 leading-none tracking-tight">94.2</span><span class="text-[12px] text-blue-600 dark:text-blue-500 font-bold ml-0.5">%</span>
+                        </div>
+                        <div class="text-[10px] sm:text-[11px] font-medium text-slate-400 text-center mt-1.5 flex items-center justify-center tabular-nums">
+                            同比: 2.80% <i class="ri-arrow-up-line text-emerald-500 ml-0.5 text-[14px]"></i>
+                        </div>
+                    </div>
+
+                    <div class="wq-card px-1.5 py-2 overflow-hidden flex flex-col justify-center">
+                        <div class="wq-tag-red w-full text-center text-[12px] px-0">劣V类</div>
+                        <div class="text-center mt-1 tabular-nums">
+                            <span class="text-[22px] font-black text-red-600 dark:text-red-500 leading-none tracking-tight">0</span><span class="text-[12px] text-red-600 dark:text-red-500 font-bold ml-0.5">%</span>
+                        </div>
+                        <div class="text-[10px] sm:text-[11px] font-medium text-slate-400 text-center mt-1.5 tabular-nums">
+                            同比: 0.00%
+                        </div>
+                    </div>
+
+                    <div class="wq-card px-2 py-2 flex flex-col justify-between">
+                        <div class="wq-tag-gray w-full text-center text-[12px] px-0 mb-1">断面数量</div>
+                        <div class="w-full flex justify-between items-center text-[12px] mb-1">
+                            <span class="text-slate-500 font-medium">I-III类</span>
+                            <span class="font-bold text-blue-600 dark:text-blue-500 text-[15px] tabular-nums">180</span>
+                        </div>
+                        <div class="w-full flex justify-between items-center text-[12px]">
+                            <span class="text-slate-500 font-medium">劣V类</span>
+                            <span class="font-bold text-red-600 dark:text-red-500 text-[15px] tabular-nums">0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-center text-[12px] font-medium text-slate-500 shrink-0 mt-1 mb-2.5 whitespace-nowrap tabular-nums">
+                    总数 <span class="font-bold text-slate-800 dark:text-slate-200 mx-0.5 text-[13px]">326</span> <span class="text-slate-300 dark:text-slate-600 mx-1">|</span>
+                    实测 <span class="font-bold text-blue-600 dark:text-blue-400 mx-0.5 text-[13px]">326</span> <span class="text-slate-300 dark:text-slate-600 mx-1">|</span>
+                    超标 <span class="font-bold text-red-500 mx-0.5 text-[13px]">21</span>
+                </div>
+
+                <div class="w-full bg-slate-50/80 dark:bg-slate-800/50 p-2.5 rounded-lg border border-slate-100/80 dark:border-slate-700/50 shrink-0">
+                    <div class="grid grid-cols-3 gap-y-2.5 gap-x-1 text-[11px] font-medium text-slate-500 px-1 tabular-nums">
+                        <span class="flex items-center whitespace-nowrap"><span class="w-2 h-2 rounded-full bg-blue-500 mr-1.5 shrink-0 shadow-sm shadow-blue-500/30"></span>I类 <span class="font-bold ml-auto text-slate-700 dark:text-slate-300">7.3%</span></span>
+                        <span class="flex items-center whitespace-nowrap"><span class="w-2 h-2 rounded-full bg-cyan-500 mr-1.5 shrink-0 shadow-sm shadow-cyan-500/30"></span>II类 <span class="font-bold ml-auto text-slate-700 dark:text-slate-300">47.6%</span></span>
+                        <span class="flex items-center whitespace-nowrap"><span class="w-2 h-2 rounded-full bg-emerald-500 mr-1.5 shrink-0 shadow-sm shadow-emerald-500/30"></span>III类 <span class="font-bold ml-auto text-slate-700 dark:text-slate-300">32.1%</span></span>
+                        <span class="flex items-center whitespace-nowrap"><span class="w-2 h-2 rounded-full bg-yellow-400 mr-1.5 shrink-0 shadow-sm shadow-yellow-400/30"></span>IV类 <span class="font-bold ml-auto text-slate-700 dark:text-slate-300">11.3%</span></span>
+                        <span class="flex items-center whitespace-nowrap"><span class="w-2 h-2 rounded-full bg-orange-500 mr-1.5 shrink-0 shadow-sm shadow-orange-500/30"></span>V类 <span class="font-bold ml-auto text-slate-700 dark:text-slate-300">1.8%</span></span>
+                        <span class="flex items-center whitespace-nowrap"><span class="w-2 h-2 rounded-full bg-red-500 mr-1.5 shrink-0 shadow-sm shadow-red-500/30"></span>劣V类 <span class="font-bold ml-auto text-slate-700 dark:text-slate-300">0%</span></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white dark:bg-slate-900 rounded-[16px] border border-slate-200/60 dark:border-slate-800 card-shadow p-4 flex flex-col min-h-0">
+                <div class="flex items-center justify-between mb-3 shrink-0 pl-0.5">
+                    <div class="flex items-center space-x-2">
+                        <div class="section-title-bar m-0"></div>
+                        <h3 class="font-bold text-slate-800 dark:text-slate-200 text-[14px]">湖北省17个地市 I-III类比例</h3>
+                    </div>
+                    <div class="toggle-group">
+                        <button class="toggle-btn active" onclick="switchTab(this)">国控</button>
+                        <button class="toggle-btn inactive" onclick="switchTab(this)">省控</button>
+                    </div>
+                </div>
+
+                <div class="flex flex-col flex-1 min-h-0 border border-slate-200/60 dark:border-slate-700/60 rounded-[10px] overflow-hidden">
+                    <table class="scroll-table-header">
+                        <thead>
+                        <tr>
+                            <th class="w-[15%]">序号</th>
+                            <th class="w-[25%] text-left">地市名称</th>
+                            <th class="w-[30%]">目标比例</th>
+                            <th class="w-[30%]">实际比例</th>
+                        </tr>
+                        </thead>
+                    </table>
+                    <div class="flex-1 overflow-hidden relative bg-slate-50/20 dark:bg-slate-800/20 marquee-container" id="marquee-city"
+                         onmouseenter="pauseMarquee(this)" onmouseleave="resumeMarquee(this)">
+                        <table class="w-full table-fixed" id="marquee-city-content">
+                            <tbody>
+                            <tr class="scroll-table-row">
+                                <td class="w-[15%] text-slate-400">1</td>
+                                <td class="w-[25%] font-medium text-left text-slate-700 dark:text-slate-300">神农架林区</td>
+                                <td class="w-[30%] text-slate-400">100%</td>
+                                <td class="w-[30%] font-bold text-blue-500">100%</td>
+                            </tr>
+                            <tr class="scroll-table-row">
+                                <td class="w-[15%] text-slate-400">2</td>
+                                <td class="w-[25%] font-medium text-left text-slate-700 dark:text-slate-300">随州市</td>
+                                <td class="w-[30%] text-slate-400">100%</td>
+                                <td class="w-[30%] font-bold text-red-500">80.0%</td>
+                            </tr>
+                            <tr class="scroll-table-row">
+                                <td class="w-[15%] text-slate-400">3</td>
+                                <td class="w-[25%] font-medium text-left text-slate-700 dark:text-slate-300">潜江市</td>
+                                <td class="w-[30%] text-slate-400">100%</td>
+                                <td class="w-[30%] font-bold text-red-500">75.0%</td>
+                            </tr>
+                            <tr class="scroll-table-row">
+                                <td class="w-[15%] text-slate-400">4</td>
+                                <td class="w-[25%] font-medium text-left text-slate-700 dark:text-slate-300">荆州市</td>
+                                <td class="w-[30%] text-slate-400">95.8%</td>
+                                <td class="w-[30%] font-bold text-red-500">92.3%</td>
+                            </tr>
+                            <tr class="scroll-table-row">
+                                <td class="w-[15%] text-slate-400">5</td>
+                                <td class="w-[25%] font-medium text-left text-slate-700 dark:text-slate-300">黄冈市</td>
+                                <td class="w-[30%] text-slate-400">92.9%</td>
+                                <td class="w-[30%] font-bold text-red-500">83.3%</td>
+                            </tr>
+                            <tr class="scroll-table-row">
+                                <td class="w-[15%] text-slate-400">6</td>
+                                <td class="w-[25%] font-medium text-left text-slate-700 dark:text-slate-300">宜昌市</td>
+                                <td class="w-[30%] text-slate-400">100%</td>
+                                <td class="w-[30%] font-bold text-red-500">90.9%</td>
+                            </tr>
+                            <tr class="scroll-table-row">
+                                <td class="w-[15%] text-slate-400">7</td>
+                                <td class="w-[25%] font-medium text-left text-slate-700 dark:text-slate-300">襄阳市</td>
+                                <td class="w-[30%] text-slate-400">100%</td>
+                                <td class="w-[30%] font-bold text-red-500">91.7%</td>
+                            </tr>
+                            <tr class="scroll-table-row">
+                                <td class="w-[15%] text-slate-400">8</td>
+                                <td class="w-[25%] font-medium text-left text-slate-700 dark:text-slate-300">十堰市</td>
+                                <td class="w-[30%] text-slate-400">91.3%</td>
+                                <td class="w-[30%] font-bold text-blue-500">95.2%</td>
+                            </tr>
+                            <tr class="scroll-table-row">
+                                <td class="w-[15%] text-slate-400">9</td>
+                                <td class="w-[25%] font-medium text-left text-slate-700 dark:text-slate-300">孝感市</td>
+                                <td class="w-[30%] text-slate-400">92.3%</td>
+                                <td class="w-[30%] font-bold text-red-500">87.5%</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white dark:bg-slate-900 rounded-[16px] border border-slate-200/60 dark:border-slate-800 card-shadow p-4 flex flex-col min-h-0">
+                <div class="flex items-center justify-between mb-3 shrink-0 pl-0.5">
+                    <div class="flex items-center space-x-2">
+                        <div class="section-title-bar m-0"></div>
+                        <h3 class="font-bold text-slate-800 dark:text-slate-200 text-[14px]">自动站小时数据</h3>
+                    </div>
+                    <div class="toggle-group">
+                        <button class="toggle-btn active" onclick="switchTab(this)">国控</button>
+                        <button class="toggle-btn inactive" onclick="switchTab(this)">省控</button>
+                    </div>
+                </div>
+
+                <div class="flex flex-col flex-1 min-h-0 border border-slate-200/60 dark:border-slate-700/60 rounded-[10px] overflow-hidden">
+                    <table class="scroll-table-header">
+                        <thead>
+                        <tr>
+                            <th class="w-[15%]">序号</th>
+                            <th class="w-[25%] text-left">断面名称</th>
+                            <th class="w-[40%]">监测时间</th>
+                            <th class="w-[20%]">水质类别</th>
+                        </tr>
+                        </thead>
+                    </table>
+                    <div class="flex-1 overflow-hidden relative bg-slate-50/20 dark:bg-slate-800/20 marquee-container"
+                         id="marquee-station" onmouseenter="pauseMarquee(this)" onmouseleave="resumeMarquee(this)">
+                        <table class="w-full table-fixed" id="marquee-station-content">
+                            <tbody>
+                            <tr class="scroll-table-row">
+                                <td class="w-[15%] text-slate-400">38</td>
+                                <td class="w-[25%] text-left text-slate-700 dark:text-slate-300">杨紫湖</td>
+                                <td class="w-[40%] text-slate-400 text-[12px] opacity-80">03-04 08:00</td>
+                                <td class="w-[20%] font-bold text-cyan-500">II类</td>
+                            </tr>
+                            <tr class="scroll-table-row">
+                                <td class="w-[15%] text-slate-400">39</td>
+                                <td class="w-[25%] text-left text-slate-700 dark:text-slate-300">排水洞</td>
+                                <td class="w-[40%] text-slate-400 text-[12px] opacity-80">03-04 08:00</td>
+                                <td class="w-[20%] font-bold text-blue-500">I类</td>
+                            </tr>
+                            <tr class="scroll-table-row">
+                                <td class="w-[15%] text-slate-400">40</td>
+                                <td class="w-[25%] text-left text-slate-700 dark:text-slate-300">浪河口</td>
+                                <td class="w-[40%] text-slate-400 text-[12px] opacity-80">03-04 08:00</td>
+                                <td class="w-[20%] font-bold text-blue-500">I类</td>
+                            </tr>
+                            <tr class="scroll-table-row">
+                                <td class="w-[15%] text-slate-400">41</td>
+                                <td class="w-[25%] text-left text-slate-700 dark:text-slate-300">两卜桥</td>
+                                <td class="w-[40%] text-slate-400 text-[12px] opacity-80">03-04 08:00</td>
+                                <td class="w-[20%] font-bold text-blue-500">I类</td>
+                            </tr>
+                            <tr class="scroll-table-row">
+                                <td class="w-[15%] text-slate-400">42</td>
+                                <td class="w-[25%] text-left text-slate-700 dark:text-slate-300">浪水大桥</td>
+                                <td class="w-[40%] text-slate-400 text-[12px] opacity-80">03-04 08:00</td>
+                                <td class="w-[20%] font-bold text-blue-500">I类</td>
+                            </tr>
+                            <tr class="scroll-table-row">
+                                <td class="w-[15%] text-slate-400">43</td>
+                                <td class="w-[25%] text-left text-slate-700 dark:text-slate-300">安林寺前</td>
+                                <td class="w-[40%] text-slate-400 text-[12px] opacity-80">03-04 08:00</td>
+                                <td class="w-[20%] font-bold text-emerald-500">III类</td>
+                            </tr>
+                            <tr class="scroll-table-row">
+                                <td class="w-[15%] text-slate-400">44</td>
+                                <td class="w-[25%] text-left text-slate-700 dark:text-slate-300">富水水库</td>
+                                <td class="w-[40%] text-slate-400 text-[12px] opacity-80">03-04 08:00</td>
+                                <td class="w-[20%] font-bold text-yellow-500">IV类</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 min-h-0 flex-[1]">
+            <div class="bg-white dark:bg-slate-900 rounded-[16px] border border-slate-200/60 dark:border-slate-800 card-shadow p-4 flex flex-col min-h-0 transition-shadow duration-300 hover:shadow-md">
+                <div class="flex items-center justify-between mb-3 shrink-0">
+                    <div class="flex items-center gap-2">
+                        <div class="section-title-bar w-1 h-3.5 bg-blue-500 rounded-full m-0 shadow-sm"></div>
+                        <h3 class="font-bold text-slate-800 dark:text-slate-100 text-[14px] leading-none">入河排污口</h3>
+                    </div>
+                    <div class="flex gap-1 text-slate-400">
+                        <button class="action-btn-wrapper" title="查看表格" onclick="showChartData('outfalls', '入河排污口数据')">
+                            <i class="ri-table-2 chart-action-icon text-[16px]"></i>
+                        </button>
+                        <button class="action-btn-wrapper" title="导出数据" onclick="exportDataDirectly('outfalls', '入河排污口数据')">
+                            <i class="ri-download-2-line chart-action-icon text-[16px]"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="flex items-baseline gap-1.5 mb-2 shrink-0">
+                    <span class="text-[12px] text-slate-500 dark:text-slate-400 font-medium">排污口数量</span>
+                    <span class="text-[24px] font-black text-blue-600 dark:text-blue-500 tracking-tight tabular-nums">34,100</span>
+                    <span class="text-[12px] font-medium text-slate-400">个</span>
+                </div>
+
+                <div class="flex-1 flex gap-4 min-h-0 mt-1">
+                    <div class="flex-1 flex flex-col justify-around py-0.5 text-[12px]">
+                        <div class="flex justify-between items-center group cursor-default">
+                            <span class="text-slate-500 font-medium group-hover:text-slate-800 dark:group-hover:text-slate-200 transition-colors">工业排污口</span>
+                            <span class="font-bold text-slate-800 dark:text-slate-200 tabular-nums">2,270</span>
+                        </div>
+                        <div class="h-px w-full bg-slate-100 dark:bg-slate-800/60 transition-colors group-hover:bg-slate-200 dark:group-hover:bg-slate-700"></div>
+                        <div class="flex justify-between items-center group cursor-default">
+                            <span class="text-slate-500 font-medium group-hover:text-slate-800 dark:group-hover:text-slate-200 transition-colors">城镇污水厂</span>
+                            <span class="font-bold text-slate-800 dark:text-slate-200 tabular-nums">1,187</span>
+                        </div>
+                        <div class="h-px w-full bg-slate-100 dark:bg-slate-800/60 transition-colors group-hover:bg-slate-200 dark:group-hover:bg-slate-700"></div>
+                        <div class="flex justify-between items-center group cursor-default">
+                            <span class="text-slate-500 font-medium group-hover:text-slate-800 dark:group-hover:text-slate-200 transition-colors">农业排污口</span>
+                            <span class="font-bold text-slate-800 dark:text-slate-200 tabular-nums">155</span>
+                        </div>
+                        <div class="h-px w-full bg-slate-100 dark:bg-slate-800/60 transition-colors group-hover:bg-slate-200 dark:group-hover:bg-slate-700"></div>
+                        <div class="flex justify-between items-center group cursor-default">
+                            <span class="text-slate-500 font-medium group-hover:text-slate-800 dark:group-hover:text-slate-200 transition-colors">其他排污口</span>
+                            <span class="font-bold text-slate-800 dark:text-slate-200 tabular-nums">30,487</span>
+                        </div>
+                    </div>
+                    <div class="w-[45%] h-full relative rounded-lg" id="chart-outfall"></div>
+                </div>
+            </div>
+
+            <div class="bg-white dark:bg-slate-900 rounded-[16px] border border-slate-200/60 dark:border-slate-800 card-shadow p-4 flex flex-col min-h-0 transition-shadow duration-300 hover:shadow-md">
+                <div class="flex items-center justify-between mb-2 shrink-0">
+                    <div class="flex items-center gap-2">
+                        <div class="section-title-bar w-1 h-3.5 bg-blue-500 rounded-full m-0 shadow-sm"></div>
+                        <h3 class="font-bold text-slate-800 dark:text-slate-100 text-[14px] leading-none">黑臭水体</h3>
+                    </div>
+                    <div class="flex gap-1 text-slate-400">
+                        <button class="action-btn-wrapper" onclick="showChartData('blackWater', '黑臭水体数据')">
+                            <i class="ri-table-2 chart-action-icon text-[16px]"></i>
+                        </button>
+                        <button class="action-btn-wrapper" onclick="exportDataDirectly('blackWater', '黑臭水体数据')">
+                            <i class="ri-download-2-line chart-action-icon text-[16px]"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="flex items-end justify-between mb-4 border-b border-slate-100 dark:border-slate-800/80 pb-3 shrink-0">
+                    <div class="flex items-baseline gap-1.5">
+                        <span class="text-[12px] text-slate-500 dark:text-slate-400 font-medium">总计</span>
+                        <span class="text-[24px] font-black text-blue-600 dark:text-blue-500 tracking-tight tabular-nums">312</span>
+                    </div>
+                    <div class="flex items-baseline gap-1.5">
+                        <span class="text-[12px] text-slate-500 font-medium">整治完成</span>
+                        <span class="text-[18px] font-black text-emerald-500 tracking-tight tabular-nums">93.9%</span>
+                    </div>
+                </div>
+
+                <div class="flex-1 flex flex-col justify-between min-h-0 py-0.5">
+                    <div class="flex items-center gap-3">
+                        <div class="w-24 text-[12px] font-bold text-slate-700 dark:text-slate-300 truncate tracking-wide">
+                            地级及以上城市
+                        </div>
+                        <div class="flex-1 flex flex-col justify-center">
+                            <div class="flex justify-between text-[11px] mb-1.5 leading-none tabular-nums font-medium">
+                                <span class="text-rose-500">0 未完成</span>
+                                <span class="text-blue-600 dark:text-blue-400 font-bold">100%</span>
+                            </div>
+                            <div class="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-1.5 overflow-hidden">
+                                <div class="bg-blue-500 h-full rounded-full transition-all duration-700 ease-[cubic-bezier(0.2,0.8,0.2,1)]" style="width: 100%"></div>
+                            </div>
+                        </div>
+                        <div class="w-12 text-right">
+                            <div class="text-[14px] font-bold text-emerald-500 leading-none mb-1 tabular-nums">216</div>
+                            <div class="text-[10px] text-slate-400 leading-none font-medium">已完成</div>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-3">
+                        <div class="w-24 text-[12px] font-bold text-slate-700 dark:text-slate-300 truncate tracking-wide">
+                            县级城市
+                        </div>
+                        <div class="flex-1 flex flex-col justify-center">
+                            <div class="flex justify-between text-[11px] mb-1.5 leading-none tabular-nums font-medium">
+                                <span class="text-rose-500">1 未完成</span>
+                                <span class="text-blue-600 dark:text-blue-400 font-bold">98.5%</span>
+                            </div>
+                            <div class="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-1.5 overflow-hidden">
+                                <div class="bg-blue-500 h-full rounded-full transition-all duration-700 ease-[cubic-bezier(0.2,0.8,0.2,1)]" style="width: 98.5%"></div>
+                            </div>
+                        </div>
+                        <div class="w-12 text-right">
+                            <div class="text-[14px] font-bold text-emerald-500 leading-none mb-1 tabular-nums">66</div>
+                            <div class="text-[10px] text-slate-400 leading-none font-medium">已完成</div>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-3">
+                        <div class="w-24 text-[12px] font-bold text-slate-700 dark:text-slate-300 truncate tracking-wide">
+                            县级
+                        </div>
+                        <div class="flex-1 flex flex-col justify-center">
+                            <div class="flex justify-between text-[11px] mb-1.5 leading-none tabular-nums font-medium">
+                                <span class="text-rose-500">18 未完成</span>
+                                <span class="text-blue-600 dark:text-blue-400 font-bold">37.9%</span>
+                            </div>
+                            <div class="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-1.5 overflow-hidden">
+                                <div class="bg-blue-500 h-full rounded-full transition-all duration-700 ease-[cubic-bezier(0.2,0.8,0.2,1)]" style="width: 37.9%"></div>
+                            </div>
+                        </div>
+                        <div class="w-12 text-right">
+                            <div class="text-[14px] font-bold text-emerald-500 leading-none mb-1 tabular-nums">11</div>
+                            <div class="text-[10px] text-slate-400 leading-none font-medium">已完成</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white dark:bg-slate-900 rounded-[16px] border border-slate-200/60 dark:border-slate-800 card-shadow p-4 flex flex-col min-h-0 transition-shadow duration-300 hover:shadow-md">
+                <div class="flex items-center justify-between mb-3 shrink-0">
+                    <div class="flex items-center gap-2">
+                        <div class="section-title-bar w-1 h-3.5 bg-blue-500 rounded-full m-0 shadow-sm"></div>
+                        <h3 class="font-bold text-slate-800 dark:text-slate-100 text-[14px] leading-none">饮用水源地</h3>
+                    </div>
+                    <div class="flex gap-1 text-slate-400">
+                        <button class="action-btn-wrapper" onclick="showChartData('waterSource', '饮用水源地')">
+                            <i class="ri-table-2 chart-action-icon text-[16px]"></i>
+                        </button>
+                        <button class="action-btn-wrapper" onclick="exportDataDirectly('waterSource', '饮用水源地')">
+                            <i class="ri-download-2-line chart-action-icon text-[16px]"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="flex-1 flex flex-col gap-2 min-h-0">
+                    <!-- 水源地类型 -->
+                    <div class="flex-1 bg-slate-50/80 dark:bg-slate-800/40 hover:bg-blue-50/50 dark:hover:bg-slate-800/70 transition-all duration-300 ease-[cubic-bezier(0.2,0.8,0.2,1)] rounded-xl border border-slate-100 dark:border-slate-700/80 p-2.5 flex items-center justify-between min-h-0 group cursor-default">
+                        <div class="flex flex-col gap-2 flex-1 min-w-0">
+                            <div class="flex items-center gap-2">
+                                <span class="text-[12px] font-medium text-slate-600 dark:text-slate-400 w-16 shrink-0">河流型</span>
+                                <div class="flex-1 bg-slate-200/60 dark:bg-slate-700/60 rounded-full h-2 overflow-hidden">
+                                    <div class="bg-[#2463eb] h-full rounded-full" style="width: 55.6%"></div>
+                                </div>
+                                <span class="text-[13px] font-bold text-slate-700 dark:text-slate-300 tabular-nums w-8 text-right">150</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="text-[12px] font-medium text-slate-600 dark:text-slate-400 w-16 shrink-0">湖库型</span>
+                                <div class="flex-1 bg-slate-200/60 dark:bg-slate-700/60 rounded-full h-2 overflow-hidden">
+                                    <div class="bg-[#0891b2] h-full rounded-full" style="width: 33.3%"></div>
+                                </div>
+                                <span class="text-[13px] font-bold text-slate-700 dark:text-slate-300 tabular-nums w-8 text-right">90</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="text-[12px] font-medium text-slate-600 dark:text-slate-400 w-16 shrink-0">地下水型</span>
+                                <div class="flex-1 bg-slate-200/60 dark:bg-slate-700/60 rounded-full h-2 overflow-hidden">
+                                    <div class="bg-[#12b981] h-full rounded-full" style="width: 11.1%"></div>
+                                </div>
+                                <span class="text-[13px] font-bold text-slate-700 dark:text-slate-300 tabular-nums w-8 text-right">30</span>
+                            </div>
+                        </div>
+                        <div class="w-16 h-16 relative shrink-0 opacity-90 group-hover:opacity-100 group-hover:scale-105 transition-all duration-300 ease-[cubic-bezier(0.2,0.8,0.2,1)] ml-2" id="chart-drink1"></div>
+                    </div>
+
+                    <!-- 水源地级别 -->
+                    <div class="flex-1 bg-slate-50/80 dark:bg-slate-800/40 hover:bg-blue-50/50 dark:hover:bg-slate-800/70 transition-all duration-300 ease-[cubic-bezier(0.2,0.8,0.2,1)] rounded-xl border border-slate-100 dark:border-slate-700/80 p-2.5 flex items-center justify-between min-h-0 group cursor-default">
+                        <div class="flex flex-col gap-2 flex-1 min-w-0">
+                            <div class="flex items-center gap-2">
+                                <span class="text-[12px] font-medium text-slate-600 dark:text-slate-400 w-16 shrink-0">省级</span>
+                                <div class="flex-1 bg-slate-200/60 dark:bg-slate-700/60 rounded-full h-2 overflow-hidden">
+                                    <div class="bg-[#2463eb] h-full rounded-full" style="width: 14.8%"></div>
+                                </div>
+                                <span class="text-[13px] font-bold text-slate-700 dark:text-slate-300 tabular-nums w-8 text-right">40</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="text-[12px] font-medium text-slate-600 dark:text-slate-400 w-16 shrink-0">市级</span>
+                                <div class="flex-1 bg-slate-200/60 dark:bg-slate-700/60 rounded-full h-2 overflow-hidden">
+                                    <div class="bg-[#0891b2] h-full rounded-full" style="width: 29.6%"></div>
+                                </div>
+                                <span class="text-[13px] font-bold text-slate-700 dark:text-slate-300 tabular-nums w-8 text-right">80</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="text-[12px] font-medium text-slate-600 dark:text-slate-400 w-16 shrink-0">县级及以下</span>
+                                <div class="flex-1 bg-slate-200/60 dark:bg-slate-700/60 rounded-full h-2 overflow-hidden">
+                                    <div class="bg-[#12b981] h-full rounded-full" style="width: 55.6%"></div>
+                                </div>
+                                <span class="text-[13px] font-bold text-slate-700 dark:text-slate-300 tabular-nums w-8 text-right">150</span>
+                            </div>
+                        </div>
+                        <div class="w-16 h-16 relative shrink-0 opacity-90 group-hover:opacity-100 group-hover:scale-105 transition-all duration-300 ease-[cubic-bezier(0.2,0.8,0.2,1)] ml-2" id="chart-drink2"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="w-[420px] flex flex-col gap-4 shrink-0 min-h-0">
+
+        <div class="bg-white dark:bg-slate-900 rounded-[16px] border border-slate-200/60 dark:border-slate-800 card-shadow p-4 flex-1 flex flex-col min-h-0">
+            <div class="flex items-center justify-between mb-3 border-b border-slate-100 dark:border-slate-800 pb-2 shrink-0">
+                <div class="flex items-center space-x-2">
+                    <div class="section-title-bar-orange m-0 shadow-sm"></div>
+                    <h3 class="font-bold text-slate-800 dark:text-slate-100 text-[15px]">厅领导关注事项</h3>
+                </div>
+                <a href="#" class="text-[12px] font-medium text-blue-500 hover:text-blue-600 dark:hover:text-blue-400 transition-colors px-2 py-1 rounded hover:bg-blue-50 dark:hover:bg-slate-800">管理</a>
+            </div>
+
+            <table class="w-full text-left text-[13px] mb-2 shrink-0 border-collapse table-fixed">
+                <thead>
+                <tr class="text-slate-500 dark:text-slate-400 font-medium bg-slate-50/80 dark:bg-slate-800/80 rounded-t-lg">
+                    <th class="py-2.5 w-12 text-center rounded-tl-lg">序号</th>
+                    <th class="py-2.5">事项名称</th>
+                    <th class="py-2.5 w-20 text-center">进度</th>
+                    <th class="py-2.5 w-[60px] text-center rounded-tr-lg">时间</th>
+                </tr>
+                </thead>
+            </table>
+
+            <div class="flex-1 overflow-y-auto custom-scrollbar pr-1 min-h-0">
+                <table class="w-full text-[13px] text-left border-collapse table-fixed">
+                    <tbody class="text-slate-600 dark:text-slate-400">
+                    <tr class="border-b border-slate-50 dark:border-slate-800/60 hover:bg-orange-50/40 dark:hover:bg-slate-800/60 transition-colors duration-200">
+                        <td class="py-3.5 w-12 text-center font-medium tabular-nums text-slate-400">1</td>
+                        <td class="py-3.5 truncate text-slate-700 dark:text-slate-300 font-medium"
+                            title="重点流域水生态环境保护规划落实">重点流域水生态环境保护规划...
+                        </td>
+                        <td class="py-3.5 w-20 text-center font-medium text-blue-600 dark:text-blue-500">推进中</td>
+                        <td class="py-3.5 w-[60px] text-center text-slate-400 text-[12px] tabular-nums opacity-80">03-04</td>
+                    </tr>
+                    <tr class="border-b border-slate-50 dark:border-slate-800/60 hover:bg-orange-50/40 dark:hover:bg-slate-800/60 transition-colors duration-200">
+                        <td class="py-3.5 w-12 text-center font-medium tabular-nums text-slate-400">2</td>
+                        <td class="py-3.5 truncate text-slate-700 dark:text-slate-300 font-medium"
+                            title="长江经济带生态环境突出问题整改">长江经济带生态环境突出问...
+                        </td>
+                        <td class="py-3.5 w-20 text-center font-medium text-orange-500">重点关注</td>
+                        <td class="py-3.5 w-[60px] text-center text-slate-400 text-[12px] tabular-nums opacity-80">03-02</td>
+                    </tr>
+                    <tr class="border-b border-slate-50 dark:border-slate-800/60 hover:bg-orange-50/40 dark:hover:bg-slate-800/60 transition-colors duration-200">
+                        <td class="py-3.5 w-12 text-center font-medium tabular-nums text-slate-400">3</td>
+                        <td class="py-3.5 truncate text-slate-700 dark:text-slate-300 font-medium"
+                            title="全省入河排污口溯源整治专项行动">全省入河排污口溯源整治专项...
+                        </td>
+                        <td class="py-3.5 w-20 text-center font-medium text-emerald-600 dark:text-emerald-500">已完成</td>
+                        <td class="py-3.5 w-[60px] text-center text-slate-400 text-[12px] tabular-nums opacity-80">02-28</td>
+                    </tr>
+                    <tr class="border-b border-slate-50 dark:border-slate-800/60 hover:bg-orange-50/40 dark:hover:bg-slate-800/60 transition-colors duration-200">
+                        <td class="py-3.5 w-12 text-center font-medium tabular-nums text-slate-400">4</td>
+                        <td class="py-3.5 truncate text-slate-700 dark:text-slate-300 font-medium"
+                            title="集中式饮用水水源地规范化建设">集中式饮用水水源地规范化...
+                        </td>
+                        <td class="py-3.5 w-20 text-center font-medium text-blue-600 dark:text-blue-500">推进中</td>
+                        <td class="py-3.5 w-[60px] text-center text-slate-400 text-[12px] tabular-nums opacity-80">02-15</td>
+                    </tr>
+                    <tr class="border-b border-slate-50 dark:border-slate-800/60 hover:bg-orange-50/40 dark:hover:bg-slate-800/60 transition-colors duration-200">
+                        <td class="py-3.5 w-12 text-center font-medium tabular-nums text-slate-400">5</td>
+                        <td class="py-3.5 truncate text-slate-700 dark:text-slate-300 font-medium"
+                            title="黑臭水体治理攻坚战效果评估">黑臭水体治理攻坚战效果评...
+                        </td>
+                        <td class="py-3.5 w-20 text-center font-medium text-blue-600 dark:text-blue-500">推进中</td>
+                        <td class="py-3.5 w-[60px] text-center text-slate-400 text-[12px] tabular-nums opacity-80">02-10</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="bg-white dark:bg-slate-900 rounded-[16px] border border-slate-200/60 dark:border-slate-800 card-shadow p-4 flex-[1.4] flex flex-col min-h-0">
+            <div class="flex items-center justify-between mb-3 shrink-0 border-b border-slate-100 dark:border-slate-800 pb-2">
+                <div class="flex items-center space-x-2">
+                    <div class="section-title-bar-orange m-0 shadow-sm"></div>
+                    <h3 class="font-bold text-slate-800 dark:text-slate-100 text-[15px]">重要线索分析</h3>
+                </div>
+                <a href="#" class="text-[12px] font-medium text-blue-500 hover:text-blue-600 dark:hover:text-blue-400 transition-colors px-2 py-1 rounded hover:bg-blue-50 dark:hover:bg-slate-800">管理</a>
+            </div>
+
+            <div class="flex space-x-1 mb-3 bg-slate-50/80 dark:bg-slate-800/80 p-1.5 rounded-lg border border-slate-200/50 dark:border-slate-700/50 backdrop-blur-md shrink-0 shadow-sm">
+                <button class="flex-1 tab-btn active px-0 text-center" onclick="switchTab(this)">环保舆情</button>
+                <button class="flex-1 tab-btn inactive px-0 text-center" onclick="switchTab(this)">环保督察</button>
+                <button class="flex-1 tab-btn inactive px-0 text-center" onclick="switchTab(this)">回头看</button>
+            </div>
+
+            <div class="flex-1 overflow-y-auto custom-scrollbar pr-1 min-h-0">
+                <table class="w-full text-[13px] text-left border-collapse table-fixed">
+                    <thead class="bg-slate-50/90 dark:bg-slate-800/90 sticky top-0 z-10 backdrop-blur-sm">
+                    <tr class="text-slate-500 dark:text-slate-400 font-medium">
+                        <th class="py-2.5 px-1 w-12 text-center rounded-tl-lg">序号</th>
+                        <th class="py-2.5 px-1">舆情名称</th>
+                        <th class="py-2.5 px-1 w-[60px] text-center">时间</th>
+                        <th class="py-2.5 px-1 w-[60px] text-center rounded-tr-lg">来源</th>
+                    </tr>
+                    </thead>
+                    <tbody class="text-slate-600 dark:text-slate-400">
+                    <tr class="border-b border-slate-50 dark:border-slate-800/60 hover:bg-orange-50/40 dark:hover:bg-slate-800/60 transition-colors duration-200">
+                        <td class="py-3.5 px-1 text-center font-medium tabular-nums text-slate-400">1</td>
+                        <td class="py-3.5 px-1 truncate" title="污染横行，监管失声：河流衰亡的背后">
+                            <a href="javascript:void(0)" class="text-slate-700 dark:text-slate-300 font-medium hover:text-blue-600 dark:hover:text-blue-400 hover:underline transition-colors outline-none focus:text-blue-600">污染横行，监管失声：河流衰亡的背后</a>
+                        </td>
+                        <td class="py-3.5 px-1 text-center text-slate-400 text-[12px] tabular-nums opacity-80">03-04</td>
+                        <td class="py-3.5 px-1 text-center text-[12px] font-medium text-slate-500">百家号</td>
+                    </tr>
+                    <tr class="border-b border-slate-50 dark:border-slate-800/60 hover:bg-orange-50/40 dark:hover:bg-slate-800/60 transition-colors duration-200">
+                        <td class="py-3.5 px-1 text-center font-medium tabular-nums text-slate-400">2</td>
+                        <td class="py-3.5 px-1 truncate" title="看他们如何为自己开脱【恒河水】">
+                            <a href="javascript:void(0)" class="text-slate-700 dark:text-slate-300 font-medium hover:text-blue-600 dark:hover:text-blue-400 hover:underline transition-colors outline-none focus:text-blue-600">看他们如何为自己开脱【恒河水】</a>
+                        </td>
+                        <td class="py-3.5 px-1 text-center text-slate-400 text-[12px] tabular-nums opacity-80">03-04</td>
+                        <td class="py-3.5 px-1 text-center text-[12px] font-medium text-slate-500">微博</td>
+                    </tr>
+                    <tr class="border-b border-slate-50 dark:border-slate-800/60 hover:bg-orange-50/40 dark:hover:bg-slate-800/60 transition-colors duration-200">
+                        <td class="py-3.5 px-1 text-center font-medium tabular-nums text-slate-400">3</td>
+                        <td class="py-3.5 px-1 truncate" title="相关举报信件复核与督导调查">
+                            <a href="javascript:void(0)" class="text-slate-700 dark:text-slate-300 font-medium hover:text-blue-600 dark:hover:text-blue-400 hover:underline transition-colors outline-none focus:text-blue-600">相关举报信件复核与督导调查</a>
+                        </td>
+                        <td class="py-3.5 px-1 text-center text-slate-400 text-[12px] tabular-nums opacity-80">03-04</td>
+                        <td class="py-3.5 px-1 text-center text-[12px] font-medium text-slate-500">快手</td>
+                    </tr>
+                    <tr class="border-b border-slate-50 dark:border-slate-800/60 hover:bg-orange-50/40 dark:hover:bg-slate-800/60 transition-colors duration-200">
+                        <td class="py-3.5 px-1 text-center font-medium tabular-nums text-slate-400">4</td>
+                        <td class="py-3.5 px-1 truncate" title="渔猎齐哥从捡垃圾到曝光打击非法捕捞">
+                            <a href="javascript:void(0)" class="text-slate-700 dark:text-slate-300 font-medium hover:text-blue-600 dark:hover:text-blue-400 hover:underline transition-colors outline-none focus:text-blue-600">渔猎齐哥从捡垃圾到曝光打击非法...</a>
+                        </td>
+                        <td class="py-3.5 px-1 text-center text-slate-400 text-[12px] tabular-nums opacity-80">03-04</td>
+                        <td class="py-3.5 px-1 text-center text-[12px] font-medium text-slate-500">头条</td>
+                    </tr>
+                    <tr class="border-b border-slate-50 dark:border-slate-800/60 hover:bg-orange-50/40 dark:hover:bg-slate-800/60 transition-colors duration-200">
+                        <td class="py-3.5 px-1 text-center font-medium tabular-nums text-slate-400">5</td>
+                        <td class="py-3.5 px-1 truncate" title="地下暗河污染源已确认 奉节环保跟进处理">
+                            <a href="javascript:void(0)" class="text-slate-700 dark:text-slate-300 font-medium hover:text-blue-600 dark:hover:text-blue-400 hover:underline transition-colors outline-none focus:text-blue-600">地下暗河污染源已确认 奉节环保...</a>
+                        </td>
+                        <td class="py-3.5 px-1 text-center text-slate-400 text-[12px] tabular-nums opacity-80">03-04</td>
+                        <td class="py-3.5 px-1 text-center text-[12px] font-medium text-slate-500">抖音</td>
+                    </tr>
+                    <tr class="border-b border-slate-50 dark:border-slate-800/60 hover:bg-orange-50/40 dark:hover:bg-slate-800/60 transition-colors duration-200">
+                        <td class="py-3.5 px-1 text-center font-medium tabular-nums text-slate-400">6</td>
+                        <td class="py-3.5 px-1 truncate" title="#一说去郑州孩子激动的觉都不睡了">
+                            <a href="javascript:void(0)" class="text-slate-700 dark:text-slate-300 font-medium hover:text-blue-600 dark:hover:text-blue-400 hover:underline transition-colors outline-none focus:text-blue-600">#一说去郑州孩子激动的觉都不睡了</a>
+                        </td>
+                        <td class="py-3.5 px-1 text-center text-slate-400 text-[12px] tabular-nums opacity-80">03-04</td>
+                        <td class="py-3.5 px-1 text-center text-[12px] font-medium text-slate-500">抖音</td>
+                    </tr>
+                    <tr class="border-b border-slate-50 dark:border-slate-800/60 hover:bg-orange-50/40 dark:hover:bg-slate-800/60 transition-colors duration-200">
+                        <td class="py-3.5 px-1 text-center font-medium tabular-nums text-slate-400">7</td>
+                        <td class="py-3.5 px-1 truncate" title="据历史传说，鱼儿洞水流往巴东方向">
+                            <a href="javascript:void(0)" class="text-slate-700 dark:text-slate-300 font-medium hover:text-blue-600 dark:hover:text-blue-400 hover:underline transition-colors outline-none focus:text-blue-600">据历史传说，鱼儿洞水流往巴东方向</a>
+                        </td>
+                        <td class="py-3.5 px-1 text-center text-slate-400 text-[12px] tabular-nums opacity-80">03-04</td>
+                        <td class="py-3.5 px-1 text-center text-[12px] font-medium text-slate-500">头条</td>
+                    </tr>
+                    <tr class="border-b border-slate-50 dark:border-slate-800/60 hover:bg-orange-50/40 dark:hover:bg-slate-800/60 transition-colors duration-200">
+                        <td class="py-3.5 px-1 text-center font-medium tabular-nums text-slate-400">8</td>
+                        <td class="py-3.5 px-1 truncate" title="污水厂超负荷运行导致溢流直排湖泊">
+                            <a href="javascript:void(0)" class="text-slate-700 dark:text-slate-300 font-medium hover:text-blue-600 dark:hover:text-blue-400 hover:underline transition-colors outline-none focus:text-blue-600">污水厂超负荷运行导致溢流直排湖泊</a>
+                        </td>
+                        <td class="py-3.5 px-1 text-center text-slate-400 text-[12px] tabular-nums opacity-80">03-04</td>
+                        <td class="py-3.5 px-1 text-center text-[12px] font-medium text-slate-500">微信</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+</main>
+
+<div id="data-table-modal"
+     class="fixed inset-0 z-[100] hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center transition-opacity opacity-0 duration-300 ease-[cubic-bezier(0.2,0.8,0.2,1)]">
+    <div class="bg-white dark:bg-slate-800 rounded-[20px] shadow-2xl w-[700px] flex flex-col transform transition-transform scale-95 duration-300 ease-[cubic-bezier(0.2,0.8,0.2,1)] max-h-[80vh] border border-slate-200/50 dark:border-slate-700/50">
+        <div class="flex items-center justify-between px-6 py-5 border-b border-slate-100 dark:border-slate-700 shrink-0">
+            <div class="flex items-center space-x-2">
+                <div class="section-title-bar m-0 shadow-sm"></div>
+                <h3 id="modal-title" class="text-[18px] font-bold text-slate-800 dark:text-white tracking-wide">数据详情</h3>
+            </div>
+            <button onclick="closeModal()" class="w-8 h-8 flex items-center justify-center rounded-full text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors focus:outline-none">
+                <i class="ri-close-line text-[24px]"></i>
+            </button>
+        </div>
+        <div class="overflow-y-auto custom-scrollbar flex-1 p-0">
+            <table class="w-full text-[14px] text-center text-slate-600 dark:text-slate-300 border-collapse">
+                <thead class="text-slate-700 dark:text-slate-200 bg-slate-50/90 dark:bg-slate-700/90 sticky top-0 z-10 backdrop-blur-md shadow-sm"
+                       id="modal-thead">
+                </thead>
+                <tbody id="modal-tbody">
+                </tbody>
+            </table>
+        </div>
+        <div class="px-6 py-4 border-t border-slate-100 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/50 shrink-0 flex justify-end space-x-3 rounded-b-[20px]">
+            <button onclick="closeModal()"
+                    class="px-5 py-2 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg text-[14px] font-medium text-slate-600 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-600 transition-colors shadow-sm focus:outline-none">
+                关闭
+            </button>
+            <button onclick="exportModalData()"
+                    class="px-5 py-2 bg-blue-600 border border-transparent rounded-lg text-[14px] font-medium text-white hover:bg-blue-700 transition-all shadow-sm shadow-blue-600/20 active:scale-95 flex items-center focus:outline-none">
+                导出数据
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Tab switching
+    function switchTab(clickedBtn) {
+        const buttons = clickedBtn.parentElement.querySelectorAll('button');
+        buttons.forEach(btn => {
+            btn.classList.remove('active');
+            btn.classList.add('inactive');
+        });
+        clickedBtn.classList.remove('inactive');
+        clickedBtn.classList.add('active');
+    }
+
+    // Month mode toggle
+    function setMonthMode(mode) {
+        const btnCurrent = document.getElementById('btn-current');
+        const btnCumulative = document.getElementById('btn-cumulative');
+
+        if (mode === 'current') {
+            btnCurrent.classList.remove('inactive');
+            btnCurrent.classList.add('active');
+            btnCumulative.classList.remove('active');
+            btnCumulative.classList.add('inactive');
+        } else {
+            btnCumulative.classList.remove('inactive');
+            btnCumulative.classList.add('active');
+            btnCurrent.classList.remove('active');
+            btnCurrent.classList.add('inactive');
+        }
+    }
+
+    // 无缝滚动动画逻辑
+    const marquees = {};
+
+    function startMarquee(containerId, contentId) {
+        const container = document.getElementById(containerId);
+        const content = document.getElementById(contentId);
+        if (!container || !content) return;
+
+        // 克隆节点实现无缝衔接
+        const clone = content.cloneNode(true);
+        clone.id = contentId + '-clone';
+        container.appendChild(clone);
+
+        marquees[containerId] = {
+            scrollAmount: 0,
+            step: 0.5,
+            isPaused: false,
+            contentHeight: content.offsetHeight
+        };
+
+        function step() {
+            if (!marquees[containerId].isPaused) {
+                marquees[containerId].scrollAmount += marquees[containerId].step;
+                if (marquees[containerId].scrollAmount >= marquees[containerId].contentHeight) {
+                    marquees[containerId].scrollAmount = 0; // 重置
+                }
+                container.scrollTop = marquees[containerId].scrollAmount;
+            }
+            requestAnimationFrame(step);
+        }
+
+        requestAnimationFrame(step);
+    }
+
+    function pauseMarquee(el) {
+        if (marquees[el.id]) marquees[el.id].isPaused = true;
+    }
+
+    function resumeMarquee(el) {
+        if (marquees[el.id]) marquees[el.id].isPaused = false;
+    }
+
+
+    // 初始化 ECharts
+    const charts = [];
+    const chartInstances = {};
+
+    function initCharts() {
+        // 2. 排污口环形图
+        const domOutfall = document.getElementById('chart-outfall');
+        const chartOutfall = echarts.init(domOutfall);
+        chartInstances['outfalls'] = chartOutfall;
+        charts.push(chartOutfall);
+        chartOutfall.setOption({
+            series: [{
+                type: 'pie',
+                radius: ['65%', '85%'],
+                center: ['50%', '50%'],
+                avoidLabelOverlap: false,
+                label: {
+                    show: true, position: 'center',
+                    formatter: '51.6%\n{sub|排污口整治率}',
+                    rich: {sub: {fontSize: 11, color: '#64748b', padding: [4, 0, 0, 0]}},
+                    fontSize: 18, fontWeight: 'bold', color: '#3b82f6', fontFamily: 'system-ui'
+                },
+                data: [
+                    {value: 51.6, itemStyle: {color: '#3b82f6'}},
+                    {value: 48.4, itemStyle: {color: '#e2e8f0'}}
+                ]
+            }]
+        });
+
+        // 3. 水源地类型环形图
+        const domDrink1 = document.getElementById('chart-drink1');
+        const chartDrink1 = echarts.init(domDrink1);
+        chartInstances['waterSourceType'] = chartDrink1;
+        charts.push(chartDrink1);
+        chartDrink1.setOption({
+            series: [{
+                type: 'pie', radius: ['60%', '88%'], hoverAnimation: false,
+                label: { show: false },
+                data: [
+                    {value: 150, name: '河流型', itemStyle: {color: '#2463eb'}},
+                    {value: 90, name: '湖库型', itemStyle: {color: '#0891b2'}},
+                    {value: 30, name: '地下水型', itemStyle: {color: '#12b981'}}
+                ]
+            }]
+        });
+
+        // 4. 水源地级别环形图
+        const domDrink2 = document.getElementById('chart-drink2');
+        const chartDrink2 = echarts.init(domDrink2);
+        chartInstances['waterSourceLevel'] = chartDrink2;
+        charts.push(chartDrink2);
+        chartDrink2.setOption({
+            series: [{
+                type: 'pie', radius: ['60%', '88%'], hoverAnimation: false,
+                label: { show: false },
+                data: [
+                    {value: 40, name: '省级', itemStyle: {color: '#2463eb'}},
+                    {value: 80, name: '市级', itemStyle: {color: '#0891b2'}},
+                    {value: 150, name: '县级及以下', itemStyle: {color: '#12b981'}}
+                ]
+            }]
+        });
+    }
+
+    // ========= 弹窗与下载逻辑 =========
+
+    // 获取特定图表/卡片的伪造数据
+    function getMockData(chartKey) {
+        let headers = [];
+        let rows = [];
+
+        if (chartKey === 'outfalls') {
+            headers = ['序号', '排污口类型', '数量(个)', '占比'];
+            rows = [
+                ['1', '工业排污口', '2270', '6.6%'],
+                ['2', '城镇污水处理厂排污口', '1187', '3.5%'],
+                ['3', '农业排污口', '155', '0.5%'],
+                ['4', '其他排污口', '30487', '89.4%']
+            ];
+        } else if (chartKey === 'blackWater') {
+            headers = ['序号', '城市级别', '黑臭水体总数', '已完成整治', '未完成整治', '完成比例'];
+            rows = [
+                ['1', '地级及以上城市', '216', '216', '0', '100%'],
+                ['2', '县级城市', '67', '66', '1', '98.5%'],
+                ['3', '县级', '29', '11', '18', '37.9%']
+            ];
+        } else if (chartKey === 'waterSource') {
+            headers = ['序号', '维度', '分类', '数量(个)', '占比'];
+            rows = [
+                ['1', '水源地类型', '河流型', '150', '55.6%'],
+                ['2', '水源地类型', '湖库型', '90', '33.3%'],
+                ['3', '水源地类型', '地下水型', '30', '11.1%'],
+                ['4', '水源地级别', '省级', '40', '14.8%'],
+                ['5', '水源地级别', '市级', '80', '29.6%'],
+                ['6', '水源地级别', '县级及以下', '150', '55.6%']
+            ];
+        }
+        return {headers, rows};
+    }
+
+    // 弹窗展示表格数据
+    function showChartData(chartKey, titleText) {
+        document.getElementById('modal-title').innerText = titleText;
+
+        const {headers, rows} = getMockData(chartKey);
+
+        // 生成表头
+        document.getElementById('modal-thead').innerHTML = `<tr>${headers.map(h => `<th class="px-6 py-3.5 font-bold tracking-wide">${h}</th>`).join('')}</tr>`;
+
+        // 生成数据行
+        document.getElementById('modal-tbody').innerHTML = rows.map((r, i) => {
+            const bgClass = i % 2 === 0 ? 'bg-white dark:bg-slate-800' : 'bg-slate-50/50 dark:bg-slate-800/50';
+            return `<tr class="${bgClass} hover:bg-blue-50/50 dark:hover:bg-slate-700/50 transition-colors duration-200">
+                ${r.map(c => `<td class="px-6 py-3 border-b border-slate-100 dark:border-slate-700/50 tabular-nums">${c}</td>`).join('')}
+            </tr>`;
+        }).join('');
+
+        const modal = document.getElementById('data-table-modal');
+        modal.classList.remove('hidden');
+        void modal.offsetWidth; // 触发重绘
+        modal.classList.remove('opacity-0');
+        modal.querySelector('div').classList.remove('scale-95');
+    }
+
+    function closeModal() {
+        const modal = document.getElementById('data-table-modal');
+        modal.classList.add('opacity-0');
+        modal.querySelector('div').classList.add('scale-95');
+        setTimeout(() => {
+            modal.classList.add('hidden');
+        }, 300);
+    }
+
+    // 提取并导出CSV逻辑
+    function executeExport(title, headers, rows) {
+        let csv = [];
+        // 加入BOM以防止中文乱码
+        csv.push('\uFEFF' + headers.map(h => `"${h}"`).join(','));
+        rows.forEach(r => {
+            csv.push(r.map(c => `"${c}"`).join(','));
+        });
+
+        const csvFile = new Blob([csv.join('\n')], {type: 'text/csv;charset=utf-8;'});
+        const downloadLink = document.createElement("a");
+        downloadLink.download = title + ".csv";
+        downloadLink.href = window.URL.createObjectURL(csvFile);
+        downloadLink.style.display = "none";
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        document.body.removeChild(downloadLink);
+    }
+
+    // 点击卡片右上角下载按钮直接导出数据
+    function exportDataDirectly(chartKey, titleText) {
+        const {headers, rows} = getMockData(chartKey);
+        executeExport(titleText, headers, rows);
+    }
+
+    // 弹窗内部的导出按钮
+    function exportModalData() {
+        const title = document.getElementById('modal-title').innerText || '导出数据';
+        const thead = Array.from(document.querySelectorAll('#modal-thead th')).map(th => th.innerText.trim());
+        const trs = Array.from(document.querySelectorAll('#modal-tbody tr'));
+        const rows = trs.map(tr => Array.from(tr.querySelectorAll('td')).map(td => td.innerText.trim()));
+
+        executeExport(title, thead, rows);
+    }
+
+    window.addEventListener('load', () => {
+        initCharts();
+        // 延迟一下启动滚动以确保高度已被准确计算
+        setTimeout(() => {
+            startMarquee('marquee-city', 'marquee-city-content');
+            startMarquee('marquee-station', 'marquee-station-content');
+        }, 300);
+    });
+
+    window.addEventListener('resize', () => {
+        charts.forEach(c => c.resize());
+    });
+</script>
+
+</body>
+</html>

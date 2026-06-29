@@ -189,7 +189,7 @@
 
         .row-1 .stat-card:nth-child(4) {
             border-color: #75c7e8;
-            background: #f1fbff;
+            background: #fff;
         }
 
         .border-grey,
@@ -239,10 +239,13 @@
         }
 
         .audit-card .stat-content {
-            display: block;
+            flex: 1;
+            display: flex;
+            align-items: center;
         }
 
         .audit-flow {
+            width: 100%;
             display: grid;
             grid-template-columns: var(--flow-columns, repeat(4, minmax(0, 1fr)));
             gap: 0;
@@ -253,10 +256,10 @@
             --flow-color: #8c97a3;
             --flow-bg: #eef2f6;
             min-width: 0;
-            height: 122px;
-            padding: 14px 16px 12px 24px;
+            height: 130px;
+            padding: 16px 18px 14px 24px;
             background: var(--flow-bg);
-            color: #566273;
+            color: var(--flow-color);
             position: relative;
             display: flex;
             flex-direction: column;
@@ -281,33 +284,32 @@
         }
 
         .flow-label {
-            font-size: 20px;
-            line-height: 1.2;
+            font-size: 21px;
+            line-height: 1.15;
             font-weight: 800;
             white-space: nowrap;
             padding-left: 2px;
         }
 
         .flow-num {
-            color: var(--flow-color);
             font-family: Arial, "Microsoft YaHei", sans-serif;
-            font-size: var(--flow-num-size, 28px);
+            font-size: var(--flow-num-size, 40px);
             line-height: 1;
             font-weight: 800;
             white-space: nowrap;
         }
 
         .flow-step:first-child .flow-num {
-            font-size: var(--flow-num-size, 28px);
+            font-size: var(--flow-num-size, 40px);
         }
 
         .flow-step:last-child .flow-num {
-            font-size: var(--flow-num-size, 28px);
+            font-size: var(--flow-num-size, 40px);
         }
 
         .flow-index {
-            width: 23px;
-            height: 23px;
+            width: 36px;
+            height: 36px;
             border-radius: 50%;
             background: #fff;
             color: var(--flow-color);
@@ -315,23 +317,23 @@
             align-items: center;
             justify-content: center;
             font-family: Arial, "Microsoft YaHei", sans-serif;
-            font-size: 13px;
+            font-size: 18px;
             font-weight: 800;
-            box-shadow: 0 1px 4px rgba(28, 56, 96, 0.14);
+            box-shadow: 0 1px 4px rgba(28, 56, 96, 0.10);
         }
 
         .flow-step.complete {
-            color: #fff;
+            color: var(--flow-color);
         }
 
         .flow-step.complete .flow-num,
         .flow-step.complete .flow-index {
-            color: #fff;
+            color: var(--flow-color);
         }
 
         .flow-step.complete .flow-index {
-            background: rgba(255, 255, 255, 0.22);
-            box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.38);
+            background: #fff;
+            box-shadow: 0 1px 4px rgba(28, 56, 96, 0.10);
         }
 
         .row-2 {
@@ -839,7 +841,7 @@
         </div>
 
         <div class="card stat-card border-grey audit-card">
-            <div class="stat-title">流转与审核状态</div>
+            <div class="stat-title">流转状态</div>
             <div class="stat-content">
                 <div class="audit-flow" aria-label="区县未提交到省级已通过审批流">
                     <div class="flow-step" style="--flow-color: #6f88ad; --flow-bg: #eef5ff;">
@@ -849,21 +851,21 @@
                             <div class="flow-num">11294</div>
                         </div>
                     </div>
-                    <div class="flow-step" style="--flow-color: #4f8fee; --flow-bg: #dcecff;">
+                    <div class="flow-step" style="--flow-color: #4f8fee; --flow-bg: #e3efff;">
                         <div class="flow-index">2</div>
                         <div class="flow-label">地市待审核</div>
                         <div>
                             <div class="flow-num">980</div>
                         </div>
                     </div>
-                    <div class="flow-step" style="--flow-color: #2f78e8; --flow-bg: #c8dfff;">
+                    <div class="flow-step" style="--flow-color: #f08a1c; --flow-bg: #fff1e0;">
                         <div class="flow-index">3</div>
                         <div class="flow-label">省级待审核</div>
                         <div>
                             <div class="flow-num">312</div>
                         </div>
                     </div>
-                    <div class="flow-step complete" style="--flow-color: #3978ec; --flow-bg: #3978ec;">
+                    <div class="flow-step complete" style="--flow-color: #24a943; --flow-bg: #e5f6e9;">
                         <div class="flow-index">4</div>
                         <div class="flow-label">省级已通过</div>
                         <div>
@@ -881,16 +883,15 @@
                 <span>任务完成情况</span>
                 <span style="font-size: 12px; color: #999; font-weight: normal;">截至 2026-06-25</span>
             </div>
-            <div class="task-item clue-task" style="margin-top: 25px;">
-                <div class="task-label">问题线索:</div>
-                <div class="task-progress-wrap" style="justify-content: center;">
-                    <div class="clue-bg">
-                        <div class="clue-progress" style="width: 87.5%;"></div>
-                    </div>
+            <div class="task-item source-task">
+                <div class="task-label">溯源任务:</div>
+                <div class="task-progress-wrap">
+                    <div class="progress-target"></div>
+                    <div class="progress-current" style="--bar-width: 78.29%; --bar-color: #22d3ee;"></div>
                 </div>
                 <div class="task-data">
-                    <div><span class="task-key">总数</span><span class="task-value">16</span></div>
-                    <div><span class="task-key">已核实</span><span class="task-value">14</span></div>
+                    <div><span class="task-key">目标</span><span class="task-value">80%</span></div>
+                    <div><span class="task-key">当前</span><span class="task-value">78.29%</span></div>
                 </div>
             </div>
             <div class="task-item fix-task">
@@ -904,15 +905,16 @@
                     <div><span class="task-key">当前</span><span class="task-value">57.63%</span></div>
                 </div>
             </div>
-            <div class="task-item source-task">
-                <div class="task-label">溯源任务:</div>
-                <div class="task-progress-wrap">
-                    <div class="progress-target"></div>
-                    <div class="progress-current" style="--bar-width: 78.29%; --bar-color: #22d3ee;"></div>
+            <div class="task-item clue-task">
+                <div class="task-label">问题线索:</div>
+                <div class="task-progress-wrap" style="justify-content: center;">
+                    <div class="clue-bg">
+                        <div class="clue-progress" style="width: 87.5%;"></div>
+                    </div>
                 </div>
                 <div class="task-data">
-                    <div><span class="task-key">目标</span><span class="task-value">80%</span></div>
-                    <div><span class="task-key">当前</span><span class="task-value">78.29%</span></div>
+                    <div><span class="task-key">总数</span><span class="task-value">16</span></div>
+                    <div><span class="task-key">已核实</span><span class="task-value">14</span></div>
                 </div>
             </div>
         </div>

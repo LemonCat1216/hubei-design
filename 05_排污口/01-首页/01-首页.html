@@ -1,0 +1,1216 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>湖北省排污口综合监管系统</title>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-blue: #3978ec;
+            --deep-blue: #0d72f2;
+            --number-blue: #2f69e8;
+            --bg-color: #f3f5f8;
+            --title-color: #061b3d;
+            --text-dark: #172642;
+            --text-light: #8b94a3;
+            --card-bg: #fff;
+            --line: #e8edf5;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: "PingFang SC", "Microsoft YaHei", Arial, sans-serif;
+            background: var(--bg-color);
+            color: var(--text-dark);
+            width: 100vw;
+            height: 100vh;
+            min-width: 0;
+            overflow: hidden;
+        }
+
+        .dashboard-shell {
+            width: 2048px;
+            height: 1080px;
+            transform-origin: 0 0;
+            background: var(--bg-color);
+        }
+
+        .header {
+            height: 69px;
+            padding: 0 17px 0 16px;
+            color: #fff;
+            background: linear-gradient(90deg, #3e79ef 0%, #3579ec 58%, #3d7def 100%);
+            display: grid;
+            grid-template-columns: 620px 990px 1fr;
+            align-items: stretch;
+            gap: 14px;
+            box-shadow: 0 2px 8px rgba(28, 87, 190, 0.22);
+        }
+
+        .header-logo {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            font-size: 30px;
+            line-height: 1;
+            font-weight: 800;
+            letter-spacing: 0;
+            white-space: nowrap;
+        }
+
+        .header-logo i {
+            width: 44px;
+            height: 44px;
+            border: 2px solid rgba(255, 255, 255, 0.94);
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 23px;
+            box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.2);
+        }
+
+        .nav-menu {
+            display: grid;
+            grid-template-columns: repeat(6, 155px);
+            align-items: end;
+            gap: 10px;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .nav-item {
+            height: 54px;
+            padding: 0 16px;
+            border: 1px solid rgba(178, 221, 255, 0.78);
+            border-bottom: 0;
+            border-radius: 7px 7px 0 0;
+            color: rgba(255, 255, 255, 0.95);
+            background: rgba(16, 134, 242, 0.25);
+            box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 11px;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .nav-item.active {
+            height: 54px;
+            color: var(--primary-blue);
+            background: #fff;
+            border-color: rgba(255, 255, 255, 0.75);
+            box-shadow: 0 -1px 12px rgba(20, 76, 165, 0.14);
+        }
+
+        .nav-item i {
+            margin: 0;
+            font-size: 20px;
+        }
+
+        .user-info {
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 4px;
+            color: #fff;
+            font-size: 16px !important;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .container {
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 0;
+            border-radius: 8px;
+            padding: 20px 22px;
+            box-shadow: 0 1px 3px rgba(38, 64, 110, 0.05);
+        }
+
+        .card-title {
+            margin: 0 0 19px;
+            color: var(--title-color);
+            font-size: 24px;
+            line-height: 1.2;
+            font-weight: 800;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .row-1 {
+            display: grid;
+            grid-template-columns: 0.78fr 0.88fr 0.88fr 1.66fr;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .stat-card {
+            height: 228px;
+            padding: 18px 23px 24px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            border: 1px solid;
+            box-shadow: none;
+        }
+
+        .row-1 .stat-card:nth-child(1) {
+            border-color: #8cc4ff;
+            background: #f3f9ff;
+        }
+
+        .row-1 .stat-card:nth-child(2) {
+            border-color: #70e6a2;
+            background: #f2fff8;
+        }
+
+        .row-1 .stat-card:nth-child(3) {
+            border-color: #ff9c4c;
+            background: #fff9f2;
+        }
+
+        .row-1 .stat-card:nth-child(4) {
+            border-color: #75c7e8;
+            background: #fff;
+        }
+
+        .border-grey,
+        .border-green,
+        .border-orange {
+            border-width: 1px;
+        }
+
+        .stat-title {
+            color: #06141f;
+            font-size: 25px;
+            line-height: 1.1;
+            font-weight: 800;
+        }
+
+        .stat-content {
+            flex: 1;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 18px;
+        }
+
+        .stat-num {
+            color: var(--number-blue);
+            font-size: 56px;
+            line-height: 1;
+            font-weight: 800;
+            letter-spacing: 0;
+        }
+
+        .stat-chart {
+            width: 136px;
+            height: 136px;
+            flex: 0 0 136px;
+            margin: 0 12px 0 0;
+        }
+
+        .audit-card {
+            overflow: hidden;
+            padding: 18px 24px 16px;
+        }
+
+        .audit-card .stat-title {
+            margin-bottom: 12px;
+        }
+
+        .audit-card .stat-content {
+            flex: 1;
+            display: flex;
+            align-items: center;
+        }
+
+        .audit-flow {
+            width: 100%;
+            display: grid;
+            grid-template-columns: var(--flow-columns, repeat(4, minmax(0, 1fr)));
+            gap: 0;
+            padding: 12px 4px 0 0;
+        }
+
+        .flow-step {
+            --flow-color: #8c97a3;
+            --flow-bg: #eef2f6;
+            min-width: 0;
+            height: 130px;
+            padding: 16px 18px 14px 24px;
+            background: var(--flow-bg);
+            color: var(--flow-color);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 50%, calc(100% - 18px) 100%, 0 100%, 18px 50%);
+        }
+
+        .flow-step:first-child {
+            padding-left: 22px;
+            padding-right: 20px;
+            border-radius: 8px 0 0 8px;
+            clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 50%, calc(100% - 18px) 100%, 0 100%);
+        }
+
+        .flow-step:last-child {
+            border-radius: 0 8px 8px 0;
+            clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%, 18px 50%);
+        }
+
+        .flow-step + .flow-step {
+            margin-left: -4px;
+        }
+
+        .flow-label {
+            font-size: 21px;
+            line-height: 1.15;
+            font-weight: 800;
+            white-space: nowrap;
+            padding-left: 2px;
+        }
+
+        .flow-num {
+            font-family: Arial, "Microsoft YaHei", sans-serif;
+            font-size: var(--flow-num-size, 40px);
+            line-height: 1;
+            font-weight: 800;
+            white-space: nowrap;
+        }
+
+        .flow-step:first-child .flow-num {
+            font-size: var(--flow-num-size, 40px);
+        }
+
+        .flow-step:last-child .flow-num {
+            font-size: var(--flow-num-size, 40px);
+        }
+
+        .flow-index {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #fff;
+            color: var(--flow-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: Arial, "Microsoft YaHei", sans-serif;
+            font-size: 18px;
+            font-weight: 800;
+            box-shadow: 0 1px 4px rgba(28, 56, 96, 0.10);
+        }
+
+        .flow-step.complete {
+            color: var(--flow-color);
+        }
+
+        .flow-step.complete .flow-num,
+        .flow-step.complete .flow-index {
+            color: var(--flow-color);
+        }
+
+        .flow-step.complete .flow-index {
+            background: #fff;
+            box-shadow: 0 1px 4px rgba(28, 56, 96, 0.10);
+        }
+
+        .row-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
+            height: 374px;
+        }
+
+        .row-2 > .card {
+            min-height: 0;
+            overflow: hidden;
+        }
+
+        .row-2 .card-title span:last-child {
+            color: #8f949c !important;
+            font-size: 15px !important;
+            font-weight: 600 !important;
+        }
+
+        .row-2 > .card > .card-title,
+        .row-3 > .card > .card-title {
+            font-size: 21px;
+        }
+
+        .task-item {
+            display: grid;
+            grid-template-columns: 135px minmax(140px, 1fr) 154px;
+            align-items: center;
+            column-gap: 24px;
+            margin: 0 0 50px;
+        }
+
+        .task-item:first-of-type {
+            margin-top: 34px !important;
+        }
+
+        .task-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .task-label {
+            width: auto;
+            color: #344159;
+            font-size: 21px;
+            line-height: 1;
+            font-weight: 800;
+            white-space: nowrap;
+        }
+
+        .task-progress-wrap {
+            height: 42px;
+            margin: 0;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .progress-target,
+        .progress-current,
+        .clue-bg {
+            height: 20px;
+            border: 1px solid #eef1f5;
+            background: #fff;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-target {
+            width: 100%;
+        }
+
+        .progress-target::before {
+            content: "";
+            position: absolute;
+            inset: 0 auto 0 0;
+            width: 80%;
+            background: #499bf4;
+        }
+
+        .progress-current {
+            width: 100% !important;
+            border-color: #eef1f5;
+            background: #fff;
+        }
+
+        .progress-current::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: var(--bar-width, 100%);
+            background: var(--bar-color, #7bdc00);
+        }
+
+        .clue-bg {
+            width: 100%;
+        }
+
+        .clue-progress {
+            height: 100%;
+            background: #7bdc00;
+            position: absolute;
+            left: 0;
+            top: 0;
+        }
+
+        .task-data {
+            width: auto;
+            padding-right: 10px;
+            color: #4a5260;
+            text-align: right;
+            font-size: 18px;
+            line-height: 1.45;
+            font-weight: 700;
+        }
+
+        .task-data > div {
+            display: grid;
+            grid-template-columns: 58px 82px;
+            justify-content: end;
+            align-items: center;
+            column-gap: 10px;
+        }
+
+        .task-key {
+            text-align: left;
+            white-space: nowrap;
+        }
+
+        .task-value {
+            display: inline-block;
+            min-width: 68px;
+            color: var(--number-blue);
+            font-size: 20px;
+            font-weight: 800;
+            text-align: right;
+        }
+
+        .task-item.clue-task .task-data div:last-child .task-key,
+        .task-item.clue-task .task-data div:last-child .task-value {
+            color: #7bdc00;
+        }
+
+        .task-item.fix-task .task-data div:last-child .task-key,
+        .task-item.fix-task .task-data div:last-child .task-value {
+            color: #7bdc00;
+        }
+
+        .task-item.source-task .task-data div:last-child .task-key,
+        .task-item.source-task .task-data div:last-child .task-value {
+            color: #22d3ee;
+        }
+
+        .type-grid {
+            flex: 1;
+            padding: 6px 10px 8px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            gap: 46px 50px;
+            align-content: center;
+            position: relative;
+        }
+
+        .type-grid::before,
+        .type-grid::after {
+            content: "";
+            position: absolute;
+            background: #d7d7d7;
+            left: 50%;
+            width: 2px;
+            margin-left: -1px;
+            border-radius: 999px;
+            opacity: 0.92;
+        }
+
+        .type-grid::before {
+            top: calc(25% - 16px);
+            height: 32px;
+        }
+
+        .type-grid::after {
+            top: calc(75% - 16px);
+            height: 32px;
+        }
+
+        .type-item {
+            display: flex;
+            align-items: center;
+            gap: 27px;
+            min-width: 0;
+        }
+
+        .type-icon {
+            width: 74px;
+            height: 74px;
+            flex: 0 0 74px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 31px;
+            border: 12px solid rgba(255, 255, 255, 0.64);
+            box-shadow: 0 0 0 10px rgba(40, 124, 245, 0.08), 0 7px 18px rgba(22, 99, 196, 0.14);
+        }
+
+        .type-item:nth-child(2) .type-icon {
+            box-shadow: 0 0 0 10px rgba(14, 188, 175, 0.08), 0 7px 18px rgba(14, 188, 175, 0.14);
+        }
+
+        .type-item:nth-child(3) .type-icon {
+            box-shadow: 0 0 0 10px rgba(255, 170, 12, 0.1), 0 7px 18px rgba(255, 170, 12, 0.17);
+        }
+
+        .type-item:nth-child(4) .type-icon {
+            box-shadow: 0 0 0 10px rgba(160, 185, 210, 0.13), 0 7px 18px rgba(129, 163, 193, 0.18);
+        }
+
+        .type-info .num {
+            color: #111;
+            font-size: 39px;
+            line-height: 1;
+            font-weight: 800;
+        }
+
+        .type-info .desc {
+            margin-top: 12px;
+            color: #10203a;
+            font-size: 19px;
+            line-height: 1.15;
+            font-weight: 800;
+            white-space: nowrap;
+        }
+
+        .dist-wrap {
+            flex: 1;
+            min-height: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+        }
+
+        .dist-wrap-inner {
+            height: 100%;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 38px;
+        }
+
+        .dist-list {
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .dist-header {
+            margin: 0 0 4px;
+            padding: 0 0 0 14px;
+            color: #2b3343;
+            border: 0;
+            border-left: 2px solid #c7cbd2;
+            font-size: 20px;
+            line-height: 1.15;
+            font-weight: 800;
+            white-space: nowrap;
+        }
+
+        .dist-scroll {
+            flex: 1;
+            min-height: 0;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .dist-scroll::before,
+        .dist-scroll::after {
+            content: "";
+            position: absolute;
+            left: 0;
+            right: 0;
+            height: 14px;
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        .dist-scroll::before {
+            top: 0;
+            background: linear-gradient(180deg, #fff 0%, rgba(255, 255, 255, 0) 100%);
+        }
+
+        .dist-scroll::after {
+            bottom: 0;
+            background: linear-gradient(0deg, #fff 0%, rgba(255, 255, 255, 0) 100%);
+        }
+
+        .dist-track {
+            --scroll-distance: 0px;
+            display: flex;
+            flex-direction: column;
+            will-change: transform;
+            animation: distAutoScroll 14s linear infinite;
+        }
+
+        .dist-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding-bottom: 10px;
+        }
+
+        @keyframes distAutoScroll {
+            from {
+                transform: translateY(0);
+            }
+            to {
+                transform: translateY(calc(var(--scroll-distance) * -1));
+            }
+        }
+
+        .dist-row {
+            min-height: 58px;
+            padding: 0 20px 0 22px;
+            border: 0;
+            border-radius: 4px;
+            background: #eef6ff;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            overflow: hidden;
+            color: #1a2942;
+            font-size: 20px;
+            line-height: 1;
+            font-weight: 800;
+        }
+
+        .dist-row::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(90deg, rgba(218, 235, 255, 0.94), rgba(239, 247, 255, 0.94));
+        }
+
+        .dist-row::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            right: 58px;
+            border-style: solid;
+            border-width: 58px 36px 0 0;
+            border-color: rgba(255, 255, 255, 0.72) transparent transparent transparent;
+            transform: skewX(-8deg);
+        }
+
+        .dist-row > span {
+            position: relative;
+            z-index: 1;
+        }
+
+        .dist-val {
+            color: var(--number-blue);
+            font-size: 31px;
+            line-height: 1;
+            font-weight: 800;
+        }
+
+        .row-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            height: 364px;
+        }
+
+        .row-3 .card {
+            padding: 16px 22px 14px;
+            min-height: 0;
+        }
+
+        .row-3 .card-title {
+            height: 38px;
+            margin-bottom: 12px;
+        }
+
+        .row-3 .card-title > span {
+            display: inline-flex;
+            gap: 29px;
+            align-items: center;
+            color: #0b1b35;
+            font-size: 22px;
+            line-height: 38px;
+            font-weight: 800;
+            position: relative;
+        }
+
+        .row-3 .card-title > span::after {
+            content: "";
+            position: absolute;
+            left: 0;
+            bottom: -1px;
+            width: 108px;
+            height: 3px;
+            background: #3978ec;
+        }
+
+        .chart-tabs {
+            display: inline-flex;
+            align-items: center;
+            gap: 29px;
+            height: 38px;
+        }
+
+        .chart-tab {
+            height: 38px;
+            padding: 0;
+            border: 0;
+            background: transparent;
+            color: #0b1b35;
+            font: inherit;
+            font-size: 22px;
+            line-height: 38px;
+            font-weight: 800;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .chart-tab.active::after {
+            content: "";
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: -1px;
+            height: 3px;
+            background: #3978ec;
+        }
+
+        select {
+            min-width: 272px;
+            height: 44px;
+            padding: 0 18px;
+            border: 1px solid #e3e8f0 !important;
+            border-radius: 5px !important;
+            color: #4f5969 !important;
+            background: #fff;
+            font-size: 16px;
+            font-weight: 700;
+            outline: none;
+        }
+
+        .chart-box {
+            width: 100%;
+            height: calc(100% - 50px);
+        }
+    </style>
+</head>
+<body>
+
+<div class="dashboard-shell">
+<div class="header">
+    <div class="header-logo">
+        <i class="fa-solid fa-shield-halved"></i> 湖北省排污口综合监管系统
+    </div>
+    <div class="nav-menu">
+        <div class="nav-item active"><i class="fa-solid fa-house"></i> 首页</div>
+        <div class="nav-item"><i class="fa-solid fa-map"></i> 一张图</div>
+        <div class="nav-item"><i class="fa-solid fa-briefcase"></i> 业务管理</div>
+        <div class="nav-item"><i class="fa-solid fa-file-lines"></i> 一口一档</div>
+        <div class="nav-item"><i class="fa-solid fa-water"></i> 水污染源</div>
+        <div class="nav-item"><i class="fa-solid fa-chart-pie"></i> 综合统计</div>
+    </div>
+    <div class="user-info" style="font-size: 14px;">
+        <i class="fa-regular fa-user"></i> 湖北省账号
+    </div>
+</div>
+
+<div class="container">
+
+    <div class="row-1">
+        <div class="card stat-card border-grey">
+            <div class="stat-title">排污口排查</div>
+            <div class="stat-content">
+                <div class="stat-num">34124</div>
+            </div>
+        </div>
+
+        <div class="card stat-card border-green">
+            <div class="stat-title">排污口溯源</div>
+            <div class="stat-content">
+                <div class="stat-num">26715</div>
+                <div class="stat-chart" id="chart-suyuan"></div>
+            </div>
+        </div>
+
+        <div class="card stat-card border-orange">
+            <div class="stat-title">排污口整治</div>
+            <div class="stat-content">
+                <div class="stat-num">19665</div>
+                <div class="stat-chart" id="chart-zhengzhi"></div>
+            </div>
+        </div>
+
+        <div class="card stat-card border-grey audit-card">
+            <div class="stat-title">流转状态</div>
+            <div class="stat-content">
+                <div class="audit-flow" aria-label="区县未提交到省级已通过审批流">
+                    <div class="flow-step" style="--flow-color: #6f88ad; --flow-bg: #eef5ff;">
+                        <div class="flow-index">1</div>
+                        <div class="flow-label">区县未提交</div>
+                        <div>
+                            <div class="flow-num">11294</div>
+                        </div>
+                    </div>
+                    <div class="flow-step" style="--flow-color: #4f8fee; --flow-bg: #e3efff;">
+                        <div class="flow-index">2</div>
+                        <div class="flow-label">地市待审核</div>
+                        <div>
+                            <div class="flow-num">980</div>
+                        </div>
+                    </div>
+                    <div class="flow-step" style="--flow-color: #f08a1c; --flow-bg: #fff1e0;">
+                        <div class="flow-index">3</div>
+                        <div class="flow-label">省级待审核</div>
+                        <div>
+                            <div class="flow-num">312</div>
+                        </div>
+                    </div>
+                    <div class="flow-step complete" style="--flow-color: #24a943; --flow-bg: #e5f6e9;">
+                        <div class="flow-index">4</div>
+                        <div class="flow-label">省级已通过</div>
+                        <div>
+                            <div class="flow-num">19665</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row-2">
+        <div class="card">
+            <div class="card-title">
+                <span>任务完成情况</span>
+                <span style="font-size: 12px; color: #999; font-weight: normal;">截至 2026-06-25</span>
+            </div>
+            <div class="task-item source-task">
+                <div class="task-label">溯源任务:</div>
+                <div class="task-progress-wrap">
+                    <div class="progress-target"></div>
+                    <div class="progress-current" style="--bar-width: 78.29%; --bar-color: #22d3ee;"></div>
+                </div>
+                <div class="task-data">
+                    <div><span class="task-key">目标</span><span class="task-value">80%</span></div>
+                    <div><span class="task-key">当前</span><span class="task-value">78.29%</span></div>
+                </div>
+            </div>
+            <div class="task-item fix-task">
+                <div class="task-label">整治任务:</div>
+                <div class="task-progress-wrap">
+                    <div class="progress-target"></div>
+                    <div class="progress-current" style="--bar-width: 57.63%;"></div>
+                </div>
+                <div class="task-data">
+                    <div><span class="task-key">目标</span><span class="task-value">80%</span></div>
+                    <div><span class="task-key">当前</span><span class="task-value">57.63%</span></div>
+                </div>
+            </div>
+            <div class="task-item clue-task">
+                <div class="task-label">问题线索:</div>
+                <div class="task-progress-wrap" style="justify-content: center;">
+                    <div class="clue-bg">
+                        <div class="clue-progress" style="width: 87.5%;"></div>
+                    </div>
+                </div>
+                <div class="task-data">
+                    <div><span class="task-key">总数</span><span class="task-value">16</span></div>
+                    <div><span class="task-key">已核实</span><span class="task-value">14</span></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" style="display: flex; flex-direction: column;">
+            <div class="card-title">排污口类型数据</div>
+            <div class="type-grid">
+                <div class="type-item">
+                    <div class="type-icon" style="background: #3b82f6;"><i class="fa-solid fa-house-chimney-window"></i></div>
+                    <div class="type-info">
+                        <div class="num">2270</div>
+                        <div class="desc">工业排污口</div>
+                    </div>
+                </div>
+                <div class="type-item">
+                    <div class="type-icon" style="background: #10b981;"><i class="fa-solid fa-plant-wilt"></i></div>
+                    <div class="type-info">
+                        <div class="num">151</div>
+                        <div class="desc">农业排口</div>
+                    </div>
+                </div>
+                <div class="type-item">
+                    <div class="type-icon" style="background: #f59e0b;"><i class="fa-solid fa-water"></i></div>
+                    <div class="type-info">
+                        <div class="num">1182</div>
+                        <div class="desc">城镇污水处理厂排污口</div>
+                    </div>
+                </div>
+                <div class="type-item">
+                    <div class="type-icon" style="background: #94a3b8;"><i class="fa-solid fa-file-invoice"></i></div>
+                    <div class="type-info">
+                        <div class="num">30520</div>
+                        <div class="desc">其他排口</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" style="display: flex; flex-direction: column;">
+            <div class="card-title">排污口分布</div>
+            <div class="dist-wrap">
+                <div class="dist-wrap-inner">
+                    <div class="dist-list">
+                        <div class="dist-header">各地市排污口数量</div>
+                        <div class="dist-scroll">
+                            <div class="dist-track">
+                                <div class="dist-group">
+                                    <div class="dist-row"><span>武汉市</span><span class="dist-val">8924</span></div>
+                                    <div class="dist-row"><span>荆州市</span><span class="dist-val">6547</span></div>
+                                    <div class="dist-row"><span>宜昌市</span><span class="dist-val">5101</span></div>
+                                    <div class="dist-row"><span>随州市</span><span class="dist-val">1824</span></div>
+                                    <div class="dist-row"><span>孝感市</span><span class="dist-val">1811</span></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="dist-list">
+                        <div class="dist-header">24个重点河湖排污口数量</div>
+                        <div class="dist-scroll">
+                            <div class="dist-track">
+                                <div class="dist-group">
+                                    <div class="dist-row"><span>清江</span><span class="dist-val">947</span></div>
+                                    <div class="dist-row"><span>陆水河</span><span class="dist-val">292</span></div>
+                                    <div class="dist-row"><span>松滋河</span><span class="dist-val">280</span></div>
+                                    <div class="dist-row"><span>藕池河</span><span class="dist-val">268</span></div>
+                                    <div class="dist-row"><span>洪湖</span><span class="dist-val">241</span></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row-3">
+        <div class="card">
+            <div class="card-title">
+                <div class="chart-tabs" aria-label="任务类型切换">
+                    <button class="chart-tab active" type="button" data-task-tab="monitor">监测任务</button>
+                    <button class="chart-tab" type="button" data-task-tab="source">溯源任务</button>
+                </div>
+                <select style="border: 1px solid #ddd; padding: 4px; border-radius: 4px; color: #666; outline: none;"><option>按地市统计</option></select>
+            </div>
+            <div class="chart-box" id="chart-bar-1"></div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">
+                <span>整治任务</span>
+                <select style="border: 1px solid #ddd; padding: 4px; border-radius: 4px; color: #666; outline: none;"><option>按地市统计</option></select>
+            </div>
+            <div class="chart-box" id="chart-bar-2"></div>
+        </div>
+    </div>
+</div>
+</div>
+
+<script>
+    function fitDashboard() {
+        var shell = document.querySelector('.dashboard-shell');
+        if (!shell) return;
+        var designWidth = 2048;
+        var designHeight = 1080;
+        var scale = Math.min(window.innerWidth / designWidth, window.innerHeight / designHeight);
+        shell.style.transform = 'scale(' + scale + ')';
+    }
+
+    fitDashboard();
+
+    // 1. 溯源率
+    var chartSuyuan = echarts.init(document.getElementById('chart-suyuan'));
+    chartSuyuan.setOption({
+        series: [{
+            type: 'pie', radius: ['68%', '88%'], avoidLabelOverlap: false,
+            label: {
+                show: true,
+                position: 'center',
+                formatter: '{percent|78.29%}\n{name|溯源率}',
+                lineHeight: 26,
+                rich: {
+                    percent: { color: '#2b61f4', fontSize: 21, fontWeight: 'bold', lineHeight: 26 },
+                    name: { color: '#4b5563', fontSize: 18, fontWeight: 'bold', lineHeight: 24 }
+                }
+            },
+            data: [
+                { value: 78.29, itemStyle: { color: '#3b82f6' } },
+                { value: 21.71, itemStyle: { color: '#e5e7eb' } }
+            ]
+        }]
+    });
+
+    // 2. 整治率
+    var chartZhengzhi = echarts.init(document.getElementById('chart-zhengzhi'));
+    chartZhengzhi.setOption({
+        series: [{
+            type: 'pie', radius: ['68%', '88%'], avoidLabelOverlap: false,
+            label: {
+                show: true,
+                position: 'center',
+                formatter: '{percent|57.63%}\n{name|整治率}',
+                lineHeight: 26,
+                rich: {
+                    percent: { color: '#2b61f4', fontSize: 21, fontWeight: 'bold', lineHeight: 26 },
+                    name: { color: '#4b5563', fontSize: 18, fontWeight: 'bold', lineHeight: 24 }
+                }
+            },
+            data: [
+                { value: 57.63, itemStyle: { color: '#3b82f6' } },
+                { value: 42.37, itemStyle: { color: '#e5e7eb' } }
+            ]
+        }]
+    });
+
+    function initDistributionScroll() {
+        document.querySelectorAll('.dist-track').forEach(function(track) {
+            var group = track.querySelector('.dist-group');
+            if (!group || track.dataset.ready === 'true') return;
+            var clone = group.cloneNode(true);
+            clone.setAttribute('aria-hidden', 'true');
+            track.appendChild(clone);
+            track.style.setProperty('--scroll-distance', group.offsetHeight + 'px');
+            track.dataset.ready = 'true';
+        });
+    }
+
+    initDistributionScroll();
+
+    function fitAuditFlow() {
+        var flow = document.querySelector('.audit-flow');
+        if (!flow) return;
+        var steps = Array.prototype.slice.call(flow.querySelectorAll('.flow-step'));
+        if (!steps.length) return;
+
+        steps.forEach(function(step) {
+            var numEl = step.querySelector('.flow-num');
+            var digitLen = numEl && numEl.textContent ? (numEl.textContent.match(/\d/g) || []).length : 0;
+            var size = 30;
+            if (digitLen >= 5) size = 29;
+            if (digitLen >= 6) size = 27;
+            step.style.setProperty('--flow-num-size', size + 'px');
+        });
+
+        var widths = steps.map(function(step) {
+            var labelEl = step.querySelector('.flow-label');
+            var numEl = step.querySelector('.flow-num');
+            var labelWidth = labelEl ? labelEl.scrollWidth : 0;
+            var numWidth = numEl ? numEl.scrollWidth : 0;
+            return Math.max(labelWidth, numWidth) + 56;
+        });
+
+        var total = widths.reduce(function(sum, value) { return sum + value; }, 0) || 1;
+        flow.style.setProperty('--flow-columns', widths.map(function(width) {
+            return (width / total * 100).toFixed(2) + '%';
+        }).join(' '));
+    }
+
+    var auditFlowObserver = window.MutationObserver ? new MutationObserver(function() {
+        fitAuditFlow();
+    }) : null;
+    if (auditFlowObserver) {
+        var auditFlowRoot = document.querySelector('.audit-flow');
+        if (auditFlowRoot) {
+            auditFlowObserver.observe(auditFlowRoot, {
+                childList: true,
+                subtree: true,
+                characterData: true
+            });
+        }
+    }
+
+    if (document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(fitAuditFlow).catch(function() {});
+    }
+
+    var taskChartOptions = {
+        monitor: {
+            xAxisData: ['武汉市', '荆州市', '宜昌市', '随州市', '孝感市', '黄冈市', '十堰市', '荆门市', '恩施州', '咸宁市', '鄂州市'],
+            seriesData: [15, 41, 53, 20, 83, 55, 68, 47, 51, 81, 74]
+        },
+        source: {
+            xAxisData: ['武汉市', '荆州市', '宜昌市', '随州市', '孝感市', '黄冈市', '十堰市', '荆门市', '恩施州', '咸宁市', '鄂州市'],
+            seriesData: [15, 41, 53, 20, 83, 55, 68, 47, 51, 81, 74]
+        }
+    };
+
+    function buildTaskChartOption(type) {
+        var data = taskChartOptions[type] || taskChartOptions.monitor;
+        return {
+            grid: { left: '3%', right: '4%', bottom: '10%', top: '15%', containLabel: true },
+            xAxis: {
+                type: 'category',
+                data: data.xAxisData,
+                axisLabel: { interval: 0, rotate: 30, fontSize: 11, color: '#666' },
+                axisTick: { show: false },
+                axisLine: { lineStyle: { color: '#eee' } }
+            },
+            yAxis: { type: 'value', min: 0, max: 100, axisLabel: { formatter: '{value}%', color: '#5f6368', fontSize: 14 }, splitLine: { lineStyle: { type: 'solid', color: '#d9d9d9' } } },
+            series: [{
+                data: data.seriesData,
+                type: 'bar', barWidth: 25,
+                itemStyle: { color: '#0d72f2' },
+                label: { show: true, position: 'top', formatter: '{c}%', fontSize: 14, fontWeight: 'bold', color: '#9b9b9b' }
+            }]
+        };
+    }
+
+    // 3. 监测/溯源任务
+    var chartBar1 = echarts.init(document.getElementById('chart-bar-1'));
+    chartBar1.setOption(buildTaskChartOption('monitor'));
+
+    document.querySelectorAll('[data-task-tab]').forEach(function(tabButton) {
+        tabButton.addEventListener('click', function() {
+            document.querySelectorAll('[data-task-tab]').forEach(function(button) {
+                button.classList.toggle('active', button === tabButton);
+            });
+            chartBar1.setOption(buildTaskChartOption(tabButton.dataset.taskTab), true);
+            chartBar1.resize();
+        });
+    });
+
+    // 4. 整治任务
+    var chartBar2 = echarts.init(document.getElementById('chart-bar-2'));
+    chartBar2.setOption({
+        grid: { left: '3%', right: '4%', bottom: '10%', top: '15%', containLabel: true },
+        xAxis: {
+            type: 'category',
+            data: ['咸宁市', '黄石市', '鄂州市', '襄阳市', '潜江市', '黄冈市', '孝感市', '仙桃市', '恩施州', '荆州市', '天门市'],
+            axisLabel: { interval: 0, rotate: 30, fontSize: 11, color: '#666' },
+            axisTick: { show: false },
+            axisLine: { lineStyle: { color: '#eee' } }
+        },
+        yAxis: { type: 'value', min: 0, max: 100, axisLabel: { formatter: '{value}%', color: '#5f6368', fontSize: 14 }, splitLine: { lineStyle: { type: 'solid', color: '#d9d9d9' } } },
+        series: [{
+            data: [93, 90, 82, 76, 76, 74, 73, 72, 70, 66, 49],
+            type: 'bar', barWidth: 25,
+            itemStyle: { color: '#0d72f2' },
+            label: { show: true, position: 'top', formatter: '{c}%', fontSize: 14, fontWeight: 'bold', color: '#9b9b9b' }
+        }]
+    });
+
+    fitAuditFlow();
+    window.addEventListener('load', fitAuditFlow);
+
+    window.addEventListener('resize', function() {
+        fitDashboard();
+        fitAuditFlow();
+        document.querySelectorAll('.dist-track').forEach(function(track) {
+            var group = track.querySelector('.dist-group');
+            if (group) track.style.setProperty('--scroll-distance', group.offsetHeight + 'px');
+        });
+        chartSuyuan.resize();
+        chartZhengzhi.resize();
+        chartBar1.resize();
+        chartBar2.resize();
+    });
+</script>
+</body>
+</html>

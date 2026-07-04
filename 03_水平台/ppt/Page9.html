@@ -1,79 +1,73 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>湖北省水生态环境形势分析 - 第09页</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>全省态势 - 月度水质趋势变化</title>
+<link rel="stylesheet" href="ppt-style.css">
 <style>
-html{zoom:175%;background:#E8ECF1;height:100%}
-*{margin:0;padding:0;box-sizing:border-box}
-body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei","Noto Sans SC",sans-serif;min-height:100vh;display:flex;align-items:flex-start;justify-content:center;padding:20px;-webkit-font-smoothing:antialiased}
-.slide-container{width:100%;max-width:860px;aspect-ratio:16/9;background:#fff;border-radius:14px;box-shadow:0 20px 60px rgba(0,0,0,.10),0 4px 20px rgba(0,0,0,.06);border:none;display:flex;flex-direction:column;justify-content:space-between;overflow:hidden}
-.ppt-header{display:flex;justify-content:space-between;align-items:flex-start;background:linear-gradient(135deg,#0B1D33 0%,#142B44 50%,#1A365D 100%);color:#fff;padding:14px 28px;border-bottom:3px solid #059669}
-.ppt-title{font-size:15px;font-weight:700;letter-spacing:1.5px;text-shadow:0 1px 2px rgba(0,0,0,.2)}
-.nav-page-num{background:#059669;padding:3px 10px;border-radius:4px;font-size:10px;font-weight:700;letter-spacing:.5px}
-.core-bar{padding:12px 28px;font-size:11px;font-weight:600;line-height:1.6;color:#065F46;background:linear-gradient(90deg,#ECFDF5,#F0FDF4);border-left:4px solid #059669;border-bottom:1px solid #D1FAE5}
-.bd{flex:1;padding:16px 24px;display:flex;gap:20px;overflow:hidden}
-.left-column{flex:1;display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.kpi-block{background:#fff;border:1px solid #E2E8F0;border-top:3px solid #2563EB;border-radius:10px;box-shadow:0 2px 8px rgba(0,0,0,.04);padding:14px;display:flex;flex-direction:column;justify-content:center;align-items:flex-start;text-align:center}
-.kpi-block.hl{border-top-color:#059669;background:linear-gradient(180deg,#F0FDF4,#fff)}
-.kpi-block.al{border-top-color:#DC2626;background:linear-gradient(180deg,#FEF2F2,#fff)}
-.kpi-title{font-size:10px;color:#475569;font-weight:700;margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px}
-.kpi-num{font-size:24px;font-weight:800;color:#0F172A;line-height:1.2}
-.kpi-block.hl .kpi-num{color:#059669}
-.kpi-block.al .kpi-num{color:#DC2626}
-.kpi-sub{font-size:9px;color:#94A3B8;margin-top:4px}
-.right-column{flex:1.4;display:flex;flex-direction:column;gap:12px}
-.table-box{border:1px solid #E2E8F0;border-radius:8px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.03)}
-.table-box table{width:100%;border-collapse:collapse;text-align:center}
-.table-box th{background:linear-gradient(180deg,#0F172A,#1E293B);color:#fff;padding:8px 10px;font-size:10px;font-weight:600;letter-spacing:.3px}
-.table-box td{padding:8px 10px;font-size:10px;color:#334155;border-bottom:1px solid #F1F5F9}
-.table-box tr:nth-child(even){background:#F8FAFC}
-.table-box tr:hover{background:#F0F7FF}
-.warning-wrapper{flex:1;display:flex;flex-direction:column;gap:6px}
-.warning-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;flex:1}
-.warning-card{background:#FFFBEB;border:1px solid #FDE68A;border-left:4px solid #D97706;border-radius:8px;padding:10px 12px;display:flex;flex-direction:column;box-shadow:0 1px 4px rgba(0,0,0,.03)}
-.card-loc{font-size:11px;font-weight:700;color:#92400E;border-bottom:1px dashed rgba(146,64,14,.2);padding-bottom:4px;margin-bottom:6px}
-.card-det{font-size:9.5px;color:#374151;line-height:1.5}
-.ft{display:flex;align-items:flex-start;justify-content:space-between;padding:12px 28px;font-size:10px;color:#94A3B8;border-top:1px solid #E2E8F0;background:#F8FAFC}
+.trend-chart{flex:1;display:flex;align-items:flex-end;gap:4px;padding:10px 0 0;position:relative}
+.trend-bar{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px}
+.trend-bar .bar{width:100%;border-radius:4px 4px 0 0;position:relative}
+.trend-bar .bar .val{position:absolute;top:-14px;left:50%;transform:translateX(-50%);font-size:8px;font-weight:700;white-space:nowrap}
+.trend-bar .lbl{font-size:8px;color:#64748B;font-weight:600;margin-top:2px}
 </style>
 </head>
 <body>
 <div class="slide-container">
-    <div class="ppt-header">
-        <span class="ppt-title">全省态势：月度水质趋势变化</span>
-        <span class="nav-page-num">P09</span>
-    </div>
-    <div class="core-bar">▎ 2026年1-5月全省国控断面Ⅰ-Ⅲ类比例呈xx趋势，5月当月87.6%，整体保持稳定。</div>
+    <div class="ppt-header"><span class="ppt-title">全省态势：月度水质趋势变化</span><span class="nav-page-num">P09</span></div>
+    <div class="core-bar">▎ 2026年1-5月全省国控断面Ⅰ-Ⅲ类比例整体平稳，5月当月87.6%。1-3月呈小幅上升趋势，4-5月略有回落。</div>
     <div class="bd">
         <div class="left-column">
-            <div class="kpi-block hl"><div class="kpi-title">月均达标率</div><div class="kpi-num">xx.xx%</div><div class="kpi-sub">1-5月均值</div></div>
-            <div class="kpi-block"><div class="kpi-title">最优月份</div><div class="kpi-num">x月</div><div class="kpi-sub">达标率 xx%</div></div>
-            <div class="kpi-block al"><div class="kpi-title">最差月份</div><div class="kpi-num">x月</div><div class="kpi-sub">达标率 xx%</div></div>
-            <div class="kpi-block"><div class="kpi-title">波动幅度</div><div class="kpi-num">xx百分点</div><div class="kpi-sub">最高-最低</div></div>
+            <div class="kpi-block highlight"><div class="kpi-title">月均达标率</div><div class="kpi-num">87.1%</div><div class="kpi-sub">1-5月均值</div></div>
+            <div class="kpi-block"><div class="kpi-title">最优月份</div><div class="kpi-num" style="font-size:16px;color:#2563EB;">3月</div><div class="kpi-sub">达标率 88.6%</div></div>
+            <div class="kpi-block alert"><div class="kpi-title">最差月份</div><div class="kpi-num" style="font-size:16px;">1月</div><div class="kpi-sub">达标率 85.0%</div></div>
+            <div class="kpi-block"><div class="kpi-title">波动幅度</div><div class="kpi-num" style="font-size:16px;">3.6pp</div><div class="kpi-sub">峰谷差值</div></div>
         </div>
         <div class="right-column">
-            <div class="table-box">
-                <table>
-                    <thead><tr><th>月份</th><th>国控Ⅰ-Ⅲ类</th><th>国控劣V类</th><th>省控Ⅰ-Ⅲ类</th><th>省控劣V类</th><th>水质指数</th></tr></thead>
-                    <tbody>
-                        <tr><td style="font-weight:bold;text-align:left">1月</td><td>xx个/xx%</td><td>xx个</td><td>xx个/xx%</td><td>xx个</td><td>x.xxx</td></tr>
-                        <tr><td style="font-weight:bold;text-align:left">2月</td><td>xx个/xx%</td><td>xx个</td><td>xx个/xx%</td><td>xx个</td><td>x.xxx</td></tr>
-                        <tr><td style="font-weight:bold;text-align:left">3月</td><td>xx个/xx%</td><td>xx个</td><td>xx个/xx%</td><td>xx个</td><td>x.xxx</td></tr>
-                        <tr><td style="font-weight:bold;text-align:left">4月</td><td>xx个/xx%</td><td>xx个</td><td>xx个/xx%</td><td>xx个</td><td>x.xxx</td></tr>
-                        <tr><td style="font-weight:bold;text-align:left">5月</td><td>144个/87.6%</td><td>11个</td><td>324个/xx%</td><td>11个</td><td>3.9699</td></tr>
-                    </tbody>
-                </table>
-            </div>
-            <div class="warning-wrapper">
-                <div class="warning-grid">
-                    <div class="warning-card"><div class="card-loc">📉 月度波动</div><div class="card-det">5月当月Ⅰ-Ⅲ类比例较4月下降，劣V类断面增加2个。</div></div>
-                    <div class="warning-card"><div class="card-loc">📊 趋势研判</div><div class="card-det">累计月达标率87.6%高于考核目标，但5月存在局部波动。</div></div>
+            <div class="chart-wrapper" style="flex:1;">
+                <div class="chart-header">
+                    <div class="chart-title">1-5月国控/省控达标率趋势</div>
+                    <div class="chart-legend">
+                        <div class="legend-item"><span class="legend-dot" style="background:#3b82f6;"></span>国控达标率</div>
+                        <div class="legend-item"><span class="legend-dot" style="background:#059669;"></span>省控达标率</div>
+                        <div class="legend-item"><span class="legend-dot" style="background:#DC2626;opacity:.5;"></span>考核目标</div>
+                    </div>
                 </div>
+                <div class="trend-chart" id="trendChart"></div>
             </div>
+            <div class="table-box"><table>
+                <thead><tr><th>月份</th><th>国控Ⅰ-Ⅲ类</th><th>国控劣Ⅴ类</th><th>省控Ⅰ-Ⅲ类</th><th>省控劣Ⅴ类</th><th>水质指数</th></tr></thead>
+                <tbody>
+                    <tr><td>1月</td><td><span class="badge-g">85.0%</span></td><td><span class="badge-r">12个</span></td><td><span class="badge-g">90.7%</span></td><td><span class="badge-r">13个</span></td><td>4.12</td></tr>
+                    <tr><td>2月</td><td><span class="badge-g">86.2%</span></td><td><span class="badge-r">11个</span></td><td><span class="badge-g">91.6%</span></td><td><span class="badge-r">12个</span></td><td>4.05</td></tr>
+                    <tr><td>3月</td><td><span class="badge-g">88.6%</span></td><td><span class="badge-r">9个</span></td><td><span class="badge-g">93.4%</span></td><td><span class="badge-r">10个</span></td><td>3.89</td></tr>
+                    <tr><td>4月</td><td><span class="badge-g">88.0%</span></td><td><span class="badge-r">10个</span></td><td><span class="badge-g">92.8%</span></td><td><span class="badge-r">11个</span></td><td>3.92</td></tr>
+                    <tr><td>5月</td><td><span class="badge-g">87.6%</span></td><td><span class="badge-r">11个</span></td><td><span class="badge-g">93.4%</span></td><td><span class="badge-r">11个</span></td><td>3.97</td></tr>
+                </tbody>
+            </table></div>
         </div>
     </div>
     <div class="ft"><span>2026年5月生态环境月度专报</span><span>提示：仅供汇报使用</span></div>
 </div>
+<script>
+var data=[
+    {m:"1月",gk:85.0,sk:90.7},
+    {m:"2月",gk:86.2,sk:91.6},
+    {m:"3月",gk:88.6,sk:93.4},
+    {m:"4月",gk:88.0,sk:92.8},
+    {m:"5月",gk:87.6,sk:93.4}
+];
+var c=document.getElementById("trendChart"),h="";
+var base=75;
+data.forEach(function(d){
+    var gh=Math.round((d.gk-base)*5),sh=Math.round((d.sk-base)*5);
+    h+='<div class="trend-bar">'+
+       '<div class="bar" style="height:'+gh+'px;background:#3b82f6;"><span class="val" style="color:#3b82f6;">'+d.gk+'%</span></div>'+
+       '<div class="bar" style="height:'+sh+'px;background:#059669;margin-top:2px;"><span class="val" style="color:#059669;">'+d.sk+'%</span></div>'+
+       '<div class="lbl">'+d.m+'</div></div>';
+});
+c.innerHTML=h;
+</script>
 </body>
 </html>

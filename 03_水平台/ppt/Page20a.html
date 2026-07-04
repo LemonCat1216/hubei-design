@@ -1,101 +1,161 @@
 ﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>第二章 · 流域湖库小结</title>
-<link rel="stylesheet" href="ppt-style.css">
-<style>
-.ch2-summary {
-    flex:1;
-    display:flex;
-    flex-direction:column;
-    justify-content:center;
-    padding:24px 36px;
-    gap:18px;
-}
-.ch2-title {
-    font-size:15px;font-weight:700;letter-spacing:3px;color:#059669;
-    border-left:3px solid #059669;padding-left:12px;margin-bottom:4px;
-}
-.ch2-conclusion {
-    background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-left:4px solid #059669;
-    padding:14px 18px;border-radius:0;display:flex;gap:14px;align-items:flex-start;
-}
-.ch2-conclusion.warn { border-left-color:#D97706; }
-.ch2-conclusion.alert { border-left-color:#DC2626; }
-.cidx {
-    flex-shrink:0;width:26px;height:26px;border-radius:50%;
-    display:flex;align-items:center;justify-content:center;
-    font-weight:700;font-size:13px;color:#fff;background:#059669;margin-top:1px;
-}
-.ch2-conclusion.warn .cidx { background:#D97706; }
-.ch2-conclusion.alert .cidx { background:#DC2626; }
-.cbody { flex:1; }
-.cmain { font-size:13px;font-weight:600;color:#fff; }
-.csub { font-size:11px;color:rgba(255,255,255,.55);margin-top:3px;line-height:1.5; }
-.ch2-next {
-    margin-top:6px;padding:12px 16px;
-    background:rgba(255,255,255,.04);border:1px dashed rgba(255,255,255,.15);
-    text-align:center;font-size:11px;color:rgba(255,255,255,.45);letter-spacing:.5px;
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第二章 · 流域湖库小结</title>
+    <link rel="stylesheet" href="ppt-style.css">
+    <style>
+        /* 收紧整体布局空间，防止溢出 */
+        .ch2-summary {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 8px 24px; /* 缩小上下内边距 */
+            gap: 8px; /* 缩小板块间距 */
+            background: #ffffff;
+            min-height: 0;
+        }
+        .ch2-title {
+            font-size: 13px; font-weight: 800; letter-spacing: 1px; color: #0F172A;
+            border-left: 4px solid #059669; padding-left: 10px; margin-bottom: 2px;
+            flex-shrink: 0;
+        }
+
+        /* 自动化指标卡片 - 紧凑高质感版 */
+        .grid-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px; /* 缩小列间距和行间距 */
+            flex: 1;
+            min-height: 0;
+        }
+        .auto-card {
+            background: #ffffff;
+            border: 1px solid #E2E8F0;
+            border-top: 3px solid #10B981;
+            border-radius: 6px;
+            padding: 10px 12px; /* 缩小卡片内部留白 */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 6px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+            transition: all 0.2s ease;
+            min-height: 0;
+        }
+        .auto-card.warn { border-top-color: #F59E0B; background: #FFFBEB; border-color: #FDE68A; box-shadow: 0 2px 8px rgba(245,158,11,0.04); }
+        .auto-card.alert { border-top-color: #EF4444; background: #FEF2F2; border-color: #FECACA; box-shadow: 0 2px 8px rgba(239,68,68,0.04); }
+
+        /* 卡片内部的数据结构 */
+        .card-head {
+            font-size: 10.5px; font-weight: 800; color: #1E293B;
+            display: flex; justify-content: space-between; align-items: center;
+            padding-bottom: 4px; border-bottom: 1px dashed #E2E8F0;
+        }
+        .auto-card.warn .card-head { border-bottom-color: #FDE68A; }
+        .auto-card.alert .card-head { border-bottom-color: #FECACA; }
+        .card-icon { font-size: 11px; }
+
+        /* 核心数字区 */
+        .data-row { display: flex; align-items: baseline; gap: 8px; margin-top: 2px; }
+        .data-main { font-size: 20px; font-weight: 900; color: #0F172A; letter-spacing: -0.5px; } /* 回退字号防溢出 */
+        .auto-card.warn .data-main { color: #B45309; }
+        .auto-card.alert .data-main { color: #B91C1C; }
+        .data-unit { font-size: 9px; color: #64748B; font-weight: normal; margin-left: 2px; }
+
+        /* 模板填空区 */
+        .template-text { font-size: 9px; color: #475569; line-height: 1.5; }
+        .var {
+            color: #1E293B; font-weight: 800; background: #F1F5F9;
+            padding: 1px 4px; border-radius: 3px; margin: 0 2px 2px 2px;
+            display: inline-block; line-height: 1.1;
+        }
+        .var.bad { color: #DC2626; background: #FEE2E2; }
+
+        .ch2-next {
+            margin-top: 4px; padding: 8px 12px;
+            background: #F8FAFC; border: 1px dashed #CBD5E1;
+            text-align: center; font-size: 10px; color: #64748B; letter-spacing: 0.5px;
+            border-radius: 6px;
+            flex-shrink: 0;
+        }
+        .ch2-next strong { color: #2563EB; font-weight: 800; }
+    </style>
 </head>
 <body>
-<div class="slide-container sec-bg">
-    <div class="ppt-header" style="background:transparent!important;border-bottom-color:rgba(255,255,255,.1)!important;">
-        <span class="ppt-title" style="color:#fff;">流域湖库 · 本章小结</span>
-        <span class="nav-page-num" style="background:rgba(255,255,255,.15)!important;color:#fff;">P20A</span>
+<div class="slide-container">
+    <div class="ppt-header">
+        <span class="ppt-title">流域湖库：本章小结</span>
+        <span class="nav-page-num">P20A</span>
     </div>
+    <div class="core-bar">▎ 2026年5月国控断面数据汇总：全省三大一级流域167个国控断面中，长江Ⅰ-Ⅲ类89.9%、汉江92.3%、清江92.3%；重点湖库24个中15个达标、9个未达标，总磷为首要超标因子。</div>
     <div class="ch2-summary">
-        <div class="ch2-title">Ⅱ 基于流域湖库分析的 5 项核心结论</div>
+        <div class="ch2-title">Ⅱ 核心指标研判总结</div>
 
-        <div class="ch2-conclusion">
-            <div class="cidx">1</div>
-            <div class="cbody">
-                <div class="cmain">三大一级流域水质整体良好，清江领跑</div>
-                <div class="csub">长江Ⅰ-Ⅲ类比例89.9%、汉江92.3%、清江92.3%。清江全流域无劣Ⅴ类断面，水质持续改善中。</div>
+        <div class="grid-container">
+
+            <div class="auto-card">
+                <div class="card-head"><span>一级流域概览</span><span class="card-icon">🌊</span></div>
+                <div class="data-row">
+                    <div class="data-main">92.3<span class="data-unit">%</span></div>
+                    <div class="template-text" style="margin-left:auto; font-weight:700; color:#059669;">最高达标率</div>
+                </div>
+                <div class="template-text">
+                    本月三大流域整体良好，其中<span class="var">清江</span>和<span class="var">汉江</span>优良比例领跑；<span class="var">清江</span>全流域实现劣Ⅴ类断面清零。
+                </div>
+            </div>
+
+            <div class="auto-card warn">
+                <div class="card-head"><span>二级片区监测</span><span class="card-icon">📍</span></div>
+                <div class="data-row">
+                    <div class="data-main">12<span class="data-unit">个片区</span></div>
+                </div>
+                <div class="template-text">
+                    区域差异显著：<span class="var">神农架片区</span>100%达标表现最优；需重点预警管控<span class="var bad">四湖片区</span>与<span class="var bad">府澴河片区</span>，目前以Ⅳ-劣Ⅴ类占比较高。
+                </div>
+            </div>
+
+            <div class="auto-card alert">
+                <div class="card-head"><span>重点湖泊考核</span><span class="card-icon">💧</span></div>
+                <div class="data-row">
+                    <div class="data-main">62.5<span class="data-unit">%</span></div>
+                    <div class="template-text" style="margin-left:auto; font-weight:700; color:#DC2626;">总体达标率</div>
+                </div>
+                <div class="template-text">
+                    <span class="var">8</span>个重点湖泊总计32个断面，本月未达标<span class="var">5</span>个。<span class="var bad">总磷</span>为首要超标因子，建议对<span class="var bad">洪湖、长湖</span>发起督办。
+                </div>
+            </div>
+
+            <div class="auto-card warn">
+                <div class="card-head"><span>水质劣变追踪</span><span class="card-icon">⚠️</span></div>
+                <div class="data-row">
+                    <div class="data-main">1<span class="data-unit">个</span></div>
+                    <div class="template-text" style="margin-left:auto; font-weight:700; color:#D97706;">新增劣Ⅴ类</div>
+                </div>
+                <div class="template-text">
+                    本月监控到<span class="var bad">xx湖库、xx湖库</span>存在劣Ⅴ类断面，<span class="var bad">xx湖库、xx湖库</span>存在Ⅴ类断面，建议立即启动污染源排查。
+                </div>
+            </div>
+
+        </div>
+
+        <div class="auto-card" style="margin-top: 2px; flex-shrink: 0;">
+            <div class="card-head"><span>南水北调水源地 (丹江口水库) 整体水质分布</span><span class="card-icon">🛡️</span></div>
+            <div class="template-text" style="margin-top: 2px;">
+                本月库区断面水质类别分布为：Ⅰ类 <span class="var">XX</span> 个，Ⅱ类 <span class="var">XX</span> 个，Ⅲ类 <span class="var">XX</span> 个，Ⅳ类 <span class="var bad">XX</span> 个，Ⅴ类 <span class="var bad">XX</span> 个，劣Ⅴ类 <span class="var bad">XX</span> 个。整体水体质量稳定可控，各项核心理化指标未见异常波动，建议维持现有总体管控强度。
             </div>
         </div>
 
-        <div class="ch2-conclusion warn">
-            <div class="cidx">2</div>
-            <div class="cbody">
-                <div class="cmain">12个二级片区差异显著，四湖片区需重点关注</div>
-                <div class="csub">神农架片区Ⅰ-Ⅲ类比例100%领先全部片区；四湖片区、府澴河片区为全省水质最薄弱环节，断面以Ⅳ-劣Ⅴ类为主。</div>
-            </div>
-        </div>
-
-        <div class="ch2-conclusion alert">
-            <div class="cidx">3</div>
-            <div class="cbody">
-                <div class="cmain">重点湖泊治理压力大，总磷为超标首要因子</div>
-                <div class="csub">8个重点湖泊中仅5个达标，洪湖（劣Ⅴ类）、长湖（Ⅴ类）仍未改善。总磷占超标因子的62%，集中在荆州、潜江区域。</div>
-            </div>
-        </div>
-
-        <div class="ch2-conclusion warn">
-            <div class="cidx">4</div>
-            <div class="cbody">
-                <div class="cmain">汉江中下游水质波动，需加密监测</div>
-                <div class="csub">汉江下游劣Ⅴ类断面1个（竹皮河），天门河、东荆河同比呈下降趋势，需关注面源污染输入。</div>
-            </div>
-        </div>
-
-        <div class="ch2-conclusion">
-            <div class="cidx">5</div>
-            <div class="cbody">
-                <div class="cmain">丹江口水库水质稳定Ⅱ类，五大水系总体可控</div>
-                <div class="csub">丹江口库区Ⅰ-Ⅲ类比例保持100%，清江同比改善1.2个百分点。建议维持现有管控强度，重点关注恶化水系。</div>
-            </div>
-        </div>
-
-        <div class="ch2-next">➜ 第三章将聚焦 水污染源排放分析，追溯断面超标背后的排放清单</div>
+        <div class="ch2-next">➜ 第三章将聚焦 <strong>水污染源排放分析</strong>，深挖断面超标背后的污染源清单与追溯数据</div>
     </div>
-    <div class="ft" style="border-top-color:rgba(255,255,255,.08)!important;background:transparent!important;">
-        <span style="color:rgba(255,255,255,.3);">2026年5月生态环境月度专报</span>
-        <span style="color:rgba(255,255,255,.3);">提示：仅供汇报使用</span>
+
+    <div class="ft">
+        <span>2026年5月生态环境月度专报</span>
+        <span>提示：仅供系统自动化生成使用</span>
     </div>
 </div>
 </body>
 </html>
+

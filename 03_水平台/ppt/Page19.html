@@ -7,23 +7,19 @@
 <link rel="stylesheet" href="ppt-style.css">
 <style>
     .bd table td { padding: 5px 6px !important; font-size: 8px !important; }
-    /* 临界波动专属：左右双半宽对比布局 */
-    .yellow-compare-panel { flex: 1; display: flex; gap: 6px; min-height: 0; }
-    .comp-card { flex: 1; border: 1px solid #E2E8F0; border-radius: 4px; padding: 6px; display: flex; flex-direction: column; justify-content: space-between; min-height: 0; }
-    .comp-card.left-side { border-top: 3px solid #D97706; background: #FFFBEB; }
-    .comp-card.right-side { border-top: 3px solid #DC2626; background: #FEF2F2; }
+
 </style>
 </head>
 <body>
 <div class="slide-container">
     <div class="ppt-header"><span class="ppt-title">流域湖库：斧头湖专项监测分析</span><span class="nav-page-num">P19</span></div>
-    <div class="core-bar">▎ 2026年5月斧头湖专项监测数据：共设置6个监测点位，综合均值为Ⅳ类，入湖河口录得最差水质（Ⅴ类）。</div>
+    <div class="core-bar">▎ 2026年5月斧头湖国控断面监测数据：共设置6个监测点位，综合均值为Ⅳ类，入湖河口录得最差水质（Ⅴ类）。</div>
     <div class="bd" style="flex-direction:column;gap:8px;">
         <div class="kpi-row" style="margin-bottom:0; flex-shrink:0;">
-            <div class="kpi-card pos1"><div class="kpi-label">监测点位</div><div class="kpi-value">6<span style="font-size:9px;font-weight:normal;color:#64748B;">个</span></div></div>
-            <div class="kpi-card status-warn"><div class="kpi-label">总磷均值</div><div class="kpi-value">0.08<span style="font-size:9px;font-weight:normal;">mg/L</span></div></div>
-            <div class="kpi-card status-warn"><div class="kpi-label">营养状态</div><div class="kpi-value" style="font-size:13px; padding-top:2px;">轻度富营养</div></div>
-            <div class="kpi-card status-warn"><div class="kpi-label">综合水质类别</div><div class="kpi-value">Ⅳ类</div></div>
+            <div class="kpi-card pos1"><div class="kpi-label">考核湖库总数</div><div class="kpi-value">24<span style="font-size:9px;font-weight:normal;color:#64748B;">个</span></div></div>
+            <div class="kpi-card status-good"><div class="kpi-label">水质达标点位</div><div class="kpi-value">15<span style="font-size:9px;font-weight:normal;">个</span></div></div>
+            <div class="kpi-card status-alert"><div class="kpi-label">未达标点位</div><div class="kpi-value">9<span style="font-size:9px;font-weight:normal;">个</span></div></div>
+            <div class="kpi-card status-good"><div class="kpi-label">总体达标率</div><div class="kpi-value">62.5%</div></div>
         </div>
         <div style="display:flex;gap:12px;flex:1;min-height:0;overflow:hidden;">
             <div class="table-box" style="flex:0 0 52%;display:flex;flex-direction:column;background:#fff;">
@@ -41,23 +37,63 @@
                 </table>
             </div>
             
-            <div class="yellow-compare-panel">
-                <div class="comp-card left-side">
-                    <div>
-                        <div style="font-size:8.5px; font-weight:800; color:#92400E;">⚠️ 均值运行状态</div>
-                        <div style="font-size:14px; font-weight:900; color:#D97706; margin-top:2px;">Ⅳ类 临界值</div>
-                    </div>
-                    <div style="font-size:7.2px; color:#475569; border-top:1px dashed #FDE68A; padding-top:4px; line-height:1.3;">
-                        全湖总磷均值录得 <strong>0.08mg/L</strong>。全水体处于轻度富营养状态，逼近标准上限。
+            <div style="flex:1; display:flex; flex-direction:column; gap:6px; min-height:0; overflow:hidden;">
+                <!-- 水质类别分布 -->
+                <div style="background:#fff; border:1px solid #E2E8F0; border-radius:4px; padding:6px 10px; flex-shrink:0;">
+                    <div style="font-size:9px; font-weight:800; color:#0F172A; margin-bottom:4px;">📊 斧头湖水质类别分级（共6个监测点位）</div>
+                    <div style="display:grid; grid-template-columns:repeat(6,1fr); gap:3px;">
+                        <div style="border-top:2px solid #0284C7; padding:3px 2px; text-align:center; border:1px solid #E2E8F0; background:#F8FAFC; border-radius:2px;">
+                            <div style="font-size:6.5px; color:#64748B;">Ⅰ类(优)</div>
+                            <div style="font-size:9px; font-weight:800; color:#0284C7; margin-top:1px;">0个</div>
+                        </div>
+                        <div style="border-top:2px solid #059669; padding:3px 2px; text-align:center; border:1px solid #E2E8F0; background:#F8FAFC; border-radius:2px;">
+                            <div style="font-size:6.5px; color:#64748B;">Ⅱ类(优质)</div>
+                            <div style="font-size:9px; font-weight:800; color:#059669; margin-top:1px;">0个</div>
+                        </div>
+                        <div style="border-top:2px solid #10B981; padding:3px 2px; text-align:center; border:1px solid #E2E8F0; background:#F8FAFC; border-radius:2px;">
+                            <div style="font-size:6.5px; color:#64748B;">Ⅲ类(达标)</div>
+                            <div style="font-size:9px; font-weight:800; color:#10B981; margin-top:1px;">2个</div>
+                        </div>
+                        <div style="border-top:2px solid #F59E0B; padding:3px 2px; text-align:center; border:1px solid #E2E8F0; background:#F8FAFC; border-radius:2px;">
+                            <div style="font-size:6.5px; color:#64748B;">Ⅳ类(临界)</div>
+                            <div style="font-size:9px; font-weight:800; color:#F59E0B; margin-top:1px;">3个</div>
+                        </div>
+                        <div style="border-top:2px solid #F97316; padding:3px 2px; text-align:center; border:1px solid #E2E8F0; background:#F8FAFC; border-radius:2px;">
+                            <div style="font-size:6.5px; color:#64748B;">Ⅴ类(超标)</div>
+                            <div style="font-size:9px; font-weight:800; color:#F97316; margin-top:1px;">1个</div>
+                        </div>
+                        <div style="border-top:2px solid #DC2626; padding:3px 2px; text-align:center; border:1px solid #E2E8F0; background:#F8FAFC; border-radius:2px;">
+                            <div style="font-size:6.5px; color:#64748B;">劣Ⅴ(重污)</div>
+                            <div style="font-size:9px; font-weight:800; color:#DC2626; margin-top:1px;">0个</div>
+                        </div>
                     </div>
                 </div>
-                <div class="comp-card right-side">
-                    <div>
-                        <div style="font-size:8.5px; font-weight:800; color:#991B1B;">🚨 最差风险单体</div>
-                        <div style="font-size:14px; font-weight:900; color:#DC2626; margin-top:2px;">入湖河口 Ⅴ类</div>
+                <!-- 特征污染物均值全景 -->
+                <div style="flex:1; background:#fff; border:1px solid #E2E8F0; border-radius:4px; padding:6px 10px; display:flex; flex-direction:column; justify-content:center;">
+                    <div style="font-size:9px; font-weight:800; color:#0F172A; margin-bottom:4px;">🟢 特征污染物综合分析</div>
+                    <div style="display:flex; gap:6px; margin-bottom:4px;">
+                        <div style="flex:1; text-align:center; background:#F0FDF4; padding:3px; border-radius:3px; border:1px solid #BBF7D0;">
+                            <div style="font-size:7px; color:#065F46;">全湖总磷均值</div>
+                            <div style="font-size:13px; font-weight:800; color:#059669; line-height:1.2;">0.05<span style="font-size:7px; font-weight:400;">mg/L</span></div>
+                        </div>
+                        <div style="flex:1; text-align:center; background:#F0FDF4; padding:3px; border-radius:3px; border:1px solid #BBF7D0;">
+                            <div style="font-size:7px; color:#065F46;">全湖氨氮均值</div>
+                            <div style="font-size:13px; font-weight:800; color:#059669; line-height:1.2;">0.24<span style="font-size:7px; font-weight:400;">mg/L</span></div>
+                        </div>
+                        <div style="flex:1; text-align:center; background:#F0FDF4; padding:3px; border-radius:3px; border:1px solid #BBF7D0;">
+                            <div style="font-size:7px; color:#065F46;">高锰酸盐均值</div>
+                            <div style="font-size:13px; font-weight:800; color:#059669; line-height:1.2;">4.3<span style="font-size:7px; font-weight:400;">mg/L</span></div>
+                        </div>
                     </div>
-                    <div style="font-size:7.2px; color:#475569; border-top:1px dashed #FCA5A5; padding-top:4px; line-height:1.3;">
-                        入湖河口断面总磷达 <strong>0.10mg/L</strong>，COD 为 <strong>22mg/L</strong>，为当前水质倒挂节点。
+                    <div style="font-size:7.5px; color:#475569; line-height:1.4;">
+                        斧头湖全湖总磷均值0.05mg/L、氨氮均值0.24mg/L、高锰酸盐指数均值4.3mg/L。6个点位中Ⅲ类2个、Ⅳ类3个、Ⅴ类1个。出湖口总磷0.06mg/L为全湖最低，入湖河口总磷0.10mg/L（超Ⅳ类标准0.33倍）、COD 22mg/L（超Ⅳ类标准0.47倍）为全湖最高。湖库断面总磷区间由0.06逐级升至0.10mg/L，COD由14升至22mg/L，指标变化较大。
+                    </div>
+                </div>
+                <!-- 预警与管控建议 -->
+                <div style="flex-shrink:0; background:#FEF2F2; border:1px solid #FCA5A5; border-left:4px solid #DC2626; border-radius:4px; padding:6px 10px;">
+                    <div style="font-size:9px; font-weight:800; color:#991B1B;">🚨 预警与管控建议</div>
+                    <div style="font-size:7.5px; color:#7F1D1D; margin-top:2px; line-height:1.5;">
+                        <strong>红色预警：</strong>xx断面总磷0.10mg/L（超Ⅳ类标准0.33倍）、COD 22mg/L（超Ⅳ类标准0.47倍），为首要管控节点。xx断面总磷0.10mg/L（超Ⅳ类标准0.33倍）、COD 22mg/L（超Ⅳ类标准0.47倍），为首要管控节点。
                     </div>
                 </div>
             </div>
@@ -67,3 +103,8 @@
 </div>
 </body>
 </html>
+
+
+
+
+

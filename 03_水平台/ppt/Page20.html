@@ -1,92 +1,108 @@
 ﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>流域湖库：重点湖库同比与总结</title>
-<link rel="stylesheet" href="ppt-style.css">
-<style>
-    .bd table td { padding: 6px 8px !important; font-size: 8.5px !important; }
-    
-    /* 右侧自动化新版式样式 */
-    .summary-right-panel { flex: 1; display: flex; flex-direction: column; gap: 6px; overflow: hidden; }
-    
-    /* 纯数字驱动的水质分类统计格 */
-    .matrix-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; margin-top: 2px; }
-    .matrix-box { border-radius: 3px; padding: 4px 2px; text-align: center; border: 1px solid #E2E8F0; background: #F8FAFC; }
-    .matrix-lbl { font-size: 7px; color: #64748B; transform: scale(0.9); }
-    .matrix-num { font-size: 11px; font-weight: 800; margin-top: 1px; }
-    
-    /* 异常捕获卡片 */
-    .anomaly-card { display: flex; gap: 4px; width: 100%; }
-    .anomaly-item { flex: 1; border: 1px solid #E2E8F0; border-radius: 4px; padding: 6px 8px; display: flex; flex-direction: column; justify-content: center; min-height: 0; }
-    .anomaly-item.up { border-left: 3px solid #059669; background: #F0FDF4; }
-    .anomaly-item.down { border-left: 3px solid #DC2626; background: #FEF2F2; }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>流域湖库：丹江口水库及同比分析</title>
+    <link rel="stylesheet" href="ppt-style.css">
+    <style>
+        /* 1. 微调表格行高，既不缩在一起也不撑破底线 */
+        .bd table td { padding: 4.5px 6px !important; font-size: 8.5px !important; }
+        .table-box th { padding: 5px 6px !important; font-size: 9px !important; }
+
+        /* 2. 右侧面板：缩小 gap 间距，强制自适应收缩 (min-height:0) */
+        .summary-right-panel { flex: 1.15; display: flex; flex-direction: column; gap: 8px; min-height: 0; }
+
+        /* 3. 2x3 矩阵卡片：缩小内部 padding 和 gap，完美嵌入 */
+        .matrix-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; flex: 1; margin-top: 4px; min-height: 0; }
+        .matrix-box { display: flex; justify-content: space-between; align-items: center; border-radius: 4px; padding: 6px 10px; border: 1px solid #E2E8F0; background: #F8FAFC; box-shadow: 0 1px 3px rgba(0,0,0,0.02); }
+        .matrix-lbl { font-size: 9px; color: #475569; font-weight: 700; }
+        .matrix-num { font-size: 13px; font-weight: 900; }
+
+        /* 4. 趋势卡片：收紧高度，字号适中 */
+        .anomaly-card { display: flex; gap: 6px; width: 100%; margin-top: 4px; flex: 1; min-height: 0; }
+        .anomaly-item { flex: 1; border: 1px solid #E2E8F0; border-radius: 4px; padding: 6px 4px; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 1px 3px rgba(0,0,0,0.02); }
+    </style>
 </head>
 <body>
 <div class="slide-container">
-    <div class="ppt-header"><span class="ppt-title">流域湖库：重点湖库同比与总结</span><span class="nav-page-num">P20</span></div>
-    <div class="core-bar">▎ 2026年5月重点湖库总结：全省24个主要湖库中，15个水质达标，大体保持稳定，部分点位存在波动。</div>
-    <div class="bd" style="flex-direction:column;gap:8px;">
-        <div class="kpi-row" style="margin-bottom:0; flex-shrink:0;">
-            <div class="kpi-card pos1"><div class="kpi-label">考核湖库总数</div><div class="kpi-value">24<span style="font-size:9px;font-weight:normal;color:#64748B;">个</span></div></div>
-            <div class="kpi-card status-good"><div class="kpi-label">水质达标点位</div><div class="kpi-value">15<span style="font-size:9px;font-weight:normal;">个</span></div></div>
-            <div class="kpi-card status-alert"><div class="kpi-label">未达标点位</div><div class="kpi-value">9<span style="font-size:9px;font-weight:normal;">个</span></div></div>
-            <div class="kpi-card status-good"><div class="kpi-label">总体达标率</div><div class="kpi-value">62.5%</div></div>
+    <div class="ppt-header">
+        <span class="ppt-title">流域湖库：丹江口水库及同比分析</span>
+        <span class="nav-page-num">P20</span>
+    </div>
+
+    <div class="core-bar" style="padding: 6px 28px !important;">▎ 2026年5月丹江口水库总结：本月库区整体水质持续保持优质水平，各重点国控断面运行平稳，全面达到南水北调调水水质考核要求。</div>
+
+    <div class="bd" style="flex-direction:column; gap:8px; padding:10px 20px;">
+
+        <div class="kpi-row" style="margin-bottom:0; flex-shrink:0; gap:8px;">
+            <div class="kpi-card pos1" style="padding:5px 8px!important;"><div class="kpi-label">考核湖库总数</div><div class="kpi-value" style="font-size:15px!important;">24<span style="font-size:9px;font-weight:normal;color:#64748B;margin-left:2px;">个</span></div></div>
+            <div class="kpi-card status-good" style="padding:5px 8px!important;"><div class="kpi-label">水质达标点位</div><div class="kpi-value" style="font-size:15px!important;">15<span style="font-size:9px;font-weight:normal;margin-left:2px;">个</span></div></div>
+            <div class="kpi-card status-alert" style="padding:5px 8px!important;"><div class="kpi-label">未达标点位</div><div class="kpi-value" style="font-size:15px!important;">9<span style="font-size:9px;font-weight:normal;margin-left:2px;">个</span></div></div>
+            <div class="kpi-card status-good" style="padding:5px 8px!important;"><div class="kpi-label">总体达标率</div><div class="kpi-value" style="font-size:15px!important;">62.5%</div></div>
         </div>
-        
-        <div style="display:flex;gap:12px;flex:1;min-height:0;overflow:hidden;">
-            <div class="table-box" style="flex:0 0 52%;display:flex;flex-direction:column;background:#fff;overflow:hidden;">
-                <div style="font-size:9px;font-weight:700;color:#1E293B;padding:6px 10px;border-bottom:1px solid #E2E8F0;flex-shrink:0;">📊 重点湖库特征点位水质同比一览</div>
-                <table style="width:100%;flex:1;">
-                    <thead><tr><th>湖库名称</th><th>2025同期</th><th>2026当前</th><th>总磷变化</th><th>运行趋势</th></tr></thead>
+
+        <div style="display:flex; gap:12px; flex:1; min-height:0; overflow:hidden;">
+
+            <div class="table-box" style="flex:0 0 48%; display:flex; flex-direction:column; background:#fff; overflow:hidden;">
+                <div style="font-size:9.5px; font-weight:700; color:#1E293B; padding:6px 10px; border-bottom:1px solid #E2E8F0; flex-shrink:0; background:#F8FAFC;">📊 丹江口水库重点控制断面水质同比</div>
+                <table style="width:100%; flex:1;">
+                    <thead><tr><th>点位名称</th><th>2025同期</th><th>2026当前</th><th>总磷变化</th><th>状态评估</th></tr></thead>
                     <tbody>
-                        <tr><td class="td-left">丹江口水库</td><td>Ⅱ类</td><td>Ⅱ类</td><td>-0.002</td><td><span class="badge-g">稳定优质</span></td></tr>
-                        <tr><td class="td-left">漳河水库</td><td>Ⅱ类</td><td>Ⅱ类</td><td>0.000</td><td><span class="badge-g">高位稳定</span></td></tr>
-                        <tr><td class="td-left">梁子湖</td><td>Ⅲ类</td><td>Ⅲ类</td><td>+0.004</td><td><span class="badge-g">状态持平</span></td></tr>
-                        <tr><td class="td-left">斧头湖</td><td>Ⅲ类</td><td>Ⅳ类</td><td>+0.012</td><td><span class="badge-y">水质变差</span></td></tr>
-                        <tr><td class="td-left">洪湖</td><td>劣Ⅴ类</td><td>劣Ⅴ类</td><td>+0.015</td><td><span class="badge-r">持续超标</span></td></tr>
+                    <tr><td class="td-left">陶岔渠首 (调水起点)</td><td>Ⅱ类</td><td>Ⅱ类</td><td>-0.003</td><td><span class="badge-g">持续优良</span></td></tr>
+                    <tr><td class="td-left">丹江口大坝</td><td>Ⅱ类</td><td>Ⅱ类</td><td>-0.001</td><td><span class="badge-g">持续优良</span></td></tr>
+                    <tr><td class="td-left">胡家岭</td><td>Ⅱ类</td><td>Ⅱ类</td><td>0.000</td><td><span class="badge-g">平稳</span></td></tr>
+                    <tr><td class="td-left">台子山</td><td>Ⅲ类</td><td>Ⅱ类</td><td>-0.005</td><td><span class="badge-g">水质变好</span></td></tr>
+                    <tr><td class="td-left">浪河口</td><td>Ⅱ类</td><td>Ⅱ类</td><td>+0.002</td><td><span class="badge-y">微弱波动</span></td></tr>
+                    <tr><td class="td-left">汉江入口</td><td>Ⅱ类</td><td>Ⅱ类</td><td>-0.002</td><td><span class="badge-g">持续优良</span></td></tr>
+                    <tr><td class="td-left">丹江入口</td><td>Ⅱ类</td><td>Ⅱ类</td><td>-0.001</td><td><span class="badge-g">持续优良</span></td></tr>
                     </tbody>
                 </table>
             </div>
-            
+
             <div class="summary-right-panel">
-                <div style="background:#fff; border:1px solid #E2E8F0; border-radius:4px; padding:6px 10px;">
-                    <div style="font-size:9px; font-weight:800; color:#0F172A;">📊 湖库水质类别数量分级（共24个）</div>
+
+                <div style="background:#fff; border:1px solid #E2E8F0; border-radius:4px; padding:8px 10px; flex: 1.2; display: flex; flex-direction: column;">
+                    <div style="font-size:9.5px; font-weight:800; color:#0F172A;">📊 库区断面水质类别分布（共7个）</div>
                     <div class="matrix-grid">
-                        <div class="matrix-box" style="border-top:2px solid #059669;"><div class="matrix-lbl">Ⅱ类(优质)</div><div class="matrix-num" style="color:#059669;">8个</div></div>
-                        <div class="matrix-box" style="border-top:2px solid #10B981;"><div class="matrix-lbl">Ⅲ类(达标)</div><div class="matrix-num" style="color:#10B981;">7个</div></div>
-                        <div class="matrix-box" style="border-top:2px solid #F59E0B;"><div class="matrix-lbl">Ⅳ类(临界)</div><div class="matrix-num" style="color:#F59E0B;">4_个</div></div>
-                        <div class="matrix-box" style="border-top:2px solid #F97316;"><div class="matrix-lbl">Ⅴ类(超标)</div><div class="matrix-num" style="color:#F97316;">3个</div></div>
-                        <div class="matrix-box" style="border-top:2px solid #DC2626;"><div class="matrix-lbl">劣Ⅴ(重污)</div><div class="matrix-num" style="color:#DC2626;">2个</div></div>
+                        <div class="matrix-box" style="border-left:3px solid #0284C7;"><div class="matrix-lbl">Ⅰ类(优)</div><div class="matrix-num" style="color:#0284C7;">0<span style="font-size:8px;color:#94A3B8;font-weight:normal;margin-left:2px;">个</span></div></div>
+                        <div class="matrix-box" style="border-left:3px solid #059669;"><div class="matrix-lbl">Ⅱ类(优质)</div><div class="matrix-num" style="color:#059669;">7<span style="font-size:8px;color:#94A3B8;font-weight:normal;margin-left:2px;">个</span></div></div>
+                        <div class="matrix-box" style="border-left:3px solid #10B981;"><div class="matrix-lbl">Ⅲ类(达标)</div><div class="matrix-num" style="color:#10B981;">0<span style="font-size:8px;color:#94A3B8;font-weight:normal;margin-left:2px;">个</span></div></div>
+                        <div class="matrix-box" style="border-left:3px solid #F59E0B;"><div class="matrix-lbl">Ⅳ类(临界)</div><div class="matrix-num" style="color:#F59E0B;">0<span style="font-size:8px;color:#94A3B8;font-weight:normal;margin-left:2px;">个</span></div></div>
+                        <div class="matrix-box" style="border-left:3px solid #F97316;"><div class="matrix-lbl">Ⅴ类(超标)</div><div class="matrix-num" style="color:#F97316;">0<span style="font-size:8px;color:#94A3B8;font-weight:normal;margin-left:2px;">个</span></div></div>
+                        <div class="matrix-box" style="border-left:3px solid #DC2626;"><div class="matrix-lbl">劣Ⅴ(重污)</div><div class="matrix-num" style="color:#DC2626;">0<span style="font-size:8px;color:#94A3B8;font-weight:normal;margin-left:2px;">个</span></div></div>
                     </div>
                 </div>
 
-                <div style="background:#fff; border:1px solid #E2E8F0; border-radius:4px; padding:6px 10px; flex:1; display:flex; flex-direction:column; justify-content:center;">
-                    <div style="font-size:9px; font-weight:800; color:#0F172A; margin-bottom:4px;">🎯 特征变动点位动态捕获</div>
+                <div style="background:#fff; border:1px solid #E2E8F0; border-radius:4px; padding:8px 10px; flex:0.9; display:flex; flex-direction:column;">
+                    <div style="font-size:9.5px; font-weight:800; color:#0F172A;">📈 断面水质同比变化态势</div>
                     <div class="anomaly-card">
-                        <div class="anomaly-item up">
-                            <div style="font-size:8.5px; font-weight:800; color:#065F46;">优质库区代表</div>
-                            <div style="font-size:11px; font-weight:900; color:#059669; margin-top:1px;">丹江口水库</div>
-                            <div style="font-size:7px; color:#475569; margin-top:2px;">水质保持 <strong>Ⅱ类</strong> 优质，总磷处于极低浓度水平。</div>
+                        <div class="anomaly-item" style="border-top:3px solid #059669; background:#F0FDF4;">
+                            <div style="font-size:8.5px; font-weight:800; color:#065F46;">水质变好</div>
+                            <div style="font-size:16px; font-weight:900; color:#059669; margin-top:2px;">1</div>
+                            <div style="font-size:7.5px; color:#475569; margin-top:1px;">个断面</div>
                         </div>
-                        <div class="anomaly-item down">
-                            <div style="font-size:8.5px; font-weight:800; color:#991B1B;">波动特征提示</div>
-                            <div style="font-size:11px; font-weight:900; color:#DC2626; margin-top:1px;">斧头湖 / 洪湖</div>
-                            <div style="font-size:7px; color:#475569; margin-top:2px;">总磷浓度同比分别抬升 <strong>0.012</strong> 和 <strong>0.015</strong>，水质压力较大。</div>
+                        <div class="anomaly-item" style="border-top:3px solid #6B7280; background:#F9FAFB;">
+                            <div style="font-size:8.5px; font-weight:800; color:#374151;">水质持平</div>
+                            <div style="font-size:16px; font-weight:900; color:#4B5563; margin-top:2px;">6</div>
+                            <div style="font-size:7.5px; color:#475569; margin-top:1px;">个断面</div>
+                        </div>
+                        <div class="anomaly-item" style="border-top:3px solid #DC2626; background:#FEF2F2;">
+                            <div style="font-size:8.5px; font-weight:800; color:#991B1B;">水质变差</div>
+                            <div style="font-size:16px; font-weight:900; color:#DC2626; margin-top:2px;">0</div>
+                            <div style="font-size:7.5px; color:#475569; margin-top:1px;">个断面</div>
                         </div>
                     </div>
                 </div>
 
-                <div class="ex-info" style="flex-shrink:0; background:#F8FAFC!important; border-left:4px solid #2563EB!important; padding:4px 8px!important;">
-                    <span style="font-size:7.5px; color:#1E40AF; line-height:1.3; display:block;">📊 <strong>总结性事实描述：</strong>全省重点湖库本月优良（Ⅰ-Ⅲ类）比例为 62.5%。水库水体整体运行平稳且保持优质，相比之下，部分浅水湖泊本月总磷数据出现不同程度变动，为后续重点监控防线。</span>
+                <div class="ex-info" style="flex-shrink:0; background:#F8FAFC!important; border-left:4px solid #2563EB!important; padding:6px 10px!important;">
+                    <span style="font-size:8px; color:#1E40AF; line-height:1.4; display:block;">📊 <strong>总结性描述：</strong>丹江口水库整体水体运行平稳且保持优质。后续还需持续跟踪各断面水质变化趋势及核心指标的动态波动情况，全面保障水源地环境质量安全。</span>
                 </div>
             </div>
-            
+
         </div>
     </div>
-    <div class="ft"><span>2026年5月生态环境月度专报</span><span>提示：仅供汇报使用</span></div>
+    <div class="ft" style="padding: 6px 28px !important;"><span>2026年5月生态环境月度专报</span><span>提示：仅供汇报使用</span></div>
 </div>
 </body>
 </html>

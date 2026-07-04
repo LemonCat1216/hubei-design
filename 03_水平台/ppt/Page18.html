@@ -7,22 +7,18 @@
 <link rel="stylesheet" href="ppt-style.css">
 <style>
     .bd table td { padding: 5px 6px !important; font-size: 8px !important; }
-    /* 优良典型专属：双分栏卡片布局 */
-    .green-split-panel { flex: 1; display: flex; flex-direction: column; gap: 6px; min-height: 0; }
-    .split-top { flex: 1.2; background: #F0FDF4; border: 1px solid #BBF7D0; border-left: 4px solid #059669; padding: 8px; border-radius: 4px; display: flex; flex-direction: column; justify-content: center; }
-    .split-bottom { flex: 1; background: #EFF6FF; border: 1px solid #BFDBFE; border-left: 4px solid #2563EB; padding: 8px; border-radius: 4px; display: flex; flex-direction: column; justify-content: center; }
 </style>
 </head>
 <body>
 <div class="slide-container">
     <div class="ppt-header"><span class="ppt-title">流域湖库：梁子湖专项监测分析</span><span class="nav-page-num">P18</span></div>
-    <div class="core-bar">▎ 2026年5月梁子湖专项监测数据：共设置6个监测点位，综合水质评定为Ⅲ类，整体处于达标运行状态。</div>
+    <div class="core-bar">▎ 2026年5月梁子湖国控断面监测数据：共设置6个监测点位，综合水质评定为Ⅲ类，整体处于达标运行状态。</div>
     <div class="bd" style="flex-direction:column;gap:8px;">
         <div class="kpi-row" style="margin-bottom:0; flex-shrink:0;">
-            <div class="kpi-card pos1"><div class="kpi-label">监测点位</div><div class="kpi-value">6<span style="font-size:9px;font-weight:normal;color:#64748B;">个</span></div></div>
-            <div class="kpi-card status-good"><div class="kpi-label">平均总磷</div><div class="kpi-value">0.05<span style="font-size:9px;font-weight:normal;">mg/L</span></div></div>
-            <div class="kpi-card status-good"><div class="kpi-label">营养状态</div><div class="kpi-value" style="font-size:13px; padding-top:2px;">中营养</div></div>
-            <div class="kpi-card status-good"><div class="kpi-label">综合水质</div><div class="kpi-value">Ⅲ类</div></div>
+            <div class="kpi-card pos1"><div class="kpi-label">考核湖库总数</div><div class="kpi-value">24<span style="font-size:9px;font-weight:normal;color:#64748B;">个</span></div></div>
+            <div class="kpi-card status-good"><div class="kpi-label">水质达标点位</div><div class="kpi-value">15<span style="font-size:9px;font-weight:normal;">个</span></div></div>
+            <div class="kpi-card status-alert"><div class="kpi-label">未达标点位</div><div class="kpi-value">9<span style="font-size:9px;font-weight:normal;">个</span></div></div>
+            <div class="kpi-card status-good"><div class="kpi-label">总体达标率</div><div class="kpi-value">62.5%</div></div>
         </div>
         <div style="display:flex;gap:12px;flex:1;min-height:0;overflow:hidden;">
             <div class="table-box" style="flex:0 0 52%;display:flex;flex-direction:column;background:#fff;">
@@ -40,19 +36,64 @@
                 </table>
             </div>
             
-            <div class="green-split-panel">
-                <div class="split-top">
-                    <div style="font-size:9.5px; font-weight:800; color:#065F46;">🟢 生态优良状态定量评定</div>
-                    <div style="font-size:20px; font-weight:900; color:#059669; margin:4px 0 2px;">83.3%<span style="font-size:9px; font-weight:normal; color:#34D399; margin-left:4px;">点位水质优良</span></div>
-                    <div style="font-size:7.5px; color:#047857;">全湖 6 个监测点位中，共有 5 个点位达到或优于地表水Ⅲ类标准。</div>
-                </div>
-                <div class="split-bottom">
-                    <div style="font-size:9.5px; font-weight:800; color:#1E40AF;">🔍 特征均值运行态势</div>
-                    <div style="font-size:10px; font-weight:700; color:#0F172A; margin-top:4px; display:flex; justify-content:space-between;">
-                        <span>全湖总磷均值: 0.05 mg/L</span>
-                        <span style="color:#2563EB;">稳定达标</span>
+            <div style="flex:1; display:flex; flex-direction:column; gap:6px; min-height:0; overflow:hidden;">
+                <!-- 水质类别分布 -->
+                <div style="background:#fff; border:1px solid #E2E8F0; border-radius:4px; padding:6px 10px; flex-shrink:0;">
+                    <div style="font-size:9px; font-weight:800; color:#0F172A; margin-bottom:4px;">📊 梁子湖水质类别分级（共6个监测点位）</div>
+                    <div style="display:grid; grid-template-columns:repeat(6,1fr); gap:3px;">
+                        <div style="border-top:2px solid #0284C7; padding:3px 2px; text-align:center; border:1px solid #E2E8F0; background:#F8FAFC; border-radius:2px;">
+                            <div style="font-size:6.5px; color:#64748B;">Ⅰ类(优)</div>
+                            <div style="font-size:9px; font-weight:800; color:#0284C7; margin-top:1px;">0个</div>
+                        </div>
+                        <div style="border-top:2px solid #059669; padding:3px 2px; text-align:center; border:1px solid #E2E8F0; background:#F8FAFC; border-radius:2px;">
+                            <div style="font-size:6.5px; color:#64748B;">Ⅱ类(优质)</div>
+                            <div style="font-size:9px; font-weight:800; color:#059669; margin-top:1px;">2个</div>
+                        </div>
+                        <div style="border-top:2px solid #10B981; padding:3px 2px; text-align:center; border:1px solid #E2E8F0; background:#F8FAFC; border-radius:2px;">
+                            <div style="font-size:6.5px; color:#64748B;">Ⅲ类(达标)</div>
+                            <div style="font-size:9px; font-weight:800; color:#10B981; margin-top:1px;">3个</div>
+                        </div>
+                        <div style="border-top:2px solid #F59E0B; padding:3px 2px; text-align:center; border:1px solid #E2E8F0; background:#F8FAFC; border-radius:2px;">
+                            <div style="font-size:6.5px; color:#64748B;">Ⅳ类(临界)</div>
+                            <div style="font-size:9px; font-weight:800; color:#F59E0B; margin-top:1px;">1个</div>
+                        </div>
+                        <div style="border-top:2px solid #F97316; padding:3px 2px; text-align:center; border:1px solid #E2E8F0; background:#F8FAFC; border-radius:2px;">
+                            <div style="font-size:6.5px; color:#64748B;">Ⅴ类(超标)</div>
+                            <div style="font-size:9px; font-weight:800; color:#F97316; margin-top:1px;">0个</div>
+                        </div>
+                        <div style="border-top:2px solid #DC2626; padding:3px 2px; text-align:center; border:1px solid #E2E8F0; background:#F8FAFC; border-radius:2px;">
+                            <div style="font-size:6.5px; color:#64748B;">劣Ⅴ(重污)</div>
+                            <div style="font-size:9px; font-weight:800; color:#DC2626; margin-top:1px;">0个</div>
+                        </div>
                     </div>
-                    <div style="font-size:7.5px; color:#475569; margin-top:2px;">出湖口断面稳定保持Ⅱ类优质水体，整体呈现中营养化特征。</div>
+                </div>
+                <!-- 污染物均值全景 -->
+                <div style="flex:1; background:#fff; border:1px solid #E2E8F0; border-radius:4px; padding:6px 10px; display:flex; flex-direction:column; justify-content:center;">
+                    <div style="font-size:9px; font-weight:800; color:#0F172A; margin-bottom:4px;">🟢 特征污染物综合分析</div>
+                    <div style="display:flex; gap:6px; margin-bottom:4px;">
+                        <div style="flex:1; text-align:center; background:#F0FDF4; padding:3px; border-radius:3px; border:1px solid #BBF7D0;">
+                            <div style="font-size:7px; color:#065F46;">全湖总磷均值</div>
+                            <div style="font-size:13px; font-weight:800; color:#059669; line-height:1.2;">0.05<span style="font-size:7px; font-weight:400;">mg/L</span></div>
+                        </div>
+                        <div style="flex:1; text-align:center; background:#F0FDF4; padding:3px; border-radius:3px; border:1px solid #BBF7D0;">
+                            <div style="font-size:7px; color:#065F46;">全湖氨氮均值</div>
+                            <div style="font-size:13px; font-weight:800; color:#059669; line-height:1.2;">0.24<span style="font-size:7px; font-weight:400;">mg/L</span></div>
+                        </div>
+                        <div style="flex:1; text-align:center; background:#F0FDF4; padding:3px; border-radius:3px; border:1px solid #BBF7D0;">
+                            <div style="font-size:7px; color:#065F46;">高锰酸盐均值</div>
+                            <div style="font-size:13px; font-weight:800; color:#059669; line-height:1.2;">4.3<span style="font-size:7px; font-weight:400;">mg/L</span></div>
+                        </div>
+                    </div>
+                    <div style="font-size:7.5px; color:#475569; line-height:1.4;">
+                        斧头湖全湖总磷均值0.05mg/L、氨氮均值0.24mg/L、高锰酸盐指数均值4.3mg/L。6个点位中Ⅲ类2个、Ⅳ类3个、Ⅴ类1个。出湖口总磷0.06mg/L为全湖最低，入湖河口总磷0.10mg/L（超Ⅳ类标准0.33倍）、COD 22mg/L（超Ⅳ类标准0.47倍）为全湖最高。湖库断面总磷区间由0.06逐级升至0.10mg/L，COD由14升至22mg/L，指标变化较大。
+                    </div>
+                </div>
+                <!-- 管控建议 -->
+                <div style="flex-shrink:0; background:#F0FDF4; border:1px solid #BBF7D0; border-left:4px solid #059669; border-radius:4px; padding:6px 10px;">
+                    <div style="font-size:9px; font-weight:800; color:#065F46;">📌 业务诊断及管控建议</div>
+                    <div style="font-size:7.5px; color:#047857; margin-top:2px; line-height:1.5;">
+                        梁子湖全湖整体运行平稳，无突出超标问题。<strong>重点关注</strong>：西梁子湖点位总磷（0.07mg/L）触近Ⅲ类上限，建议加密西梁子湖区监测频次；出湖口水质持续Ⅱ类表明湖体自净能力良好，建议维持现有管控强度。
+                    </div>
                 </div>
             </div>
         </div>
@@ -61,3 +102,6 @@
 </div>
 </body>
 </html>
+
+
+

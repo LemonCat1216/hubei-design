@@ -5,51 +5,54 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>流域湖库：梁子湖专项监测分析</title>
 <link rel="stylesheet" href="ppt-style.css">
+<style>
+    .bd table td { padding: 5px 6px !important; font-size: 8px !important; }
+    /* 优良典型专属：双分栏卡片布局 */
+    .green-split-panel { flex: 1; display: flex; flex-direction: column; gap: 6px; min-height: 0; }
+    .split-top { flex: 1.2; background: #F0FDF4; border: 1px solid #BBF7D0; border-left: 4px solid #059669; padding: 8px; border-radius: 4px; display: flex; flex-direction: column; justify-content: center; }
+    .split-bottom { flex: 1; background: #EFF6FF; border: 1px solid #BFDBFE; border-left: 4px solid #2563EB; padding: 8px; border-radius: 4px; display: flex; flex-direction: column; justify-content: center; }
+</style>
 </head>
 <body>
 <div class="slide-container">
     <div class="ppt-header"><span class="ppt-title">流域湖库：梁子湖专项监测分析</span><span class="nav-page-num">P18</span></div>
-    <div class="core-bar">▎ 梁子湖水质总体良好，局部水域总磷偏高，省控断面监测数据详见分析。</div>
-    <div class="bd" style="flex-direction:column;gap:10px;">
-        <div class="kpi-row" style="margin-bottom:0;"><div class="kpi-card" style="border-top-color:#2563EB;"><div class="kpi-label" style="color:#2563EB;">监测点位</div><div class="kpi-value" style="color:#2563EB;">xx个</div></div><div class="kpi-card" style="border-top-color:#059669;"><div class="kpi-label" style="color:#059669;">平均总磷</div><div class="kpi-value" style="color:#059669;">0.05mg/L</div></div><div class="kpi-card" style="border-top-color:#059669;"><div class="kpi-label" style="color:#059669;">营养状态</div><div class="kpi-value" style="color:#059669;">中营养</div></div><div class="kpi-card" style="border-top-color:#059669;"><div class="kpi-label" style="color:#059669;">水质类别</div><div class="kpi-value" style="color:#059669;">Ⅲ类</div></div></div>
-        <div style="display:flex;gap:12px;flex:1;min-height:0;">
-            <div class="table-box" style="flex:0 0 48%;display:flex;flex-direction:column;">
-                <div style="font-size:9px;font-weight:700;color:#1E293B;padding:4px 10px;border-bottom:1px solid #E2E8F0;flex-shrink:0;">梁子湖监测点位水质一览</div>
+    <div class="core-bar">▎ 2026年5月梁子湖专项监测数据：共设置6个监测点位，综合水质评定为Ⅲ类，整体处于达标运行状态。</div>
+    <div class="bd" style="flex-direction:column;gap:8px;">
+        <div class="kpi-row" style="margin-bottom:0; flex-shrink:0;">
+            <div class="kpi-card pos1"><div class="kpi-label">监测点位</div><div class="kpi-value">6<span style="font-size:9px;font-weight:normal;color:#64748B;">个</span></div></div>
+            <div class="kpi-card status-good"><div class="kpi-label">平均总磷</div><div class="kpi-value">0.05<span style="font-size:9px;font-weight:normal;">mg/L</span></div></div>
+            <div class="kpi-card status-good"><div class="kpi-label">营养状态</div><div class="kpi-value" style="font-size:13px; padding-top:2px;">中营养</div></div>
+            <div class="kpi-card status-good"><div class="kpi-label">综合水质</div><div class="kpi-value">Ⅲ类</div></div>
+        </div>
+        <div style="display:flex;gap:12px;flex:1;min-height:0;overflow:hidden;">
+            <div class="table-box" style="flex:0 0 52%;display:flex;flex-direction:column;background:#fff;">
+                <div style="font-size:9px;font-weight:700;color:#1E293B;padding:5px 10px;border-bottom:1px solid #E2E8F0;flex-shrink:0;">📊 梁子湖点位特征污染物监测数据</div>
                 <table style="width:100%;flex:1;">
-                    <thead><tr><th>点位</th><th>总磷</th><th>氨氮</th><th>高锰酸盐</th><th>水质</th></tr></thead>
+                    <thead><tr><th>点位名称</th><th>总磷(mg/L)</th><th>氨氮(mg/L)</th><th>高锰酸盐</th><th>水质</th></tr></thead>
                     <tbody>
-                        <tr><td class="td-left">东梁子湖</td><td>0.04</td><td>0.18</td><td>3.8</td><td>Ⅱ类</td></tr>
-                        <tr><td class="td-left">出湖口</td><td>0.04</td><td>0.20</td><td>3.5</td><td>Ⅱ类</td></tr>
+                        <tr><td class="td-left">东梁子湖</td><td>0.04</td><td>0.18</td><td>3.8</td><td><span class="badge-g">Ⅱ类</span></td></tr>
+                        <tr><td class="td-left">出湖口</td><td>0.04</td><td>0.20</td><td>3.5</td><td><span class="badge-g">Ⅱ类</span></td></tr>
                         <tr><td class="td-left">梁子湖湖心</td><td>0.05</td><td>0.22</td><td>4.2</td><td>Ⅲ类</td></tr>
                         <tr><td class="td-left">梁子岛附近</td><td>0.06</td><td>0.25</td><td>4.5</td><td>Ⅲ类</td></tr>
                         <tr><td class="td-left">入湖河口</td><td>0.06</td><td>0.28</td><td>4.8</td><td>Ⅲ类</td></tr>
-                        <tr><td class="td-left">西梁子湖</td><td>0.07</td><td>0.30</td><td>5.0</td><td>Ⅳ类</td></tr>
+                        <tr><td class="td-left">西梁子湖</td><td>0.07</td><td>0.30</td><td>5.0</td><td><span class="badge-y">Ⅳ类</span></td></tr>
                     </tbody>
                 </table>
             </div>
-            <div style="flex:1;display:flex;flex-direction:column;gap:6px;">
-                <div style="font-size:9px;font-weight:700;color:#059669;padding:3px 0;border-bottom:1px solid #D1FAE5;flex-shrink:0;">✅ 梁子湖水质评估</div>
-                <div class="warning-card green-card" style="flex:1;border-left:5px solid #059669!important;padding:10px 14px!important;display:flex;flex-direction:column;justify-content:center;">
-                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
-                        <div style="font-size:12px;font-weight:800;color:#059669;">总体水质良好</div>
-                        <span style="font-size:8px;background:#059669;color:#fff;padding:2px 8px;font-weight:700;">Ⅲ类为主</span>
-                    </div>
-                    <div style="display:flex;gap:12px;font-size:9px;color:#475569;">
-                        <span>湖心总磷：<strong style="color:#059669;">0.05mg/L</strong></span>
-                        <span>平均氨氮：<strong style="color:#059669;">0.24mg/L</strong></span>
-                        <span>平均水质：<strong style="color:#059669;">Ⅲ类</strong></span>
-                    </div>
+            
+            <div class="green-split-panel">
+                <div class="split-top">
+                    <div style="font-size:9.5px; font-weight:800; color:#065F46;">🟢 生态优良状态定量评定</div>
+                    <div style="font-size:20px; font-weight:900; color:#059669; margin:4px 0 2px;">83.3%<span style="font-size:9px; font-weight:normal; color:#34D399; margin-left:4px;">点位水质优良</span></div>
+                    <div style="font-size:7.5px; color:#047857;">全湖 6 个监测点位中，共有 5 个点位达到或优于地表水Ⅲ类标准。</div>
                 </div>
-                <div class="warning-card" style="flex:1;border-left:5px solid #D97706!important;background:#FFFBEB!important;padding:10px 14px!important;display:flex;flex-direction:column;justify-content:center;">
-                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
-                        <div style="font-size:12px;font-weight:800;color:#D97706;">重点关注</div>
-                        <span style="font-size:8px;background:#D97706;color:#fff;padding:2px 8px;font-weight:700;">西部水域</span>
+                <div class="split-bottom">
+                    <div style="font-size:9.5px; font-weight:800; color:#1E40AF;">🔍 特征均值运行态势</div>
+                    <div style="font-size:10px; font-weight:700; color:#0F172A; margin-top:4px; display:flex; justify-content:space-between;">
+                        <span>全湖总磷均值: 0.05 mg/L</span>
+                        <span style="color:#2563EB;">稳定达标</span>
                     </div>
-                    <div style="display:flex;gap:12px;font-size:9px;color:#475569;">
-                        <span>西梁子湖：<strong style="color:#D97706;">Ⅳ类</strong>（总磷0.07）</span>
-                        <span>出入湖：<strong style="color:#059669;">稳定Ⅱ类</strong></span>
-                    </div>
-                    <div style="font-size:8px;color:#94A3B8;margin-top:4px;">建议加强西部水域面源管控，东区与出湖口水质持续优化</div>
+                    <div style="font-size:7.5px; color:#475569; margin-top:2px;">出湖口断面稳定保持Ⅱ类优质水体，整体呈现中营养化特征。</div>
                 </div>
             </div>
         </div>
@@ -58,5 +61,3 @@
 </div>
 </body>
 </html>
-
-

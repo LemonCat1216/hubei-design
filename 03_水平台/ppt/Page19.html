@@ -5,50 +5,60 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>流域湖库：斧头湖专项监测分析</title>
 <link rel="stylesheet" href="ppt-style.css">
+<style>
+    .bd table td { padding: 5px 6px !important; font-size: 8px !important; }
+    /* 临界波动专属：左右双半宽对比布局 */
+    .yellow-compare-panel { flex: 1; display: flex; gap: 6px; min-height: 0; }
+    .comp-card { flex: 1; border: 1px solid #E2E8F0; border-radius: 4px; padding: 6px; display: flex; flex-direction: column; justify-content: space-between; min-height: 0; }
+    .comp-card.left-side { border-top: 3px solid #D97706; background: #FFFBEB; }
+    .comp-card.right-side { border-top: 3px solid #DC2626; background: #FEF2F2; }
+</style>
 </head>
 <body>
 <div class="slide-container">
     <div class="ppt-header"><span class="ppt-title">流域湖库：斧头湖专项监测分析</span><span class="nav-page-num">P19</span></div>
-    <div class="core-bar">▎ 斧头湖水质监测数据显示，总磷为主要超标因子，周边面源污染需加强管控。</div>
-    <div class="bd" style="flex-direction:column;gap:10px;">
-        <div class="kpi-row" style="margin-bottom:0;"><div class="kpi-card" style="border-top-color:#2563EB;"><div class="kpi-label" style="color:#2563EB;">监测点位</div><div class="kpi-value" style="color:#2563EB;">xx个</div></div><div class="kpi-card" style="border-top-color:#D97706;"><div class="kpi-label" style="color:#D97706;">总磷均值</div><div class="kpi-value" style="color:#D97706;">0.08mg/L</div></div><div class="kpi-card" style="border-top-color:#D97706;"><div class="kpi-label" style="color:#D97706;">营养状态</div><div class="kpi-value" style="color:#D97706;">轻度富营养</div></div><div class="kpi-card" style="border-top-color:#D97706;"><div class="kpi-label" style="color:#D97706;">水质类别</div><div class="kpi-value" style="color:#D97706;">Ⅳ类</div></div></div>
-        <div style="display:flex;gap:12px;flex:1;min-height:0;">
-            <div class="table-box" style="flex:0 0 48%;display:flex;flex-direction:column;">
-                <div style="font-size:9px;font-weight:700;color:#1E293B;padding:4px 10px;border-bottom:1px solid #E2E8F0;flex-shrink:0;">斧头湖监测点位水质一览</div>
+    <div class="core-bar">▎ 2026年5月斧头湖专项监测数据：共设置6个监测点位，综合均值为Ⅳ类，入湖河口录得最差水质（Ⅴ类）。</div>
+    <div class="bd" style="flex-direction:column;gap:8px;">
+        <div class="kpi-row" style="margin-bottom:0; flex-shrink:0;">
+            <div class="kpi-card pos1"><div class="kpi-label">监测点位</div><div class="kpi-value">6<span style="font-size:9px;font-weight:normal;color:#64748B;">个</span></div></div>
+            <div class="kpi-card status-warn"><div class="kpi-label">总磷均值</div><div class="kpi-value">0.08<span style="font-size:9px;font-weight:normal;">mg/L</span></div></div>
+            <div class="kpi-card status-warn"><div class="kpi-label">营养状态</div><div class="kpi-value" style="font-size:13px; padding-top:2px;">轻度富营养</div></div>
+            <div class="kpi-card status-warn"><div class="kpi-label">综合水质类别</div><div class="kpi-value">Ⅳ类</div></div>
+        </div>
+        <div style="display:flex;gap:12px;flex:1;min-height:0;overflow:hidden;">
+            <div class="table-box" style="flex:0 0 52%;display:flex;flex-direction:column;background:#fff;">
+                <div style="font-size:9px;font-weight:700;color:#1E293B;padding:5px 10px;border-bottom:1px solid #E2E8F0;flex-shrink:0;">📊 斧头湖点位特征污染物监测数据</div>
                 <table style="width:100%;flex:1;">
-                    <thead><tr><th>点位</th><th>总磷</th><th>氨氮</th><th>COD</th><th>水质</th></tr></thead>
+                    <thead><tr><th>点位名称</th><th>总磷(mg/L)</th><th>氨氮(mg/L)</th><th>COD(mg/L)</th><th>水质</th></tr></thead>
                     <tbody>
                         <tr><td class="td-left">出湖口</td><td>0.06</td><td>0.25</td><td>14</td><td>Ⅲ类</td></tr>
                         <tr><td class="td-left">斧头湖北</td><td>0.06</td><td>0.28</td><td>15</td><td>Ⅲ类</td></tr>
                         <tr><td class="td-left">斧头湖东</td><td>0.07</td><td>0.32</td><td>16</td><td>Ⅳ类</td></tr>
                         <tr><td class="td-left">斧头湖湖心</td><td>0.08</td><td>0.35</td><td>18</td><td>Ⅳ类</td></tr>
                         <tr><td class="td-left">斧头湖南</td><td>0.09</td><td>0.40</td><td>20</td><td>Ⅳ类</td></tr>
-                        <tr><td class="td-left">入湖河口</td><td>0.10</td><td>0.45</td><td>22</td><td>Ⅴ类</td></tr>
+                        <tr><td class="td-left">入湖河口</td><td>0.10</td><td>0.45</td><td>22</td><td><span class="badge-r">Ⅴ类</span></td></tr>
                     </tbody>
                 </table>
             </div>
-            <div style="flex:1;display:flex;flex-direction:column;gap:6px;">
-                <div style="font-size:9px;font-weight:700;color:#D97706;padding:3px 0;border-bottom:1px solid #FEF3C7;flex-shrink:0;">⚠ 斧头湖水质评估</div>
-                <div class="warning-card" style="flex:1;border-left:5px solid #D97706!important;background:#FFFBEB!important;padding:10px 14px!important;display:flex;flex-direction:column;justify-content:center;">
-                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
-                        <div style="font-size:12px;font-weight:800;color:#D97706;">平均水质Ⅳ类 · 总磷偏高</div>
-                        <span style="font-size:8px;background:#D97706;color:#fff;padding:2px 8px;font-weight:700;">需关注</span>
+            
+            <div class="yellow-compare-panel">
+                <div class="comp-card left-side">
+                    <div>
+                        <div style="font-size:8.5px; font-weight:800; color:#92400E;">⚠️ 均值运行状态</div>
+                        <div style="font-size:14px; font-weight:900; color:#D97706; margin-top:2px;">Ⅳ类 临界值</div>
                     </div>
-                    <div style="display:flex;gap:12px;font-size:9px;color:#475569;">
-                        <span>湖心总磷：<strong style="color:#D97706;">0.08mg/L</strong></span>
-                        <span>平均氨氮：<strong style="color:#D97706;">0.34mg/L</strong></span>
+                    <div style="font-size:7.2px; color:#475569; border-top:1px dashed #FDE68A; padding-top:4px; line-height:1.3;">
+                        全湖总磷均值录得 <strong>0.08mg/L</strong>。全水体处于轻度富营养状态，逼近标准上限。
                     </div>
                 </div>
-                <div class="warning-card" style="flex:1;border-left:5px solid #DC2626!important;background:#FEF2F2!important;padding:10px 14px!important;display:flex;flex-direction:column;justify-content:center;">
-                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
-                        <div style="font-size:12px;font-weight:800;color:#DC2626;">入湖河口（Ⅴ类）</div>
-                        <span style="font-size:8px;background:#DC2626;color:#fff;padding:2px 8px;font-weight:700;">重点断面</span>
+                <div class="comp-card right-side">
+                    <div>
+                        <div style="font-size:8.5px; font-weight:800; color:#991B1B;">🚨 最差风险单体</div>
+                        <div style="font-size:14px; font-weight:900; color:#DC2626; margin-top:2px;">入湖河口 Ⅴ类</div>
                     </div>
-                    <div style="display:flex;gap:12px;font-size:9px;color:#475569;">
-                        <span>总磷：<strong style="color:#DC2626;">0.10mg/L</strong></span>
-                        <span>COD：<strong style="color:#DC2626;">22mg/L</strong></span>
+                    <div style="font-size:7.2px; color:#475569; border-top:1px dashed #FCA5A5; padding-top:4px; line-height:1.3;">
+                        入湖河口断面总磷达 <strong>0.10mg/L</strong>，COD 为 <strong>22mg/L</strong>，为当前水质倒挂节点。
                     </div>
-                    <div style="font-size:8px;color:#94A3B8;margin-top:4px;">入湖来水污染压力大，建议排查上游面源和农业排放，南部湖区持续监测</div>
                 </div>
             </div>
         </div>
@@ -57,5 +67,3 @@
 </div>
 </body>
 </html>
-
-

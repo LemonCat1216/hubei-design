@@ -3,39 +3,199 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>流域湖库 - 二级流域片区详情（12个片区）</title>
+<title>流域湖库：二级流域片区详情</title>
 <link rel="stylesheet" href="ppt-style.css">
+
+<style>
+/* Page12 页面深度优化：大块完美对齐，右侧升级为全水质六色块堆叠图 */
+.bd {
+  padding: 10px 24px;
+}
+.bd .kpi-row {
+  margin-bottom: 8px;
+  gap: 8px;
+}
+.bd .kpi-row .kpi-card {
+  padding: 6px 8px !important;
+  flex: 1;
+}
+
+/* 下方双大块布局 */
+.content-layout {
+  display: flex;
+  gap: 8px;
+  flex: 1;
+  min-height: 0;
+}
+
+/* 将左右包装成标准的 PPT 大卡片块 */
+.content-layout .data-block {
+  flex: 1;
+  background: #ffffff;
+  border: 1px solid #E2E8F0;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+  border-radius: 4px;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* 左侧表格容器 */
+.content-layout .table-box {
+  flex: 1;
+  overflow: hidden;
+}
+.content-layout .table-box table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.content-layout .table-box th {
+  padding: 4px 6px !important;
+  font-size: 8.5px !important;
+  background: #F8FAFC;
+}
+.content-layout .table-box td {
+  padding: 3px 6px !important; /* 极致压缩内边距，确保12行与图表严格平行 */
+  font-size: 8.5px !important;
+}
+
+/* 右侧图表容器 */
+.content-layout .chart-wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+.content-layout .chart-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.content-layout .chart-title {
+  font-size: 10px;
+  font-weight: 700;
+  color: #1E293B;
+  border-left: 3px solid #059669;
+  padding-left: 6px;
+  line-height: 1.2;
+}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
 </head>
 <body>
 <div class="slide-container">
-    <div class="ppt-header"><span class="ppt-title">流域湖库：二级流域片区详情（12个片区）</span><span class="nav-page-num">P12</span></div>
-    <div class="core-bar">▎ 全省12个二级流域片区中，三峡库区(100%)、丹江口库区(100%)水质最优；四湖片区(72.7%)、汉江下游(85.7%)需重点关注。</div>
-    <div class="bd" style="flex-direction:column;gap:10px;">
-        <div class="kpi-row">
-            <div class="kpi-card" style="border-top-color:#059669;"><div class="kpi-label" style="color:#059669;">达标片区</div><div class="kpi-value" style="color:#059669;">9个</div></div>
-            <div class="kpi-card" style="border-top-color:#D97706;"><div class="kpi-label" style="color:#D97706;">预警片区</div><div class="kpi-value" style="color:#D97706;">2个</div></div>
-            <div class="kpi-card" style="border-top-color:#DC2626;"><div class="kpi-label" style="color:#DC2626;">超标片区</div><div class="kpi-value" style="color:#DC2626;">1个</div></div>
-            <div class="kpi-card" style="border-top-color:#2563EB;"><div class="kpi-label" style="color:#2563EB;">片区总数</div><div class="kpi-value">12个</div></div>
+    <div class="ppt-header"><span class="ppt-title">流域湖库：二级流域片区详情</span><span class="nav-page-num">P12</span></div>
+    <div class="core-bar">▎ 全省12个二级流域片区覆盖长江、汉江、清江三大一级流域，其中Ⅰ-Ⅲ类比例最高为神农架片区（100%），最低为四湖片区（xx%）；劣Ⅴ类涉及xx个片区，劣V类比例最高为xx片区（xx%），最低为xx片区（xx%）。</div>
+    <div class="bd" style="flex-direction:column;gap:8px;">
+        <div class="kpi-row" style="margin-bottom:0;">
+            <div class="kpi-card" style="border-top-color:#2563EB;"><div class="kpi-label" style="color:#2563EB;">长江片区</div><div class="kpi-value" style="color:#2563EB;">xx个</div></div>
+            <div class="kpi-card" style="border-top-color:#059669;"><div class="kpi-label" style="color:#059669;">汉江片区</div><div class="kpi-value" style="color:#059669;">xx个</div></div>
+            <div class="kpi-card" style="border-top-color:#10B981;"><div class="kpi-label" style="color:#10B981;">清江片区</div><div class="kpi-value" style="color:#10B981;">xx个</div></div>
+            <div class="kpi-card" style="border-top-color:#D97706;"><div class="kpi-label" style="color:#D97706;">12片区Ⅰ-Ⅲ类比例</div><div class="kpi-value" style="color:#D97706;">xx%</div></div>
         </div>
-        <div class="table-box" style="flex:1;overflow-y:auto;"><table>
-            <thead><tr><th>片区名称</th><th>所属一级流域</th><th>断面数</th><th>Ⅰ-Ⅲ类</th><th>劣Ⅴ类</th><th>达标率</th><th>同比</th><th>趋势</th></tr></thead>
-            <tbody>
-                <tr><td class="td-left">三峡库区</td><td>长江</td><td>15</td><td><span class="badge-g">15</span></td><td>0</td><td><span class="badge-g">100%</span></td><td>持平</td><td>→</td></tr>
-                <tr><td class="td-left">丹江口库区</td><td>汉江</td><td>10</td><td><span class="badge-g">10</span></td><td>0</td><td><span class="badge-g">100%</span></td><td>持平</td><td>→</td></tr>
-                <tr><td class="td-left">清江片区</td><td>清江</td><td>26</td><td><span class="badge-g">24</span></td><td>0</td><td><span class="badge-g">92.3%</span></td><td><span class="badge-g">+1.2%</span></td><td>↑</td></tr>
-                <tr><td class="td-left">汉江上游</td><td>汉江</td><td>18</td><td><span class="badge-g">17</span></td><td>0</td><td><span class="badge-g">94.4%</span></td><td>持平</td><td>→</td></tr>
-                <tr><td class="td-left">汉江中游</td><td>汉江</td><td>14</td><td><span class="badge-g">13</span></td><td>0</td><td><span class="badge-g">92.9%</span></td><td><span class="badge-g">+0.8%</span></td><td>↑</td></tr>
-                <tr><td class="td-left">长江上游</td><td>长江</td><td>22</td><td><span class="badge-g">20</span></td><td>0</td><td><span class="badge-g">90.9%</span></td><td>持平</td><td>→</td></tr>
-                <tr><td class="td-left">长江中游</td><td>长江</td><td>25</td><td><span class="badge-g">22</span></td><td>1</td><td><span class="badge-g">88.0%</span></td><td><span class="badge-r">-0.5%</span></td><td>↓</td></tr>
-                <tr><td class="td-left">长江下游</td><td>长江</td><td>24</td><td><span class="badge-g">20</span></td><td>2</td><td><span class="badge-g">83.3%</span></td><td><span class="badge-r">-2.1%</span></td><td>↓</td></tr>
-                <tr><td class="td-left">汉江下游</td><td>汉江</td><td>10</td><td><span class="badge-g">9</span></td><td>0</td><td><span class="badge-y">85.7%</span></td><td><span class="badge-r">-1.4%</span></td><td>↓</td></tr>
-                <tr><td class="td-left">鄂东片区</td><td>长江</td><td>28</td><td><span class="badge-g">24</span></td><td>2</td><td><span class="badge-g">85.7%</span></td><td><span class="badge-r">-1.8%</span></td><td>↓</td></tr>
-                <tr><td class="td-left">四湖片区</td><td>长江</td><td>22</td><td><span class="badge-g">16</span></td><td>4</td><td><span class="badge-r">72.7%</span></td><td><span class="badge-r">-5.3%</span></td><td>↓</td></tr>
-                <tr><td class="td-left">府澴河片区</td><td>长江</td><td>20</td><td><span class="badge-g">16</span></td><td>2</td><td><span class="badge-y">80.0%</span></td><td><span class="badge-r">-3.2%</span></td><td>↓</td></tr>
-            </tbody>
-        </table></div>
+        
+        <div class="content-layout">
+            <div class="data-block">
+                <div class="table-box">
+                    <table>
+                        <thead><tr><th>片区名称</th><th>所在流域</th><th>断面数</th><th>Ⅰ-Ⅲ类</th><th>Ⅰ-Ⅲ类比</th><th>劣Ⅴ类</th><th>劣V比</th></tr></thead>
+                        <tbody>
+                            <tr><td class="td-left">神农架片区</td><td>长江</td><td>xx</td><td>xx</td><td>100%</td><td>xx</td><td>xx%</td></tr>
+                            <tr><td class="td-left">三峡库区</td><td>长江</td><td>xx</td><td>xx</td><td>xx%</td><td>xx</td><td>xx%</td></tr>
+                            <tr><td class="td-left">清江片区</td><td>清江</td><td>26</td><td>24</td><td>92.3%</td><td>xx</td><td>xx%</td></tr>
+                            <tr><td class="td-left">黄柏河片区</td><td>长江</td><td>xx</td><td>xx</td><td>xx%</td><td>xx</td><td>xx%</td></tr>
+                            <tr><td class="td-left">汉江上游</td><td>汉江</td><td>xx</td><td>xx</td><td>xx%</td><td>xx</td><td>xx%</td></tr>
+                            <tr><td class="td-left">汉江中游</td><td>汉江</td><td>xx</td><td>xx</td><td>xx%</td><td>xx</td><td>xx%</td></tr>
+                            <tr><td class="td-left">汉江下游</td><td>汉江</td><td>xx</td><td>xx</td><td>xx%</td><td>xx</td><td>xx%</td></tr>
+                            <tr><td class="td-left">丹江口库区</td><td>汉江</td><td>xx</td><td>xx</td><td>xx%</td><td>xx</td><td>xx%</td></tr>
+                            <tr><td class="td-left">四湖片区</td><td>长江</td><td>xx</td><td>xx</td><td>xx%</td><td>xx</td><td>xx%</td></tr>
+                            <tr><td class="td-left">府澴河片区</td><td>长江</td><td>xx</td><td>xx</td><td>xx%</td><td>xx</td><td>xx%</td></tr>
+                            <tr><td class="td-left">富水片区</td><td>长江</td><td>xx</td><td>xx</td><td>xx%</td><td>xx</td><td>xx%</td></tr>
+                            <tr><td class="td-left">倒举巴片区</td><td>长江</td><td>xx</td><td>xx</td><td>xx%</td><td>xx</td><td>xx%</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="data-block">
+                <div class="chart-wrapper">
+                    <div class="chart-header-row">
+                        <div class="chart-title">12片区水质结构构成 (100%)</div>
+                    </div>
+                    <div id="chart-district" style="width:100%; flex:1;"></div>
+                </div>
+            </div>
+        </div>
     </div>
     <div class="ft"><span>2026年5月生态环境月度专报</span><span>提示：仅供汇报使用</span></div>
 </div>
+
+<script>
+var districts = echarts.init(document.getElementById('chart-district'));
+
+// 数据集定义（数组顺序需与下方 yAxis 的 reverse 保持对应，此处从上到下代表表格的第1行到第12行）
+var chartData = {
+    districts: ['神农架片区','三峡库区','清江片区','黄柏河片区','汉江上游','汉江中游','汉江下游','丹江口库区','四湖片区','府澴河片区','富水片区','倒举巴片区'].reverse(),
+    // 以下各级别水质比例相加均为 100，xx部分先用标准演示数据占位
+    class1: [40, 20, 30, 15, 25, 10,  5, 35,  5, 10, 15, 10].reverse(), // Ⅰ类
+    class2: [40, 30, 40, 35, 45, 30, 20, 45, 15, 20, 25, 20].reverse(), // Ⅱ类
+    class3: [20, 25, 22.3, 25, 20, 35, 35, 15, 25, 30, 35, 30].reverse(),// Ⅲ类 (注:神农架40+40+20=100; 清江30+40+22.3=92.3)
+    class4: [ 0, 15,  5, 15,  7, 15, 25,  3, 30, 25, 15, 25].reverse(), // Ⅳ类
+    class5: [ 0,  7,  2,  7,  3,  7, 10,  2, 15, 10,  7, 10].reverse(), // Ⅴ类
+    class6: [ 0,  3,  0.7,  3,  0,  3,  5,  0, 10,  5,  3,  5].reverse()  // 劣Ⅴ类
+};
+
+districts.setOption({
+    tooltip: {
+        trigger: 'axis',
+        axisPointer: { type: 'shadow' },
+        formatter: function(params) {
+            var html = params[0].name + '<br/>';
+            params.forEach(function(item) {
+                html += item.marker + item.seriesName + ': ' + item.value + '%<br/>';
+            });
+            return html;
+        }
+    },
+    // 环保标准 6 色域配色方案 (由蓝变绿再变红)
+    color: ['#1E3A8A', '#3B82F6', '#60A5FA', '#FBBF24', '#F97316', '#EF4444'],
+    legend: {
+        data: ['Ⅰ类', 'Ⅱ类', 'Ⅲ类', 'Ⅳ类', 'Ⅴ类', '劣Ⅴ类'],
+        icon: 'rect',
+        itemWidth: 8,
+        itemHeight: 8,
+        textStyle: { fontSize: 7, fontWeight: 600, color: '#475569' },
+        top: 0
+    },
+    grid: { left: 55, right: 15, top: 20, bottom: 5 },
+    xAxis: {
+        type: 'value',
+        max: 100,
+        splitLine: { show: false },
+        axisLabel: { show: false }, // 隐藏底部刻度线让排版更干净
+        axisLine: { show: false },
+        axisTick: { show: false }
+    },
+    yAxis: {
+        type: 'category',
+        data: chartData.districts,
+        axisLabel: { fontSize: 7, fontWeight: 600, color: '#1E293B' },
+        axisTick: { show: false },
+        axisLine: { show: false }
+    },
+    series: [
+        { name: 'Ⅰ类', type: 'bar', stack: 'total', barWidth: 6, data: chartData.class1 },
+        { name: 'Ⅱ类', type: 'bar', stack: 'total', data: chartData.class2 },
+        { name: 'Ⅲ类', type: 'bar', stack: 'total', data: chartData.class3 },
+        { name: 'Ⅳ类', type: 'bar', stack: 'total', data: chartData.class4 },
+        { name: 'Ⅴ类', type: 'bar', stack: 'total', data: chartData.class5 },
+        { name: '劣Ⅴ类', type: 'bar', stack: 'total', data: chartData.class6 }
+    ],
+    backgroundColor: 'transparent'
+});
+window.addEventListener('resize',function(){districts.resize();});
+</script>
 </body>
 </html>

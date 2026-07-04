@@ -5,28 +5,225 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>流域湖库 - 一级流域概览</title>
 <link rel="stylesheet" href="ppt-style.css">
+<script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+<style>
+.bd {
+  padding: 14px 24px;
+}
+
+/* 左右对称的现代双板布局 */
+.content-layout {
+  display: flex;
+  gap: 14px;
+  flex: 1;
+  min-height: 0;
+}
+
+/* 统一下方两个大块的底座样式，达成完美的视觉平衡 */
+.main-panel {
+  flex: 1;
+  background: #ffffff;
+  border: 1px solid #E2E8F0;
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04);
+  border-radius: 4px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* 卡片标题标准排版 */
+.panel-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: #0F172A;
+  border-left: 3px solid #059669;
+  padding-left: 8px;
+  margin-bottom: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.panel-title span.sub-tips {
+  font-size: 8px;
+  color: #64748B;
+  font-weight: 500;
+}
+
+/* 右侧下方的核心结论区域：彻底解决右侧太空的问题 */
+.business-summary-box {
+  margin-top: 14px;
+  background: #F8FAFC;
+  border-top: 2px solid #E2E8F0;
+  padding: 10px 12px;
+  flex: 1; /* 自动撑满表格下方的剩余空间 */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 6px;
+}
+.summary-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  font-size: 9px;
+  color: #334155;
+  line-height: 1.5;
+}
+.summary-item .dot {
+  width: 4px;
+  height: 4px;
+  background: #059669;
+  border-radius: 50%;
+  margin-top: 5px;
+  flex-shrink: 0;
+}
+.summary-item .dot.alert { background: #DC2626; }
+
+
+</style>
 </head>
 <body>
 <div class="slide-container">
-    <div class="ppt-header"><span class="ppt-title">流域湖库：一级流域概览（长江/清江/汉江）</span><span class="nav-page-num">P11</span></div>
-    <div class="core-bar">▎ 全省水系分为长江、清江、汉江三大一级流域。长江流域Ⅰ-Ⅲ类比例89.9%，汉江流域92.3%，清江流域保持92.3%优质水平。</div>
-    <div class="bd" style="flex-direction:column;gap:10px;">
-        <div class="kpi-row">
-            <div class="kpi-card" style="border-top-color:#2563EB;"><div class="kpi-label" style="color:#2563EB;">长江流域断面</div><div class="kpi-value" style="color:#2563EB;">89个</div></div>
-            <div class="kpi-card" style="border-top-color:#059669;"><div class="kpi-label" style="color:#059669;">汉江流域断面</div><div class="kpi-value" style="color:#059669;">52个</div></div>
-            <div class="kpi-card" style="border-top-color:#059669;"><div class="kpi-label" style="color:#059669;">清江流域断面</div><div class="kpi-value" style="color:#059669;">26个</div></div>
-            <div class="kpi-card" style="border-top-color:#D97706;"><div class="kpi-label" style="color:#D97706;">劣V类断面</div><div class="kpi-value" style="color:#DC2626;">9个</div></div>
+    <div class="ppt-header"><span class="ppt-title">流域湖库：一级流域概览（三大流域）</span><span class="nav-page-num">P11</span></div>
+    <div class="core-bar">▎ 全省三大一级流域（长江、汉江、清江）共布设167个国控断面，Ⅰ-Ⅲ类比例分别为长江89.9%、汉江92.3%、清江92.3%。劣Ⅴ类断面长江3个、汉江2个，清江保持零个。</div>
+    
+    <div class="bd" style="flex-direction:column;">
+        <div class="content-layout">
+            
+            <div class="main-panel">
+                <div class="panel-title">
+                    <span>三大流域水质级别构成横向对比</span>
+                    <span class="sub-tips">全省国控国控断面: 167 个</span>
+                </div>
+                <div id="chart-basin" style="width:100%; flex:1; min-height: 200px;"></div>
+            </div>
+
+            <div class="main-panel">
+                <div class="panel-title">
+                    <span>各流域断面数据明细明细表</span>
+                </div>
+                <div class="table-box">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>一级流域</th>
+                                <th>断面数</th>
+                                <th>Ⅰ-Ⅲ类</th>
+                                <th>Ⅳ-Ⅴ类</th>
+                                <th>劣Ⅴ类</th>
+                                <th>同比变化</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="td-left" style="font-weight:700; color:#1E3A8A;">长江流域</td>
+                                <td style="font-weight:600;">89</td>
+                                <td><span class="badge-g">80个</span> <small style="color:#64748B;">(89.9%)</small></td>
+                                <td>6个</td>
+                                <td><span class="badge-r">3个</span></td>
+                                <td><span class="badge-r">↓ 1.4%</span></td>
+                            </tr>
+                            <tr>
+                                <td class="td-left" style="font-weight:700; color:#064E3B;">汉江流域</td>
+                                <td style="font-weight:600;">52</td>
+                                <td><span class="badge-g">48个</span> <small style="color:#64748B;">(92.3%)</small></td>
+                                <td>2个</td>
+                                <td><span class="badge-r">2个</span></td>
+                                <td><span class="badge-r">↓ 0.8%</span></td>
+                            </tr>
+                            <tr>
+                                <td class="td-left" style="font-weight:700; color:#0F5132;">清江流域</td>
+                                <td style="font-weight:600;">26</td>
+                                <td><span class="badge-g">24个</span> <small style="color:#64748B;">(92.3%)</small></td>
+                                <td>2个</td>
+                                <td><span style="color:#64748B;font-weight:600;">0个</span></td>
+                                <td><span class="badge-g">↑ 1.2%</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="business-summary-box">
+                    <div class="summary-item">
+                        <div class="dot"></div>
+                        <div><b>水质稳中向好：</b>三大流域优良水质比例均超89%，汉江92.3%、清江92.3%、长江89.9%，清江持续实现劣Ⅴ类断面"清零"。</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="dot alert"></div>
+                        <div><b>重点关注风险：</b>长江优良率89.9%，同比回落1.4%，存在<b>3个</b>劣Ⅴ类断面；汉江同比回落0.8%，存在<b>2个</b>劣Ⅴ类断面，需推进上游重点断面溯源与攻坚整治。</div>
+                    </div>
+                </div>
+            </div>
+
         </div>
-        <div class="table-box" style="flex:1;overflow-y:auto;"><table>
-            <thead><tr><th>一级流域</th><th>断面总数</th><th>Ⅰ-Ⅲ类</th><th>Ⅳ-Ⅴ类</th><th>劣Ⅴ类</th><th>Ⅰ-Ⅲ类比例</th><th>同比变化</th><th>主要风险</th></tr></thead>
-            <tbody>
-                <tr><td class="td-left">长江</td><td>89</td><td><span class="badge-g">80个</span></td><td>6</td><td><span class="badge-r">3个</span></td><td><span class="badge-g">89.9%</span></td><td><span class="badge-r">↓1.4%</span></td><td>四湖总干渠/府河</td></tr>
-                <tr><td class="td-left">汉江</td><td>52</td><td><span class="badge-g">48个</span></td><td>2</td><td><span class="badge-r">2个</span></td><td><span class="badge-g">92.3%</span></td><td><span class="badge-r">↓0.8%</span></td><td>竹皮河/天门河</td></tr>
-                <tr><td class="td-left">清江</td><td>26</td><td><span class="badge-g">24个</span></td><td>2</td><td>0</td><td><span class="badge-g">92.3%</span></td><td><span class="badge-g">↑1.2%</span></td><td>个别支流</td></tr>
-            </tbody>
-        </table></div>
     </div>
+    
     <div class="ft"><span>2026年5月生态环境月度专报</span><span>提示：仅供汇报使用</span></div>
 </div>
+
+<script>
+var chart = echarts.init(document.getElementById('chart-basin'));
+chart.setOption({
+    tooltip: {
+        trigger: 'axis',
+        axisPointer: { type: 'shadow' },
+        formatter: function(params) {
+            var html = params[0].name + '<br/>';
+            params.forEach(function(item) {
+                html += item.marker + item.seriesName + ': ' + item.value + '个 (' + 
+                        ((item.value / (params[0].value + params[1].value + params[2].value)) * 100).toFixed(1) + '%)<br/>';
+            });
+            return html;
+        }
+    },
+    // 全局精细色彩管理：使用深邃环保青绿色系，去掉刺眼蓝
+    color: ['#059669', '#3B82F6', '#EF4444'],
+    legend: {
+        data: ['Ⅰ-Ⅲ类', 'Ⅳ-Ⅴ类', '劣Ⅴ类'],
+        icon: 'circle',
+        itemWidth: 8,
+        itemHeight: 8,
+        textStyle: { fontSize: 8.5, fontWeight: 600, color: '#475569' },
+        right: 0,
+        top: 0
+    },
+    grid: { left: 45, right: 10, top: 30, bottom: 10 },
+    xAxis: {
+        type: 'value',
+        max: 'dataMax',
+        splitLine: { show: true, lineStyle: { color: '#F1F5F9', type: 'dashed' } },
+        axisLabel: { fontSize: 8, color: '#94A3B8', fontWeight: 600 },
+        axisLine: { show: false },
+        axisTick: { show: false }
+    },
+    yAxis: {
+        type: 'category',
+        data: ['清江流域', '汉江流域', '长江流域'],
+        axisLabel: { fontSize: 9, fontWeight: 700, color: '#1E293B' },
+        axisTick: { show: false },
+        axisLine: { show: false }
+    },
+    series: [
+        { 
+            name: 'Ⅰ-Ⅲ类', type: 'bar', stack: 'total', barWidth: 16, data: [24, 48, 80], 
+            label: { show: true, position: 'inside', fontSize: 8.5, fontWeight: 700, color: '#fff', formatter: '{c}个' } 
+        },
+        { 
+            name: 'Ⅳ-Ⅴ类', type: 'bar', stack: 'total', data: [2, 2, 6], 
+            label: { show: true, position: 'inside', fontSize: 8.5, fontWeight: 700, color: '#fff', formatter: '{c}个' } 
+        },
+        { 
+            name: '劣Ⅴ类', type: 'bar', stack: 'total', data: [0, 2, 3], 
+            label: { 
+                show: true, position: 'inside', fontSize: 8.5, fontWeight: 700, color: '#fff', 
+                formatter: function(p){return p.value > 0 ? p.value + '个' : '';} 
+            } 
+        }
+    ],
+    backgroundColor: 'transparent'
+});
+window.addEventListener('resize', function(){ chart.resize(); });
+</script>
 </body>
 </html>

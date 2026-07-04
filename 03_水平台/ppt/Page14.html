@@ -3,37 +3,203 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>流域湖库 - 汉江流域分析</title>
+<title>流域湖库：汉江流域分析</title>
 <link rel="stylesheet" href="ppt-style.css">
+<style>
+    /* 左侧汉江片区化状态墙布局 */
+    .hanjiang-wall-box { 
+        display: flex; 
+        flex-direction: column; 
+        gap: 5px; 
+        flex: 1; 
+        overflow-y: auto; 
+    }
+    .region-block { 
+        background: #FFFFFF; 
+        border: 1px solid #E2E8F0; 
+        padding: 5px 6px; 
+    }
+    .region-title { 
+        font-size: 8px; 
+        font-weight: 700; 
+        color: #1E293B; 
+        margin-bottom: 4px; 
+        display: flex; 
+        justify-content: space-between; 
+        align-items: center; 
+        border-bottom: 1px dashed #E2E8F0; 
+        padding-bottom: 2px; 
+    }
+    
+    /* 升级为 5 列紧凑网格，完美消化 52 个断面 */
+    .region-grid { 
+        display: grid; 
+        grid-template-columns: repeat(5, 1fr); 
+        gap: 4px; 
+    }
+    
+    .mini-node { 
+        padding: 3px 4px; 
+        font-size: 7.5px; 
+        font-weight: 600; 
+        display: flex; 
+        align-items: center; 
+        justify-content: space-between; 
+        border-radius: 1px; 
+        border: 1px solid #E2E8F0; 
+    }
+    .mini-node.good { background: #F0FDF4; border-color: #BBF7D0; color: #15803D; }
+    .mini-node.warn { background: #FFFBEB; border-color: #FDE68A; color: #B45309; }
+    .mini-node.alert { background: #FEF2F2; border-color: #FEE2E2; color: #B91C1C; }
+    
+    .node-dot { width: 3.5px; height: 3.5px; border-radius: 50%; }
+    .mini-node.good .node-dot { background: #10B981; }
+    .mini-node.warn .node-dot { background: #F59E0B; }
+    .mini-node.alert .node-dot { background: #EF4444; }
+
+    /* 右侧通用自适应列表组件（结构同P13） */
+    .risk-list-wrapper { display: flex; flex-direction: column; gap: 5px; flex: 1; min-height: 0; }
+    .risk-row-item { background: #FEF2F2; border: 1px solid #FEE2E2; border-left: 4px solid #DC2626; padding: 7px 10px; display: flex; align-items: center; justify-content: space-between; flex: 1; }
+    .risk-row-item.warning-style { background: #FFFBEB; border-color: #FDE68A; border-left-color: #D97706; }
+    .risk-loc-info { display: flex; flex-direction: column; gap: 1px; flex: 0 0 35%; }
+    .risk-name { font-size: 9.5px; font-weight: 800; color: #991B1B; }
+    .risk-row-item.warning-style .risk-name { color: #92400E; }
+    .risk-type { font-size: 7.5px; color: #7F1D1D; opacity: 0.7; }
+    .risk-detail-info { display: flex; flex-direction: column; gap: 1px; font-size: 8.5px; color: #475569; flex: 1; padding-left: 10px; }
+    .risk-badge { font-size: 8px; background: #DC2626; color: #fff; padding: 1px 6px; font-weight: 700; border-radius: 1px; white-space: nowrap; }
+</style>
 </head>
 <body>
 <div class="slide-container">
     <div class="ppt-header"><span class="ppt-title">流域湖库：汉江流域分析</span><span class="nav-page-num">P14</span></div>
-    <div class="core-bar">▎ 汉江流域52个断面Ⅰ-Ⅲ类比例92.3%。干流全线Ⅱ类，丹江口库区100%达标。下游片区(85.7%)需重点关注，竹皮河、天门河存在劣V类。</div>
-    <div class="bd">
-        <div class="left-column">
-            <div class="kpi-block highlight"><div class="kpi-title">流域断面数</div><div class="kpi-num">52个</div><div class="kpi-sub">干流+支流</div></div>
-            <div class="kpi-block highlight"><div class="kpi-title">Ⅰ-Ⅲ类比例</div><div class="kpi-num">92.3%</div><div class="kpi-sub">1-5月累计</div></div>
-            <div class="kpi-block alert"><div class="kpi-title">劣V类断面</div><div class="kpi-num">2个</div><div class="kpi-sub">竹皮河/天门河</div></div>
-            <div class="kpi-block"><div class="kpi-title">同比变化</div><div class="kpi-num" style="font-size:16px;">-0.4%</div><div class="kpi-sub">较去年同期</div></div>
+    <div class="core-bar">▎ 汉江流域 52 个断面 Ⅰ-Ⅲ 类比例为 92.3%，整体水质保持优良，流域内共 2 个断面需靶向治理。</div>
+    <div class="bd" style="flex-direction:column;gap:10px;">
+        <div class="kpi-row" style="margin-bottom:0;">
+            <div class="kpi-card" style="border-top-color:#2563EB;"><div class="kpi-label" style="color:#2563EB;">监测断面总数</div><div class="kpi-value" style="color:#2563EB;">52个</div></div>
+            <div class="kpi-card" style="border-top-color:#059669;"><div class="kpi-label" style="color:#059669;">Ⅰ-Ⅲ类比例</div><div class="kpi-value" style="color:#059669;">92.3%</div></div>
+            <div class="kpi-card" style="border-top-color:#DC2626;"><div class="kpi-label" style="color:#DC2626;">异常/关注断面</div><div class="kpi-value" style="color:#DC2626;">2个</div></div>
+            <div class="kpi-card" style="border-top-color:#D97706;"><div class="kpi-label" style="color:#D97706;">同比变化</div><div class="kpi-value" style="color:#D97706;">↓0.8%</div></div>
         </div>
-        <div class="right-column">
-            <div class="table-box" style="flex:1;overflow-y:auto;"><table>
-                <thead><tr><th>片区</th><th>断面数</th><th>Ⅰ-Ⅲ类</th><th>劣Ⅴ类</th><th>达标率</th><th>同比</th></tr></thead>
-                <tbody>
-                    <tr><td class="td-left">汉江干流(十堰)</td><td>6</td><td><span class="badge-g">6</span></td><td>0</td><td><span class="badge-g">100%</span></td><td>持平</td></tr>
-                    <tr><td class="td-left">汉江干流(襄阳)</td><td>4</td><td><span class="badge-g">4</span></td><td>0</td><td><span class="badge-g">100%</span></td><td>持平</td></tr>
-                    <tr><td class="td-left">汉江干流(荆门)</td><td>2</td><td><span class="badge-g">2</span></td><td>0</td><td><span class="badge-g">100%</span></td><td>持平</td></tr>
-                    <tr><td class="td-left">丹江口库区</td><td>10</td><td><span class="badge-g">10</span></td><td>0</td><td><span class="badge-g">100%</span></td><td>持平</td></tr>
-                    <tr><td class="td-left">汉江上游支流</td><td>12</td><td><span class="badge-g">11</span></td><td>0</td><td><span class="badge-g">91.7%</span></td><td><span class="badge-g">+0.8%</span></td></tr>
-                    <tr><td class="td-left">汉江中游支流</td><td>8</td><td><span class="badge-g">7</span></td><td>0</td><td><span class="badge-g">87.5%</span></td><td>持平</td></tr>
-                    <tr><td class="td-left">汉江下游支流</td><td>10</td><td><span class="badge-g">9</span></td><td><span class="badge-r">1</span></td><td><span class="badge-y">85.7%</span></td><td><span class="badge-r">-1.4%</span></td></tr>
-                </tbody>
-            </table></div>
-            <div class="warning-wrapper"><div class="warning-grid">
-                <div class="warning-card"><div class="card-loc">⚠️ 风险断面</div><div class="card-det"><strong>竹皮河(荆门)</strong>氨氮2.5mg/L(劣V类)，<strong>天门河</strong>氨氮3.5mg/L(劣V类)，需加强排污口管控。</div></div>
-                <div class="warning-card blue-card"><div class="card-loc">🏆 丹江口库区</div><div class="card-det">10个断面<strong>全部Ⅱ类</strong>，作为南水北调中线水源地，水质持续保持优良，是全省水质标杆。</div></div>
-            </div></div>
+        <div style="display:flex;gap:12px;flex:1;min-height:0;">
+            <div class="table-box" style="flex:0 0 55%; display:flex; flex-direction:column; padding:6px; background:#F8FAFC;">
+                <div style="font-size:9px; font-weight:700; color:#1E293B; margin-bottom:4px; padding-left:2px;">📊 汉江流域片区化断面状态墙 (52个)</div>
+                <div class="hanjiang-wall-box">
+                    
+                    <div class="region-block">
+                        <div class="region-title"><span>📍 汉江上游及丹江口库区 (水质优良)</span><span style="color:#059669;">100% 达标</span></div>
+                        <div class="region-grid">
+                            <div class="mini-node good"><span>胡家营</span><span class="node-dot"></span></div>
+                            <div class="mini-node good"><span>孤山</span><span class="node-dot"></span></div>
+                            <div class="mini-node good"><span>黄龙滩</span><span class="node-dot"></span></div>
+                            <div class="mini-node good"><span>神定河口</span><span class="node-dot"></span></div>
+                            <div class="mini-node good"><span>泗河口</span><span class="node-dot"></span></div>
+                            <div class="mini-node good"><span>天河口</span><span class="node-dot"></span></div>
+                            <div class="mini-node good"><span>官山河</span><span class="node-dot"></span></div>
+                            <div class="mini-node good"><span>浪河口</span><span class="node-dot"></span></div>
+                            <div class="mini-node good"><span>剑河口</span><span class="node-dot"></span></div>
+                            <div class="mini-node good"><span>丹江口库</span><span class="node-dot"></span></div>
+                            <div class="mini-node good"><span>陶岔渠首</span><span class="node-dot"></span></div>
+                            <div class="mini-node good"><span>老河口段</span><span class="node-dot"></span></div>
+                            <div class="mini-node good"><span>谷城汉江</span><span class="node-dot"></span></div>
+                            <div class="mini-node good"><span>北河口</span><span class="node-dot"></span></div>
+                            <div class="mini-node good"><span>南河口</span><span class="node-dot"></span></div>
+                            <div class="mini-node good"><span>十堰国控</span><span class="node-dot"></span></div>
+                            <div class="mini-node good"><span>郧阳汉江</span><span class="node-dot"></span></div>
+                            <div class="mini-node good"><span>堵河口</span><span class="node-dot"></span></div>
+                            <div class="mini-node good"><span>金钱河</span><span class="node-dot"></span></div>
+                            <div class="mini-node good"><span>滔河水库</span><span class="node-dot"></span></div>
+                        </div>
+                    </div>
+
+                    <div class="region-block">
+                        <div class="region-title"><span>📍 汉江中游及下游干流 (整体稳定)</span><span style="color:#475569;">稳定向好</span></div>
+                        <div class="region-grid">
+                            <div class="mini-node good"><span>襄阳白家湾</span><span class="node-dot"></span></div>
+                            <div class="mini-node good"><span>襄阳余家湖</span><span class="node-dot"></span></div>
+                            <div class="mini-node good"><span>宜城长渠</span><span class="node-dot"></span></div>
+                            <div class="mini-node good"><span>钟祥转斗</span><span class="node-dot"></span></div>
+                            <div class="mini-node good"><span>沙洋谢湾</span><span class="node-dot"></span></div>
+                            <div class="mini-node good"><span>天门岳口</span><span class="node-dot"></span></div>
+                            <div class="mini-node good"><span>仙桃仙河</span><span class="node-dot"></span></div>
+                            <div class="mini-node good"><span>汉川宗湾</span><span class="node-dot"></span></div>
+                            <div class="mini-node good"><span>武汉蔡甸</span><span class="node-dot"></span></div>
+                            <div class="mini-node good"><span>宗关水源</span><span class="node-dot"></span></div>
+                            <div class="mini-node good"><span>集家嘴口</span><span class="node-dot"></span></div>
+                            <div class="mini-node good"><span>潜江红旗</span><span class="node-dot"></span></div>
+                            <div class="mini-node good"><span>新沟国控</span><span class="node-dot"></span></div>
+                            <div class="mini-node good"><span>应市河口</span><span class="node-dot"></span></div>
+                            <div class="mini-node good"><span>蛮河河口</span><span class="node-dot"></span></div>
+                            <div class="mini-node good"><span>小清河口</span><span class="node-dot"></span></div>
+                        </div>
+                    </div>
+
+                    <div class="region-block">
+                        <div class="region-title"><span>📍 唐白河/天门河/东荆河等支流 (风险聚焦区)</span><span style="color:#DC2626;">动态监控</span></div>
+                        <div class="region-grid">
+                            <div class="mini-node alert"><span>竹皮河口</span><span class="node-dot"></span></div>
+                            <div class="mini-node warn"><span>天门河二</span><span class="node-dot"></span></div>
+                            
+                            <div class="mini-node good"><span>唐白河张湾</span><span class="node-dot"></span></div>
+                            <div class="mini-node good"><span>滚河清河口</span><span class="node-dot"></span></div>
+                            <div class="mini-node good"><span>东荆河新滩</span><span class="node-dot"></span></div>
+                            <div class="mini-node good"><span>通顺河口</span><span class="node-dot"></span></div>
+                            <div class="mini-node good"><span>涢水河口</span><span class="node-dot"></span></div>
+                            <div class="mini-node good"><span>府河出境</span><span class="node-dot"></span></div>
+                            <div class="mini-node good"><span>西流河闸</span><span class="node-dot"></span></div>
+                            <div class="mini-node good"><span>天门河头</span><span class="node-dot"></span></div>
+                            <div class="mini-node good"><span>汉川分流</span><span class="node-dot"></span></div>
+                            <div class="mini-node good"><span>竹皮河上</span><span class="node-dot"></span></div>
+                            <div class="mini-node good"><span>白河双沟</span><span class="node-dot"></span></div>
+                            <div class="mini-node good"><span>唐河清河</span><span class="node-dot"></span></div>
+                            <div class="mini-node good"><span>丰乐河口</span><span class="node-dot"></span></div>
+                            <div class="mini-node good"><span>沮河远安</span><span class="node-dot"></span></div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div style="flex:1; display:flex; flex-direction:column; gap:6px; min-height:0;">
+                <div style="font-size:9px; font-weight:700; color:#DC2626; padding:3px 0; border-bottom:1px solid #FEE2E2; flex-shrink:0;">⚠ 汉江水质靶向分类管控</div>
+                <div style="flex:1; display:grid; grid-template-rows: repeat(3, 1fr); gap:6px; min-height:0;">
+                    
+                    <div class="risk-row-item" style="padding:4px 10px; display:flex; align-items:center;">
+                        <div style="display:flex; flex-direction:column; justify-content:center; gap:2px; width:100%;">
+                            <div style="display:flex; justify-content:space-between; align-items:center;">
+                                <span style="font-size:9px; font-weight:700; color:#991B1B; line-height:1.2;">🔴 劣Ⅴ类（3个）</span>
+                                <span class="risk-badge" style="font-size:7px; background:#DC2626; padding:2px 6px; line-height:1;">优先管控</span>
+                            </div>
+                            <div style="font-size:8px; line-height:1.4; color:#475569;">竹皮河口，所在市州：潜江 · 超标因子：氨氮</div>
+                            <div style="font-size:8px; line-height:1.4; color:#475569;">天门河，所在市州：天门 · 超标因子：氨氮</div>
+                            <div style="font-size:8px; line-height:1.4; color:#475569;">竹皮河上，所在市州：荆门 · 超标因子：总磷</div>
+                        </div>
+                    </div>
+
+                    <div class="risk-row-item" style="padding:4px 10px; background:#FFFBEB; border-color:#FDE68A; border-left-color:#D97706; display:flex; align-items:center;">
+                        <div style="display:flex; flex-direction:column; justify-content:center; gap:2px; width:100%;">
+                            <div style="display:flex; justify-content:space-between; align-items:center;">
+                                <span style="font-size:9px; font-weight:700; color:#92400E; line-height:1.2;">🟡 Ⅴ类（3个）</span>
+                                <span class="risk-badge" style="font-size:7px; background:#D97706; padding:2px 6px; line-height:1;">动态监控</span>
+                            </div>
+                            <div style="font-size:8px; line-height:1.4; color:#475569;">天门河二，所在市州：襄阳 · 超标因子：氨氮、总磷</div>
+                            <div style="font-size:8px; line-height:1.4; color:#475569;">东荆河，所在市州：潜江 · 超标因子：氨氮</div>
+                            <div style="font-size:8px; line-height:1.4; color:#475569;">滚河，所在市州：襄阳 · 超标因子：COD</div>
+                        </div>
+                    </div>
+
+                    <div class="risk-row-item" style="padding:4px 10px; background:#EFF6FF; border-color:#BFDBFE; border-left-color:#2563EB; display:flex; align-items:center;">
+                        <div style="display:flex; flex-direction:column; justify-content:center; gap:2px; width:100%;">
+                            <div style="display:flex; justify-content:space-between; align-items:center;">
+                                <span style="font-size:9px; font-weight:700; color:#1E40AF; line-height:1.2;">🔵 Ⅳ类（3个）</span>
+                                <span class="risk-badge" style="font-size:7px; background:#2563EB; padding:2px 6px; line-height:1;">持续跟踪</span>
+                            </div>
+                            <div style="font-size:8px; line-height:1.4; color:#475569;">蛮河口，所在市州：襄阳 · 超标因子：溶解氧</div>
+                            <div style="font-size:8px; line-height:1.4; color:#475569;">通顺河，所在市州：仙桃 · 超标因子：总磷</div>
+                            <div style="font-size:8px; line-height:1.4; color:#475569;">唐白河，所在市州：襄阳 · 超标因子：COD</div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
         </div>
     </div>
     <div class="ft"><span>2026年5月生态环境月度专报</span><span>提示：仅供汇报使用</span></div>

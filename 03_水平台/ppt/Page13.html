@@ -3,38 +3,240 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>流域湖库 - 长江干流及主要支流</title>
+<title>流域湖库：长江流域分析</title>
 <link rel="stylesheet" href="ppt-style.css">
+<style>
+    /* 左侧状态墙矩阵 */
+    .status-wall-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr); /* 4列紧凑排布 */
+        gap: 5px; 
+        flex: 1;
+        overflow-y: auto;
+        padding-right: 4px;
+    }
+    .status-wall-grid::-webkit-scrollbar { width: 3px; }
+    .status-wall-grid::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 2px; }
+
+    .status-node {
+        background: #F8FAFC;
+        border: 1px solid #E2E8F0;
+        padding: 4px 6px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        gap: 1px;
+        position: relative;
+    }
+    .status-node::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; }
+    .status-node.good { background: #F0FDF4; border-color: #DCFCE7; }
+    .status-node.good::before { background: #059669; }
+    .status-node.alert { background: #FEF2F2; border-color: #FEE2E2; }
+    .status-node.alert::before { background: #DC2626; }
+
+    .node-name { font-size: 8px; font-weight: 700; color: #1E293B; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .node-meta { display: flex; justify-content: space-between; align-items: center; font-size: 7.5px; color: #64748B; }
+    .node-tag { padding: 0px 3px; font-size: 7px; font-weight: 700; border-radius: 1px; color: #fff; }
+    .node-tag.g { background: #059669; }
+    .node-tag.r { background: #DC2626; }
+
+    /* 右侧抗变形组件样式 - 抽离至样式表，规避内联样式拉伸冲突 */
+    .risk-container-fixed {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        min-height: 0;
+        overflow: hidden; /* 防止溢出变形 */
+    }
+    .risk-grid-fixed {
+        flex: 1;
+        display: grid;
+        grid-template-rows: repeat(5, 1fr); /* 绝对 5 等分，纵向永不变形 */
+        gap: 5px;
+        min-height: 0;
+    }
+    .risk-row-card {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 4px 8px;
+        min-height: 0;
+        box-sizing: border-box;
+    }
+    /* 严格分配内部横向比例，配合 ellipsis 阻断因变形引起的文字换行 */
+    .col-loc-info {
+        display: flex;
+        flex-direction: column;
+        gap: 1px;
+        flex: 0 0 32%;
+        max-width: 32%;
+        overflow: hidden;
+    }
+    .col-detail-info {
+        display: flex;
+        flex-direction: column;
+        gap: 1px;
+        flex: 0 0 52%;
+        max-width: 52%;
+        padding-left: 8px;
+        font-size: 8.5px;
+        color: #475569;
+        overflow: hidden;
+    }
+    .col-badge-info {
+        flex: 0 0 16%;
+        max-width: 16%;
+        display: flex;
+        justify-content: flex-end;
+        flex-shrink: 0;
+    }
+    .risk-text-ellipsis {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+</style>
 </head>
 <body>
 <div class="slide-container">
-    <div class="ppt-header"><span class="ppt-title">流域湖库：长江干流及主要支流</span><span class="nav-page-num">P13</span></div>
-    <div class="core-bar">▎ 长江干流湖北段18个断面全部达到Ⅱ类及以上。主要支流中四湖总干渠、府河存在劣V类风险，需重点监控。</div>
-    <div class="bd">
-        <div class="left-column">
-            <div class="kpi-block highlight"><div class="kpi-title">干流断面数</div><div class="kpi-num">18个</div><div class="kpi-sub">全线Ⅱ类及以上</div></div>
-            <div class="kpi-block highlight"><div class="kpi-title">干流Ⅱ类占比</div><div class="kpi-num">100%</div><div class="kpi-sub">持续保持</div></div>
-            <div class="kpi-block"><div class="kpi-title">支流达标率</div><div class="kpi-num">87.3%</div><div class="kpi-sub">71个支流断面</div></div>
-            <div class="kpi-block alert"><div class="kpi-title">风险支流</div><div class="kpi-num">3条</div><div class="kpi-sub">四湖/府河/倒水</div></div>
+    <div class="ppt-header"><span class="ppt-title">流域湖库：长江流域分析</span><span class="nav-page-num">P13</span></div>
+    <div class="core-bar">▎ 2026年5月，长江干流湖北段 42 个断面水质总体稳定，Ⅰ-Ⅲ 类比例为 88.1%，流域内 5 个断面存在阶段性超标。</div>
+    <div class="bd" style="flex-direction:column;gap:10px;">
+        <div class="kpi-row" style="margin-bottom:0;">
+            <div class="kpi-card" style="border-top-color:#2563EB;"><div class="kpi-label" style="color:#2563EB;">监测断面总数</div><div class="kpi-value" style="color:#2563EB;">42个</div></div>
+            <div class="kpi-card" style="border-top-color:#059669;"><div class="kpi-label" style="color:#059669;">Ⅰ-Ⅲ类比例</div><div class="kpi-value" style="color:#059669;">88.1%</div></div>
+            <div class="kpi-card" style="border-top-color:#DC2626;"><div class="kpi-label" style="color:#DC2626;">异常风险断面</div><div class="kpi-value" style="color:#DC2626;">5个</div></div>
+            <div class="kpi-card" style="border-top-color:#D97706;"><div class="kpi-label" style="color:#D97706;">同比变化</div><div class="kpi-value" style="color:#D97706;">↓1.2%</div></div>
         </div>
-        <div class="right-column">
-            <div class="table-box" style="flex:1;overflow-y:auto;"><table>
-                <thead><tr><th>河流/断面</th><th>级别</th><th>水质类别</th><th>主要因子</th><th>趋势</th></tr></thead>
-                <tbody>
-                    <tr><td class="td-left">长江干流·宜昌</td><td>国控</td><td><span class="badge-g">Ⅱ类</span></td><td>-</td><td>→</td></tr>
-                    <tr><td class="td-left">长江干流·荆州</td><td>国控</td><td><span class="badge-g">Ⅱ类</span></td><td>-</td><td>→</td></tr>
-                    <tr><td class="td-left">长江干流·武汉</td><td>国控</td><td><span class="badge-g">Ⅱ类</span></td><td>-</td><td>→</td></tr>
-                    <tr><td class="td-left">长江干流·黄石</td><td>国控</td><td><span class="badge-g">Ⅱ类</span></td><td>-</td><td>→</td></tr>
-                    <tr><td class="td-left">长江干流·黄冈</td><td>国控</td><td><span class="badge-g">Ⅱ类</span></td><td>-</td><td>→</td></tr>
-                    <tr><td class="td-left">四湖总干渠</td><td>国控</td><td><span class="badge-r">劣Ⅴ类</span></td><td>总磷/COD</td><td>↓</td></tr>
-                    <tr><td class="td-left">府河·孝感</td><td>国控</td><td><span class="badge-r">劣Ⅴ类</span></td><td>氨氮</td><td>↓</td></tr>
-                    <tr><td class="td-left">倒水·新洲</td><td>国控</td><td><span class="badge-y">Ⅳ类</span></td><td>总磷</td><td>↓</td></tr>
-                    <tr><td class="td-left">举水·麻城</td><td>省控</td><td><span class="badge-y">Ⅳ类</span></td><td>氨氮</td><td>↓</td></tr>
-                    <tr><td class="td-left">清江·恩施</td><td>国控</td><td><span class="badge-g">Ⅱ类</span></td><td>-</td><td>→</td></tr>
-                    <tr><td class="td-left">沮漳河</td><td>省控</td><td><span class="badge-g">Ⅲ类</span></td><td>-</td><td>→</td></tr>
-                    <tr><td class="td-left">陆水·赤壁</td><td>省控</td><td><span class="badge-g">Ⅲ类</span></td><td>-</td><td>→</td></tr>
-                </tbody>
-            </table></div>
+        
+        <div style="display:flex;gap:12px;flex:1;min-height:0;">
+            <div class="table-box" style="flex:0 0 54%; display:flex; flex-direction:column; padding:8px; background:#F8FAFC;">
+                <div style="font-size:9px; font-weight:700; color:#1E293B; margin-bottom:6px; display:flex; justify-content:space-between; align-items:center;">
+                    <span>📊 长江干流及主要支流全断面状态墙 (42个)</span>
+                    <span style="font-size:7.5px; color:#64748B; font-weight:normal;">🟢 优良 37 | 🔴 异常 5</span>
+                </div>
+                <div class="status-wall-grid">
+                    <div class="status-node alert"><div class="node-name">四湖总干渠</div><div class="node-meta"><span>支流</span><span class="node-tag r">劣Ⅴ</span></div></div>
+                    <div class="status-node alert"><div class="node-name">府河孝感段</div><div class="node-meta"><span>支流</span><span class="node-tag r">劣Ⅴ</span></div></div>
+                    <div class="status-node alert"><div class="node-name">支流天门河</div><div class="node-meta"><span>支流</span><span class="node-tag r">Ⅴ类</span></div></div>
+                    <div class="status-node alert"><div class="node-name">汉川汉江口</div><div class="node-meta"><span>支流</span><span class="node-tag r">Ⅳ类</span></div></div>
+                    <div class="status-node alert"><div class="node-name">竹皮河口</div><div class="node-meta"><span>支流</span><span class="node-tag r">劣Ⅴ</span></div></div>
+                    
+                    <div class="status-node good"><div class="node-name">宜昌国控</div><div class="node-meta"><span>干流</span><span class="node-tag g">Ⅱ类</span></div></div>
+                    <div class="status-node good"><div class="node-name">荆州国控</div><div class="node-meta"><span>干流</span><span class="node-tag g">Ⅱ类</span></div></div>
+                    <div class="status-node good"><div class="node-name">武汉武昌段</div><div class="node-meta"><span>干流</span><span class="node-tag g">Ⅲ类</span></div></div>
+                    <div class="status-node good"><div class="node-name">黄冈黄州段</div><div class="node-meta"><span>干流</span><span class="node-tag g">Ⅱ类</span></div></div>
+                    <div class="status-node good"><div class="node-name">咸宁赤壁段</div><div class="node-meta"><span>干流</span><span class="node-tag g">Ⅱ类</span></div></div>
+                    <div class="status-node good"><div class="node-name">鄂州鄂城段</div><div class="node-meta"><span>干流</span><span class="node-tag g">Ⅱ类</span></div></div>
+                    <div class="status-node good"><div class="node-name">黄石港区段</div><div class="node-meta"><span>干流</span><span class="node-tag g">Ⅲ类</span></div></div>
+                    <div class="status-node good"><div class="node-name">宜昌枝江段</div><div class="node-meta"><span>干流</span><span class="node-tag g">Ⅱ类</span></div></div>
+                    <div class="status-node good"><div class="node-name">荆州石首段</div><div class="node-meta"><span>干流</span><span class="node-tag g">Ⅱ类</span></div></div>
+                    <div class="status-node good"><div class="node-name">荆州洪湖段</div><div class="node-meta"><span>干流</span><span class="node-tag g">Ⅲ类</span></div></div>
+                    <div class="status-node good"><div class="node-name">武汉汉阳段</div><div class="node-meta"><span>干流</span><span class="node-tag g">Ⅲ类</span></div></div>
+                    <div class="status-node good"><div class="node-name">武汉青山段</div><div class="node-meta"><span>干流</span><span class="node-tag g">Ⅱ类</span></div></div>
+                    <div class="status-node good"><div class="node-name">黄冈武穴段</div><div class="node-meta"><span>干流</span><span class="node-tag g">Ⅱ类</span></div></div>
+                    <div class="status-node good"><div class="node-name">黄冈稀水段</div><div class="node-meta"><span>干流</span><span class="node-tag g">Ⅱ类</span></div></div>
+                    <div class="status-node good"><div class="node-name">咸宁嘉鱼段</div><div class="node-meta"><span>干流</span><span class="node-tag g">Ⅱ类</span></div></div>
+                    <div class="status-node good"><div class="node-name">沮漳河口</div><div class="node-meta"><span>支流</span><span class="node-tag g">Ⅲ类</span></div></div>
+                    <div class="status-node good"><div class="node-name">陆水河国控</div><div class="node-meta"><span>支流</span><span class="node-tag g">Ⅱ类</span></div></div>
+                    <div class="status-node good"><div class="node-name">通顺河新沟</div><div class="node-meta"><span>支流</span><span class="node-tag g">Ⅲ类</span></div></div>
+                    <div class="status-node good"><div class="node-name">倒水河李集</div><div class="node-meta"><span>支流</span><span class="node-tag g">Ⅲ类</span></div></div>
+                    <div class="status-node good"><div class="node-name">举水河柳子港</div><div class="node-meta"><span>支流</span><span class="node-tag g">Ⅲ类</span></div></div>
+                    <div class="status-node good"><div class="node-name">巴水河麻城段</div><div class="node-meta"><span>支流</span><span class="node-tag g">Ⅱ类</span></div></div>
+                    <div class="status-node good"><div class="node-name">浠水河白莲河</div><div class="node-meta"><span>支流</span><span class="node-tag g">Ⅲ类</span></div></div>
+                    <div class="status-node good"><div class="node-name">蕲水河蕲春段</div><div class="node-meta"><span>支流</span><span class="node-tag g">Ⅱ类</span></div></div>
+                    <div class="status-node good"><div class="node-name">富水河阳新段</div><div class="node-meta"><span>支流</span><span class="node-tag g">Ⅲ类</span></div></div>
+                    <div class="status-node good"><div class="node-name">金水河江夏段</div><div class="node-meta"><span>支流</span><span class="node-tag g">Ⅲ类</span></div></div>
+                    <div class="status-node good"><div class="node-name">滠水河黄陂段</div><div class="node-meta"><span>支流</span><span class="node-tag g">Ⅲ类</span></div></div>
+                    <div class="status-node good"><div class="node-name">东荆河大柴湖</div><div class="node-meta"><span>支流</span><span class="node-tag g">Ⅲ类</span></div></div>
+                    <div class="status-node good"><div class="node-name">华容%河段</div><div class="node-meta"><span>支流</span><span class="node-tag g">Ⅱ类</span></div></div>
+                    <div class="status-node good"><div class="node-name">梁子湖出水口</div><div class="node-meta"><span>支流</span><span class="node-tag g">Ⅲ类</span></div></div>
+                    <div class="status-node good"><div class="node-name">釜头湖出水口</div><div class="node-meta"><span>支流</span><span class="node-tag g">Ⅲ类</span></div></div>
+                    <div class="status-node good"><div class="node-name">洪湖排水闸</div><div class="node-meta"><span>支流</span><span class="node-tag g">Ⅲ类</span></div></div>
+                    <div class="status-node good"><div class="node-name">天门河竟陵段</div><div class="node-meta"><span>支流</span><span class="node-tag g">Ⅲ类</span></div></div>
+                </div>
+            </div>
+            
+            <div class="risk-container-fixed">
+                <div style="font-size: 9px; font-weight: 700; color: #DC2626; padding: 3px 0; border-bottom: 1px solid #FEE2E2; flex-shrink: 0;">
+                    ⚠ 流域异常风险超标断面排查 (Top 5)
+                </div>
+                
+                <div class="risk-grid-fixed">
+                    
+                    <div class="risk-row-card" style="background: #FEF2F2; border: 1px solid #FEE2E2; border-left: 4px solid #DC2626;">
+                        <div class="col-loc-info">
+                            <span class="risk-name risk-text-ellipsis" style="font-size: 9.5px; font-weight: 800; color: #991B1B;">四湖总干渠</span>
+                            <span class="risk-type risk-text-ellipsis" style="font-size: 7.5px; color: #7F1D1D; opacity: 0.7;">主要支流 · 荆州段</span>
+                        </div>
+                        <div class="col-detail-info">
+                            <div class="risk-text-ellipsis">超标因子：<strong style="color: #DC2626;">COD、氨氮</strong></div>
+                            <div class="risk-text-ellipsis">当前趋势：<strong style="color: #DC2626;">↓ 水质恶化</strong></div>
+                        </div>
+                        <div class="col-badge-info">
+                            <span style="font-size: 8px; background: #DC2626; color: #fff; padding: 1px 5px; font-weight: 700; border-radius: 1px; white-space: nowrap;">劣Ⅴ类</span>
+                        </div>
+                    </div>
+                    
+                    <div class="risk-row-card" style="background: #FEF2F2; border: 1px solid #FEE2E2; border-left: 4px solid #DC2626;">
+                        <div class="col-loc-info">
+                            <span class="risk-name risk-text-ellipsis" style="font-size: 9.5px; font-weight: 800; color: #991B1B;">府河孝感段</span>
+                            <span class="risk-type risk-text-ellipsis" style="font-size: 7.5px; color: #7F1D1D; opacity: 0.7;">主要支流 · 孝感段</span>
+                        </div>
+                        <div class="col-detail-info">
+                            <div class="risk-text-ellipsis">超标因子：<strong style="color: #DC2626;">氨氮、总磷</strong></div>
+                            <div class="risk-text-ellipsis">当前趋势：<strong style="color: #DC2626;">↓ 水质恶化</strong></div>
+                        </div>
+                        <div class="col-badge-info">
+                            <span style="font-size: 8px; background: #DC2626; color: #fff; padding: 1px 5px; font-weight: 700; border-radius: 1px; white-space: nowrap;">劣Ⅴ类</span>
+                        </div>
+                    </div>
+                    
+                    <div class="risk-row-card" style="background: #FFFBEB; border: 1px solid #FDE68A; border-left: 4px solid #D97706;">
+                        <div class="col-loc-info">
+                            <span class="risk-name risk-text-ellipsis" style="font-size: 9.5px; font-weight: 800; color: #92400E;">支流天门河</span>
+                            <span class="risk-type risk-text-ellipsis" style="font-size: 7.5px; color: #7F1D1D; opacity: 0.7;">汉江支流 · 天门段</span>
+                        </div>
+                        <div class="col-detail-info">
+                            <div class="risk-text-ellipsis">超标因子：<strong style="color: #D97706;">总磷</strong></div>
+                            <div class="risk-text-ellipsis">当前趋势：<strong style="color: #D97706;">→ 保持持平</strong></div>
+                        </div>
+                        <div class="col-badge-info">
+                            <span style="font-size: 8px; background: #D97706; color: #fff; padding: 1px 5px; font-weight: 700; border-radius: 1px; white-space: nowrap;">Ⅴ类</span>
+                        </div>
+                    </div>
+                    
+                    <div class="risk-row-card" style="background: #EFF6FF; border: 1px solid #BFDBFE; border-left: 4px solid #2563EB;">
+                        <div class="col-loc-info">
+                            <span class="risk-name risk-text-ellipsis" style="font-size: 9.5px; font-weight: 800; color: #1E40AF;">汉川汉江口</span>
+                            <span class="risk-type risk-text-ellipsis" style="color: #1D4ED8; opacity: 0.7; font-size: 7.5px;">跨界支流 · 孝感段</span>
+                        </div>
+                        <div class="col-detail-info">
+                            <div class="risk-text-ellipsis">超标因子：<strong style="color: #2563EB;">溶解氧</strong></div>
+                            <div class="risk-text-ellipsis">当前趋势：<strong style="color: #059669;">↑ 水质提升</strong></div>
+                        </div>
+                        <div class="col-badge-info">
+                            <span style="font-size: 8px; background: #2563EB; color: #fff; padding: 1px 5px; font-weight: 700; border-radius: 1px; white-space: nowrap;">Ⅳ类</span>
+                        </div>
+                    </div>
+                    
+                    <div class="risk-row-card" style="background: #FEF2F2; border: 1px solid #FEE2E2; border-left: 4px solid #DC2626;">
+                        <div class="col-loc-info">
+                            <span class="risk-name risk-text-ellipsis" style="font-size: 9.5px; font-weight: 800; color: #991B1B;">竹皮河口</span>
+                            <span class="risk-type risk-text-ellipsis" style="font-size: 7.5px; color: #7F1D1D; opacity: 0.7;">汉江支流 · 荆门段</span>
+                        </div>
+                        <div class="col-detail-info">
+                            <div class="risk-text-ellipsis">超标因子：<strong style="color: #DC2626;">氨氮、总磷</strong></div>
+                            <div class="risk-text-ellipsis">当前趋势：<strong style="color: #DC2626;">↓ 水质恶化</strong></div>
+                        </div>
+                        <div class="col-badge-info">
+                            <span style="font-size: 8px; background: #DC2626; color: #fff; padding: 1px 5px; font-weight: 700; border-radius: 1px; white-space: nowrap;">劣Ⅴ类</span>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
         </div>
     </div>
     <div class="ft"><span>2026年5月生态环境月度专报</span><span>提示：仅供汇报使用</span></div>

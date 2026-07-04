@@ -3,33 +3,175 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>流域湖库 - 重点湖泊水质总览</title>
+<title>流域湖库：清江流域分析</title>
 <link rel="stylesheet" href="ppt-style.css">
+<style>
+    /* 左侧水平胶囊断面排布墙 */
+    .qingjiang-wall { 
+        display: flex; 
+        flex-direction: column; 
+        gap: 6px; 
+        flex: 1; 
+        overflow-y: auto; 
+    }
+    .section-block { 
+        background: #FFFFFF; 
+        border: 1px solid #E2E8F0; 
+        padding: 6px 10px; 
+    }
+    .section-title { 
+        font-size: 8.5px; 
+        font-weight: 700; 
+        color: #0F172A; 
+        margin-bottom: 5px; 
+        display: flex; 
+        align-items: center; 
+        gap: 4px; 
+        border-bottom: 1px solid #F1F5F9; 
+        padding-bottom: 3px; 
+    }
+    
+    /* 核心改动：调整为 3 列排布，让少断面情况下也能完美填满纵向空间 */
+    .pill-grid { 
+        display: grid; 
+        grid-template-columns: repeat(3, 1fr); 
+        gap: 5px; 
+    }
+    
+    .pill-node { 
+        background: #F0FDF4; 
+        border: 1px solid #DCFCE7; 
+        padding: 5px 6px; 
+        border-radius: 3px; 
+        display: flex; 
+        align-items: center; 
+        justify-content: space-between; 
+    }
+    .pill-name { 
+        font-size: 8px; 
+        font-weight: 600; 
+        color: #166534; 
+        white-space: nowrap; 
+        overflow: hidden; 
+        text-overflow: ellipsis; 
+    }
+    .pill-status { 
+        font-size: 7px; 
+        font-weight: 700; 
+        color: #ffffff; 
+        background: #10B981; 
+        padding: 0px 3.5px; 
+        border-radius: 2px; 
+    }
+
+    /* 右侧通用自适应组件的“全绿亮点版”（结构同P13/P14） */
+    .risk-list-wrapper { display: flex; flex-direction: column; gap: 5px; flex: 1; min-height: 0; }
+    .risk-row-item { background: #F0FDF4; border: 1px solid #DCFCE7; border-left: 4px solid #10B981; padding: 7px 10px; display: flex; align-items: center; justify-content: space-between; flex: 1; }
+    .risk-row-item.blue-style { background: #EFF6FF; border-color: #BFDBFE; border-left-color: #2563EB; }
+    .risk-loc-info { display: flex; flex-direction: column; gap: 1px; flex: 0 0 35%; }
+    .risk-name { font-size: 9.5px; font-weight: 800; color: #166534; }
+    .risk-row-item.blue-style .risk-name { color: #1E40AF; }
+    .risk-type { font-size: 7.5px; color: #15803D; opacity: 0.7; }
+    .risk-row-item.blue-style .risk-type { color: #1D4ED8; opacity: 0.7; }
+    .risk-detail-info { display: flex; flex-direction: column; gap: 1px; font-size: 8.5px; color: #475569; flex: 1; padding-left: 10px; }
+    .risk-badge { font-size: 8px; background: #10B981; color: #fff; padding: 1px 6px; font-weight: 700; border-radius: 1px; white-space: nowrap; }
+</style>
 </head>
 <body>
 <div class="slide-container">
-    <div class="ppt-header"><span class="ppt-title">流域湖库：重点湖泊水质总览</span><span class="nav-page-num">P15</span></div>
-    <div class="core-bar">▎ 全省8个重点湖泊中，洪湖、长湖水质未达标(劣V类)，总磷为主要超标因子；梁子湖、斧头湖水质良好(Ⅲ类)；东湖(Ⅱ类)持续改善。</div>
+    <div class="ppt-header"><span class="ppt-title">流域湖库：清江流域分析</span><span class="nav-page-num">P15</span></div>
+    <div class="core-bar" style="background: #F0FDF4!important; border-left-color: #10B981!important; color: #166534!important;">▎ 清江流域水质总体较好，Ⅰ-Ⅲ类比例保持92.3%以上，全线断面实现劣Ⅴ类清零。</div>
     <div class="bd" style="flex-direction:column;gap:10px;">
-        <div class="kpi-row">
-            <div class="kpi-card" style="border-top-color:#2563EB;"><div class="kpi-label" style="color:#2563EB;">监测湖泊</div><div class="kpi-value">8个</div></div>
-            <div class="kpi-card" style="border-top-color:#059669;"><div class="kpi-label" style="color:#059669;">达标湖泊</div><div class="kpi-value" style="color:#059669;">6个</div></div>
-            <div class="kpi-card" style="border-top-color:#DC2626;"><div class="kpi-label" style="color:#DC2626;">未达标</div><div class="kpi-value" style="color:#DC2626;">2个</div></div>
-            <div class="kpi-card" style="border-top-color:#D97706;"><div class="kpi-label" style="color:#D97706;">主要超标因子</div><div class="kpi-value" style="font-size:14px;">总磷</div></div>
+        <div class="kpi-row" style="margin-bottom:0;">
+            <div class="kpi-card" style="border-top-color:#2563EB;"><div class="kpi-label" style="color:#2563EB;">监测断面总数</div><div class="kpi-value" style="color:#2563EB;">26个</div></div>
+            <div class="kpi-card" style="border-top-color:#059669;"><div class="kpi-label" style="color:#059669;">Ⅰ-Ⅲ类比例</div><div class="kpi-value" style="color:#059669;">92.3%</div></div>
+            <div class="kpi-card" style="border-top-color:#10B981; background: #F0FDF4;"><div class="kpi-label" style="color:#10B981;">劣Ⅴ类断面</div><div class="kpi-value" style="color:#10B981;">0个 (清零)</div></div>
+            <div class="kpi-card" style="border-top-color:#059669;"><div class="kpi-label" style="color:#059669;">同比变化</div><div class="kpi-value" style="color:#059669;">↑1.2%</div></div>
         </div>
-        <div class="table-box" style="flex:1;overflow-y:auto;"><table>
-            <thead><tr><th>湖泊名称</th><th>所在市州</th><th>水质类别</th><th>营养状态</th><th>总磷(mg/L)</th><th>考核目标</th><th>达标</th></tr></thead>
-            <tbody>
-                <tr><td class="td-left">东湖</td><td>武汉</td><td><span class="badge-g">Ⅱ类</span></td><td>中营养</td><td>0.03</td><td>Ⅲ类</td><td><span class="badge-g">达标</span></td></tr>
-                <tr><td class="td-left">梁子湖</td><td>鄂州</td><td><span class="badge-g">Ⅲ类</span></td><td>中营养</td><td>0.04</td><td>Ⅲ类</td><td><span class="badge-g">达标</span></td></tr>
-                <tr><td class="td-left">斧头湖</td><td>咸宁</td><td><span class="badge-g">Ⅲ类</span></td><td>中营养</td><td>0.04</td><td>Ⅲ类</td><td><span class="badge-g">达标</span></td></tr>
-                <tr><td class="td-left">网湖</td><td>黄石</td><td><span class="badge-g">Ⅲ类</span></td><td>轻度富营养</td><td>0.05</td><td>Ⅳ类</td><td><span class="badge-g">达标</span></td></tr>
-                <tr><td class="td-left">大冶湖</td><td>黄石</td><td><span class="badge-g">Ⅳ类</span></td><td>轻度富营养</td><td>0.06</td><td>Ⅳ类</td><td><span class="badge-g">达标</span></td></tr>
-                <tr><td class="td-left">武山湖</td><td>黄冈</td><td><span class="badge-g">Ⅳ类</span></td><td>轻度富营养</td><td>0.06</td><td>Ⅳ类</td><td><span class="badge-g">达标</span></td></tr>
-                <tr><td class="td-left">长湖</td><td>荆门</td><td><span class="badge-r">劣Ⅴ类</span></td><td>中度富营养</td><td>0.12</td><td>Ⅳ类</td><td><span class="badge-r">未达标</span></td></tr>
-                <tr><td class="td-left">洪湖</td><td>荆州</td><td><span class="badge-r">劣Ⅴ类</span></td><td>中度富营养</td><td>0.15</td><td>Ⅳ类</td><td><span class="badge-r">未达标</span></td></tr>
-            </tbody>
-        </table></div>
+        <div style="display:flex;gap:12px;flex:1;min-height:0;">
+            <div class="table-box" style="flex:0 0 55%; display:flex; flex-direction:column; padding:6px; background:#F8FAFC;">
+                <div style="font-size:9px; font-weight:700; color:#1E293B; margin-bottom:5px; padding-left:2px;">🌿 清江全流域断面水质看板 (26个)</div>
+                <div class="qingjiang-wall">
+                    
+                    <div class="section-block">
+                        <div class="section-title"><span style="color:#10B981;">💧</span> 恩施州片区 (生态屏障核心区)</div>
+                        <div class="pill-grid">
+                            <div class="pill-node"><span class="pill-name">恩施国控</span><span class="pill-status">Ⅱ类</span></div>
+                            <div class="pill-node"><span class="pill-name">利川段干流</span><span class="pill-status">Ⅱ类</span></div>
+                            <div class="pill-node"><span class="pill-name">建始段干流</span><span class="pill-status">Ⅲ类</span></div>
+                            <div class="pill-node"><span class="pill-name">巴东清江口</span><span class="pill-status">Ⅱ类</span></div>
+                            <div class="pill-node"><span class="pill-name">宣恩贡水河</span><span class="pill-status">Ⅱ类</span></div>
+                            <div class="pill-node"><span class="pill-name">咸丰唐崖河</span><span class="pill-status">Ⅱ类</span></div>
+                            <div class="pill-node"><span class="pill-name">来凤酉水河</span><span class="pill-status">Ⅲ类</span></div>
+                            <div class="pill-node"><span class="pill-name">支流忠建河</span><span class="pill-status">Ⅱ类</span></div>
+                            <div class="pill-node"><span class="pill-name">支流野三河</span><span class="pill-status">Ⅱ类</span></div>
+                            <div class="pill-node"><span class="pill-name">鹤峰缕水河</span><span class="pill-status">Ⅱ类</span></div>
+                            <div class="pill-node"><span class="pill-name">利川二桥</span><span class="pill-status">Ⅲ类</span></div>
+                            <div class="pill-node"><span class="pill-name">建始马水河</span><span class="pill-status">Ⅲ类</span></div>
+                            <div class="pill-node"><span class="pill-name">恩施大沙河</span><span class="pill-status">Ⅱ类</span></div>
+                            <div class="pill-node"><span class="pill-name">屯堡国控</span><span class="pill-status">Ⅱ类</span></div>
+                        </div>
+                    </div>
+
+                    <div class="section-block">
+                        <div class="section-title"><span style="color:#10B981;">💧</span> 宜昌市片区 (高峡平湖消落区)</div>
+                        <div class="pill-grid">
+                            <div class="pill-node"><span class="pill-name">长阳段干流</span><span class="pill-status">Ⅱ类</span></div>
+                            <div class="pill-node"><span class="pill-name">五峰湾潭河</span><span class="pill-status">Ⅰ类</span></div>
+                            <div class="pill-node"><span class="pill-name">宜都清江口</span><span class="pill-status">Ⅱ类</span></div>
+                            <div class="pill-node"><span class="pill-name">高坝洲水库</span><span class="pill-status">Ⅱ类</span></div>
+                            <div class="pill-node"><span class="pill-name">隔河岩大坝</span><span class="pill-status">Ⅱ类</span></div>
+                            <div class="pill-node"><span class="pill-name">渔峡口国控</span><span class="pill-status">Ⅱ类</span></div>
+                            <div class="pill-node"><span class="pill-name">支流茅坪河</span><span class="pill-status">Ⅲ类</span></div>
+                            <div class="pill-node"><span class="pill-name">红花套断面</span><span class="pill-status">Ⅱ类</span></div>
+                            <div class="pill-node"><span class="pill-name">长阳龙舟坪</span><span class="pill-status">Ⅱ类</span></div>
+                            <div class="pill-node"><span class="pill-name">宜都红湖</span><span class="pill-status">Ⅲ类</span></div>
+                            <div class="pill-node"><span class="pill-name">五峰渔洋河</span><span class="pill-status">Ⅱ类</span></div>
+                            <div class="pill-node"><span class="pill-name">高坝洲尾水</span><span class="pill-status">Ⅱ类</span></div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div style="flex:1; display:flex; flex-direction:column; gap:6px; min-height:0;">
+                <div style="font-size:9px; font-weight:700; color:#059669; padding:3px 0; border-bottom:1px solid #DCFCE7; flex-shrink:0;">🌿 清江水质靶向分类管控</div>
+                <div style="flex:1; display:grid; grid-template-rows: repeat(3, 1fr); gap:6px; min-height:0;">
+                    
+                    <div class="risk-row-item" style="padding:4px 10px; background:#FEF2F2; border-color:#FEE2E2; border-left-color:#DC2626; display:flex; align-items:center;">
+                        <div style="display:flex; flex-direction:column; justify-content:center; gap:3px; width:100%;">
+                            <div style="display:flex; justify-content:space-between; align-items:center;">
+                                <span style="font-size:9px; font-weight:700; color:#991B1B; line-height:1.2;">🔴 劣Ⅴ类（0个）</span>
+                                <span class="risk-badge" style="font-size:7px; background:#DC2626; padding:2px 6px; line-height:1;">持续清零</span>
+                            </div>
+                            <div style="font-size:8px; line-height:1.5; color:#475569;">清江全线已实现劣Ⅴ类断面"清零"，保持优良水质。</div>
+                        </div>
+                    </div>
+
+                    <div class="risk-row-item" style="padding:4px 10px; background:#FFFBEB; border-color:#FDE68A; border-left-color:#D97706; display:flex; align-items:center;">
+                        <div style="display:flex; flex-direction:column; justify-content:center; gap:3px; width:100%;">
+                            <div style="display:flex; justify-content:space-between; align-items:center;">
+                                <span style="font-size:9px; font-weight:700; color:#92400E; line-height:1.2;">🟡 Ⅴ类·动态监控（2个）</span>
+                                <span class="risk-badge" style="font-size:7px; background:#D97706; padding:2px 6px; line-height:1;">动态监控</span>
+                            </div>
+                            <div style="font-size:8px; line-height:1.5; color:#475569;">清江支流忠建河，所在市州：恩施 · 超标因子：COD、总磷</div>
+                            <div style="font-size:8px; line-height:1.5; color:#475569;">清江支流野三河，所在市州：恩施 · 超标因子：总磷</div>
+                        </div>
+                    </div>
+
+                    <div class="risk-row-item blue-style" style="padding:4px 10px; display:flex; align-items:center;">
+                        <div style="display:flex; flex-direction:column; justify-content:center; gap:3px; width:100%;">
+                            <div style="display:flex; justify-content:space-between; align-items:center;">
+                                <span style="font-size:9px; font-weight:700; color:#1E40AF; line-height:1.2;">🔵 Ⅳ类·关注（2个）</span>
+                                <span class="risk-badge" style="font-size:7px; background:#2563EB; padding:2px 6px; line-height:1;">常规监测</span>
+                            </div>
+                            <div style="font-size:8px; line-height:1.5; color:#475569;">清江利川段，所在市州：恩施 · 超标因子：总磷（阶段性波动）</div>
+                            <div style="font-size:8px; line-height:1.5; color:#475569;">清江恩施段，所在市州：恩施 · 超标因子：氨氮</div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
     </div>
     <div class="ft"><span>2026年5月生态环境月度专报</span><span>提示：仅供汇报使用</span></div>
 </div>

@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>PPT页面预览</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:#0f172a;color:#e2e8f0;height:100vh;display:flex;flex-direction:column}
+
+/* 顶部工具栏 */
+.toolbar{display:flex;align-items:center;justify-content:space-between;padding:10px 20px;background:#1e293b;border-bottom:1px solid #334155;flex-shrink:0;gap:12px}
+.toolbar-left{display:flex;align-items:center;gap:12px}
+.toolbar-title{font-size:15px;font-weight:700;color:#f1f5f9;letter-spacing:1px}
+.toolbar-badge{background:#3b82f6;color:#fff;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px}
+.toolbar-center{display:flex;align-items:center;gap:8px}
+.toolbar-right{display:flex;align-items:center;gap:6px}
+
+/* 按钮 */
+.btn{background:#334155;color:#e2e8f0;border:1px solid #475569;padding:6px 14px;border-radius:6px;font-size:12px;cursor:pointer;display:flex;align-items:center;gap:4px;transition:all .15s}
+.btn:hover{background:#475569;border-color:#64748b}
+.btn:active{background:#1e293b}
+.btn.primary{background:#2563eb;border-color:#3b82f6;color:#fff}
+.btn.primary:hover{background:#3b82f6}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.page-indicator{font-size:13px;font-weight:600;color:#94a3b8;min-width:80px;text-align:center}
+
+/* 搜索框 */
+.search-box{position:relative}
+.search-box input{background:#0f172a;border:1px solid #475569;color:#e2e8f0;padding:5px 10px 5px 28px;border-radius:6px;font-size:12px;width:200px;outline:none}
+.search-box input:focus{border-color:#3b82f6}
+.search-box::before{content:"🔍";position:absolute;left:8px;top:50%;transform:translateY(-50%);font-size:11px}
+
+/* 主体布局 */
+.main{display:flex;flex:1;overflow:hidden}
+
+/* 左侧目录 */
+.sidebar{width:220px;background:#1e293b;border-right:1px solid #334155;display:flex;flex-direction:column;flex-shrink:0;overflow:hidden}
+.sidebar-header{padding:10px 14px;font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:1px;border-bottom:1px solid #334155}
+.sidebar-list{flex:1;overflow-y:auto;padding:4px}
+.sidebar-list::-webkit-scrollbar{width:4px}
+.sidebar-list::-webkit-scrollbar-thumb{background:#475569;border-radius:2px}
+
+.nav-item{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:6px;cursor:pointer;font-size:12px;color:#cbd5e1;transition:all .12s;border:1px solid transparent}
+.nav-item:hover{background:#334155}
+.nav-item.active{background:#1e3a5f;border-color:#3b82f6;color:#93c5fd}
+.nav-num{background:#334155;color:#94a3b8;font-size:9px;font-weight:700;padding:1px 5px;border-radius:3px;min-width:24px;text-align:center;flex-shrink:0}
+.nav-item.active .nav-num{background:#2563eb;color:#fff}
+.nav-label{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+.nav-section{padding:6px 10px 2px;font-size:9px;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:1px;margin-top:4px}
+
+/* 右侧预览区 */
+.preview{flex:1;display:flex;flex-direction:column;background:#0f172a;overflow:hidden;position:relative}
+.preview-frame{border:none;background:#f0f4f8;transform:scale(0.571);transform-origin:top left;width:175%;height:175%;flex-shrink:0}
+
+/* 加载提示 */
+.loading{display:flex;align-items:center;justify-content:center;flex:1;color:#64748b;font-size:14px}
+
+/* 键盘提示 */
+.kbd{background:#334155;border:1px solid #475569;padding:1px 5px;border-radius:3px;font-size:10px;color:#94a3b8;font-family:monospace}
+</style>
+</head>
+<body>
+
+<div class="toolbar">
+    <div class="toolbar-left">
+        <span class="toolbar-title">📊 PPT页面预览</span>
+        <span class="toolbar-badge" id="pageCount">加载中...</span>
+    </div>
+    <div class="toolbar-center">
+        <button class="btn" id="btnFirst" title="第一页">⏮</button>
+        <button class="btn" id="btnPrev" title="上一页 (←)">◀ 上一页</button>
+        <span class="page-indicator" id="pageIndicator">-- / --</span>
+        <button class="btn" id="btnNext" title="下一页 (→)">下一页 ▶</button>
+        <button class="btn" id="btnLast" title="最后一页">⏭</button>
+    </div>
+    <div class="toolbar-right">
+        <div class="search-box"><input type="text" id="searchInput" placeholder="搜索页面标题..." /></div>
+        <span style="font-size:10px;color:#64748b;margin-left:8px"><span class="kbd">←</span> <span class="kbd">→</span> 翻页</span>
+    </div>
+</div>
+
+<div class="main">
+    <div class="sidebar">
+        <div class="sidebar-header">页面目录</div>
+        <div class="sidebar-list" id="sidebarList"></div>
+    </div>
+    <div class="preview">
+        <iframe class="preview-frame" id="previewFrame" src="about:blank"></iframe>
+    </div>
+</div>
+
+<script>
+// ============================================
+// 页面注册表 - 增删页面只需修改这个数组
+// ============================================
+var PAGES = [
+    { file: "Page1.html",  label: "P01 封面" },
+    { file: "Page2.html",  label: "P02 目录 / 分析框架" },
+    // --- 排名情况 ---
+    { section: "一、排名情况" },
+    { file: "Page3.html",  label: "P03 全省国控断面水环境质量排位" },
+    { file: "Page4.html",  label: "P04 全省水环境波动态势" },
+    { file: "Page5.html",  label: "P05 全省省控断面详情" },
+    // --- 全省态势 ---
+    { section: "二、全省态势" },
+    { file: "Page6.html",  label: "P06 市州省控断面累计月情况" },
+    { file: "Page7.html",  label: "P07 市州国控断面达标率对比" },
+    { file: "Page8.html",  label: "P08 重点风险断面预警清单" },
+    { file: "Page9.html",  label: "P09 月度水质趋势变化" },
+    { file: "Page10.html", label: "P10 重点污染因子浓度分析（总磷/氨氮）" },
+    // --- 流域湖库 ---
+    { section: "三、流域湖库" },
+    { file: "Page11.html", label: "P11 一级流域概览（长江/清江/汉江）" },
+    { file: "Page12.html", label: "P12 二级流域片区详情（12个片区）" },
+    { file: "Page13.html", label: "P13 长江干流及主要支流" },
+    { file: "Page14.html", label: "P14 汉江流域分析" },
+    { file: "Page15.html", label: "P15 重点湖泊水质总览" },
+    { file: "Page16.html", label: "P16 洪湖专项监测分析" },
+    { file: "Page17.html", label: "P17 梁子湖专项监测分析" },
+    { file: "Page18.html", label: "P18 斧头湖专项监测分析" },
+    { file: "Page19.html", label: "P19 丹江口水库专项监测分析" },
+    { file: "Page20.html", label: "P20 流域水质同比分析" },
+    // --- 排口与黑臭水体（子系统） ---
+    { section: "四、排口与黑臭水体（子系统）" },
+    { file: "Page21.html", label: "P21 入河排污口排查整治总览" },
+    { file: "Page22.html", label: "P22 各市州排污口排查进展" },
+    { file: "Page23.html", label: "P23 不达标断面对应排口清单" },
+    { file: "Page24.html", label: "P24 污染溯源预警分析" },
+    { file: "Page25.html", label: "P25 黑臭水体整治与督办" },
+    { file: "Page26.html", label: "P26 入河排污口月度进展报告" },
+    // --- 饮用水与资金项目（子系统） ---
+    { section: "五、饮用水与资金项目（子系统）" },
+    { file: "Page27.html", label: "P27 饮用水水源地管理与督办" },
+    { file: "Page28.html", label: "P28 中央水污染防治资金项目调度" },
+    { file: "Page29.html", label: "P29 排污口日常监管运行" },
+    // --- 问题聚焦与督办 ---
+    { section: "六、问题聚焦与督办" },
+    { file: "Page30.html", label: "P30 重点问题清单与整改进展" },
+    { file: "Page31.html", label: "P31 问题线索跟踪处置" },
+    // --- 总结 ---
+    { section: "七、总结与展望" },
+    { file: "Page32.html", label: "P32 总结与展望" },
+];
+
+// ============================================
+// 核心逻辑（不需要修改）
+// ============================================
+(function() {
+    var pages = [];
+    var currentIdx = 0;
+
+    var listEl = document.getElementById("sidebarList");
+    var frameEl = document.getElementById("previewFrame");
+    var indicatorEl = document.getElementById("pageIndicator");
+    var countEl = document.getElementById("pageCount");
+    var searchEl = document.getElementById("searchInput");
+
+    // 构建页面列表（过滤掉 section 分隔符）
+    function buildPages(filter) {
+        pages = [];
+        listEl.innerHTML = "";
+        var filterLower = (filter || "").toLowerCase();
+
+        for (var i = 0; i < PAGES.length; i++) {
+            var item = PAGES[i];
+
+            if (item.section) {
+                // 分组标题
+                var div = document.createElement("div");
+                div.className = "nav-section";
+                div.textContent = item.section;
+                if (!filterLower) listEl.appendChild(div);
+                continue;
+            }
+
+            // 搜索过滤
+            if (filterLower && item.label.toLowerCase().indexOf(filterLower) === -1) continue;
+
+            var pageObj = { file: item.file, label: item.label, idx: pages.length };
+            pages.push(pageObj);
+
+            var nav = document.createElement("div");
+            nav.className = "nav-item";
+            nav.setAttribute("data-idx", pageObj.idx);
+            nav.innerHTML = '<span class="nav-num">' + (pageObj.idx + 1) + '</span><span class="nav-label">' + item.label + '</span>';
+            nav.onclick = (function(idx) {
+                return function() { goTo(idx); };
+            })(pageObj.idx);
+            listEl.appendChild(nav);
+        }
+
+        countEl.textContent = pages.length + " 页";
+        updateNav();
+    }
+
+    function goTo(idx) {
+        if (idx < 0 || idx >= pages.length) return;
+        currentIdx = idx;
+        var page = pages[currentIdx];
+        frameEl.src = page.file;
+
+        // 更新侧栏高亮
+        var items = listEl.querySelectorAll(".nav-item");
+        for (var i = 0; i < items.length; i++) {
+            items[i].classList.toggle("active", parseInt(items[i].getAttribute("data-idx")) === currentIdx);
+        }
+
+        // 滚动到可见
+        var activeEl = listEl.querySelector(".nav-item.active");
+        if (activeEl) activeEl.scrollIntoView({ block: "nearest", behavior: "smooth" });
+
+        updateNav();
+    }
+
+    function updateNav() {
+        indicatorEl.textContent = (currentIdx + 1) + " / " + pages.length;
+        document.getElementById("btnFirst").disabled = currentIdx <= 0;
+        document.getElementById("btnPrev").disabled = currentIdx <= 0;
+        document.getElementById("btnNext").disabled = currentIdx >= pages.length - 1;
+        document.getElementById("btnLast").disabled = currentIdx >= pages.length - 1;
+    }
+
+    // 按钮事件
+    document.getElementById("btnFirst").onclick = function() { goTo(0); };
+    document.getElementById("btnPrev").onclick = function() { goTo(currentIdx - 1); };
+    document.getElementById("btnNext").onclick = function() { goTo(currentIdx + 1); };
+    document.getElementById("btnLast").onclick = function() { goTo(pages.length - 1); };
+
+    // 键盘快捷键
+    document.addEventListener("keydown", function(e) {
+        if (e.target.tagName === "INPUT") return;
+        if (e.key === "ArrowLeft" || e.key === "ArrowUp") { e.preventDefault(); goTo(currentIdx - 1); }
+        if (e.key === "ArrowRight" || e.key === "ArrowDown") { e.preventDefault(); goTo(currentIdx + 1); }
+        if (e.key === "Home") { e.preventDefault(); goTo(0); }
+        if (e.key === "End") { e.preventDefault(); goTo(pages.length - 1); }
+    });
+
+    // 搜索
+    var searchTimer = null;
+    searchEl.addEventListener("input", function() {
+        clearTimeout(searchTimer);
+        searchTimer = setTimeout(function() {
+            buildPages(searchEl.value);
+            if (pages.length > 0) goTo(0);
+        }, 200);
+    });
+
+    // 初始化
+    buildPages("");
+    if (pages.length > 0) goTo(0);
+})();
+</script>
+</body>
+</html>

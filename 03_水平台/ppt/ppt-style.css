@@ -1,0 +1,93 @@
+/* === 湖北省水生态环境形势分析 - 专业PPT设计系统 v2.0 === */
+html{zoom:175%;background:#E8ECF1!important;height:100%}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei","Noto Sans SC",sans-serif!important;-webkit-font-smoothing:antialiased}
+
+/* 主容器 */
+.slide-container{box-shadow:0 20px 60px rgba(0,0,0,.10),0 4px 20px rgba(0,0,0,.06)!important;border:none!important;border-radius:14px!important}
+
+/* 页眉 */
+.ppt-header{background:linear-gradient(135deg,#0B1D33 0%,#142B44 50%,#1A365D 100%)!important;border-bottom:3px solid #059669!important;padding:14px 28px!important}
+.ppt-title{font-size:15px!important;font-weight:700!important;letter-spacing:1.5px!important;text-shadow:0 1px 2px rgba(0,0,0,.2)}
+.nav-page-num{background:#059669!important;padding:3px 10px!important;border-radius:4px!important;font-size:10px!important;font-weight:700!important;letter-spacing:.5px}
+
+/* 核心结论条 */
+.core-bar{background:linear-gradient(90deg,#ECFDF5,#F0FDF4)!important;border-left:4px solid #059669!important;border-bottom:1px solid #D1FAE5!important;color:#065F46!important;padding:12px 28px!important;font-size:11px!important;font-weight:600!important;line-height:1.6!important}
+
+/* KPI卡片 */
+.kpi-block{background:#fff!important;border:1px solid #E2E8F0!important;border-top:3px solid #2563EB!important;border-radius:10px!important;box-shadow:0 2px 8px rgba(0,0,0,.04)!important;padding:14px!important}
+.kpi-block.highlight,.kpi-block.hl{border-top-color:#059669!important;background:linear-gradient(180deg,#F0FDF4,#fff)!important}
+.kpi-block.alert,.kpi-block.al{border-top-color:#DC2626!important;background:linear-gradient(180deg,#FEF2F2,#fff)!important}
+.kpi-title{font-size:10px!important;font-weight:700!important;color:#475569!important;text-transform:uppercase;letter-spacing:.5px}
+.kpi-num{font-size:24px!important;font-weight:800!important;color:#0F172A!important;line-height:1.2}
+.kpi-block.highlight .kpi-num,.kpi-block.hl .kpi-num{color:#059669!important}
+.kpi-block.alert .kpi-num,.kpi-block.al .kpi-num{color:#DC2626!important}
+.kpi-sub{font-size:9px!important;color:#94A3B8!important;margin-top:4px!important}
+
+/* KPI横向卡片 */
+.kpi-row .kpi-card{background:#fff!important;border:1px solid #E2E8F0!important;border-top:3px solid #2563EB!important;border-radius:10px!important;box-shadow:0 2px 8px rgba(0,0,0,.04)!important;padding:10px!important}
+.kpi-label{font-size:9px!important;font-weight:700!important;text-transform:uppercase;letter-spacing:.5px}
+.kpi-value{font-size:16px!important;font-weight:800!important}
+
+/* 表格 */
+.table-box{border:1px solid #E2E8F0!important;border-radius:8px!important;overflow:hidden!important;box-shadow:0 1px 4px rgba(0,0,0,.03)}
+.table-box th{background:linear-gradient(180deg,#0F172A,#1E293B)!important;color:#fff!important;padding:8px 10px!important;font-size:10px!important;font-weight:600!important;letter-spacing:.3px}
+.table-box td{padding:8px 10px!important;font-size:10px!important;color:#334155!important;border-bottom:1px solid #F1F5F9!important}
+.table-box tr:nth-child(even){background:#F8FAFC!important}
+.table-box tr:hover{background:#F0F7FF!important}
+
+/* 预警卡片 */
+.warning-card{background:#FFFBEB!important;border:1px solid #FDE68A!important;border-left:4px solid #D97706!important;border-radius:8px!important;padding:10px 12px!important;box-shadow:0 1px 4px rgba(0,0,0,.03)}
+.warning-card.blue-card,.warning-card.blue{background:#EFF6FF!important;border-color:#BFDBFE!important;border-left-color:#2563EB!important}
+.card-loc{font-size:11px!important;font-weight:700!important;color:#92400E!important;border-bottom:1px dashed rgba(146,64,14,.2)!important;padding-bottom:4px!important;margin-bottom:6px!important}
+.warning-card.blue-card .card-loc,.warning-card.blue .card-loc{color:#1E40AF!important;border-bottom-color:rgba(30,64,175,.2)!important}
+.card-det{font-size:9.5px!important;color:#374151!important;line-height:1.5!important}
+
+/* 页脚 */
+.ft{background:#F8FAFC!important;border-top:1px solid #E2E8F0!important;padding:12px 28px!important;font-size:10px!important;color:#94A3B8!important}
+
+/* 分节导航页 */
+.sec-bg{background:linear-gradient(135deg,#0B1D33 0%,#142B44 40%,#1E3A5F 100%)!important;padding:40px!important}
+.sec-title{font-size:24px!important;font-weight:700!important;letter-spacing:4px!important;text-shadow:0 2px 4px rgba(0,0,0,.2)}
+.sec-sub{font-size:14px!important;opacity:.7!important}
+.sec-card{background:rgba(255,255,255,.06)!important;border:1px solid rgba(255,255,255,.12)!important;border-radius:10px!important;padding:18px 14px!important}
+.sec-card:hover{background:rgba(255,255,255,.10)!important;transform:translateY(-2px)}
+.sc-l{font-size:11px!important;opacity:.8!important;margin-bottom:8px!important;font-weight:600;letter-spacing:.5px}
+.sc-v{font-size:22px!important;font-weight:800!important;text-shadow:0 1px 2px rgba(0,0,0,.2)}
+.sc-s{font-size:9px!important;opacity:.5!important;margin-top:6px!important}
+
+/* 图表 */
+.chart-wrapper{background:#fff!important;border:1px solid #E2E8F0!important;border-radius:10px!important;box-shadow:0 1px 4px rgba(0,0,0,.03)}
+.chart-title{font-size:11px!important;font-weight:700!important;color:#0F172A!important}
+
+/* 徽标 */
+.badge-r{color:#DC2626!important;font-weight:700!important}
+.badge-g{color:#059669!important;font-weight:700!important}
+
+/* 说明信息 */
+.ex-info{background:#F8FAFC!important;border:1px solid #E2E8F0!important;border-radius:6px!important;padding:8px 14px!important;font-size:9px!important;color:#64748B!important}
+
+/* 封面页 */
+.cover-container{background:linear-gradient(135deg,#0B1D33 0%,#142B44 30%,#1A365D 60%,#0F2B46 100%)!important;border-radius:14px!important;box-shadow:0 20px 60px rgba(13,43,69,.3)!important}
+.cover-container::after{background:radial-gradient(circle,rgba(5,150,105,.08) 0%,rgba(5,150,105,0) 70%)!important}
+.hdr-tag{background:#059669!important;padding:4px 12px!important;border-radius:4px!important;font-size:11px!important;letter-spacing:1px}
+.hdr-doc-type{color:rgba(255,255,255,.5)!important}
+.main-title{font-size:30px!important;letter-spacing:3px!important;text-shadow:0 2px 8px rgba(0,0,0,.3)}
+.dept-name{color:#E2E8F0!important}
+.date-sec{color:rgba(255,255,255,.5)!important}
+
+/* 目录页 */
+.toc-title{border-left-color:#059669!important;font-size:18px!important;letter-spacing:6px!important}
+.toc-item{background:rgba(255,255,255,.06)!important;border:1px solid rgba(255,255,255,.08)!important;border-radius:8px!important;padding:12px 18px!important}
+.idx{background:#059669!important;width:24px!important;height:24px!important}
+.item-main{font-size:14px!important;font-weight:600!important}
+
+/* 柱状图 */
+.stacked-bar{box-shadow:1px 0 4px rgba(0,0,0,.1)}
+.bar-group.highlight .prov-name{color:#DC2626!important}
+.prov-name{font-size:7px!important;color:#64748B!important;font-weight:600!important}
+
+/* 预警标题 */
+.warning-header-title{color:#92400E!important;font-size:11px!important}
+
+/* 左右分栏 */
+.left-column,.right-column{gap:12px!important}

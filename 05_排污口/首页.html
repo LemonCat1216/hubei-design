@@ -1,0 +1,474 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>湖北省排污口综合监管系统</title>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-blue: #4a7cf5;
+            --number-blue: #2b61f4;
+            --bg-color: #f2f3f5;
+            --text-dark: #333;
+            --text-light: #888;
+            --card-bg: #fff;
+            --border-color: #e5e7eb;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-dark);
+            min-width: 1250px;
+        }
+
+        /* --- 顶部导航栏 --- */
+        .header {
+            background-color: var(--primary-blue);
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            color: #fff;
+        }
+        .header-logo {
+            font-size: 20px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .nav-menu {
+            display: flex;
+            height: 100%;
+        }
+        .nav-item {
+            padding: 0 20px;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            font-size: 15px;
+            color: rgba(255, 255, 255, 0.9);
+        }
+        .nav-item.active {
+            background-color: #fff;
+            color: var(--primary-blue);
+            font-weight: bold;
+            margin-top: 10px;
+            height: 50px;
+            border-radius: 4px 4px 0 0;
+        }
+        .nav-item i { margin-right: 6px; }
+
+        /* --- 主体布局 --- */
+        .container {
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 4px;
+            padding: 18px;
+            background-clip: border-box;
+            border: 1px solid var(--border-color);
+            box-sizing: border-box;
+        }
+        .card-title {
+            font-size: 15px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* --- 第一排：概览数据 --- */
+        .row-1 {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+        }
+        .stat-card {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 120px;
+        }
+        .border-grey { border: 1px solid #d1d5db; }
+        .border-green { border: 1px solid #bbf7d0; }
+        .border-orange { border: 1px solid #fed7aa; }
+
+        .stat-title { font-size: 15px; font-weight: bold; }
+        .stat-content { display: flex; align-items: flex-end; justify-content: space-between; flex-grow: 1; padding-bottom: 5px; }
+        .stat-num { font-size: 38px; font-weight: bold; color: var(--number-blue); line-height: 1;}
+        .stat-chart { width: 75px; height: 75px; margin-bottom: -5px; }
+
+        /* ==================================================== */
+        /* 空心箭头标签样式 (Hollow Arrow Tag) - 纯CSS绘制 */
+        /* ==================================================== */
+        .hollow-arrow-tag {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            height: 22px;
+            padding: 0 4px 0 6px;
+            border: 1px solid currentColor; /* 继承传入的文字颜色 */
+            border-right: none; /* 去掉右边框以融入箭头 */
+            border-radius: 2px 0 0 2px;
+            font-family: 'Arial', sans-serif;
+            font-weight: bold;
+            font-size: 13px;
+            margin-right: 11px; /* 留出箭头的空间 */
+            background: transparent; /* 空心透明 */
+            min-width: 32px;
+        }
+        .hollow-arrow-tag::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            right: -11.5px;
+            width: 15.5px;
+            height: 15.5px;
+            border-top: 1px solid currentColor;
+            border-right: 1px solid currentColor;
+            transform: translateY(-50%) rotate(45deg);
+            background: var(--card-bg); /* 与卡片背景色一致，避免底层线穿透 */
+            border-radius: 0 2px 0 0; /* 箭头尖端微小的圆角 */
+        }
+        /* ==================================================== */
+
+        /* --- 第二排：任务与类型 --- */
+        .row-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 15px;
+        }
+
+        .task-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 22px;
+        }
+        .task-label { width: 70px; font-weight: bold; font-size: 13px; }
+        .task-progress-wrap {
+            flex-grow: 1;
+            margin: 0 15px;
+            position: relative;
+            height: 24px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 6px;
+        }
+        .progress-target { height: 10px; background: #3b82f6; width: 80%; }
+        .progress-current { height: 10px; background: #84cc16; }
+
+        .clue-bg { width: 100%; height: 12px; background: #f1f5f9; position: relative; }
+        .clue-progress { height: 12px; background: #84cc16; position: absolute; left: 0; top: 0; }
+
+        .task-data {
+            width: 75px; font-size: 12px; color: var(--text-light); text-align: right; line-height: 1.6;
+        }
+        .task-data span { color: var(--number-blue); font-weight: bold; font-size: 13px; }
+
+        .type-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            gap: 20px;
+            flex-grow: 1;
+            align-content: space-around;
+            padding-bottom: 10px;
+        }
+        .type-item { display: flex; align-items: center; gap: 15px; }
+        .type-icon {
+            width: 48px; height: 48px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; font-size: 20px; color: #fff;
+        }
+        .type-info .num { font-size: 24px; font-weight: bold; line-height: 1.1; }
+        .type-info .desc { font-size: 12px; color: var(--text-light); margin-top: 4px;}
+
+        .dist-wrap { display: flex; gap: 30px; flex-grow: 1; flex-direction: column; justify-content: space-between;}
+        .dist-wrap-inner { display: flex; gap: 30px; height: 100%;}
+        .dist-list { flex: 1; display: flex; flex-direction: column; justify-content: space-between;}
+        .dist-header { font-size: 13px; color: var(--text-light); border-bottom: 1px solid #eee; padding-bottom: 8px; margin-bottom: 8px; }
+        .dist-row { display: flex; justify-content: space-between; padding: 6px 0; font-size: 14px; border-bottom: 1px dashed #f0f0f0; }
+        .dist-row:last-child { border-bottom: none; }
+        .dist-val { color: var(--number-blue); font-weight: bold; font-size: 16px; }
+
+        /* --- 第三排：图表 --- */
+        .row-3 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; height: 350px; }
+        .chart-box { width: 100%; height: 280px; }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <div class="header-logo">
+        <i class="fa-solid fa-shield-halved"></i> 湖北省排污口综合监管系统
+    </div>
+    <div class="nav-menu">
+        <div class="nav-item active"><i class="fa-solid fa-house"></i> 首页</div>
+        <div class="nav-item"><i class="fa-solid fa-map"></i> 一张图</div>
+        <div class="nav-item"><i class="fa-solid fa-briefcase"></i> 业务管理</div>
+        <div class="nav-item"><i class="fa-solid fa-file-lines"></i> 一口一档</div>
+        <div class="nav-item"><i class="fa-solid fa-water"></i> 水污染源</div>
+        <div class="nav-item"><i class="fa-solid fa-chart-pie"></i> 综合统计</div>
+    </div>
+    <div class="user-info" style="font-size: 14px;">
+        <i class="fa-regular fa-user"></i> 湖北省账号
+    </div>
+</div>
+
+<div class="container">
+
+    <div class="row-1">
+        <div class="card stat-card border-grey">
+            <div class="stat-title">排污口排查</div>
+            <div class="stat-content">
+                <div class="stat-num">34124</div>
+            </div>
+        </div>
+
+        <div class="card stat-card border-green">
+            <div class="stat-title">排污口溯源</div>
+            <div class="stat-content">
+                <div class="stat-num">26715</div>
+                <div class="stat-chart" id="chart-suyuan"></div>
+            </div>
+        </div>
+
+        <div class="card stat-card border-orange">
+            <div class="stat-title">排污口整治</div>
+            <div class="stat-content">
+                <div class="stat-num">19665</div>
+                <div class="stat-chart" id="chart-zhengzhi"></div>
+            </div>
+        </div>
+
+        <div class="card stat-card border-grey">
+            <div class="stat-title">流转与审核状态</div>
+            <div class="stat-content" style="align-items: center;">
+                <div style="flex: 1;">
+                    <div class="stat-num">19665</div>
+                    <div style="font-size: 12px; color: #888; margin-top: 6px;">省级已通过</div>
+                </div>
+
+                <div style="display: flex; flex-direction: column; gap: 7px; width: 110px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span style="font-size: 12px; color: #666;">省级待审</span>
+                        <span class="hollow-arrow-tag" style="color: #ef4444;">312</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span style="font-size: 12px; color: #666;">地市待审</span>
+                        <span class="hollow-arrow-tag" style="color: #f59e0b;">980</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span style="font-size: 12px; color: #666;">区县未交</span>
+                        <span class="hollow-arrow-tag" style="color: #6b7280;">2145</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row-2">
+        <div class="card">
+            <div class="card-title">
+                <span>任务完成情况</span>
+                <span style="font-size: 12px; color: #999; font-weight: normal;">截至 2026-06-25</span>
+            </div>
+            <div class="task-item" style="margin-top: 25px;">
+                <div class="task-label">本月线索:</div>
+                <div class="task-progress-wrap" style="justify-content: center;">
+                    <div class="clue-bg">
+                        <div class="clue-progress" style="width: 87.5%;"></div>
+                    </div>
+                </div>
+                <div class="task-data">
+                    <div>总数 &nbsp;<span>16</span></div>
+                    <div>已核实 <span>14</span></div>
+                </div>
+            </div>
+            <div class="task-item">
+                <div class="task-label">整治任务:</div>
+                <div class="task-progress-wrap">
+                    <div class="progress-target"></div>
+                    <div class="progress-current" style="width: 57.63%;"></div>
+                </div>
+                <div class="task-data">
+                    <div>目标 &nbsp;<span>80%</span></div>
+                    <div>当前 <span>57.63%</span></div>
+                </div>
+            </div>
+            <div class="task-item">
+                <div class="task-label">溯源任务:</div>
+                <div class="task-progress-wrap">
+                    <div class="progress-target"></div>
+                    <div class="progress-current" style="width: 78.29%; background: #22d3ee;"></div>
+                </div>
+                <div class="task-data">
+                    <div>目标 &nbsp;<span>80%</span></div>
+                    <div>当前 <span>78.29%</span></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" style="display: flex; flex-direction: column;">
+            <div class="card-title">排污口类型数据</div>
+            <div class="type-grid">
+                <div class="type-item">
+                    <div class="type-icon" style="background: #3b82f6;"><i class="fa-solid fa-house-chimney-window"></i></div>
+                    <div class="type-info">
+                        <div class="num">2270</div>
+                        <div class="desc">工业排污口</div>
+                    </div>
+                </div>
+                <div class="type-item">
+                    <div class="type-icon" style="background: #10b981;"><i class="fa-solid fa-plant-wilt"></i></div>
+                    <div class="type-info">
+                        <div class="num">151</div>
+                        <div class="desc">农业排口</div>
+                    </div>
+                </div>
+                <div class="type-item">
+                    <div class="type-icon" style="background: #f59e0b;"><i class="fa-solid fa-water"></i></div>
+                    <div class="type-info">
+                        <div class="num">1182</div>
+                        <div class="desc">城镇污水处理厂排污口</div>
+                    </div>
+                </div>
+                <div class="type-item">
+                    <div class="type-icon" style="background: #94a3b8;"><i class="fa-solid fa-file-invoice"></i></div>
+                    <div class="type-info">
+                        <div class="num">30520</div>
+                        <div class="desc">其他排口</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" style="display: flex; flex-direction: column;">
+            <div class="card-title">排污口分布</div>
+            <div class="dist-wrap">
+                <div class="dist-wrap-inner">
+                    <div class="dist-list">
+                        <div class="dist-header">各地市排污口数量</div>
+                        <div class="dist-row"><span>武汉市</span><span class="dist-val">8924</span></div>
+                        <div class="dist-row"><span>荆州市</span><span class="dist-val">6547</span></div>
+                        <div class="dist-row"><span>宜昌市</span><span class="dist-val">5101</span></div>
+                        <div class="dist-row"><span>随州市</span><span class="dist-val">1824</span></div>
+                        <div class="dist-row"><span>孝感市</span><span class="dist-val">1811</span></div>
+                    </div>
+                    <div class="dist-list">
+                        <div class="dist-header">24个重点河湖排污口数量</div>
+                        <div class="dist-row"><span>清江</span><span class="dist-val">947</span></div>
+                        <div class="dist-row"><span>陆水河</span><span class="dist-val">292</span></div>
+                        <div class="dist-row"><span>松滋河</span><span class="dist-val">280</span></div>
+                        <div class="dist-row"><span>藕池河</span><span class="dist-val">268</span></div>
+                        <div class="dist-row"><span>洪湖</span><span class="dist-val">241</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row-3">
+        <div class="card">
+            <div class="card-title">
+                <span>监测任务&nbsp;&nbsp;溯源任务</span>
+                <select style="border: 1px solid #ddd; padding: 4px; border-radius: 4px; color: #666; outline: none;"><option>按地市统计</option></select>
+            </div>
+            <div class="chart-box" id="chart-bar-1"></div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">
+                <span>整治任务</span>
+                <select style="border: 1px solid #ddd; padding: 4px; border-radius: 4px; color: #666; outline: none;"><option>按地市统计</option></select>
+            </div>
+            <div class="chart-box" id="chart-bar-2"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var chartSuyuan = echarts.init(document.getElementById('chart-suyuan'));
+    chartSuyuan.setOption({
+        series: [{
+            type: 'pie', radius: ['65%', '85%'], avoidLabelOverlap: false,
+            label: { show: true, position: 'center', formatter: '78.29%\n溯源率', fontSize: 11, fontWeight: 'bold', color: '#2b61f4', lineHeight: 16 },
+            data: [
+                { value: 78.29, itemStyle: { color: '#3b82f6' } },
+                { value: 21.71, itemStyle: { color: '#e5e7eb' } }
+            ]
+        }]
+    });
+
+    var chartZhengzhi = echarts.init(document.getElementById('chart-zhengzhi'));
+    chartZhengzhi.setOption({
+        series: [{
+            type: 'pie', radius: ['65%', '85%'], avoidLabelOverlap: false,
+            label: { show: true, position: 'center', formatter: '57.63%\n整治率', fontSize: 11, fontWeight: 'bold', color: '#2b61f4', lineHeight: 16 },
+            data: [
+                { value: 57.63, itemStyle: { color: '#3b82f6' } },
+                { value: 42.37, itemStyle: { color: '#e5e7eb' } }
+            ]
+        }]
+    });
+
+    var chartBar1 = echarts.init(document.getElementById('chart-bar-1'));
+    chartBar1.setOption({
+        grid: { left: '3%', right: '4%', bottom: '10%', top: '15%', containLabel: true },
+        xAxis: {
+            type: 'category',
+            data: ['武汉市', '荆州市', '宜昌市', '随州市', '孝感市', '黄冈市', '十堰市', '荆门市', '恩施州', '咸宁市', '鄂州市'],
+            axisLabel: { interval: 0, rotate: 30, fontSize: 11, color: '#666' },
+            axisTick: { show: false },
+            axisLine: { lineStyle: { color: '#eee' } }
+        },
+        yAxis: { type: 'value', min: 0, max: 100, axisLabel: { formatter: '{value}%', color: '#666', fontSize: 11 }, splitLine: { lineStyle: { type: 'dashed', color: '#eee' } } },
+        series: [{
+            data: [15, 41, 53, 20, 83, 55, 68, 47, 51, 81, 74],
+            type: 'bar', barWidth: '35%',
+            itemStyle: { color: '#2b61f4' },
+            label: { show: true, position: 'top', formatter: '{c}%', fontSize: 10, color: '#666' }
+        }]
+    });
+
+    var chartBar2 = echarts.init(document.getElementById('chart-bar-2'));
+    chartBar2.setOption({
+        grid: { left: '3%', right: '4%', bottom: '10%', top: '15%', containLabel: true },
+        xAxis: {
+            type: 'category',
+            data: ['咸宁市', '黄石市', '鄂州市', '襄阳市', '潜江市', '黄冈市', '孝感市', '仙桃市', '恩施州', '荆州市', '天门市'],
+            axisLabel: { interval: 0, rotate: 30, fontSize: 11, color: '#666' },
+            axisTick: { show: false },
+            axisLine: { lineStyle: { color: '#eee' } }
+        },
+        yAxis: { type: 'value', min: 0, max: 100, axisLabel: { formatter: '{value}%', color: '#666', fontSize: 11 }, splitLine: { lineStyle: { type: 'dashed', color: '#eee' } } },
+        series: [{
+            data: [93, 90, 82, 76, 76, 74, 73, 72, 70, 66, 49],
+            type: 'bar', barWidth: '35%',
+            itemStyle: { color: '#2b61f4' },
+            label: { show: true, position: 'top', formatter: '{c}%', fontSize: 10, color: '#666' }
+        }]
+    });
+
+    window.addEventListener('resize', function() {
+        chartSuyuan.resize();
+        chartZhengzhi.resize();
+        chartBar1.resize();
+        chartBar2.resize();
+    });
+</script>
+</body>
+</html>

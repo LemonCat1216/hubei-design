@@ -51,8 +51,28 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Micr
 .nav-section{padding:6px 10px 2px;font-size:9px;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:1px;margin-top:4px}
 
 /* 右侧预览区 */
-.preview{flex:1;display:flex;flex-direction:column;background:#0f172a;overflow:hidden;position:relative}
-.preview-frame{border:none;background:#f0f4f8;transform:scale(0.571);transform-origin:top left;width:175%;height:175%;flex-shrink:0}
+.preview {
+    flex: 1;
+    display: flex;
+    align-items: center;       /* 关键：垂直居中 */
+    justify-content: center;   /* 关键：水平居中 */
+    background: #cbd5e1;       /* 改用深一点的背景色，让 PPT 卡片更凸显 */
+    overflow: hidden;
+    position: relative;
+}
+
+/* 核心画框：设定为固定的虚拟分辨率 */
+.preview-frame {
+    border: none;
+    background: #f0f4f8;
+    /* 根据你子页面 860px 宽度 * 1.75 放大率精确计算出的完美画布尺寸 */
+    width: 1575px;
+    height: 917px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15); /* 增加真实的阴影立体感 */
+    transform-origin: center center;          /* 缩放中心改为正中央 */
+    flex-shrink: 0;
+    transition: transform 0.15s ease-out;     /* 窗口拉伸时加入平滑动画 */
+}
 
 /* 加载提示 */
 .loading{display:flex;align-items:center;justify-content:center;flex:1;color:#64748b;font-size:14px}
@@ -250,6 +270,34 @@ var PAGES = [
     // 初始化
     buildPages("");
     if (pages.length > 0) goTo(0);
+
+
+
+    function autoScalePreview() {
+        var previewArea = document.querySelector('.preview');
+        var iframe = document.getElementById('previewFrame');
+        if (!previewArea || !iframe) return;
+
+        // 获取右侧可用宽高（减去 40px 作为四周的安全留白边缘）
+        var availWidth = previewArea.clientWidth - 40;
+        var availHeight = previewArea.clientHeight - 40;
+
+        // 这是我们在 CSS 中设定的 iframe 画布完美尺寸
+        var frameWidth = 1575;
+        var frameHeight = 917;
+
+        // 核心算法：取宽比和高比中较小的一个，确保完整显示且不裁剪变形
+        var scale = Math.min(availWidth / frameWidth, availHeight / frameHeight);
+
+        // 应用动态缩放
+        iframe.style.transform = 'scale(' + scale + ')';
+    }
+
+    // 监听窗口大小变化
+    window.addEventListener('resize', autoScalePreview);
+
+    // 初始化时触发一次缩放
+    setTimeout(autoScalePreview, 50);
 })();
 </script>
 </body>

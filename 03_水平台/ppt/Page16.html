@@ -5,25 +5,31 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>流域湖库：重点湖泊水质总览</title>
 <link rel="stylesheet" href="ppt-style.css">
-<script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
 <style>
-    /* 极限压榨表格行高，确保24行在PPT画布内完美直出 */
+    /* 极致优化静态表格：12+12完美填满左侧 */
     .static-table { width: 50%; flex: 1; table-layout: fixed; }
-    .static-table th, .static-table td { padding: 3px 5px !important; font-size: 7.5px !important; line-height: 1.1 !important; }
-    .static-table th { background: #F8FAFC; font-weight: 700; color: #475569; }
+    .static-table th, .static-table td { padding: 4.5px 6px !important; font-size: 8px !important; line-height: 1.1 !important; }
+    .static-table th { background: #F8FAFC; font-weight: 700; color: #475569; border-bottom: 1px solid #E2E8F0; }
     
-    /* 横向靶向管控标签样式 (替代原本纵向大卡片) */
-    .risk-badge-container { display: flex; gap: 6px; width: 100%; flex-wrap: nowrap; }
-    .risk-mini-card { flex: 1; background: #FFF; border: 1px solid #E2E8F0; border-radius: 3px; padding: 4px 6px; display: flex; flex-direction: column; justify-content: center; min-width: 0; }
-    .risk-mini-card.level-5 { border-left: 3px solid #DC2626; background: #FEF2F2; }
-    .risk-mini-card.level-4 { border-left: 3px solid #D97706; background: #FFFBEB; }
-    .risk-mini-card.level-3 { border-left: 3px solid #F59E0B; background: #FFFDF5; }
+    /* 右侧模块：通过 flex: 1 让 3 个卡片严格等分高度，绝对不会冒出去 */
+    .risk-panel { display: flex; flex-direction: column; gap: 4px; flex: 1; min-height: 0; overflow: hidden; }
+    .risk-large-card { flex: 1; background: #FFF; border: 1px solid #E2E8F0; border-radius: 4px; padding: 4px 8px; display: flex; flex-direction: column; justify-content: center; min-height: 0; overflow: hidden; }
+    
+    .risk-large-card.level-5 { border-top: 2px solid #DC2626; background: #FEF2F2; }
+    .risk-large-card.level-4 { border-top: 2px solid #D97706; background: #FFFBEB; }
+    .risk-large-card.level-3 { border-top: 2px solid #F59E0B; background: #FFFDF5; }
+
+    /* 极致压缩的数据网格 */
+    .data-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; margin-top: 3px; }
+    .data-item { background: rgba(255,255,255,0.7); border: 1px solid #E2E8F0; padding: 2px 4px; text-align: center; border-radius: 2px; }
+    .data-label { font-size: 7px; color: #64748B; transform: scale(0.9); transform-origin: center center; }
+    .data-val { font-size: 8.5px; font-weight: 700; color: #0F172A; margin-top: 0px; }
 </style>
 </head>
 <body>
 <div class="slide-container">
     <div class="ppt-header"><span class="ppt-title">流域湖库：重点湖泊水质总览</span><span class="nav-page-num">P16</span></div>
-    <div class="core-bar">▎ 全省 24 个重点湖泊中，15 个水质达标，洪湖、长湖等 9 个湖泊未达标，总磷为主要超标因子。</div>
+    <div class="core-bar">▎ 24个重点湖泊水质呈分化态势：15个点位达标，洪湖、长湖等3个湖库9个点位未达标，总磷（TP）为首要超标因子。</div>
     
     <div class="bd" style="flex-direction:column; gap:8px;">
         <div class="kpi-row" style="margin-bottom:0; flex-shrink:0;">
@@ -45,20 +51,20 @@
             </div>
         </div>
 
-        <div style="display:flex; gap:10px; flex:1; min-height:0; overflow:hidden;">
+        <div style="display:flex; gap:12px; flex:1; min-height:0; overflow:hidden;">
             
-            <div class="table-box" style="flex:0 0 55%; display:flex; flex-direction:column; background:#fff; overflow:hidden;">
-                <div style="font-size:8.5px; font-weight:700; color:#1E293B; padding:5px 8px; border-bottom:1px solid #E2E8F0; flex-shrink:0;">📊 重点湖泊水质一览 (全省 24 个点位静态平铺)</div>
+            <div class="table-box" style="flex:0 0 54%; display:flex; flex-direction:column; background:#fff; overflow:hidden;">
+                <div style="font-size:9px; font-weight:700; color:#1E293B; padding:6px 10px; border-bottom:1px solid #E2E8F0; flex-shrink:0;">📊 重点湖泊水质状况一览表</div>
                 
                 <div style="display: flex; flex: 1; min-height:0; overflow:hidden;">
                     <table class="static-table" style="border-right: 1px solid #E2E8F0;">
-                        <thead><tr><th>湖库</th><th>水质</th><th>总磷</th><th>状态</th></tr></thead>
+                        <thead><tr><th>湖库名称</th><th>水质</th><th>总磷</th><th>状态</th></tr></thead>
                         <tbody>
                             <tr><td class="td-left">洪湖</td><td><span class="badge-r">劣Ⅴ</span></td><td>0.15</td><td><span class="badge-r">未标</span></td></tr>
                             <tr><td class="td-left">长湖</td><td><span class="badge-r">Ⅴ类</span></td><td>0.12</td><td><span class="badge-r">未标</span></td></tr>
                             <tr><td class="td-left">斧头湖</td><td>Ⅳ类</td><td>0.08</td><td><span class="badge-y">临界</span></td></tr>
                             <tr><td class="td-left">梁子湖</td><td>Ⅲ类</td><td>0.05</td><td><span class="badge-g">达标</span></td></tr>
-                            <tr><td class="td-left">丹江口</td><td>Ⅱ类</td><td>0.02</td><td><span class="badge-g">达标</span></td></tr>
+                            <tr><td class="td-left">丹江口水库</td><td>Ⅱ类</td><td>0.02</td><td><span class="badge-g">达标</span></td></tr>
                             <tr><td class="td-left">漳河水库</td><td>Ⅱ类</td><td>0.02</td><td><span class="badge-g">达标</span></td></tr>
                             <tr><td class="td-left">陆水水库</td><td>Ⅲ类</td><td>0.04</td><td><span class="badge-g">达标</span></td></tr>
                             <tr><td class="td-left">富水水库</td><td>Ⅱ类</td><td>0.03</td><td><span class="badge-g">达标</span></td></tr>
@@ -70,7 +76,7 @@
                     </table>
                     
                     <table class="static-table">
-                        <thead><tr><th>湖库</th><th>水质</th><th>总磷</th><th>状态</th></tr></thead>
+                        <thead><tr><th>湖库名称</th><th>水质</th><th>总磷</th><th>状态</th></tr></thead>
                         <tbody>
                             <tr><td class="td-left">大冶湖</td><td>Ⅳ类</td><td>0.08</td><td><span class="badge-y">临界</span></td></tr>
                             <tr><td class="td-left">磁湖</td><td>Ⅲ类</td><td>0.05</td><td><span class="badge-g">达标</span></td></tr>
@@ -89,77 +95,51 @@
                 </div>
             </div>
 
-            <div style="flex:1; display:flex; flex-direction:column; gap:6px; overflow:hidden;">
+            <div style="flex:1; display:flex; flex-direction:column; background:#fff; border:1px solid #E2E8F0; padding:6px 8px; border-radius:4px; overflow:hidden;">
+                <div style="font-size:9px; font-weight:800; color:#0F172A; margin-bottom:4px; border-bottom:1px solid #F1F5F9; padding-bottom:2px; flex-shrink:0;">📊 重点超标断面污染物解析Top3</div>
                 
-                <div class="chart-wrapper" style="flex:1; padding:5px 8px; display:flex; flex-direction:column; min-height:0; background:#fff;">
-                    <div style="font-size:8.5px; font-weight:700; color:#1E293B; border-bottom:1px dashed #E2E8F0; padding-bottom:3px; margin-bottom:2px;">📈 水质类别比例分布</div>
-                    <div id="chart-lake" style="width:100%; flex:1;"></div>
-                </div>
-
-                <div style="flex-shrink:0; display:flex; flex-direction:column; gap:4px; background:#fff; padding:6px; border-radius:4px; border:1px solid #E2E8F0;">
-                    <div style="font-size:8.5px; font-weight:700; color:#0F172A; margin-bottom:2px;">🎯 重点靶向风险管控断面</div>
-                    
-                    <div class="risk-badge-container">
-                        <div class="risk-mini-card level-5">
-                            <div style="display:flex; justify-content:space-between; align-items:center;">
-                                <span style="font-size:8.5px; font-weight:800; color:#991B1B; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">洪湖湖心</span>
-                                <span style="font-size:6.5px; background:#DC2626; color:#fff; padding:0px 3px; font-weight:700; scale:0.9;">劣Ⅴ</span>
-                            </div>
-                            <div style="font-size:7px; color:#475569; margin-top:2px; transform: scale(0.95); transform-origin: left center;">TP: 0.15 | 连超3月</div>
+                <div class="risk-panel">
+                    <div class="risk-large-card level-5">
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <span style="font-size:9px; font-weight:800; color:#991B1B;">01. 洪湖湖心</span>
+                            <span style="font-size:6.5px; background:#DC2626; color:#fff; padding:0px 3px; font-weight:700; border-radius:1px;">红色预警</span>
                         </div>
-
-                        <div class="risk-mini-card level-4">
-                            <div style="display:flex; justify-content:space-between; align-items:center;">
-                                <span style="font-size:8.5px; font-weight:800; color:#92400E; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">长湖(荆门)</span>
-                                <span style="font-size:6.5px; background:#D97706; color:#fff; padding:0px 3px; font-weight:700; scale:0.9;">Ⅴ类</span>
-                            </div>
-                            <div style="font-size:7px; color:#475569; margin-top:2px; transform: scale(0.95); transform-origin: left center;">TP: 0.12 | 优先管控</div>
+                        <div class="data-grid">
+                            <div class="data-item"><div class="data-label">当前水质</div><div class="data-val" style="color:#DC2626;">劣Ⅴ类</div></div>
+                            <div class="data-item"><div class="data-label">总磷浓度</div><div class="data-val">0.15</div></div>
+                            <div class="data-item"><div class="data-label">超标倍数</div><div class="data-val" style="color:#DC2626;">+2.00倍</div></div>
                         </div>
+                    </div>
 
-                        <div class="risk-mini-card level-3">
-                            <div style="display:flex; justify-content:space-between; align-items:center;">
-                                <span style="font-size:8.5px; font-weight:800; color:#B45309; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">斧头湖</span>
-                                <span style="font-size:6.5px; background:#F59E0B; color:#fff; padding:0px 3px; font-weight:700; scale:0.9;">Ⅳ类</span>
-                            </div>
-                            <div style="font-size:7px; color:#475569; margin-top:2px; transform: scale(0.95); transform-origin: left center;">TP: 0.08 | 临界预警</div>
+                    <div class="risk-large-card level-4">
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <span style="font-size:9px; font-weight:800; color:#92400E;">02. 长湖（荆门）</span>
+                            <span style="font-size:6.5px; background:#D97706; color:#fff; padding:0px 3px; font-weight:700; border-radius:1px;">橙色预警</span>
+                        </div>
+                        <div class="data-grid">
+                            <div class="data-item"><div class="data-label">当前水质</div><div class="data-val" style="color:#D97706;">Ⅴ类</div></div>
+                            <div class="data-item"><div class="data-label">总磷浓度</div><div class="data-val">0.12</div></div>
+                            <div class="data-item"><div class="data-label">超标倍数</div><div class="data-val" style="color:#D97706;">+1.40倍</div></div>
+                        </div>
+                    </div>
+
+                    <div class="risk-large-card level-3">
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <span style="font-size:9px; font-weight:800; color:#B45309;">03. 斧头湖</span>
+                            <span style="font-size:6.5px; background:#F59E0B; color:#fff; padding:0px 3px; font-weight:700; border-radius:1px;">黄色预警</span>
+                        </div>
+                        <div class="data-grid">
+                            <div class="data-item"><div class="data-label">当前水质</div><div class="data-val" style="color:#F59E0B;">Ⅳ类</div></div>
+                            <div class="data-item"><div class="data-label">总磷浓度</div><div class="data-val">0.08</div></div>
+                            <div class="data-item"><div class="data-label">超标倍数</div><div class="data-val" style="color:#F59E0B;">+0.60倍</div></div>
                         </div>
                     </div>
                 </div>
-
             </div>
+
         </div>
     </div>
     
-    <script>
-    var lake = echarts.init(document.getElementById('chart-lake'));
-    lake.setOption({
-        tooltip: { trigger: 'item', formatter: '{b}: {c}个 ({d}%)' },
-        legend: {
-            orient: 'vertical',
-            right: '2%',
-            top: 'center',
-            itemWidth: 6,
-            itemHeight: 6,
-            textStyle: { fontSize: 7.5, fontWeight: 600, color: '#475569' },
-            gap: 2
-        },
-        series: [{
-            type: 'pie',
-            radius: ['50%', '75%'],
-            center: ['40%', '50%'],
-            data: [
-                { value: 8, name: 'Ⅱ类', itemStyle: { color: '#059669' } },
-                { value: 7, name: 'Ⅲ类', itemStyle: { color: '#10B981' } },
-                { value: 4, name: 'Ⅳ类', itemStyle: { color: '#F59E0B' } },
-                { value: 3, name: 'Ⅴ类', itemStyle: { color: '#F97316' } },
-                { value: 2, name: '劣Ⅴ类', itemStyle: { color: '#DC2626' } }
-            ],
-            label: { show: false }
-        }],
-        backgroundColor: 'transparent'
-    });
-    window.addEventListener('resize', function(){ lake.resize(); });
-    </script>
     <div class="ft"><span>2026年5月生态环境月度专报</span><span>提示：仅供汇报使用</span></div>
 </div>
 </body>

@@ -19,7 +19,7 @@
         /* 预警卡片内容垂直居中 */
         .warning-col .warning-card { justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,.03); }
     </style>
-</head>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script></head>
 <body>
 <div class="slide-container">
     <div class="ppt-header">
@@ -29,94 +29,103 @@
 
     <div class="core-bar">▎ 2026年1-5月，全省实测167个国控断面，其中Ⅰ-Ⅲ类152个，劣Ⅴ类9个；累计实测333个省控断面，其中Ⅰ-Ⅲ类312个，劣Ⅴ类9个。</div>
 
-    <div class="bd bd-horizontal">
+    <div class="bd" style="flex-direction:column;gap:8px;">
 
-        <div class="kpi-row" style="margin-bottom: 0;">
-            <div class="kpi-card" style="border-top-color: #2563EB;">
-                <div class="kpi-label" style="color: #2563EB;">国控累计达标率</div>
-                <div class="kpi-value" style="color: #0F172A; font-size: 26px !important;">87.26%</div>
-                <div style="font-size: 9px; color: #64748B; margin-top: 4px;">167个断面1-5月拉通</div>
-            </div>
-            <div class="kpi-card" style="border-top-color: #059669;">
-                <div class="kpi-label" style="color: #059669;">省控累计达标率</div>
-                <div class="kpi-value" style="color: #0F172A; font-size: 26px !important;">93.41%</div>
-                <div style="font-size: 9px; color: #64748B; margin-top: 4px;">334个断面1-5月拉通</div>
-            </div>
-            <div class="kpi-card" style="border-top-color: #D97706;">
-                <div class="kpi-label" style="color: #D97706;">当月水质指数</div>
-                <div class="kpi-value" style="color: #0F172A; font-size: 26px !important;">3.97</div>
-                <div style="font-size: 9px; color: #64748B; margin-top: 4px;">较上月呈现微幅波动</div>
-            </div>
-            <div class="kpi-card" style="border-top-color: #8B5CF6;">
-                <div class="kpi-label" style="color: #8B5CF6;">预警断面总数</div>
-                <div class="kpi-value" style="color: #0F172A; font-size: 26px !important;">13 个</div>
-                <div style="font-size: 9px; color: #64748B; margin-top: 4px;">需启动专项拉网攻坚</div>
+    <div class="kpi-row" style="margin-bottom: 0;flex-shrink:0;">
+        <div class="kpi-card" style="border-top-color: #2563EB;">
+            <div class="kpi-label" style="color: #2563EB;">国控累计达标率</div>
+            <div class="kpi-value" style="color: #0F172A; font-size: 26px !important;">87.26%</div>
+            <div style="font-size: 9px; color: #64748B; margin-top: 4px;">167个断面1-5月统计</div>
+            <div style="display:flex;gap:10px;margin-top:3px;font-size:9px;justify-content:center;">
+                <span style="color:#64748B;">同比 <span style="color:#DC2626;font-weight:700;">↓0.8%</span></span>
+                <span style="color:#64748B;">环比 <span style="color:#059669;font-weight:700;">↑0.3%</span></span>
             </div>
         </div>
-
-        <div class="table-box full-table" style="flex-shrink: 0;">
-            <table style="width: 100%;">
-                <thead>
-                <tr>
-                    <th>考核级别</th>
-                    <th>测点总数</th>
-                    <th>累计Ⅰ-Ⅲ类</th>
-                    <th>累计劣Ⅴ类</th>
-                    <th>当月Ⅰ-Ⅲ类</th>
-                    <th>当月劣Ⅴ类</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr>
-                    <td class="td-left">国控断面考核</td>
-                    <td>167</td>
-                    <td><span class="badge-g">152个</span></td>
-                    <td><span class="badge-r">9个</span></td>
-                    <td><span class="badge-g">144个</span></td>
-                    <td><span class="badge-r">11个</span></td>
-                </tr>
-                <tr>
-                    <td class="td-left">省控断面考核</td>
-                    <td>334</td>
-                    <td><span class="badge-g">312个</span></td>
-                    <td><span class="badge-r">9个</span></td>
-                    <td><span class="badge-g">324个</span></td>
-                    <td><span class="badge-r">11个</span></td>
-                </tr>
-                </tbody>
-            </table>
+        <div class="kpi-card" style="border-top-color: #059669;">
+            <div class="kpi-label" style="color: #059669;">省控累计达标率</div>
+            <div class="kpi-value" style="color: #0F172A; font-size: 26px !important;">93.41%</div>
+            <div style="font-size: 9px; color: #64748B; margin-top: 4px;">334个断面1-5月统计</div>
+            <div style="display:flex;gap:10px;margin-top:3px;font-size:9px;justify-content:center;">
+                <span style="color:#64748B;">同比 <span style="color:#059669;font-weight:700;">↑0.5%</span></span>
+                <span style="color:#64748B;">环比 <span style="color:#64748B;font-weight:700;">→0.0%</span></span>
+            </div>
         </div>
-
-        <div class="warning-col" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; flex: 1;">
-
-            <div class="warning-card">
-                <div class="card-loc">📍 突发劣V类</div>
-                <div class="card-det" style="font-size: 10px !important;"><strong>潜江总干渠、洪湖湖心</strong>本月突发劣Ⅴ类，是拉网攻坚重中之重。</div>
+        <div class="kpi-card" style="border-top-color: #D97706;">
+            <div class="kpi-label" style="color: #D97706;">当月水质指数</div>
+            <div class="kpi-value" style="color: #0F172A; font-size: 26px !important;">3.97</div>
+            <div style="font-size: 9px; color: #64748B; margin-top: 4px;">较上月呈现微幅波动</div>
+            <div style="display:flex;gap:10px;margin-top:3px;font-size:9px;justify-content:center;">
+                <span style="color:#64748B;">同比 <span style="color:#059669;font-weight:700;">↑0.12</span></span>
+                <span style="color:#64748B;">环比 <span style="color:#D97706;font-weight:700;">↓0.08</span></span>
             </div>
-
-            <div class="warning-card">
-                <div class="card-loc">📍 连续超标</div>
-                <div class="card-det" style="font-size: 10px !important;"><strong>潜江总干渠、洪湖湖心</strong>已连续超标三个月，需重点关注。</div>
-            </div>
-
-            <div class="warning-card blue-card">
-                <div class="card-loc">📍 指标反弹</div>
-                <div class="card-det" style="font-size: 10px !important;"><strong>洪湖湖心(省控)</strong>总磷实测0.15mg/L，建议列入督办清单并启动专项攻坚。</div>
-            </div>
-
-            <div class="warning-card blue-card">
-                <div class="card-loc">📍 风险市州</div>
-                <div class="card-det" style="font-size: 10px !important;"><strong>孝感、荆门、神农架</strong>断面超标比例居前三位，面临较大预警压力。</div>
-            </div>
-
         </div>
-
+        <div class="kpi-card" style="border-top-color: #8B5CF6;">
+            <div class="kpi-label" style="color: #8B5CF6;">预警断面总数</div>
+            <div class="kpi-value" style="color: #0F172A; font-size: 26px !important;">13 个</div>
+            <div style="font-size: 9px; color: #64748B; margin-top: 4px;">需启动专项拉网攻坚</div>
+            <div style="display:flex;gap:10px;margin-top:3px;font-size:9px;justify-content:center;">
+                <span style="color:#64748B;">同比 <span style="color:#DC2626;font-weight:700;">↑2个</span></span>
+                <span style="color:#64748B;">环比 <span style="color:#059669;font-weight:700;">↓1个</span></span>
+            </div>
+        </div>
     </div>
 
-    <div class="ft">
+    <div id="chart-trend" style="flex:1;min-height:0;"></div>
+
+    <div style="display:flex;gap:10px;flex-shrink:0;">
+        <div class="warning-card" style="padding:8px 12px!important;justify-content:center;flex:1;">
+            <div class="card-loc" style="font-size:9px!important;">&#x1F4CD; 突发劣V类</div>
+            <div class="card-det" style="font-size:9px!important;"><strong>潜江总干渠、洪湖湖心</strong>本月突发劣Ⅴ类</div>
+        </div>
+        <div class="warning-card" style="padding:8px 12px!important;justify-content:center;flex:1;">
+            <div class="card-loc" style="font-size:9px!important;">&#x1F4CD; 连续超标</div>
+            <div class="card-det" style="font-size:9px!important;"><strong>潜江总干渠、洪湖湖心</strong>已连续超标三个月</div>
+        </div>
+        <div class="warning-card blue-card" style="padding:8px 12px!important;justify-content:center;flex:1;">
+            <div class="card-loc" style="font-size:9px!important;">&#x1F4CD; 指标反弹</div>
+            <div class="card-det" style="font-size:9px!important;"><strong>洪湖湖心(省控)</strong>总磷0.15mg/L，建议督办</div>
+        </div>
+        <div class="warning-card blue-card" style="padding:8px 12px!important;justify-content:center;flex:1;">
+            <div class="card-loc" style="font-size:9px!important;">&#x1F4CD; 风险市州</div>
+            <div class="card-det" style="font-size:9px!important;"><strong>孝感、荆门、神农架</strong>超标比例居前三位</div>
+        </div>
+    </div>
+
+</div><div class="ft">
         <span>2026年5月生态环境月度专报</span>
         <span>提示：仅供汇报使用</span>
     </div>
 </div>
-</body>
+<script>
+var months = ["1\u6708","2\u6708","3\u6708","4\u6708","5\u6708"];
+var c = echarts.init(document.getElementById("chart-trend"));
+c.setOption({
+    tooltip:{trigger:"axis",formatter:function(p){var h=p[0].axisValue+"<br/>";p.forEach(function(i){h+=i.marker+i.seriesName+": "+i.value+"%<br/>";});return h;}},
+    legend:{data:["\u56fd\u63a7 I-III\u7c7b\u6bd4\u4f8b","\u7701\u63a7 I-III\u7c7b\u6bd4\u4f8b"],top:0,right:0,textStyle:{fontSize:9,color:'#334155',fontWeight:600},itemWidth:14,itemHeight:8},
+    grid:{left:40,right:20,top:28,bottom:20},
+    xAxis:{type:"category",data:months,axisLabel:{fontSize:10,fontWeight:700,color:'#1E293B'},axisLine:{lineStyle:{color:"#CBD5E1"}}},
+    yAxis:{type:"value",min:80,max:96,splitLine:{lineStyle:{color:"#E2E8F0",type:"dashed"}},axisLabel:{fontSize:9,color:'#334155',fontWeight:600,formatter:"{value}%"}},
+    series:[
+        {name:"\u56fd\u63a7 I-III\u7c7b\u6bd4\u4f8b",type:"line",data:[86.2,86.8,87.1,87.0,87.3],smooth:true,lineStyle:{color:"#2563EB",width:2.5},
+         areaStyle:{color:{type:"linear",x:0,y:0,x2:0,y2:1,colorStops:[{offset:0,color:"rgba(37,99,235,0.2)"},{offset:1,color:"rgba(37,99,235,0.02)"}]}},
+         symbol:"circle",symbolSize:6,itemStyle:{color:"#2563EB"}},
+        {name:"\u7701\u63a7 I-III\u7c7b\u6bd4\u4f8b",type:"line",data:[92.1,92.5,93.0,92.8,93.4],smooth:true,lineStyle:{color:"#059669",width:2.5},
+         areaStyle:{color:{type:"linear",x:0,y:0,x2:0,y2:1,colorStops:[{offset:0,color:"rgba(5,150,105,0.2)"},{offset:1,color:"rgba(5,150,105,0.02)"}]}},
+         symbol:"circle",symbolSize:6,itemStyle:{color:"#059669"}}
+    ],
+    backgroundColor:"transparent"
+});
+window.addEventListener("resize",function(){c.resize();});
+</script></body>
 </html>
+
+
+
+
+
+
+
+
+
+
+

@@ -5,33 +5,80 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>湖北省水生态环境形势分析 - 目录</title>
 <link rel="stylesheet" href="ppt-style.css">
+<style>
+/* 目录项目区域 */
+.toc-body {
+  flex: 1;
+  padding: 16px 36px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 10px;
+  position: relative;
+  z-index: 1;
+}
+
+/* 覆盖全局 .toc-item 样式 */
+.toc-item {
+  gap: 12px !important;
+  padding: 11px 20px !important;
+}
+
+/* 页码标 */
+.toc-page-num {
+  margin-left: auto;
+  font-size: 10px;
+  font-weight: 600;
+  color: rgba(255,255,255,.3);
+  letter-spacing: .5px;
+  flex-shrink: 0;
+  padding-left: 12px;
+}
+
+/* 底部水波纹（仿封面） */
+.toc-container::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 28%;
+  background: linear-gradient(180deg, rgba(5,150,105,0) 0%, rgba(5,150,105,.04) 40%, rgba(5,150,105,.06) 100%);
+  clip-path: polygon(0 55%, 3% 50%, 6% 60%, 9% 48%, 12% 62%, 15% 44%, 18% 66%, 21% 46%, 24% 64%, 27% 50%, 30% 60%, 33% 46%, 36% 62%, 39% 50%, 42% 58%, 45% 44%, 48% 64%, 51% 48%, 54% 60%, 57% 42%, 60% 66%, 63% 48%, 66% 62%, 69% 50%, 72% 58%, 75% 44%, 78% 64%, 81% 48%, 84% 60%, 87% 46%, 90% 62%, 93% 44%, 96% 66%, 100% 55%, 100% 100%, 0 100%);
+  pointer-events: none;
+}
+</style>
 </head>
 <body>
 
-<div class="toc-container">
+<div class="toc-container" style="position:relative;">
+
+    
     <div class="ppt-header">
-        <span class="ppt-title">目录 / 分析框架</span>
+        <span class="ppt-title">目 录</span>
         <span class="nav-page-num">P02</span>
     </div>
     
-    <div style="flex:1;padding:20px 36px;display:flex;flex-direction:column;justify-content:center;">
-        <div class="toc-title">分 析 框 架</div>
-        <div style="display:flex;flex-direction:column;gap:10px;" id="toc-container"></div>
-    </div>
-    
-    <div class="ft" style="border-top-color:rgba(255,255,255,.1);background:rgba(0,0,0,.1);color:rgba(255,255,255,.5);">
+
+    <!-- 目录主体：5 个板块 -->
+    <div class="toc-body" id="toc-container"></div>
+
+    <!-- 底部：简化落款 -->
+    <div class="ft" style="border-top-color:rgba(255,255,255,.08);background:rgba(0,0,0,.08);color:rgba(255,255,255,.35);position:relative;z-index:1;">
         <span>2026年5月生态环境月度专报</span>
-        <span>提示：仅供汇报使用</span>
+        <span>仅供汇报使用</span>
     </div>
+
+    <!-- 底部水波纹装饰 -->
 </div>
 
 <script>
 var ITS = [
-    ["排名情况", "国/省控断面排位 · 波动态势 · 17市州详情"],
-    ["全省态势", "市州达标率 · 风险预警 · 月度趋势 · 污染因子"],
-    ["流域湖库", "五大水系概览 · 12片区详情 · 重点湖库专项监测"],
-    ["排口信息", "排污口排查整治 · 不达标清单 · 溯源预警 · 黑臭水体"],
-    ["压实举措", "督办交办 · 资金调度 · 饮用水源 · 考核排名"]
+    ["排名情况", "国/省控断面排位 · 波动态势 · 17市州详情",       "03-05"],
+    ["全省态势", "市州达标率 · 风险预警 · 月度趋势 · 污染因子",  "06-10"],
+    ["流域湖库", "五大水系概览 · 12片区详情 · 重点湖库专项监测", "11-20"],
+    ["排口信息", "排污口排查整治 · 不达标清单 · 溯源预警 · 黑臭水体", "21-26"],
+    ["压实举措", "督办交办 · 资金调度 · 饮用水源 · 考核排名",   "27-32"]
 ];
 var c = document.getElementById("toc-container");
 var h = "";
@@ -41,10 +88,18 @@ for (var i = 0; i < ITS.length; i++) {
          '<div style="display:flex;flex-direction:column;gap:2px;">' +
          '<span class="item-main">' + ITS[i][0] + '</span>' +
          '<span class="item-sub">' + ITS[i][1] + '</span>' +
-         '</div></div>';
+         '</div>' +
+         '<span class="toc-page-num">' + ITS[i][2] + '</span>' +
+         '</div>';
 }
 c.innerHTML = h;
 </script>
 
 </body>
 </html>
+
+
+
+
+
+

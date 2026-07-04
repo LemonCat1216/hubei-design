@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>排名情况 - 全省国控断面水环境质量排位（累计月）</title>
 <link rel="stylesheet" href="ppt-style.css">
-</head>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script></head>
 <body>
 <div class="slide-container">
     <div class="ppt-header"><span class="ppt-title">排名情况：全省国控断面水环境质量排位（累计月）</span><span class="nav-page-num">P03</span></div>
@@ -13,10 +13,10 @@
     <div class="bd">
         <div style="flex:1;display:flex;flex-direction:column;gap:10px;overflow:hidden;">
             <div class="kpi-row">
-                <div class="kpi-card" style="border-top-color:#2563EB;"><div class="kpi-label" style="color:#2563EB;">全国排名</div><div class="kpi-value" style="color:#2563EB;">第12位</div></div>
-                <div class="kpi-card" style="border-top-color:#059669;"><div class="kpi-label" style="color:#059669;">长江经济带</div><div class="kpi-value" style="color:#059669;">第5位</div></div>
-                <div class="kpi-card" style="border-top-color:#059669;"><div class="kpi-label" style="color:#059669;">中部六省</div><div class="kpi-value" style="color:#059669;">第2位</div></div>
-                <div class="kpi-card" style="border-top-color:#D97706;"><div class="kpi-label" style="color:#D97706;">累计达标率</div><div class="kpi-value" style="color:#0F172A;">87.6%</div></div>
+                <div class="kpi-card" style="border-top-color:#2563EB;"><div class="kpi-label" style="color:#2563EB;">全国排名</div><div class="kpi-value" style="color:#2563EB;">第12位</div><div style="display:flex;gap:10px;margin-top:3px;font-size:9px;justify-content:center;"><span style="color:#64748B;">同比 <span style="color:#64748B;font-weight:700;">持平</span></span><span style="color:#64748B;">环比 <span style="color:#64748B;font-weight:700;">持平</span></span></div></div>
+                <div class="kpi-card" style="border-top-color:#059669;"><div class="kpi-label" style="color:#059669;">长江经济带</div><div class="kpi-value" style="color:#059669;">第5位</div><div style="display:flex;gap:10px;margin-top:3px;font-size:9px;justify-content:center;"><span style="color:#64748B;">同比 <span style="color:#059669;font-weight:700;">上升1位</span></span><span style="color:#64748B;">环比 <span style="color:#64748B;font-weight:700;">持平</span></span></div></div>
+                <div class="kpi-card" style="border-top-color:#059669;"><div class="kpi-label" style="color:#059669;">中部六省</div><div class="kpi-value" style="color:#059669;">第2位</div><div style="display:flex;gap:10px;margin-top:3px;font-size:9px;justify-content:center;"><span style="color:#64748B;">同比 <span style="color:#059669;font-weight:700;">上升1位</span></span><span style="color:#64748B;">环比 <span style="color:#64748B;font-weight:700;">持平</span></span></div></div>
+                <div class="kpi-card" style="border-top-color:#D97706;"><div class="kpi-label" style="color:#D97706;">累计达标率</div><div class="kpi-value" style="color:#0F172A;">87.6%</div><div style="display:flex;gap:10px;margin-top:3px;font-size:9px;justify-content:center;"><span style="color:#64748B;">同比 <span style="color:#DC2626;font-weight:700;">↓0.5%</span></span><span style="color:#64748B;">环比 <span style="color:#059669;font-weight:700;">↑0.3%</span></span></div></div>
             </div>
             <div class="chart-wrapper">
                 <div class="chart-header">
@@ -29,7 +29,7 @@
                 </div>
                 <div class="chart-container" id="chart1"></div>
             </div>
-            <div class="ex-info"><strong>数据说明：</strong>累计月指标为1-5月拉通统计，数据源来自生态环境部。</div>
+            <div class="ex-info"><strong>数据说明：</strong>达标线参考省级考核目标85%，数据源来自全省167个国控断面1-5月累计统计。</div>
         </div>
     </div>
     <div class="ft"><span>2026年5月生态环境月度专报</span><span>提示：仅供汇报使用</span></div>
@@ -41,5 +41,31 @@ d.forEach(function(p){var t=p.i+p.ii+p.iii,hl=p.h?" highlight":"";
 h+='<div class="bar-group'+hl+'"><div class="stacked-bar" style="height:'+Math.round(t*.8)+'px;"><div class="bar-seg cat1" style="height:'+(p.i/t*100)+'%;"></div><div class="bar-seg cat2" style="height:'+(p.ii/t*100)+'%;"></div><div class="bar-seg cat3" style="height:'+(p.iii/t*100)+'%;"></div></div><div class="prov-name">'+p.n+'</div></div>';});
 c.innerHTML=h;
 </script>
-</body>
+<script>
+var cityData = [
+    {n:"\u795e\u519c\u67b6\u6797\u533a",v:100},{n:"\u9102\u5dde\u5e02",v:98.2},{n:"\u5341\u5830\u5e02",v:96.8},{n:"\u6069\u65bd\u5dde",v:95.5},
+    {n:"\u5b9c\u660c\u5e02",v:93.8},{n:"\u54b8\u5b81\u5e02",v:92.1},{n:"\u9ec4\u77f3\u5e02",v:90.4},{n:"\u968f\u5dde\u5e02",v:89.5},
+    {n:"\u8944\u9633\u5e02",v:88.2},{n:"\u8346\u95e8\u5e02",v:87.2},{n:"\u6b66\u6c49\u5e02",v:86.8},{n:"\u9ec4\u5188\u5e02",v:85.5},
+    {n:"\u5b5d\u611f\u5e02",v:82.4},{n:"\u4ed9\u6843\u5e02",v:80.1},{n:"\u6f5c\u6c5f\u5e02",v:78.6},{n:"\u8346\u5dde\u5e02",v:76.3},{n:"\u5929\u95e8\u5e02",v:74.5}
+];
+var c = echarts.init(document.getElementById("chart-city"));
+c.setOption({
+    grid:{left:75,right:40,top:12,bottom:8,containLabel:false},
+    xAxis:{type:"value",max:105,splitLine:{lineStyle:{color:"#E2E8F0",type:"dashed"}},axisLabel:{fontSize:8,color:'#334155'}},
+    yAxis:{type:"category",data:cityData.map(function(d){return d.n;}).reverse(),axisLabel:{fontSize:9,fontWeight:600,color:"#334155"},axisTick:{show:false},axisLine:{show:false}},
+    series:[{
+        type:"bar",data:cityData.map(function(d){return {value:d.v,itemStyle:{color:d.v>=85?"#10B981":"#EF4444"}};}).reverse(),
+        barWidth:10,label:{show:true,position:"right",fontSize:9,fontWeight:700,formatter:function(p){return p.value.toFixed(1)+"%";}},
+        markLine:{silent:true,data:[{xAxis:85,label:{show:true,formatter:"\u8fbe\u6807\u7ebf 85%",fontSize:8,color:"#64748B",position:"end"},lineStyle:{color:"#94A3B8",type:"dashed",width:1}}]}
+    }],
+    backgroundColor:"transparent"
+});
+window.addEventListener("resize",function(){c.resize();});
+</script></body>
 </html>
+
+
+
+
+
+

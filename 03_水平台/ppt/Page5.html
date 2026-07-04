@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>全省态势 - 市州省控断面当前月情况</title>
+    <title>全省态势 - 市州省控断面达标详情（5月当月）</title>
     <link rel="stylesheet" href="ppt-style.css">
     <style>
         /* === 核心修复：17行满载表格极限压缩方案 === */
@@ -25,8 +25,8 @@
 <body>
 <div class="slide-container">
     <div class="ppt-header">
-        <span class="ppt-title">全省态势：市州省控断面当前月情况（17市州）</span>
-        <span class="nav-page-num">P06</span>
+        <span class="ppt-title">全省态势：市州省控断面达标详情（5月当月）</span>
+        <span class="nav-page-num">P05</span>
     </div>
 
     <div class="core-bar">▎ 2026年5月，全省省控断面12个地市与目标存在差距，缺口集中在荆州市(18个)、武汉市(14个)、孝感市(10个)、潜江市(8个)。</div>
@@ -39,10 +39,10 @@
             <div class="kpi-block" style="padding: 12px 14px !important;">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
                     <div class="kpi-title">省控Ⅰ-Ⅲ类比例（累计均值）</div>
-                    <span style="font-size: 8px; background: #EFF6FF; color: #1E40AF; padding: 1px 4px; border-radius: 3px; font-weight: 700;">总体平稳</span>
+                    <span style="font-size: 8px; background: #EFF6FF; color: #1E40AF; padding: 1px 4px; border-radius: 0; font-weight: 700;">总体平稳</span>
                 </div>
                 <div class="kpi-num" style="font-size: 26px !important; margin: 2px 0 4px 0;">84.8%</div>
-                <div class="progress-bar" style="background: #E2E8F0; height: 5px; border-radius: 3px; overflow: hidden; margin-bottom: 4px;">
+                <div class="progress-bar" style="background: #E2E8F0; height: 5px; border-radius: 0; overflow: hidden; margin-bottom: 4px;">
                     <div class="progress-fill" style="width: 84.8%; background: #2563EB; height: 100%;"></div>
                 </div>
                 <div class="kpi-sub">数据口径：1-5月全省17市州拉通统计均值</div>
@@ -75,41 +75,86 @@
         </div>
 
         <!-- 右侧分栏：强制高度 100%，包裹表格 -->
-        <div class="right-column" style="height: 100%;">
-            <div class="table-box fit-table" style="height: 100%; overflow: hidden; display: flex; flex-direction: column;">
-                <table style="width: 100%; flex: 1;">
-                    <thead>
-                    <tr>
-                        <th>市州</th>
-                        <th>考核断面</th>
-                        <th>1-5月优良比</th>
-                        <th>目标</th>
-                        <th>差距</th>
-                        <th>缺口数</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr><td class="td-left">神农架林区</td><td>8</td><td>100%</td><td>100%</td><td><span class="badge-g">0.0</span></td><td>0</td></tr>
-                    <tr><td class="td-left">鄂州市</td><td>18</td><td>100%</td><td>85.7%</td><td><span class="badge-g">+14.3%</span></td><td>0</td></tr>
-                    <tr><td class="td-left">十堰市</td><td>67</td><td>97.0%</td><td>92.6%</td><td><span class="badge-g">+4.4%</span></td><td>0</td></tr>
-                    <tr><td class="td-left">宜昌市</td><td>32</td><td>93.8%</td><td>90.6%</td><td><span class="badge-g">+3.2%</span></td><td>2</td></tr>
-                    <tr><td class="td-left">襄阳市</td><td>28</td><td>92.9%</td><td>89.3%</td><td><span class="badge-g">+3.6%</span></td><td>4</td></tr>
-                    <tr><td class="td-left">黄石市</td><td>22</td><td>90.9%</td><td>86.4%</td><td><span class="badge-g">+4.5%</span></td><td>0</td></tr>
-                    <tr><td class="td-left">武汉市</td><td>52</td><td>86.5%</td><td>82.7%</td><td><span class="badge-g">+3.8%</span></td><td>14</td></tr>
-                    <tr><td class="td-left">黄冈市</td><td>50</td><td>86.0%</td><td>96.2%</td><td><span class="badge-r">-10.2%</span></td><td>7</td></tr>
-                    <tr><td class="td-left">咸宁市</td><td>18</td><td>83.3%</td><td>88.9%</td><td><span class="badge-r">-5.6%</span></td><td>6</td></tr>
-                    <tr><td class="td-left">恩施州</td><td>20</td><td>80.0%</td><td>85.0%</td><td><span class="badge-r">-5.0%</span></td><td>1</td></tr>
-                    <tr><td class="td-left">荆门市</td><td>16</td><td>75.0%</td><td>81.3%</td><td><span class="badge-r">-6.3%</span></td><td>6</td></tr>
-                    <tr><td class="td-left">孝感市</td><td>40</td><td>75.0%</td><td>96.2%</td><td><span class="badge-r">-21.2%</span></td><td>10</td></tr>
-                    <tr><td class="td-left">荆州市</td><td>45</td><td>60.0%</td><td>84.4%</td><td><span class="badge-r">-24.4%</span></td><td>18</td></tr>
-                    <tr><td class="td-left">随州市</td><td>12</td><td>58.3%</td><td>83.3%</td><td><span class="badge-r">-25.0%</span></td><td>5</td></tr>
-                    <tr><td class="td-left">潜江市</td><td>14</td><td>57.1%</td><td>78.6%</td><td><span class="badge-r">-21.5%</span></td><td>8</td></tr>
-                    <tr><td class="td-left">仙桃市</td><td>8</td><td>50.0%</td><td>60.0%</td><td><span class="badge-r">-10.0%</span></td><td>4</td></tr>
-                    <tr><td class="td-left">天门市</td><td>13</td><td>46.2%</td><td>87.5%</td><td><span class="badge-r">-41.3%</span></td><td>7</td></tr>
-                    </tbody>
-                </table>
-            </div>
+        <div class="right-column" style="height:100%;display:flex;flex-direction:column;gap:8px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-shrink:0;">
+        <div style="font-size:12px;font-weight:700;color:#1E293B;">当月省控断面达标热力图（17市州）</div>
+        <div style="display:flex;gap:8px;font-size:8px;align-items:center;">
+            <span><span style="display:inline-block;width:8px;height:8px;background:#10B981;margin-right:2px;"></span>达标</span>
+            <span><span style="display:inline-block;width:8px;height:8px;background:#F59E0B;margin-right:2px;"></span>偏低</span>
+            <span><span style="display:inline-block;width:8px;height:8px;background:#F97316;margin-right:2px;"></span>差距大</span>
+            <span><span style="display:inline-block;width:8px;height:8px;background:#DC2626;margin-right:2px;"></span>严重</span>
         </div>
+    </div>
+    <div class="heatmap-grid" style="display:flex;flex-wrap:wrap;gap:6px;flex:1;align-content:flex-start;">        <div style="flex:0 0 calc(25% - 5px);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px 4px;background:#ECFDF5;border-left:3px solid #10B981;border-radius:4px;gap:2px;">
+            <span style="font-size:12px;font-weight:700;color:#1E293B;">神农架</span>
+            <span style="font-size:9px;color:#475569;">100%</span>
+            <span style="font-size:11px;font-weight:800;color:#10B981;">缺口 0</span>
+        </div>        <div style="flex:0 0 calc(25% - 5px);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px 4px;background:#ECFDF5;border-left:3px solid #10B981;border-radius:4px;gap:2px;">
+            <span style="font-size:12px;font-weight:700;color:#1E293B;">鄂州</span>
+            <span style="font-size:9px;color:#475569;">100%</span>
+            <span style="font-size:11px;font-weight:800;color:#10B981;">缺口 0</span>
+        </div>        <div style="flex:0 0 calc(25% - 5px);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px 4px;background:#ECFDF5;border-left:3px solid #10B981;border-radius:4px;gap:2px;">
+            <span style="font-size:12px;font-weight:700;color:#1E293B;">十堰</span>
+            <span style="font-size:9px;color:#475569;">97%</span>
+            <span style="font-size:11px;font-weight:800;color:#10B981;">缺口 0</span>
+        </div>        <div style="flex:0 0 calc(25% - 5px);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px 4px;background:#ECFDF5;border-left:3px solid #10B981;border-radius:4px;gap:2px;">
+            <span style="font-size:12px;font-weight:700;color:#1E293B;">黄石</span>
+            <span style="font-size:9px;color:#475569;">90.9%</span>
+            <span style="font-size:11px;font-weight:800;color:#10B981;">缺口 0</span>
+        </div>        <div style="flex:0 0 calc(25% - 5px);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px 4px;background:#FFFBEB;border-left:3px solid #F59E0B;border-radius:4px;gap:2px;">
+            <span style="font-size:12px;font-weight:700;color:#1E293B;">宜昌</span>
+            <span style="font-size:9px;color:#475569;">93.8%</span>
+            <span style="font-size:11px;font-weight:800;color:#F59E0B;">缺口 2</span>
+        </div>        <div style="flex:0 0 calc(25% - 5px);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px 4px;background:#FFF7ED;border-left:3px solid #F97316;border-radius:4px;gap:2px;">
+            <span style="font-size:12px;font-weight:700;color:#1E293B;">襄阳</span>
+            <span style="font-size:9px;color:#475569;">92.9%</span>
+            <span style="font-size:11px;font-weight:800;color:#F97316;">缺口 4</span>
+        </div>        <div style="flex:0 0 calc(25% - 5px);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px 4px;background:#FEF2F2;border-left:3px solid #DC2626;border-radius:4px;gap:2px;">
+            <span style="font-size:12px;font-weight:700;color:#1E293B;">武汉</span>
+            <span style="font-size:9px;color:#475569;">86.5%</span>
+            <span style="font-size:11px;font-weight:800;color:#DC2626;">缺口 14</span>
+        </div>        <div style="flex:0 0 calc(25% - 5px);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px 4px;background:#FFF7ED;border-left:3px solid #F97316;border-radius:4px;gap:2px;">
+            <span style="font-size:12px;font-weight:700;color:#1E293B;">黄冈</span>
+            <span style="font-size:9px;color:#475569;">86%</span>
+            <span style="font-size:11px;font-weight:800;color:#F97316;">缺口 7</span>
+        </div>        <div style="flex:0 0 calc(25% - 5px);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px 4px;background:#FFF7ED;border-left:3px solid #F97316;border-radius:4px;gap:2px;">
+            <span style="font-size:12px;font-weight:700;color:#1E293B;">咸宁</span>
+            <span style="font-size:9px;color:#475569;">83.3%</span>
+            <span style="font-size:11px;font-weight:800;color:#F97316;">缺口 6</span>
+        </div>        <div style="flex:0 0 calc(25% - 5px);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px 4px;background:#FFFBEB;border-left:3px solid #F59E0B;border-radius:4px;gap:2px;">
+            <span style="font-size:12px;font-weight:700;color:#1E293B;">恩施</span>
+            <span style="font-size:9px;color:#475569;">80%</span>
+            <span style="font-size:11px;font-weight:800;color:#F59E0B;">缺口 1</span>
+        </div>        <div style="flex:0 0 calc(25% - 5px);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px 4px;background:#FFF7ED;border-left:3px solid #F97316;border-radius:4px;gap:2px;">
+            <span style="font-size:12px;font-weight:700;color:#1E293B;">荆门</span>
+            <span style="font-size:9px;color:#475569;">75%</span>
+            <span style="font-size:11px;font-weight:800;color:#F97316;">缺口 6</span>
+        </div>        <div style="flex:0 0 calc(25% - 5px);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px 4px;background:#FEF2F2;border-left:3px solid #DC2626;border-radius:4px;gap:2px;">
+            <span style="font-size:12px;font-weight:700;color:#1E293B;">孝感</span>
+            <span style="font-size:9px;color:#475569;">75%</span>
+            <span style="font-size:11px;font-weight:800;color:#DC2626;">缺口 10</span>
+        </div>        <div style="flex:0 0 calc(25% - 5px);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px 4px;background:#FFF7ED;border-left:3px solid #F97316;border-radius:4px;gap:2px;">
+            <span style="font-size:12px;font-weight:700;color:#1E293B;">随州</span>
+            <span style="font-size:9px;color:#475569;">58.3%</span>
+            <span style="font-size:11px;font-weight:800;color:#F97316;">缺口 5</span>
+        </div>        <div style="flex:0 0 calc(25% - 5px);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px 4px;background:#FEF2F2;border-left:3px solid #DC2626;border-radius:4px;gap:2px;">
+            <span style="font-size:12px;font-weight:700;color:#1E293B;">潜江</span>
+            <span style="font-size:9px;color:#475569;">57.1%</span>
+            <span style="font-size:11px;font-weight:800;color:#DC2626;">缺口 8</span>
+        </div>        <div style="flex:0 0 calc(25% - 5px);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px 4px;background:#FEF2F2;border-left:3px solid #DC2626;border-radius:4px;gap:2px;">
+            <span style="font-size:12px;font-weight:700;color:#1E293B;">荆州</span>
+            <span style="font-size:9px;color:#475569;">60%</span>
+            <span style="font-size:11px;font-weight:800;color:#DC2626;">缺口 18</span>
+        </div>        <div style="flex:0 0 calc(25% - 5px);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px 4px;background:#FFF7ED;border-left:3px solid #F97316;border-radius:4px;gap:2px;">
+            <span style="font-size:12px;font-weight:700;color:#1E293B;">仙桃</span>
+            <span style="font-size:9px;color:#475569;">50%</span>
+            <span style="font-size:11px;font-weight:800;color:#F97316;">缺口 4</span>
+        </div>        <div style="flex:0 0 calc(25% - 5px);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px 4px;background:#FFF7ED;border-left:3px solid #F97316;border-radius:4px;gap:2px;">
+            <span style="font-size:12px;font-weight:700;color:#1E293B;">天门</span>
+            <span style="font-size:9px;color:#475569;">46.2%</span>
+            <span style="font-size:11px;font-weight:800;color:#F97316;">缺口 7</span>
+        </div>    </div>
+</div>
     </div>
 
     <div class="ft">
@@ -119,3 +164,7 @@
 </div>
 </body>
 </html>
+
+
+
+

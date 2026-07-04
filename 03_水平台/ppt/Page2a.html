@@ -1,0 +1,127 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>核心研判 - 月度核心判断</title>
+  <!-- 完美引入专报核心样式 -->
+  <link rel="stylesheet" href="ppt-style.css">
+  <style>
+    /* 严格沿用系统的弹性纵向布局 */
+    .bd-vertical {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      flex: 1;
+      overflow: hidden;
+    }
+    /* 预警卡片布局，与P04保持一致的横向弹性排列 */
+    .warning-row {
+      display: flex;
+      gap: 10px;
+      flex: 1;
+    }
+    .warning-row .warning-card {
+      flex: 1;
+      justify-content: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,.03);
+    }
+  </style>
+</head>
+<body>
+<div class="slide-container">
+  <!-- 统一的页眉规范 -->
+  <div class="ppt-header">
+    <span class="ppt-title">月度核心研判：1-5月全省水环境核心判断</span>
+    <span class="nav-page-num">P02A</span>
+  </div>
+
+  <!-- 核心结论带条 -->
+  <div class="core-bar">▎ 基于2026年1-5月全省水环境监测数据，提炼如下4项核心判断，辅助领导快速掌握全局态势。</div>
+
+  <!-- 主体区域：采用全套标准KPI卡片与预警矩阵组合 -->
+  <div class="bd bd-vertical">
+
+    <!-- 上方：全套沿用系统标准的 kpi-card 组合 -->
+    <div class="kpi-row" style="margin-bottom: 0; flex-shrink: 0;">
+      <!-- 1. 总体判断 -->
+      <div class="kpi-card" style="border-top-color: #059669;">
+        <div class="kpi-label" style="color: #059669;">Ⅰ-Ⅲ类水质比例</div>
+        <div class="kpi-value" style="color: #0F172A; font-size: 26px !important;">87.6%</div>
+        <div style="font-size: 9px; color: #64748B; margin-top: 4px;">整体水质稳中向好</div>
+        <div style="display:flex;gap:10px;margin-top:3px;font-size:9px;justify-content:center;">
+          <span style="color:#64748B;">同比 <span style="color:#64748B;font-weight:700;">持平</span></span>
+          <span style="color:#64748B;">断面数 <span style="color:#059669;font-weight:700;">167个</span></span>
+        </div>
+      </div>
+
+      <!-- 2. 突出问题 -->
+      <div class="kpi-card" style="border-top-color: #DC2626;">
+        <div class="kpi-label" style="color: #DC2626;">劣Ⅴ类断面总数</div>
+        <div class="kpi-value" style="color: #0F172A; font-size: 26px !important;">11 个</div>
+        <div style="font-size: 9px; color: #64748B; margin-top: 4px;">消劣攻坚任务艰巨</div>
+        <div style="display:flex;gap:10px;margin-top:3px;font-size:9px;justify-content:center;">
+          <span style="color:#64748B;">荆州占 <span style="color:#DC2626;font-weight:700;">4个</span></span>
+          <span style="color:#64748B;">天门占 <span style="color:#DC2626;font-weight:700;">2个</span></span>
+        </div>
+      </div>
+
+      <!-- 3. 向好趋势 -->
+      <div class="kpi-card" style="border-top-color: #2563EB;">
+        <div class="kpi-label" style="color: #2563EB;">全省 CWQI 指数</div>
+        <div class="kpi-value" style="color: #0F172A; font-size: 26px !important;">3.97</div>
+        <div style="font-size: 9px; color: #64748B; margin-top: 4px;">多地呈现持续改善</div>
+        <div style="display:flex;gap:10px;margin-top:3px;font-size:9px;justify-content:center;">
+          <span style="color:#64748B;">同比改善 <span style="color:#059669;font-weight:700;">↑0.12</span></span>
+        </div>
+      </div>
+
+      <!-- 4. 重点关注 -->
+      <div class="kpi-card" style="border-top-color: #D97706;">
+        <div class="kpi-label" style="color: #D97706;">主要超标因子</div>
+        <div class="kpi-value" style="color: #0F172A; font-size: 26px !important;">总磷 62%</div>
+        <div style="font-size: 9px; color: #64748B; margin-top: 4px;">超标断面中总磷居首</div>
+        <div style="display:flex;gap:10px;margin-top:3px;font-size:9px;justify-content:center;">
+          <span style="color:#64748B;">总磷 <span style="color:#D97706;font-weight:700;">14个</span></span>
+          <span style="color:#64748B;">氨氮 <span style="color:#D97706;font-weight:700;">7个</span></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 下方：无缝契合系统的 warning-card 深度研判矩阵 -->
+    <div class="warning-row">
+      <!-- 总体判断补充 -->
+      <div class="warning-card green-card" style="padding:10px 14px!important;">
+        <div class="card-loc">🏆 行政区域排位</div>
+        <div class="card-det">全省综合水质在<strong>全国排名第12位</strong>，长江经济带居第5位，中部六省高居第2位，整体水质维持高位稳定。</div>
+      </div>
+
+      <!-- 突出问题详情 -->
+      <div class="warning-card" style="padding:10px 14px!important;">
+        <div class="card-loc">🔴 劣Ⅴ类集中水体</div>
+        <div class="card-det">11个劣Ⅴ类断面高度集中在<strong>荆州洪湖、四湖总干渠、天门河</strong>等重点敏感水体，其余散布于潜江、孝感、荆门、仙桃。</div>
+      </div>
+
+      <!-- 向好趋势详情 -->
+      <div class="warning-card blue-card" style="padding:10px 14px!important;">
+        <div class="card-loc">📈 领跑与改善区域</div>
+        <div class="card-det"><strong>神农架林区（1.82）、鄂州、十堰</strong>CWQI指数持续保持极优，随州市同比改善明显，水质拉升显著。</div>
+      </div>
+
+      <!-- 重点关注建议 -->
+      <div class="warning-card" style="padding:10px 14px!important; border-left-color: #D97706; background: #FFFBEB; border-color: #FDE68A;">
+        <div class="card-loc" style="color: #92400E; border-bottom-color: rgba(146,64,14,.2);">⚠️ 针对性攻坚建议</div>
+        <div class="card-det"><strong>荆州、潜江</strong>总磷反弹最集中，<strong>孝感、天门</strong>氨氮问题突出，建议针对上述污染因子精准纳入下一阶段专项拉网攻坚。</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- 统一页脚 -->
+  <div class="ft">
+    <span>2026年5月生态环境月度专报</span>
+    <span>提示：仅供汇报使用</span>
+  </div>
+</div>
+</body>
+</html>

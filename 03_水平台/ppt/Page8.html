@@ -3,42 +3,121 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>全省态势 - 重点风险断面预警清单</title>
+<title>根因分析 - 重点污染因子浓度分析</title>
 <link rel="stylesheet" href="ppt-style.css">
 <style>
-.risk-table td:last-child{font-weight:600}
-.risk-high{background:#FEF2F2!important}
-.risk-med{background:#FFFBEB!important}
+    /* 调整右侧表格内部的高度，让17行数据匀称填满，保持系统精细感 */
+    .fit-table th { padding: 3px 6px !important; }
+    .fit-table td { padding: 2px 6px !important; font-size: 9px !important; }
 </style>
-</head>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script></head>
 <body>
 <div class="slide-container">
-    <div class="ppt-header"><span class="ppt-title">全省态势：重点风险断面预警清单</span><span class="nav-page-num">P08</span></div>
-    <div class="core-bar">▎ 当前全省共有23个断面处于预警状态，其中突发劣V类5个、连续超标8个、指标反弹10个。涉及武汉、荆州、孝感、潜江等8个市州。</div>
-    <div class="bd" style="flex-direction:column;gap:10px;">
-        <div class="kpi-row">
-            <div class="kpi-card" style="border-top-color:#DC2626;"><div class="kpi-label" style="color:#DC2626;">预警断面总数</div><div class="kpi-value" style="color:#DC2626;">23个</div></div>
-            <div class="kpi-card" style="border-top-color:#DC2626;"><div class="kpi-label" style="color:#DC2626;">突发劣V类</div><div class="kpi-value" style="color:#DC2626;">5个</div></div>
-            <div class="kpi-card" style="border-top-color:#D97706;"><div class="kpi-label" style="color:#D97706;">连续超标</div><div class="kpi-value" style="color:#D97706;">8个</div></div>
-            <div class="kpi-card" style="border-top-color:#2563EB;"><div class="kpi-label" style="color:#2563EB;">指标反弹</div><div class="kpi-value" style="color:#2563EB;">10个</div></div>
-        </div>
-        <div class="table-box" style="flex:1;overflow-y:auto;"><table class="risk-table">
-            <thead><tr><th>序号</th><th>断面名称</th><th>市州</th><th>级别</th><th>预警类型</th><th>超标因子</th><th>实测值</th><th>标准值</th><th>连续月</th><th>建议措施</th></tr></thead>
-            <tbody>
-                <tr class="risk-high"><td>1</td><td class="td-left">潜江总干渠</td><td>潜江</td><td>国控</td><td><span class="badge-r">突发劣V</span></td><td>氨氮</td><td>4.2</td><td>2.0</td><td>1</td><td>溯源排查</td></tr>
-                <tr class="risk-high"><td>2</td><td class="td-left">洪湖湖心</td><td>荆州</td><td>省控</td><td><span class="badge-r">突发劣V</span></td><td>总磷</td><td>0.15</td><td>0.05</td><td>3</td><td>总磷专项攻坚</td></tr>
-                <tr class="risk-high"><td>3</td><td class="td-left">长湖荆门</td><td>荆门</td><td>省控</td><td><span class="badge-r">突发劣V</span></td><td>总磷</td><td>0.12</td><td>0.05</td><td>2</td><td>面源污染治理</td></tr>
-                <tr class="risk-high"><td>4</td><td class="td-left">府河孝感</td><td>孝感</td><td>国控</td><td><span class="badge-r">突发劣V</span></td><td>氨氮</td><td>3.8</td><td>2.0</td><td>1</td><td>排污口溯源</td></tr>
-                <tr class="risk-high"><td>5</td><td class="td-left">天门河</td><td>天门</td><td>国控</td><td><span class="badge-r">突发劣V</span></td><td>氨氮</td><td>3.5</td><td>2.0</td><td>2</td><td>管网覆盖排查</td></tr>
-                <tr class="risk-med"><td>6</td><td class="td-left">四湖总干渠</td><td>荆州</td><td>国控</td><td><span class="badge-y">连续超标</span></td><td>COD</td><td>28</td><td>20</td><td>4</td><td>工业排放管控</td></tr>
-                <tr class="risk-med"><td>7</td><td class="td-left">东荆河</td><td>潜江</td><td>国控</td><td><span class="badge-y">连续超标</span></td><td>氨氮</td><td>2.8</td><td>2.0</td><td>3</td><td>生活污水截污</td></tr>
-                <tr class="risk-med"><td>8</td><td class="td-left">竹皮河</td><td>荆门</td><td>省控</td><td><span class="badge-y">连续超标</span></td><td>氨氮</td><td>2.5</td><td>2.0</td><td>3</td><td>管网修复</td></tr>
-                <tr><td>9</td><td class="td-left">倒水新洲</td><td>武汉</td><td>国控</td><td><span style="color:#2563EB;font-weight:700;">指标反弹</span></td><td>总磷</td><td>0.08</td><td>0.05</td><td>2</td><td>加强监测</td></tr>
-                <tr><td>10</td><td class="td-left">举水麻城</td><td>黄冈</td><td>省控</td><td><span style="color:#2563EB;font-weight:700;">指标反弹</span></td><td>氨氮</td><td>1.8</td><td>1.5</td><td>2</td><td>面源治理</td></tr>
-            </tbody>
-        </table></div>
+    <div class="ppt-header">
+        <span class="ppt-title">根因分析：重点污染因子剖析与决策支撑</span>
+        <span class="nav-page-num">P08</span>
     </div>
+    
+    <div class="core-bar">▎ 剖析超标根因：总磷(62%)、氨氮(31%)为全省超标绝对主因。总磷问题集中在荆州/潜江，氨氮集中在孝感/天门。</div>
+    
+    <div class="bd">
+        <div class="left-column" style="display:flex;flex-direction:column;gap:10px;height:100%;">
+
+            <div class="kpi-block" style="display:flex; flex-direction:row; gap:12px; flex:1; min-height:0; border-top:3px solid #64748B !important; padding:12px !important;">
+                
+                <div id="chart-pie" style="width:150px; flex-shrink:0; background:transparent !important; border:none !important;"></div>
+                
+                <div style="display:flex; flex-direction:column; justify-content:center; gap:8px; flex:1; padding-right:4px;">
+                    <div style="padding:8px 12px; background:#FEF2F2; border-left:4px solid #DC2626; border-radius:0;">
+                        <div style="font-size:10px; font-weight:700; color:#DC2626;">总磷 62%</div>
+                        <div style="font-size:20px; font-weight:800; color:#DC2626; line-height:1.2;">14个</div>
+                        <div style="font-size:9px; color:#EF4444; margin-top:2px; white-space:nowrap;">涉及6市州，荆州(4)、潜江(2)最集中</div>
+                    </div>
+                    <div style="padding:8px 12px; background:#FFFBEB; border-left:4px solid #D97706; border-radius:0;">
+                        <div style="font-size:10px; font-weight:700; color:#D97706;">氨氮 31%</div>
+                        <div style="font-size:20px; font-weight:800; color:#D97706; line-height:1.2;">7个</div>
+                        <div style="font-size:9px; color:#D97706; margin-top:2px; white-space:nowrap;">集中在孝感(3)、天门(2)</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="warning-card" style="flex:1; justify-content:center; background:linear-gradient(135deg,#0F172A,#1E293B); border:1px solid #334155; border-left:5px solid #38BDF8; color:#fff;">
+                <div class="card-loc" style="color:#38BDF8; border-bottom-color:rgba(56,189,248,0.3); font-size:11px!important; margin-bottom:8px!important;">💡 支撑建议</div>
+                <div class="card-det" style="color:#CBD5E1; font-size:10px!important; line-height:1.6;">
+                    总磷超标涉及 6 市共 14 个断面，以荆州（4个）最为集中，潜江（2个）、荆门（2个）次之；氨氮超标涉及 4 市州共 7 个断面，集中在孝感（3个）、天门（2个）。
+                </div>
+            </div>
+        </div>
+
+        <div class="right-column" style="height: 100%;">
+            <div class="table-box fit-table" style="height: 100%; display: flex; flex-direction: column;">
+                <table style="width: 100%; height: 100%;">
+                    <thead>
+                        <tr>
+                            <th>市州</th>
+                            <th>总磷超标断面</th>
+                            <th>氨氮超标断面</th>
+                            <th>超标断面</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td class="td-left" style="font-weight:bold;">神农架林区</td><td>0个</td><td>0个</td><td style="text-align:left;">—</td></tr>
+                        <tr><td class="td-left" style="font-weight:bold;">鄂州市</td><td>0个</td><td>0个</td><td style="text-align:left;">—</td></tr>
+                        <tr><td class="td-left" style="font-weight:bold;">十堰市</td><td>0个</td><td>0个</td><td style="text-align:left;">—</td></tr>
+                        <tr><td class="td-left">宜昌市</td><td>0个</td><td>0个</td><td style="text-align:left;">—</td></tr>
+                        <tr><td class="td-left">襄阳市</td><td>0个</td><td>0个</td><td style="text-align:left;">—</td></tr>
+                        <tr><td class="td-left">黄石市</td><td>0个</td><td>0个</td><td style="text-align:left;">—</td></tr>
+                        <tr><td class="td-left" style="font-weight:bold;">荆州市</td><td><span class="badge-r">4个</span></td><td>0个</td><td style="text-align:left;"><b>总磷</b> 洪湖、四湖总干渠</td></tr>
+                        <tr><td class="td-left" style="font-weight:bold;">潜江市</td><td><span class="badge-r">2个</span></td><td><span class="badge-r">1个</span></td><td style="text-align:left;"><b>总磷</b> 东荆河、城南河；<b>氨氮</b> 百里长渠</td></tr>
+                        <tr><td class="td-left">荆门市</td><td><span class="badge-r">2个</span></td><td>1个</td><td style="text-align:left;"><b>总磷</b> 天门河（荆门段）</td></tr>
+                        <tr><td class="td-left">孝感市</td><td>1个</td><td><span class="badge-r">2个</span></td><td style="text-align:left;"><b>总磷</b> 府河；<b>氨氮</b> 澴河相关断面</td></tr>
+                        <tr><td class="td-left">天门市</td><td>1个</td><td><span class="badge-r">2个</span></td><td style="text-align:left;"><b>总磷</b> 汉北河；<b>氨氮</b> 天门河相关断面</td></tr>
+                        <tr><td class="td-left">武汉市</td><td>2个</td><td>0个</td><td style="text-align:left;"><b>总磷</b> 通顺河相关断面</td></tr>
+                        <tr><td class="td-left">黄冈市</td><td>1个</td><td>1个</td><td style="text-align:left;"><b>总磷</b> 举水；<b>氨氮</b> 巴水相关断面</td></tr>
+                        <tr><td class="td-left">仙桃市</td><td>1个</td><td>0个</td><td style="text-align:left;"><b>总磷</b> 通顺河仙桃段</td></tr>
+                        <tr><td class="td-left">咸宁市</td><td>0个</td><td>0个</td><td style="text-align:left;">—</td></tr>
+                        <tr><td class="td-left">随州市</td><td>0个</td><td>0个</td><td style="text-align:left;">—</td></tr>
+                        <tr><td class="td-left">恩施州</td><td>0个</td><td>0个</td><td style="text-align:left;">—</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
     <div class="ft"><span>2026年5月生态环境月度专报</span><span>提示：仅供汇报使用</span></div>
 </div>
-</body>
+<script>
+var pie = echarts.init(document.getElementById("chart-pie"));
+pie.setOption({
+    tooltip:{trigger:"item",formatter:"{b}: {c}%"},
+    series:[{
+        type:"pie",
+        // 精细调优半径，完美贴合 150px 宽的卡片腹地
+        radius:["35%","52%"],
+        center:["50%","50%"],
+        data:[
+            {value:62,name:"\u603b\u78f7",itemStyle:{color:"#DC2626"}},
+            {value:31,name:"\u6c28\u6c2e",itemStyle:{color:"#D97706"}},
+            {value:7,name:"\u5176\u4ed6",itemStyle:{color:"#94A3B8"}}
+        ],
+        label:{
+            show:true,
+            fontSize:8,
+            fontWeight:700,
+            position:"outside",
+            distance:2,
+            color:'#334155',
+            formatter:"{b}\n{d}%"
+        },
+        labelLine:{
+            length:4,
+            length2:4,
+            smooth:true
+        },
+        emphasis:{itemStyle:{shadowBlur:8,shadowColor:"rgba(0,0,0,0.1)"}}
+    }],
+    backgroundColor:"transparent"
+});
+window.addEventListener("resize",function(){pie.resize();});
+</script></body>
 </html>

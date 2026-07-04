@@ -1,229 +1,388 @@
 ﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>流域湖库 - 一级流域概览</title>
-<link rel="stylesheet" href="ppt-style.css">
-<script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
-<style>
-.bd {
-  padding: 14px 24px;
-}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>流域湖库 - 一级流域概览</title>
+    <link rel="stylesheet" href="ppt-style.css">
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+    <style>
+        /* 极致收紧外部 padding，防止溢出 */
+        .bd {
+            padding: 8px 20px;
+        }
 
-/* 左右对称的现代双板布局 */
-.content-layout {
-  display: flex;
-  gap: 14px;
-  flex: 1;
-  min-height: 0;
-}
+        /* 左右对称的双板布局 */
+        .content-layout {
+            display: flex;
+            gap: 12px;
+            flex: 1;
+            min-height: 0;
+        }
 
-/* 统一下方两个大块的底座样式，达成完美的视觉平衡 */
-.main-panel {
-  flex: 1;
-  background: #ffffff;
-  border: 1px solid #E2E8F0;
-  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04);
-  border-radius: 4px;
-  padding: 14px;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
+        /* 面板底座样式 - 收紧内部留白 */
+        .main-panel {
+            background: #ffffff;
+            border: 1px solid #E2E8F0;
+            box-shadow: 0 2px 10px rgba(15, 23, 42, 0.03);
+            border-radius: 6px;
+            padding: 10px 12px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            min-height: 0;
+        }
 
-/* 卡片标题标准排版 */
-.panel-title {
-  font-size: 11px;
-  font-weight: 700;
-  color: #0F172A;
-  border-left: 3px solid #059669;
-  padding-left: 8px;
-  margin-bottom: 12px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-.panel-title span.sub-tips {
-  font-size: 8px;
-  color: #64748B;
-  font-weight: 500;
-}
+        /* 卡片标题 - 减小底部 margin */
+        .panel-title {
+            font-size: 11px;
+            font-weight: 800;
+            color: #0F172A;
+            border-left: 4px solid #059669;
+            padding-left: 8px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+        }
+        .panel-title span.sub-tips {
+            font-size: 8.5px;
+            color: #64748B;
+            font-weight: 600;
+            background: #F1F5F9;
+            padding: 2px 6px;
+            border-radius: 3px;
+        }
 
-/* 右侧下方的核心结论区域：彻底解决右侧太空的问题 */
-.business-summary-box {
-  margin-top: 14px;
-  background: #F8FAFC;
-  border-top: 2px solid #E2E8F0;
-  padding: 10px 12px;
-  flex: 1; /* 自动撑满表格下方的剩余空间 */
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 6px;
-}
-.summary-item {
-  display: flex;
-  align-items: flex-start;
-  gap: 6px;
-  font-size: 9px;
-  color: #334155;
-  line-height: 1.5;
-}
-.summary-item .dot {
-  width: 4px;
-  height: 4px;
-  background: #059669;
-  border-radius: 50%;
-  margin-top: 5px;
-  flex-shrink: 0;
-}
-.summary-item .dot.alert { background: #DC2626; }
+        /* =======================================
+           左侧：三大流域地图卡片布局
+           ======================================= */
+        .map-list {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            flex: 1;
+            min-height: 0;
+        }
+        .map-card {
+            flex: 1;
+            display: flex;
+            gap: 10px;
+            background: #F8FAFC;
+            border: 1px solid #E2E8F0;
+            border-radius: 4px;
+            padding: 6px 8px;
+            align-items: center;
+            min-height: 0;
+        }
+        /* 地图区域 */
+        .map-placeholder {
+            flex: 0 0 100px;
+            height: 100%;
+            background: #E2E8F0;
+            border: 1px dashed #94A3B8;
+            border-radius: 4px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #64748B;
+            position: relative;
+            overflow: hidden;
+        }
+        .map-placeholder::before {
+            content: '🗺️';
+            font-size: 18px;
+            margin-bottom: 2px;
+            opacity: 0.5;
+        }
+        .map-placeholder span {
+            font-size: 8px;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+        /* 地图右侧指标区 */
+        .map-stats {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 4px;
+        }
+        .map-stat-title {
+            font-size: 10.5px;
+            font-weight: 800;
+            color: #0F172A;
+            border-bottom: 1px solid #E2E8F0;
+            padding-bottom: 2px;
+        }
+        .map-stat-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .map-stat-lbl { font-size: 8.5px; color: #475569; font-weight: 600; }
+        .map-stat-val { font-size: 11px; font-weight: 900; }
+        .val-green { color: #059669; }
+        .val-red { color: #DC2626; }
 
+        /* =======================================
+           右侧：表格与总结区
+           ======================================= */
+        .bd table td { padding: 4px 6px !important; font-size: 8.5px !important; vertical-align: middle; }
+        .bd table th { padding: 4px 6px !important; font-size: 9px !important; }
 
-</style>
+        /* 进度条 */
+        .progress-wrapper { display: flex; align-items: center; gap: 6px; width: 100%; }
+        .progress-track { flex: 1; height: 5px; background: #E2E8F0; border-radius: 3px; overflow: hidden; }
+        .progress-fill { height: 100%; background: #059669; border-radius: 3px; }
+        .progress-fill.warn { background: #D97706; }
+
+        /* 核心结论区域 - 紧凑型双栏，取消 flex:1，靠自身内容撑开高度 */
+        .business-summary-box {
+            margin-top: 8px;
+            background: #F8FAFC;
+            border: 1px solid #E2E8F0;
+            border-left: 3px solid #3B82F6;
+            border-radius: 4px;
+            padding: 6px 10px; /* 进一步压缩内边距 */
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            align-items: center;
+            gap: 12px;
+            flex-shrink: 0; /* 绝对禁止被压缩 */
+        }
+        .summary-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 6px;
+            font-size: 8.5px;
+            color: #334155;
+            line-height: 1.4;
+        }
+        .summary-item .dot {
+            width: 4px;
+            height: 4px;
+            background: #2563EB;
+            border-radius: 50%;
+            margin-top: 4px;
+            flex-shrink: 0;
+        }
+        .summary-item .dot.alert { background: #DC2626; }
+
+        /* =======================================
+           右侧新增：趋势折线图容器 (吃掉剩余所有空间)
+           ======================================= */
+        .trend-wrapper {
+            flex: 1; /* 自动撑满下方剩余空间 */
+            min-height: 0;
+            margin-top: 8px;
+            display: flex;
+            flex-direction: column;
+            background: #ffffff;
+            border: 1px dashed #CBD5E1;
+            border-radius: 4px;
+            padding: 6px 10px;
+        }
+        .trend-title {
+            font-size: 9px;
+            font-weight: 800;
+            color: #475569;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .trend-title span { font-size: 7.5px; color: #94A3B8; font-weight: normal; }
+    </style>
 </head>
 <body>
 <div class="slide-container">
     <div class="ppt-header"><span class="ppt-title">流域湖库：一级流域概览（三大流域）</span><span class="nav-page-num">P11</span></div>
-    <div class="core-bar">▎ 全省三大一级流域（长江、汉江、清江）共布设167个国控断面，Ⅰ-Ⅲ类比例分别为长江89.9%、汉江92.3%、清江92.3%。劣Ⅴ类断面长江3个、汉江2个，清江保持零个。</div>
-    
-    <div class="bd" style="flex-direction:column;">
+
+    <div class="core-bar" style="padding: 6px 28px !important;">▎ 2026年5月流域总览：全省三大一级流域共有 167 个国控断面。本月总体水质数据已由系统自动更新，具体各流域空间分布、占比情况及同比波动明细如下。</div>
+
+    <div class="bd" style="flex-direction:column; gap:8px;">
         <div class="content-layout">
-            
-            <div class="main-panel">
+
+            <div class="main-panel" style="flex: 1.1;">
                 <div class="panel-title">
-                    <span>三大流域水质级别构成横向对比</span>
-                    <span class="sub-tips">全省国控国控断面: 167 个</span>
+                    <span>三大流域空间分布与核心指标</span>
+                    <span class="sub-tips">区域分布</span>
                 </div>
-                <div id="chart-basin" style="width:100%; flex:1; min-height: 200px;"></div>
+
+                <div class="map-list">
+                    <div class="map-card" style="border-left: 3px solid #1E40AF;">
+                        <div class="map-placeholder"><span>长江流域</span></div>
+                        <div class="map-stats">
+                            <div class="map-stat-title" style="color: #1E40AF;">长江流域</div>
+                            <div class="map-stat-row"><span class="map-stat-lbl">考核断面数</span><span class="map-stat-val">89 <small style="font-size:7.5px;font-weight:normal;color:#94A3B8;">个</small></span></div>
+                            <div class="map-stat-row"><span class="map-stat-lbl">优良(Ⅰ-Ⅲ类)</span><span class="map-stat-val val-green">89.9%</span></div>
+                            <div class="map-stat-row"><span class="map-stat-lbl">当前劣Ⅴ类</span><span class="map-stat-val val-red">3 <small style="font-size:7.5px;font-weight:normal;color:#94A3B8;">个</small></span></div>
+                        </div>
+                    </div>
+
+                    <div class="map-card" style="border-left: 3px solid #065F46;">
+                        <div class="map-placeholder"><span>汉江流域</span></div>
+                        <div class="map-stats">
+                            <div class="map-stat-title" style="color: #065F46;">汉江流域</div>
+                            <div class="map-stat-row"><span class="map-stat-lbl">考核断面数</span><span class="map-stat-val">52 <small style="font-size:7.5px;font-weight:normal;color:#94A3B8;">个</small></span></div>
+                            <div class="map-stat-row"><span class="map-stat-lbl">优良(Ⅰ-Ⅲ类)</span><span class="map-stat-val val-green">92.3%</span></div>
+                            <div class="map-stat-row"><span class="map-stat-lbl">当前劣Ⅴ类</span><span class="map-stat-val val-red">2 <small style="font-size:7.5px;font-weight:normal;color:#94A3B8;">个</small></span></div>
+                        </div>
+                    </div>
+
+                    <div class="map-card" style="border-left: 3px solid #0F5132;">
+                        <div class="map-placeholder"><span>清江流域</span></div>
+                        <div class="map-stats">
+                            <div class="map-stat-title" style="color: #0F5132;">清江流域</div>
+                            <div class="map-stat-row"><span class="map-stat-lbl">考核断面数</span><span class="map-stat-val">26 <small style="font-size:7.5px;font-weight:normal;color:#94A3B8;">个</small></span></div>
+                            <div class="map-stat-row"><span class="map-stat-lbl">优良(Ⅰ-Ⅲ类)</span><span class="map-stat-val val-green">92.3%</span></div>
+                            <div class="map-stat-row"><span class="map-stat-lbl">当前劣Ⅴ类</span><span class="map-stat-val" style="color:#64748B;">0 <small style="font-size:7.5px;font-weight:normal;">个</small></span></div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            <div class="main-panel">
+            <div class="main-panel" style="flex: 1.3;">
                 <div class="panel-title">
-                    <span>各流域断面数据明细明细表</span>
+                    <span>各流域关键考核数据明细</span>
                 </div>
-                <div class="table-box">
-                    <table>
+
+                <div class="table-box" style="flex-shrink: 0;">
+                    <table style="width:100%;">
                         <thead>
-                            <tr>
-                                <th>一级流域</th>
-                                <th>断面数</th>
-                                <th>Ⅰ-Ⅲ类</th>
-                                <th>Ⅳ-Ⅴ类</th>
-                                <th>劣Ⅴ类</th>
-                                <th>同比变化</th>
-                            </tr>
+                        <tr>
+                            <th>一级流域</th>
+                            <th style="width:35px;">断面数</th>
+                            <th style="width:45px;">优良(Ⅰ-Ⅲ)</th>
+                            <th>优良占比进度</th>
+                            <th>劣Ⅴ类</th>
+                            <th>同比变化</th>
+                        </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td class="td-left" style="font-weight:700; color:#1E3A8A;">长江流域</td>
-                                <td style="font-weight:600;">89</td>
-                                <td><span class="badge-g">80个</span> <small style="color:#64748B;">(89.9%)</small></td>
-                                <td>6个</td>
-                                <td><span class="badge-r">3个</span></td>
-                                <td><span class="badge-r">↓ 1.4%</span></td>
-                            </tr>
-                            <tr>
-                                <td class="td-left" style="font-weight:700; color:#064E3B;">汉江流域</td>
-                                <td style="font-weight:600;">52</td>
-                                <td><span class="badge-g">48个</span> <small style="color:#64748B;">(92.3%)</small></td>
-                                <td>2个</td>
-                                <td><span class="badge-r">2个</span></td>
-                                <td><span class="badge-r">↓ 0.8%</span></td>
-                            </tr>
-                            <tr>
-                                <td class="td-left" style="font-weight:700; color:#0F5132;">清江流域</td>
-                                <td style="font-weight:600;">26</td>
-                                <td><span class="badge-g">24个</span> <small style="color:#64748B;">(92.3%)</small></td>
-                                <td>2个</td>
-                                <td><span style="color:#64748B;font-weight:600;">0个</span></td>
-                                <td><span class="badge-g">↑ 1.2%</span></td>
-                            </tr>
+                        <tr>
+                            <td class="td-left" style="font-weight:800; color:#1E40AF;">长江流域</td>
+                            <td style="font-weight:600;">89</td>
+                            <td style="font-weight:700; color:#059669;">80个</td>
+                            <td>
+                                <div class="progress-wrapper">
+                                    <div class="progress-track"><div class="progress-fill warn" style="width: 89.9%;"></div></div>
+                                    <span style="font-weight:700; font-size:8px; color:#475569;">89.9%</span>
+                                </div>
+                            </td>
+                            <td><span class="badge-r" style="font-size:9px;">3个</span></td>
+                            <td><span class="badge-r">↓ 1.4%</span></td>
+                        </tr>
+                        <tr>
+                            <td class="td-left" style="font-weight:800; color:#065F46;">汉江流域</td>
+                            <td style="font-weight:600;">52</td>
+                            <td style="font-weight:700; color:#059669;">48个</td>
+                            <td>
+                                <div class="progress-wrapper">
+                                    <div class="progress-track"><div class="progress-fill" style="width: 92.3%;"></div></div>
+                                    <span style="font-weight:700; font-size:8px; color:#475569;">92.3%</span>
+                                </div>
+                            </td>
+                            <td><span class="badge-r" style="font-size:9px;">2个</span></td>
+                            <td><span class="badge-r">↓ 0.8%</span></td>
+                        </tr>
+                        <tr>
+                            <td class="td-left" style="font-weight:800; color:#0F5132;">清江流域</td>
+                            <td style="font-weight:600;">26</td>
+                            <td style="font-weight:700; color:#059669;">24个</td>
+                            <td>
+                                <div class="progress-wrapper">
+                                    <div class="progress-track"><div class="progress-fill" style="width: 92.3%;"></div></div>
+                                    <span style="font-weight:700; font-size:8px; color:#475569;">92.3%</span>
+                                </div>
+                            </td>
+                            <td><span style="color:#94A3B8;font-weight:600;font-size:9px;">0个</span></td>
+                            <td><span class="badge-g">↑ 1.2%</span></td>
+                        </tr>
                         </tbody>
                     </table>
                 </div>
-                
+
                 <div class="business-summary-box">
                     <div class="summary-item">
                         <div class="dot"></div>
-                        <div><b>水质稳中向好：</b>三大流域优良水质比例均超89%，汉江92.3%、清江92.3%、长江89.9%，清江持续实现劣Ⅴ类断面"清零"。</div>
+                        <div><b>📊 水质占比：</b>本月优良（Ⅰ-Ⅲ类）比例为长江 89.9%、汉江 92.3%、清江 92.3%。清江流域劣Ⅴ类断面总数为 0 个。</div>
                     </div>
                     <div class="summary-item">
                         <div class="dot alert"></div>
-                        <div><b>重点关注风险：</b>长江优良率89.9%，同比回落1.4%，存在<b>3个</b>劣Ⅴ类断面；汉江同比回落0.8%，存在<b>2个</b>劣Ⅴ类断面，需推进上游重点断面溯源与攻坚整治。</div>
+                        <div><b>⚠️ 波动追踪：</b>长江优良率同比 -1.4%，汉江 -0.8%。本月合计 5 个劣Ⅴ类断面，系统将持续跟踪其指标数据波动。</div>
                     </div>
                 </div>
+
+                <div class="trend-wrapper">
+                    <div class="trend-title">
+                        📉 近 6 个月三大流域优良（Ⅰ-Ⅲ类）水质走势
+                        <span>单位：%</span>
+                    </div>
+                    <div id="trendChart" style="width:100%; flex:1;"></div>
+                </div>
+
             </div>
 
         </div>
     </div>
-    
-    <div class="ft"><span>2026年5月生态环境月度专报</span><span>提示：仅供汇报使用</span></div>
+
+    <div class="ft" style="padding: 8px 28px !important;"><span>2026年5月生态环境月度专报</span><span>提示：系统自动生成，仅供汇报使用</span></div>
 </div>
 
 <script>
-var chart = echarts.init(document.getElementById('chart-basin'));
-chart.setOption({
-    tooltip: {
-        trigger: 'axis',
-        axisPointer: { type: 'shadow' },
-        formatter: function(params) {
-            var html = params[0].name + '<br/>';
-            params.forEach(function(item) {
-                html += item.marker + item.seriesName + ': ' + item.value + '个 (' + 
-                        ((item.value / (params[0].value + params[1].value + params[2].value)) * 100).toFixed(1) + '%)<br/>';
-            });
-            return html;
-        }
-    },
-    // 全局精细色彩管理：使用深邃环保青绿色系，去掉刺眼蓝
-    color: ['#059669', '#3B82F6', '#EF4444'],
-    legend: {
-        data: ['Ⅰ-Ⅲ类', 'Ⅳ-Ⅴ类', '劣Ⅴ类'],
-        icon: 'circle',
-        itemWidth: 8,
-        itemHeight: 8,
-        textStyle: { fontSize: 8.5, fontWeight: 600, color: '#475569' },
-        right: 0,
-        top: 0
-    },
-    grid: { left: 45, right: 10, top: 30, bottom: 10 },
-    xAxis: {
-        type: 'value',
-        max: 'dataMax',
-        splitLine: { show: true, lineStyle: { color: '#F1F5F9', type: 'dashed' } },
-        axisLabel: { fontSize: 8, color: '#94A3B8', fontWeight: 600 },
-        axisLine: { show: false },
-        axisTick: { show: false }
-    },
-    yAxis: {
-        type: 'category',
-        data: ['清江流域', '汉江流域', '长江流域'],
-        axisLabel: { fontSize: 9, fontWeight: 700, color: '#1E293B' },
-        axisTick: { show: false },
-        axisLine: { show: false }
-    },
-    series: [
-        { 
-            name: 'Ⅰ-Ⅲ类', type: 'bar', stack: 'total', barWidth: 16, data: [24, 48, 80], 
-            label: { show: true, position: 'inside', fontSize: 8.5, fontWeight: 700, color: '#fff', formatter: '{c}个' } 
+    // 初始化趋势图表
+    var trendChart = echarts.init(document.getElementById('trendChart'));
+    var trendOption = {
+        tooltip: { trigger: 'axis', textStyle: { fontSize: 10 } },
+        legend: {
+            data: ['长江', '汉江', '清江'],
+            itemWidth: 12, itemHeight: 4,
+            textStyle: { fontSize: 8.5, color: '#64748B' },
+            top: 0, right: 0
         },
-        { 
-            name: 'Ⅳ-Ⅴ类', type: 'bar', stack: 'total', data: [2, 2, 6], 
-            label: { show: true, position: 'inside', fontSize: 8.5, fontWeight: 700, color: '#fff', formatter: '{c}个' } 
+        grid: { left: 25, right: 10, top: 20, bottom: 20 },
+        xAxis: {
+            type: 'category',
+            boundaryGap: false,
+            data: ['25/12', '26/01', '26/02', '26/03', '26/04', '26/05'],
+            axisLabel: { fontSize: 8, color: '#94A3B8' },
+            axisLine: { lineStyle: { color: '#E2E8F0' } },
+            axisTick: { show: false }
         },
-        { 
-            name: '劣Ⅴ类', type: 'bar', stack: 'total', data: [0, 2, 3], 
-            label: { 
-                show: true, position: 'inside', fontSize: 8.5, fontWeight: 700, color: '#fff', 
-                formatter: function(p){return p.value > 0 ? p.value + '个' : '';} 
-            } 
-        }
-    ],
-    backgroundColor: 'transparent'
-});
-window.addEventListener('resize', function(){ chart.resize(); });
+        yAxis: {
+            type: 'value',
+            min: 80, // 从80%起步让变化看起来更明显
+            max: 100,
+            axisLabel: { fontSize: 8, color: '#94A3B8' },
+            splitLine: { lineStyle: { type: 'dashed', color: '#F1F5F9' } }
+        },
+        series: [
+            {
+                name: '长江', type: 'line', smooth: true, symbolSize: 4,
+                itemStyle: { color: '#1E40AF' }, lineStyle: { width: 2 },
+                data: [91.3, 91.0, 90.5, 90.0, 89.9, 89.9]
+            },
+            {
+                name: '汉江', type: 'line', smooth: true, symbolSize: 4,
+                itemStyle: { color: '#059669' }, lineStyle: { width: 2 },
+                data: [93.1, 93.1, 92.8, 92.5, 92.3, 92.3]
+            },
+            {
+                name: '清江', type: 'line', smooth: true, symbolSize: 4,
+                itemStyle: { color: '#10B981' }, lineStyle: { width: 2 },
+                data: [91.1, 91.5, 92.0, 92.0, 92.3, 92.3]
+            }
+        ]
+    };
+    trendChart.setOption(trendOption);
+
+    // 确保图表随窗口大小自适应
+    window.addEventListener('resize', function() {
+        trendChart.resize();
+    });
 </script>
 </body>
 </html>

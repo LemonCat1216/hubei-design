@@ -1,317 +1,45 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>湖北省水生态环境形势分析 - 第03页</title>
-<style>
-    /* 核心标准：全局等比放大 175% */
-    html {
-        zoom: 175%; 
-        background: #f0f4f8;
-        height: 100%;
-    }
-    
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-
-    body {
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
-        min-height: 100vh;
-        display: flex;
-        align-items: flex-start;
-        justify-content: center;
-        padding: 20px;
-    }
-
-    /* 16:9 经典 PPT 汇报比例卡片容器 */
-    .slide-container {
-        width: 100%;
-        max-width: 860px;
-        aspect-ratio: 16 / 9;
-        background: #ffffff;
-        border-radius: 12px;
-        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08);
-        border: 1px solid #e2e8f0;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        overflow: hidden;
-    }
-
-    /* 顶部导航标题 */
-    .ppt-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
-        background: #1a3a5c;
-        color: #fff;
-        padding: 10px 24px;
-        border-bottom: 3px solid #2463ae;
-    }
-    .ppt-title {
-        font-size: 13px;
-        font-weight: 700;
-        letter-spacing: 1px;
-    }
-    .nav-page-num {
-        background: rgba(255,255,255,0.2);
-        padding: 2px 6px;
-        border-radius: 3px;
-        color: #fff;
-        font-size: 8px;
-        font-weight: bold;
-    }
-
-    /* PPT 核心结论带条 */
-    .core-bar {
-        padding: 10px 24px;
-        font-size: 10.5px;
-        font-weight: 700;
-        line-height: 1.5;
-        color: #1a3a5c;
-        background: #f0f7ff;
-        border-bottom: 1px solid #e2edf7;
-    }
-
-    /* 主体排版布局 */
-    .bd {
-        flex: 1;
-        padding: 16px 24px;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        overflow: hidden;
-    }
-
-    /* 顶部 4 枚横向小 KPI 卡片 */
-    .kpi-row {
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: 10px;
-        margin-bottom: 12px;
-    }
-    .kpi-card {
-        border-radius: 6px;
-        padding: 8px;
-        text-align: center;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-    }
-    .kpi-label {
-        font-size: 9px;
-        font-weight: 700;
-        margin-bottom: 2px;
-    }
-    .kpi-value {
-        font-weight: 800;
-        font-size: 15px;
-    }
-
-    /* 核心图表区域：完全饱满填充 */
-    .chart-wrapper {
-        flex: 1;
-        background: #f8fafc;
-        border: 1px solid #e2e8f0;
-        border-radius: 8px;
-        padding: 10px 16px;
-        display: flex;
-        flex-direction: column;
-        overflow: hidden;
-        margin-bottom: 10px;
-    }
-    .chart-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
-        margin-bottom: 6px;
-        border-bottom: 1px dashed #e2e8f0;
-        padding-bottom: 4px;
-    }
-    .chart-title {
-        font-size: 10px;
-        font-weight: 700;
-        color: #1e3a8a;
-    }
-    .chart-legend {
-        display: flex;
-        gap: 10px;
-        font-size: 7px;
-        color: #64748b;
-        font-weight: bold;
-    }
-    .legend-item { display: flex; align-items: flex-start; gap: 3px; }
-    .legend-dot { width: 7px; height: 7px; border-radius: 1px; }
-
-    /* 堆叠图图表容器 */
-    .chart-container {
-        flex: 1;
-        display: flex;
-        align-items: flex-end;
-        justify-content: space-between;
-        border-bottom: 2px solid #cbd5e1;
-        padding: 20px 10px 2px 2px;
-        margin-top: 5px;
-    }
-    .bar-group {
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-        flex: 1;
-    }
-    /* 堆叠柱子：利用 flex 纵向拉伸完美适配大屏 */
-    .stacked-bar {
-        width: 16px;
-        display: flex;
-        flex-direction: column-reverse;
-        border-radius: 2px 2px 0 0;
-        overflow: hidden;
-        box-shadow: 1px 0 3px rgba(0,0,0,0.08);
-    }
-    .bar-seg { width: 100%; }
-    .bar-seg.cat1 { background: #3b82f6; } /* I类水质 */
-    .bar-seg.cat2 { background: #06b6d4; } /* II类水质 */
-    .bar-seg.cat3 { background: #fbbf24; } /* III类水质 */
-    
-    .prov-name {
-        font-size: 7px;
-        color: #64748b;
-        margin-top: 5px;
-        font-weight: 600;
-    }
-    /* 高亮强调湖北省 */
-    .bar-group.highlight .prov-name {
-        color: #dc2626 !important;
-        font-weight: 800;
-        font-size: 8px;
-    }
-    .bar-group.highlight .stacked-bar {
-        outline: 2px solid #dc2626;
-        outline-offset: 1.5px;
-    }
-
-    /* 底部说明 */
-    .ex-info {
-        font-size: 8.5px;
-        color: #64748b;
-        background: #f1f5f9;
-        padding: 6px 12px;
-        border-radius: 4px;
-    }
-
-    /* 页脚 */
-    .ft {
-        display: flex;
-        align-items: flex-start;
-        justify-content: space-between;
-        padding: 10px 24px;
-        font-size: 9.5px;
-        color: #a0aec0;
-        border-top: 1px solid #eef2f6;
-        background: #f7fafc;
-    }
-html{zoom:175%;background:#E8ECF1;height:100%}*{margin:0;padding:0;box-sizing:border-box}body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei","Noto Sans SC",sans-serif;min-height:100vh;display:flex;align-items:flex-start;justify-content:center;padding:20px;-webkit-font-smoothing:antialiased}.slide-container{width:100%;max-width:860px;aspect-ratio:16/9;background:#fff;border-radius:14px;box-shadow:0 20px 60px rgba(0,0,0,.10),0 4px 20px rgba(0,0,0,.06);border:none;display:flex;flex-direction:column;justify-content:space-between;overflow:hidden}.ppt-header{display:flex;justify-content:space-between;align-items:flex-start;background:linear-gradient(135deg,#0B1D33 0%,#142B44 50%,#1A365D 100%);color:#fff;padding:14px 28px;border-bottom:3px solid #059669}.ppt-title{font-size:15px;font-weight:700;letter-spacing:1.5px;text-shadow:0 1px 2px rgba(0,0,0,.2)}.nav-page-num{background:#059669;padding:3px 10px;border-radius:4px;font-size:10px;font-weight:700;letter-spacing:.5px}.core-bar{padding:12px 28px;font-size:11px;font-weight:600;line-height:1.6;color:#065F46;background:linear-gradient(90deg,#ECFDF5,#F0FDF4);border-left:4px solid #059669;border-bottom:1px solid #D1FAE5}.bd{flex:1;padding:16px 24px;display:flex;gap:20px;overflow:hidden}.left-column{flex:1;display:grid;grid-template-columns:1fr 1fr;gap:10px}.kpi-block{background:#fff;border:1px solid #E2E8F0;border-top:3px solid #2563EB;border-radius:10px;box-shadow:0 2px 8px rgba(0,0,0,.04);padding:14px;display:flex;flex-direction:column;justify-content:center;align-items:flex-start;text-align:center}.kpi-block.hl,.kpi-block.highlight{border-top-color:#059669;background:linear-gradient(180deg,#F0FDF4,#fff)}.kpi-block.al,.kpi-block.alert{border-top-color:#DC2626;background:linear-gradient(180deg,#FEF2F2,#fff)}.kpi-title{font-size:10px;color:#475569;font-weight:700;margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px}.kpi-num{font-size:24px;font-weight:800;color:#0F172A;line-height:1.2}.kpi-block.hl .kpi-num,.kpi-block.highlight .kpi-num{color:#059669}.kpi-block.al .kpi-num,.kpi-block.alert .kpi-num{color:#DC2626}.kpi-sub{font-size:9px;color:#94A3B8;margin-top:4px}.right-column{flex:1.4;display:flex;flex-direction:column;gap:12px}.table-box{border:1px solid #E2E8F0;border-radius:8px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.03)}.table-box table{width:100%;border-collapse:collapse;text-align:center}.table-box th{background:linear-gradient(180deg,#0F172A,#1E293B);color:#fff;padding:8px 10px;font-size:10px;font-weight:600;letter-spacing:.3px}.table-box td{padding:8px 10px;font-size:10px;color:#334155;border-bottom:1px solid #F1F5F9}.table-box tr:nth-child(even){background:#F8FAFC}.table-box tr:hover{background:#F0F7FF}.badge-r{color:#DC2626;font-weight:700}.badge-g{color:#059669;font-weight:700}.warning-wrapper{flex:1;display:flex;flex-direction:column;gap:6px}.warning-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;flex:1}.warning-card{background:#FFFBEB;border:1px solid #FDE68A;border-left:4px solid #D97706;border-radius:8px;padding:10px 12px;display:flex;flex-direction:column;box-shadow:0 1px 4px rgba(0,0,0,.03)}.warning-card.blue-card,.warning-card.blue{background:#EFF6FF;border-color:#BFDBFE;border-left-color:#2563EB}.card-loc{font-size:11px;font-weight:700;color:#92400E;border-bottom:1px dashed rgba(146,64,14,.2);padding-bottom:4px;margin-bottom:6px}.warning-card.blue-card .card-loc,.warning-card.blue .card-loc{color:#1E40AF;border-bottom-color:rgba(30,64,175,.2)}.card-det{font-size:9.5px;color:#374151;line-height:1.5}.ft{display:flex;align-items:flex-start;justify-content:space-between;padding:12px 28px;font-size:10px;color:#94A3B8;border-top:1px solid #E2E8F0;background:#F8FAFC}.sec-bg{background:linear-gradient(135deg,#0B1D33 0%,#142B44 40%,#1E3A5F 100%);color:#fff;padding:40px;text-align:center;display:flex;flex-direction:column;justify-content:center;align-items:flex-start;flex:1}.sec-title{font-size:24px;font-weight:700;letter-spacing:4px;text-shadow:0 2px 4px rgba(0,0,0,.2)}.sec-sub{font-size:14px;opacity:.7;margin-bottom:30px}.sec-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;width:100%;max-width:700px}.sec-card{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:18px 14px;text-align:center}.sc-l{font-size:11px;opacity:.8;margin-bottom:8px;font-weight:600;letter-spacing:.5px}.sc-v{font-size:22px;font-weight:800;text-shadow:0 1px 2px rgba(0,0,0,.2)}.sc-s{font-size:9px;opacity:.5;margin-top:6px}.kpi-row .kpi-card{background:#fff;border:1px solid #E2E8F0;border-top:3px solid #2563EB;border-radius:10px;box-shadow:0 2px 8px rgba(0,0,0,.04);padding:10px}.kpi-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px}.kpi-value{font-size:16px;font-weight:800}.chart-wrapper{background:#fff;border:1px solid #E2E8F0;border-radius:10px;box-shadow:0 1px 4px rgba(0,0,0,.03)}.chart-title{font-size:11px;font-weight:700;color:#0F172A}.ex-info{background:#F8FAFC;border:1px solid #E2E8F0;border-radius:6px;padding:8px 14px;font-size:9px;color:#64748B}.stacked-bar{box-shadow:1px 0 4px rgba(0,0,0,.1)}.bar-group.highlight .prov-name{color:#DC2626}.prov-name{font-size:7px;color:#64748B;font-weight:600}.warning-header-title{color:#92400E;font-size:11px}
-</style>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>排名情况 - 全省国控断面水环境质量排位（累计月）</title>
+<link rel="stylesheet" href="ppt-style.css">
 </head>
 <body>
-
 <div class="slide-container">
-    <!-- 头部横栏 -->
-    <div class="ppt-header">
-        <span class="ppt-title">排名情况：全省国控断面水环境质量排位</span>
-        <span class="nav-page-num">P03</span>
-    </div>
-    
-    <!-- 核心叙述结论（已完整融合三大排名） -->
-    <div class="core-bar">
-        ▎ 全省167个国控断面质量稳中向好：2026年1-5月累计月Ⅰ-Ⅲ类比例87.6%。在全国各省（自治区、直辖市）中排名第12位；在长江经济带11省（直辖市）中排名第5位；在中部六省中排名第2位。5月当月状态存在局部波动。
-    </div>
-    
-    <!-- 主体区域 -->
+    <div class="ppt-header"><span class="ppt-title">排名情况：全省国控断面水环境质量排位（累计月）</span><span class="nav-page-num">P03</span></div>
+    <div class="core-bar">▎ 全省167个国控断面2026年1-5月累计月Ⅰ-Ⅲ类比例87.6%。全国排名第12位，长江经济带第5位，中部六省第2位。</div>
     <div class="bd">
-        <!-- 横向4枚核心KPI卡片 -->
-        <div class="kpi-row" id="kpi-container"></div>
-        
-        <!-- 修正补全后的柱状图核心组件 -->
-        <div class="chart-wrapper">
-            <div class="chart-header">
-                <div class="chart-title">📊 累计月省级行政辖区I-III类比例同比变化情况</div>
-                <div class="chart-legend">
-                    <div class="legend-item"><span class="legend-dot" style="background:#3b82f6;"></span>I类占</div>
-                    <div class="legend-item"><span class="legend-dot" style="background:#06b6d4;"></span>II类占</div>
-                    <div class="legend-item"><span class="legend-dot" style="background:#fbbf24;"></span>III类占</div>
-                </div>
+        <div style="flex:1;display:flex;flex-direction:column;gap:10px;overflow:hidden;">
+            <div class="kpi-row">
+                <div class="kpi-card" style="border-top-color:#2563EB;"><div class="kpi-label" style="color:#2563EB;">全国排名</div><div class="kpi-value" style="color:#2563EB;">第12位</div></div>
+                <div class="kpi-card" style="border-top-color:#059669;"><div class="kpi-label" style="color:#059669;">长江经济带</div><div class="kpi-value" style="color:#059669;">第5位</div></div>
+                <div class="kpi-card" style="border-top-color:#059669;"><div class="kpi-label" style="color:#059669;">中部六省</div><div class="kpi-value" style="color:#059669;">第2位</div></div>
+                <div class="kpi-card" style="border-top-color:#D97706;"><div class="kpi-label" style="color:#D97706;">累计达标率</div><div class="kpi-value" style="color:#0F172A;">87.6%</div></div>
             </div>
-            
-            <!-- 完美的图表生成容器 -->
-            <div class="chart-container" id="chart-container"></div>
-        </div>
-        
-        <!-- 底部数据注脚 -->
-        <div class="ex-info">
-            <strong>数据说明：</strong>累计月指标跨度为 1-5 月拉通统计，数据源来自生态环境部。
+            <div class="chart-wrapper">
+                <div class="chart-header">
+                    <div class="chart-title">累计月省级行政辖区Ⅰ-Ⅲ类比例（部分省份）</div>
+                    <div class="chart-legend">
+                        <div class="legend-item"><span class="legend-dot" style="background:#3b82f6;"></span>I类</div>
+                        <div class="legend-item"><span class="legend-dot" style="background:#06b6d4;"></span>II类</div>
+                        <div class="legend-item"><span class="legend-dot" style="background:#fbbf24;"></span>III类</div>
+                    </div>
+                </div>
+                <div class="chart-container" id="chart1"></div>
+            </div>
+            <div class="ex-info"><strong>数据说明：</strong>累计月指标为1-5月拉通统计，数据源来自生态环境部。</div>
         </div>
     </div>
-    
-    <!-- 页脚 -->
-    <div class="ft">
-        <span>2026年5月生态环境月度专报</span>
-        <span>提示：仅供汇报使用</span>
-    </div>
+    <div class="ft"><span>2026年5月生态环境月度专报</span><span>提示：仅供汇报使用</span></div>
 </div>
-
 <script>
-    // 1. 动态生成并注入 4 枚横向考核排位 KPI 卡片（修复了渲染中断 Bug）
-    var kpData = [
-        {c: "#2b6cb0", l: "全国各省排名", k: "第12位"},
-        {c: "#2f855a", l: "长江经济带11省", k: "第5位"},
-        {c: "#2f855a", l: "中部六省排位", k: "第2位"},
-        {c: "#c05621", l: "当月水质预警", k: "局部波动"}
-    ];
-
-    var kpiHtml = "";
-    for (var i = 0; i < kpData.length; i++) {
-        kpiHtml += '<div class="kpi-card" style="background:' + kpData[i].c + '0a; border:1px solid ' + kpData[i].c + '20;">' +
-                        '<div class="kpi-label" style="color:' + kpData[i].c + ';">' + kpData[i].l + '</div>' +
-                        '<div class="kpi-value" style="color:' + kpData[i].c + ';">' + kpData[i].k + '</div>' +
-                    '</div>';
-    }
-    document.getElementById("kpi-container").innerHTML = kpiHtml;
-
-    // 2. 完美映射并高亮湖北省的省级行政辖区水质堆叠柱状图
-    var mockProvinces = [
-        {name: "青海", i: 38, ii: 50, iii: 12}, {name: "新疆", i: 30, ii: 44, iii: 15},
-        {name: "甘肃", i: 29, ii: 56, iii: 7},  {name: "广西", i: 16, ii: 61, iii: 14},
-        {name: "辽宁", i: 15, ii: 42, iii: 21}, {name: "陕西", i: 14, ii: 58, iii: 19},
-        {name: "云南", i: 13, ii: 52, iii: 20}, {name: "四川", i: 12, ii: 42, iii: 38},
-        {name: "重庆", i: 11, ii: 52, iii: 29}, 
-        {name: "湖北", i: 9, ii: 47, iii: 31.6, highlight: true}, // 优良断面总比 87.6% 强力高亮
-        {name: "浙江", i: 8, ii: 48, iii: 34},  {name: "河南", i: 7, ii: 38, iii: 31},
-        {name: "河北", i: 6, ii: 38, iii: 36},  {name: "海南", i: 6, ii: 54, iii: 23},
-        {name: "湖南", i: 4, ii: 69, iii: 23},  {name: "江西", i: 3, ii: 64, iii: 27},
-        {name: "山东", i: 3, ii: 21, iii: 46},  {name: "北京", i: 3, ii: 58, iii: 33},
-        {name: "安徽", i: 1, ii: 38, iii: 35},  {name: "广东", i: 1, ii: 38, iii: 32},
-        {name: "江苏", i: 0, ii: 43, iii: 46},  {name: "黑龙江",i: 0, ii: 11, iii: 57}
-    ];
-
-    var chartContainer = document.getElementById("chart-container");
-    var chartHtml = "";
-    mockProvinces.forEach(function(p) {
-        var isHubei = p.highlight ? "highlight" : "";
-        var totalHeight = p.i + p.ii + p.iii;
-        
-        // 放大图表整体高度至 80 像素，使其在大屏极度饱满
-        chartHtml += '<div class="bar-group ' + isHubei + '">' +
-                            '<div class="stacked-bar" style="height:' + (totalHeight * 0.8) + 'px;">' +
-                                '<div class="bar-seg cat1" style="height:' + (p.i / totalHeight * 100) + '%;"></div>' +
-                                '<div class="bar-seg cat2" style="height:' + (p.ii / totalHeight * 100) + '%;"></div>' +
-                                '<div class="bar-seg cat3" style="height:' + (p.iii / totalHeight * 100) + '%;"></div>' +
-                            '</div>' +
-                            '<div class="prov-name">' + p.name + '</div>' +
-                       '</div>';
-    });
-    chartContainer.innerHTML = chartHtml;
+var d=[{n:"青海",i:38,ii:50,iii:12},{n:"新疆",i:30,ii:44,iii:15},{n:"甘肃",i:29,ii:56,iii:7},{n:"广西",i:16,ii:61,iii:14},{n:"辽宁",i:15,ii:42,iii:21},{n:"陕西",i:14,ii:58,iii:19},{n:"云南",i:13,ii:52,iii:20},{n:"四川",i:12,ii:42,iii:38},{n:"重庆",i:11,ii:52,iii:29},{n:"湖北",i:9,ii:47,iii:31.6,h:1},{n:"浙江",i:8,ii:48,iii:34},{n:"河南",i:7,ii:38,iii:31},{n:"河北",i:6,ii:38,iii:36},{n:"海南",i:6,ii:54,iii:23},{n:"湖南",i:4,ii:69,iii:23},{n:"江西",i:3,ii:64,iii:27},{n:"山东",i:3,ii:21,iii:46},{n:"北京",i:3,ii:58,iii:33},{n:"安徽",i:1,ii:38,iii:35},{n:"广东",i:1,ii:38,iii:32},{n:"江苏",i:0,ii:43,iii:46}];
+var c=document.getElementById("chart1"),h="";
+d.forEach(function(p){var t=p.i+p.ii+p.iii,hl=p.h?" highlight":"";
+h+='<div class="bar-group'+hl+'"><div class="stacked-bar" style="height:'+Math.round(t*.8)+'px;"><div class="bar-seg cat1" style="height:'+(p.i/t*100)+'%;"></div><div class="bar-seg cat2" style="height:'+(p.ii/t*100)+'%;"></div><div class="bar-seg cat3" style="height:'+(p.iii/t*100)+'%;"></div></div><div class="prov-name">'+p.n+'</div></div>';});
+c.innerHTML=h;
 </script>
-
 </body>
 </html>

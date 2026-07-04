@@ -1,210 +1,49 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>湖北省水生态环境形势分析 - 第02页(目录)</title>
-<style>
-    /* 核心标准：全局等比放大 175% */
-    html {
-        zoom: 175%; 
-        background: #f0f4f8;
-        height: 100%;
-    }
-    
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-
-    body {
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
-        min-height: 100vh;
-        display: flex;
-        align-items: flex-start;
-        justify-content: center;
-        padding: 20px;
-    }
-
-   .ppt-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
-        background: #1a3a5c;
-        color: #fff;
-        padding: 10px 24px;
-        border-bottom: 3px solid #3da066;
-    }
-    .ppt-title {
-        font-size: 14px;
-        font-weight: 700;
-        letter-spacing: 1px;
-    }
-    .nav-page-num {
-        background: rgba(255,255,255,0.2);
-        padding: 2px 6px;
-        border-radius: 3px;
-        color: #fff;
-        font-size: 8px;
-        font-weight: bold;
-    }
-
-
-    /* 16:9 经典政务大屏比例卡片容器 */
-    .slide-container {
-        width: 100%;
-        max-width: 860px;
-        aspect-ratio: 16 / 9;
-        background: linear-gradient(180deg, #1a3a5c, #1e4d73);
-        border-radius: 12px;
-        box-shadow: 0 15px 35px rgba(11, 37, 69, 0.25);
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        overflow: hidden;
-    }
-
-    /* 顶部页眉 */
-    .hdr {
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
-        padding: 14px 24px;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.15);
-        color: #fff;
-    }
-    .pg-label {
-        background: rgba(255,255,255,0.22);
-        padding: 2px 6px;
-        border-radius: 3px;
-        font-size: 11px;
-        font-weight: 600;
-    }
-    .tt {
-        font-size: 11px;
-        opacity: 0.8;
-        letter-spacing: 1px;
-    }
-
-    /* 目录主体排版 */
-    .bd {
-        flex: 1;
-        padding: 24px 40px;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-    }
-    .toc-title {
-        font-size: 16px;
-        font-weight: 700;
-        color: #fff;
-        opacity: 0.9;
-        margin-bottom: 16px;
-        letter-spacing: 4px;
-        border-left: 3px solid #3da066;
-        padding-left: 8px;
-    }
-
-    /* 目录列表条目渲染 */
-    .toc-list {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-    }
-    .toc-item {
-        display: flex;
-        align-items: flex-start;
-        gap: 16px;
-        padding: 10px 16px;
-        background: rgba(255, 255, 255, 0.07);
-        border-radius: 6px;
-        color: #e2e8f0;
-        transition: background 0.2s;
-    }
-    .toc-item:hover {
-        background: rgba(255, 255, 255, 0.12);
-    }
-    .idx {
-        background: rgba(255, 255, 255, 0.15);
-        border-radius: 50%;
-        width: 22px;
-        height: 22px;
-        display: flex;
-        align-items: flex-start;
-        justify-content: center;
-        font-weight: 700;
-        font-size: 12px;
-        color: #fff;
-        flex-shrink: 0;
-    }
-    .item-text {
-        display: flex;
-        justify-content: space-between;
-        width: 100%;
-        align-items: flex-start;
-    }
-    .item-main {
-        font-weight: 600;
-        font-size: 14px;
-    }
-    .item-sub {
-        font-size: 11px;
-        opacity: 0.6;
-    }
-
-    /* 底部页脚 */
-    .ft {
-        display: flex;
-        align-items: flex-start;
-        justify-content: space-between;
-        padding: 12px 24px;
-        font-size: 10px;
-        color: rgba(255,255,255,0.5);
-        border-top: 1px solid rgba(255,255,255,0.1);
-        background: rgba(0,0,0,0.1);
-    }
-</style>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>湖北省水生态环境形势分析 - 目录</title>
+<link rel="stylesheet" href="ppt-style.css">
 </head>
 <body>
 
-<div class="slide-container">
- <div class="ppt-header">
+<div class="toc-container">
+    <div class="ppt-header">
         <span class="ppt-title">目录 / 分析框架</span>
         <span class="nav-page-num">P02</span>
     </div>
     
-    <div class="bd">
+    <div style="flex:1;padding:20px 36px;display:flex;flex-direction:column;justify-content:center;">
         <div class="toc-title">分 析 框 架</div>
-        <div class="toc-list" id="toc-container">
-            <!-- 由下面JS逻辑动态生成 -->
-        </div>
+        <div style="display:flex;flex-direction:column;gap:10px;" id="toc-container"></div>
     </div>
     
-    <div class="ft">
+    <div class="ft" style="border-top-color:rgba(255,255,255,.1);background:rgba(0,0,0,.1);color:rgba(255,255,255,.5);">
         <span>2026年5月生态环境月度专报</span>
         <span>提示：仅供汇报使用</span>
     </div>
 </div>
 
 <script>
-    // 已按照您的指示修改第一项和第四项的名称
-    var ITS = [
-        ["排名情况", "国/省控对比排位"],
-        ["全省态势", "17市州考核分析"],
-        ["流域湖库", "五大水系+重点湖泊"],
-        ["排口信息", "排污口与不达标清单"],
-        ["压实举措", "督办交办机制落实"]
-    ];
-    
-    var container = document.getElementById("toc-container");
-    var html = "";
-    for (var i = 0; i < ITS.length; i++) {
-        html += '<div class="toc-item">' +
-                    '<span class="idx">' + (i + 1) + '</span>' +
-                    '<div class="item-text">' +
-                        '<span class="item-main">' + ITS[i][0] + '</span>' +
-                        '<span class="item-sub">' + ITS[i][1] + '</span>' +
-                    '</div>' +
-                '</div>';
-    }
-    container.innerHTML = html;
+var ITS = [
+    ["排名情况", "国/省控断面排位 · 波动态势 · 17市州详情"],
+    ["全省态势", "市州达标率 · 风险预警 · 月度趋势 · 污染因子"],
+    ["流域湖库", "五大水系概览 · 12片区详情 · 重点湖库专项监测"],
+    ["排口信息", "排污口排查整治 · 不达标清单 · 溯源预警 · 黑臭水体"],
+    ["压实举措", "督办交办 · 资金调度 · 饮用水源 · 考核排名"]
+];
+var c = document.getElementById("toc-container");
+var h = "";
+for (var i = 0; i < ITS.length; i++) {
+    h += '<div class="toc-item">' +
+         '<span class="idx">' + (i + 1) + '</span>' +
+         '<div style="display:flex;flex-direction:column;gap:2px;">' +
+         '<span class="item-main">' + ITS[i][0] + '</span>' +
+         '<span class="item-sub">' + ITS[i][1] + '</span>' +
+         '</div></div>';
+}
+c.innerHTML = h;
 </script>
 
 </body>

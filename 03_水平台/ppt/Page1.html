@@ -1,145 +1,26 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>湖北省水生态环境形势分析 - 第01页(封面)</title>
-<style>
-    /* 1. 核心放大标准：全局强制放大 175% */
-    html {
-        zoom: 175%; 
-        background: #f0f4f8;
-        height: 100%;
-    }
-    
-    * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-    }
-
-    body {
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
-        min-height: 100vh;
-        display: flex;
-        align-items: flex-start;
-        justify-content: center;
-        padding: 20px;
-    }
-
-    /* 2. 封面容器优化：采用高质感深邃政务蓝渐变，16:9 经典演示比例 */
-    .cover-container {
-        width: 100%;
-        max-width: 860px; /* 配合 175% 放大后的黄金宽度 */
-        aspect-ratio: 16 / 9;
-        background: linear-gradient(135deg, #0d2b45, #203c56, #16537e);
-        border-radius: 12px;
-        box-shadow: 0 15px 35px rgba(13, 43, 69, 0.3);
-        padding: 45px 50px;
-        color: #ffffff;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between; /* 让头部、中部、尾部自然拉开距离 */
-        position: relative;
-        overflow: hidden;
-    }
-
-    /* 装饰性的右下角微光暗纹，增加政务大屏质感 */
-    .cover-container::after {
-        content: "";
-        position: absolute;
-        bottom: -30%;
-        right: -10%;
-        width: 60%;
-        height: 80%;
-        background: radial-gradient(circle, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0) 70%);
-        transform: rotate(-15deg);
-        pointer-events: none;
-    }
-
-    /* 顶部标志线 */
-    .hdr-line {
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.15);
-        padding-bottom: 12px;
-    }
-    .hdr-tag {
-        font-size: 10px;
-        font-weight: bold;
-        letter-spacing: 2px;
-        background: #eb5757; /* 严管专报采用沉稳的警示红标 */
-        color: #fff;
-        padding: 3px 8px;
-        border-radius: 3px;
-    }
-    .hdr-doc-type {
-        font-size: 11px;
-        color: rgba(255, 255, 255, 0.7);
-        letter-spacing: 1px;
-    }
-
-    /* 中部主标题区域 */
-    .main-body {
-        margin-top: -10px;
-    }
-    .main-title {
-        font-size: 28px;
-        font-weight: 700;
-        line-height: 1.4;
-        letter-spacing: 2px;
-        color: #ffffff;
-        text-shadow: 0 2px 4px rgba(0,0,0,0.2);
-    }
-    .subtitle {
-        font-size: 14px;
-        color: #cbd5e1;
-        margin-top: 12px;
-        letter-spacing: 1px;
-    }
-
-    /* 底部汇报单位及时间 */
-    .ft-info {
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-end;
-        border-top: 1px solid rgba(255, 255, 255, 0.1);
-        padding-top: 15px;
-    }
-    .dept-name {
-        font-size: 13px;
-        font-weight: 500;
-        color: #f8fafc;
-    }
-    .date-sec {
-        font-size: 11px;
-        color: rgba(255, 255, 255, 0.6);
-        text-align: right;
-    }
-</style>
+    <meta charset="UTF-8">
+    <title>P01 - 封面</title>
+    <link rel="stylesheet" href="ppt-style.css">
 </head>
 <body>
-
 <div class="cover-container">
-    <div class="hdr-line">
-        <span class="hdr-tag">2026年5月生态环境月度专报</span>
-        <span class="hdr-doc-type">【内部资料-仅供汇报使用】</span>
+    <div style="display:flex;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,.15);padding-bottom:12px;">
+        <span style="background:#059669;padding:4px 12px;border-radius:4px;font-size:11px;font-weight:700;">2026年5月 月度专报</span>
+        <span style="font-size:11px;color:rgba(255,255,255,.5);">【内部资料 · 仅供汇报使用】</span>
     </div>
 
-    <div class="main-body">
-        <h1 class="main-title">2026年1-5月湖北省<br>水生态环境形势分析汇报</h1>
-
+    <div style="margin-top:20px; flex: 1; display: flex; flex-direction: column; justify-content: center;">
+        <h1 style="font-size:28px;font-weight:700;line-height:1.4;text-shadow:0 2px 8px rgba(0,0,0,.3);">2026年1-5月湖北省<br>水生态环境形势分析汇报</h1>
+        <p style="font-size:13px;color:#cbd5e1;margin-top:12px;">基于水生态环境综合管理平台 · 全省17市州数据</p>
     </div>
 
-    <div class="ft-info">
-        <div class="dept-name">湖北省生态环境厅水生态环境处</div>
-        <div class="date-sec">
-            <div>报告月度：2026年 5月</div>
-            <div style="margin-top: 2px;">生成时间：2026年6月29日</div>
-        </div>
+    <div style="display:flex;justify-content:space-between;align-items:flex-end;border-top:1px solid rgba(255,255,255,.1);padding-top:15px;">
+        <div style="font-size:13px;font-weight:500;">湖北省生态环境厅水生态环境处</div>
+        <div style="font-size:11px;color:rgba(255,255,255,.6);text-align:right;">报告月度：2026年5月<br>生成时间：2026年6月29日</div>
     </div>
 </div>
-
 </body>
 </html>

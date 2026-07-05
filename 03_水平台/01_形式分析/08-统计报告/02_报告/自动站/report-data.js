@@ -181,7 +181,7 @@ window.__REPORT_DATA__ = (function() {
         { date: "2026-06-06", cls: "Ⅴ类", level: 5, target: "Ⅱ类", targetLevel: 2, compliant: "否", pollutant: "化学需氧量(0.32)、总磷(0.18)" },
         { date: "2026-06-07", cls: "劣Ⅴ类", level: "bad-5", target: "Ⅱ类", targetLevel: 2, compliant: "否", pollutant: "化学需氧量(0.49)" },
         { date: "2026-06-08", cls: "Ⅳ类", level: 4, target: "Ⅱ类", targetLevel: 2, compliant: "否", pollutant: "总磷(0.16)" },
-        { date: "2026-06-09", cls: "Ⅴ类", level: 5, target: "Ⅱ类", targetLevel: 2, compliant: "否", pollutant: "溶解氧(0.21)、化学需氧量(0.28)" },
+        { date: "2026-06-09-PPT", cls: "Ⅴ类", level: 5, target: "Ⅱ类", targetLevel: 2, compliant: "否", pollutant: "溶解氧(0.21)、化学需氧量(0.28)" },
         { date: "2026-06-10", cls: "劣Ⅴ类", level: "bad-5", target: "Ⅱ类", targetLevel: 2, compliant: "否", pollutant: "化学需氧量(0.49)" }
       ]
     },
@@ -190,7 +190,7 @@ window.__REPORT_DATA__ = (function() {
       detail: [
         { date: "2026-06-07", cls: "Ⅳ类", level: 4, target: "Ⅲ类", targetLevel: 3, compliant: "否", pollutant: "总磷(0.11)" },
         { date: "2026-06-08", cls: "Ⅴ类", level: 5, target: "Ⅲ类", targetLevel: 3, compliant: "否", pollutant: "溶解氧(0.26)" },
-        { date: "2026-06-09", cls: "劣Ⅴ类", level: "bad-5", target: "Ⅲ类", targetLevel: 3, compliant: "否", pollutant: "溶解氧(0.47)" },
+        { date: "2026-06-09-PPT", cls: "劣Ⅴ类", level: "bad-5", target: "Ⅲ类", targetLevel: 3, compliant: "否", pollutant: "溶解氧(0.47)" },
         { date: "2026-06-10", cls: "Ⅴ类", level: 5, target: "Ⅲ类", targetLevel: 3, compliant: "否", pollutant: "溶解氧(0.52)" }
       ]
     },
@@ -199,7 +199,7 @@ window.__REPORT_DATA__ = (function() {
       detail: [
         { date: "2026-06-07", cls: "Ⅳ类", level: 4, target: "Ⅱ类", targetLevel: 2, compliant: "否", pollutant: "总磷(0.12)" },
         { date: "2026-06-08", cls: "Ⅴ类", level: 5, target: "Ⅱ类", targetLevel: 2, compliant: "否", pollutant: "溶解氧(0.22)" },
-        { date: "2026-06-09", cls: "Ⅴ类", level: 5, target: "Ⅱ类", targetLevel: 2, compliant: "否", pollutant: "溶解氧(0.27)、氨氮(0.19)" },
+        { date: "2026-06-09-PPT", cls: "Ⅴ类", level: 5, target: "Ⅱ类", targetLevel: 2, compliant: "否", pollutant: "溶解氧(0.27)、氨氮(0.19)" },
         { date: "2026-06-10", cls: "劣Ⅴ类", level: "bad-5", target: "Ⅱ类", targetLevel: 2, compliant: "否", pollutant: "溶解氧(0.34)" }
       ]
     },
@@ -207,7 +207,7 @@ window.__REPORT_DATA__ = (function() {
       name: "排水闸", city: "荆州市", days: 3,
       detail: [
         { date: "2026-06-08", cls: "Ⅳ类", level: 4, target: "Ⅲ类", targetLevel: 3, compliant: "否", pollutant: "总磷(0.10)" },
-        { date: "2026-06-09", cls: "Ⅴ类", level: 5, target: "Ⅲ类", targetLevel: 3, compliant: "否", pollutant: "高锰酸盐指数(0.31)" },
+        { date: "2026-06-09-PPT", cls: "Ⅴ类", level: 5, target: "Ⅲ类", targetLevel: 3, compliant: "否", pollutant: "高锰酸盐指数(0.31)" },
         { date: "2026-06-10", cls: "劣Ⅴ类", level: "bad-5", target: "Ⅲ类", targetLevel: 3, compliant: "否", pollutant: "高锰酸盐指数(0.44)" }
       ]
     },
@@ -215,7 +215,7 @@ window.__REPORT_DATA__ = (function() {
       name: "五龙泉", city: "十堰市", days: 3,
       detail: [
         { date: "2026-06-08", cls: "Ⅳ类", level: 4, target: "Ⅲ类", targetLevel: 3, compliant: "否", pollutant: "高锰酸盐指数(0.12)" },
-        { date: "2026-06-09", cls: "Ⅴ类", level: 5, target: "Ⅲ类", targetLevel: 3, compliant: "否", pollutant: "溶解氧(0.19)" },
+        { date: "2026-06-09-PPT", cls: "Ⅴ类", level: 5, target: "Ⅲ类", targetLevel: 3, compliant: "否", pollutant: "溶解氧(0.19)" },
         { date: "2026-06-10", cls: "Ⅴ类", level: 5, target: "Ⅲ类", targetLevel: 3, compliant: "否", pollutant: "溶解氧(0.26)" }
       ]
     }
@@ -374,7 +374,7 @@ window.__REPORT_DATA__ = (function() {
     { seq: 67, river: "梁子湖武汉水域", attr: "国控", name: "牛山湖湖心", city: "武汉市", dailyClass: "Ⅴ类", dailyLevel: 5, dailyChange: "-", dailyFactors: "氨氮(0.23)", monthlyClass: "Ⅴ类", monthlyLevel: 5, monthlyFactors: "溶解氧(0.20)", target: "Ⅲ类", targetLevel: 3 },
     { seq: 72, river: "金水", attr: "国控", name: "金水闸", city: "武汉市", dailyClass: "Ⅳ类", dailyLevel: 4, dailyChange: "有所好转", dailyFactors: "化学需氧量(0.14)", monthlyClass: "Ⅴ类", monthlyLevel: 5, monthlyFactors: "总磷(0.20)", target: "Ⅱ类", targetLevel: 2 },
     { seq: 73, river: "通顺河", attr: "国控", name: "黄陵大桥", city: "武汉市", dailyClass: "Ⅲ类", dailyLevel: 3, dailyChange: "有所好转", dailyFactors: "-", monthlyClass: "Ⅲ类", monthlyLevel: 3, monthlyFactors: "-", target: "Ⅱ类", targetLevel: 2 },
-    { seq: 75, river: "东荆河", attr: "国控", name: "潜江大桥", city: "潜江市", dailyClass: "Ⅲ类", dailyLevel: 3, dailyChange: "有所好转", dailyFactors: "化学需氧量(0.09)", monthlyClass: "Ⅲ类", monthlyLevel: 3, monthlyFactors: "氨氮(0.14)", target: "Ⅱ类", targetLevel: 2 },
+    { seq: 75, river: "东荆河", attr: "国控", name: "潜江大桥", city: "潜江市", dailyClass: "Ⅲ类", dailyLevel: 3, dailyChange: "有所好转", dailyFactors: "化学需氧量(0.09-PPT)", monthlyClass: "Ⅲ类", monthlyLevel: 3, monthlyFactors: "氨氮(0.14)", target: "Ⅱ类", targetLevel: 2 },
     { seq: 77, river: "南河", attr: "国控", name: "阳日湾", city: "神农架", dailyClass: "Ⅲ类", dailyLevel: 3, dailyChange: "有所好转", dailyFactors: "-", monthlyClass: "Ⅳ类", monthlyLevel: 4, monthlyFactors: "氨氮(0.12)", target: "Ⅱ类", targetLevel: 2 },
     { seq: 79, river: "藕池河西支", attr: "国控", name: "官垱", city: "荆州市", dailyClass: "Ⅳ类", dailyLevel: 4, dailyChange: "有所好转", dailyFactors: "化学需氧量(0.13)", monthlyClass: "Ⅳ类", monthlyLevel: 4, monthlyFactors: "总磷(0.25)", target: "Ⅱ类", targetLevel: 2 },
     { seq: 80, river: "藕池河", attr: "国控", name: "康家岗", city: "荆州市", dailyClass: "Ⅳ类", dailyLevel: 4, dailyChange: "有所下降", dailyFactors: "溶解氧(0.17)", monthlyClass: "Ⅳ类", monthlyLevel: 4, monthlyFactors: "高锰酸盐指数(0.22)", target: "Ⅱ类", targetLevel: 2 },
@@ -540,7 +540,7 @@ window.__REPORT_DATA__ = (function() {
     { seq: 41, river: "清江", attr: "国控", name: "桅杆坪", city: "宜昌市", dailyClass: "Ⅱ类", dailyLevel: 2, dailyChange: "有所下降", dailyFactors: "-", monthlyClass: "Ⅱ类", monthlyLevel: 2, monthlyFactors: "-", target: "Ⅱ类", targetLevel: 2 },
     { seq: 43, river: "漳河", attr: "国控", name: "白石港", city: "宜昌市", dailyClass: "Ⅰ类", dailyLevel: 1, dailyChange: "-", dailyFactors: "-", monthlyClass: "Ⅰ类", monthlyLevel: 1, monthlyFactors: "-", target: "Ⅱ类", targetLevel: 2 },
     { seq: 45, river: "香溪河", attr: "国控", name: "长沙坝", city: "宜昌市", dailyClass: "Ⅰ类", dailyLevel: 1, dailyChange: "-", dailyFactors: "-", monthlyClass: "Ⅰ类", monthlyLevel: 1, monthlyFactors: "-", target: "Ⅱ类", targetLevel: 2 },
-    { seq: 46, river: "隔河岩水库", attr: "国控", name: "隔河岩水库坝上", city: "宜昌市", dailyClass: "Ⅲ类", dailyLevel: 3, dailyChange: "-", dailyFactors: "-", monthlyClass: "Ⅲ类", monthlyLevel: 3, monthlyFactors: "溶解氧(0.09)", target: "Ⅲ类", targetLevel: 3 },
+    { seq: 46, river: "隔河岩水库", attr: "国控", name: "隔河岩水库坝上", city: "宜昌市", dailyClass: "Ⅲ类", dailyLevel: 3, dailyChange: "-", dailyFactors: "-", monthlyClass: "Ⅲ类", monthlyLevel: 3, monthlyFactors: "溶解氧(0.09-PPT)", target: "Ⅲ类", targetLevel: 3 },
     { seq: 47, river: "沮河", attr: "国控", name: "马渡河", city: "宜昌市", dailyClass: "Ⅱ类", dailyLevel: 2, dailyChange: "有所好转", dailyFactors: "-", monthlyClass: "Ⅲ类", monthlyLevel: 3, monthlyFactors: "-", target: "Ⅱ类", targetLevel: 2 },
     { seq: 48, river: "酉水", attr: "国控", name: "乐坪桥", city: "恩施州", dailyClass: "Ⅱ类", dailyLevel: 2, dailyChange: "-", dailyFactors: "-", monthlyClass: "Ⅱ类", monthlyLevel: 2, monthlyFactors: "-", target: "Ⅱ类", targetLevel: 2 },
     { seq: 50, river: "长江干流", attr: "国控", name: "培石", city: "恩施州", dailyClass: "Ⅱ类", dailyLevel: 2, dailyChange: "-", dailyFactors: "-", monthlyClass: "Ⅱ类", monthlyLevel: 2, monthlyFactors: "-", target: "Ⅱ类", targetLevel: 2 },
@@ -661,7 +661,7 @@ window.__REPORT_DATA__ = (function() {
     { seq: 17, name: "小河", city: "孝感市", date: "2026-06-10", cls: "Ⅱ类", level: 2, target: "Ⅱ类", targetLevel: 2, compliant: "是", do: "6.4", tn: "1.19", cond: "292.2", tp: "0.048", temp: "25.5", codmn: "3.4", ph: "8", turb: "15.7", nh3n: "0.046", factors: "不超标" },
     { seq: 18, name: "应城公路桥", city: "孝感市", date: "2026-06-10", cls: "Ⅰ类", level: 1, target: "Ⅱ类", targetLevel: 2, compliant: "是", do: "8.8", tn: "0.49", cond: "232.8", tp: "0.03", temp: "22.7", codmn: "1.6", ph: "7.2", turb: "8.1", nh3n: "0.038", factors: "不超标" },
     { seq: 19, name: "新沟闸", city: "孝感市", date: "2026-06-10", cls: "Ⅰ类", level: 1, target: "Ⅱ类", targetLevel: 2, compliant: "是", do: "7.4", tn: "0.53", cond: "171", tp: "0.029", temp: "23.3", codmn: "1.7", ph: "7", turb: "11.2", nh3n: "0.05", factors: "不超标" },
-    { seq: 20, name: "田店泵站", city: "孝感市", date: "2026-06-10", cls: "Ⅱ类", level: 2, target: "Ⅱ类", targetLevel: 2, compliant: "是", do: "7.6", tn: "1.09", cond: "288.9", tp: "0.032", temp: "24.3", codmn: "3.5", ph: "8.2", turb: "10.5", nh3n: "0.038", factors: "不超标" },
+    { seq: 20, name: "田店泵站", city: "孝感市", date: "2026-06-10", cls: "Ⅱ类", level: 2, target: "Ⅱ类", targetLevel: 2, compliant: "是", do: "7.6", tn: "1.09-PPT", cond: "288.9", tp: "0.032", temp: "24.3", codmn: "3.5", ph: "8.2", turb: "10.5", nh3n: "0.038", factors: "不超标" },
     { seq: 21, name: "隔蒲桥", city: "孝感市", date: "2026-06-10", cls: "Ⅱ类", level: 2, target: "Ⅱ类", targetLevel: 2, compliant: "是", do: "7.6", tn: "0.8", cond: "229", tp: "0.052", temp: "24.2", codmn: "3.6", ph: "7.3", turb: "10.8", nh3n: "0.133", factors: "不超标" },
     { seq: 22, name: "鲢鱼地泵站", city: "孝感市", date: "2026-06-10", cls: "Ⅰ类", level: 1, target: "Ⅱ类", targetLevel: 2, compliant: "是", do: "7.7", tn: "0.4", cond: "174", tp: "0.025", temp: "23.7", codmn: "1.8", ph: "8.1", turb: "3.7", nh3n: "0.05", factors: "不超标" },
     { seq: 23, name: "云池（白洋）", city: "宜昌市", date: "2026-06-10", cls: "Ⅱ类", level: 2, target: "Ⅱ类", targetLevel: 2, compliant: "是", do: "7.4", tn: "0.9", cond: "303.6", tp: "0.041", temp: "24.7", codmn: "3", ph: "8.4", turb: "15.7", nh3n: "0.043", factors: "不超标" },
@@ -752,14 +752,14 @@ window.__REPORT_DATA__ = (function() {
     { seq: 108, name: "姚集", city: "荆州市", date: "2026-06-10", cls: "Ⅱ类", level: 2, target: "Ⅱ类", targetLevel: 2, compliant: "是", do: "7.6", tn: "0.88", cond: "306", tp: "0.08", temp: "23.5", codmn: "4", ph: "7.3", turb: "11.5", nh3n: "0.06", factors: "不超标" },
     { seq: 109, name: "桂花树", city: "荆州市", date: "2026-06-10", cls: "Ⅰ类", level: 1, target: "Ⅱ类", targetLevel: 2, compliant: "是", do: "8.8", tn: "0.43", cond: "219.6", tp: "0.033", temp: "24.5", codmn: "2.1", ph: "7.4", turb: "9", nh3n: "0.031", factors: "不超标" },
     { seq: 110, name: "瞿家湾", city: "荆州市", date: "2026-06-10", cls: "Ⅰ类", level: 1, target: "Ⅱ类", targetLevel: 2, compliant: "是", do: "8.7", tn: "0.45", cond: "233.6", tp: "0.034", temp: "25.3", codmn: "1.7", ph: "8", turb: "8.5", nh3n: "0.05", factors: "不超标" },
-    { seq: 111, name: "山河电站", city: "荆门市", date: "2026-06-10", cls: "Ⅱ类", level: 2, target: "Ⅱ类", targetLevel: 2, compliant: "是", do: "6", tn: "1.09", cond: "238.3", tp: "0.055", temp: "24.1", codmn: "2.2", ph: "8", turb: "10.7", nh3n: "0.188", factors: "不超标" },
+    { seq: 111, name: "山河电站", city: "荆门市", date: "2026-06-10", cls: "Ⅱ类", level: 2, target: "Ⅱ类", targetLevel: 2, compliant: "是", do: "6", tn: "1.09-PPT", cond: "238.3", tp: "0.055", temp: "24.1", codmn: "2.2", ph: "8", turb: "10.7", nh3n: "0.188", factors: "不超标" },
     { seq: 112, name: "康家沟", city: "荆门市", date: "2026-06-10", cls: "Ⅱ类", level: 2, target: "Ⅱ类", targetLevel: 2, compliant: "是", do: "7", tn: "0.66", cond: "299.4", tp: "0.051", temp: "24.1", codmn: "1.7", ph: "7.3", turb: "19.4", nh3n: "0.064", factors: "不超标" },
     { seq: 113, name: "石牌港", city: "荆门市", date: "2026-06-10", cls: "Ⅱ类", level: 2, target: "Ⅱ类", targetLevel: 2, compliant: "是", do: "6.4", tn: "1.19", cond: "292.4", tp: "0.058", temp: "25.1", codmn: "2.9", ph: "7.8", turb: "5.5", nh3n: "0.225", factors: "不超标" },
     { seq: 114, name: "王湾村", city: "襄阳市", date: "2026-06-10", cls: "Ⅰ类", level: 1, target: "Ⅱ类", targetLevel: 2, compliant: "是", do: "8.5", tn: "0.45", cond: "229.9", tp: "0.03", temp: "22.6", codmn: "1.7", ph: "7.2", turb: "1.5", nh3n: "0.014", factors: "不超标" },
     { seq: 115, name: "琚湾", city: "襄阳市", date: "2026-06-10", cls: "Ⅱ类", level: 2, target: "Ⅱ类", targetLevel: 2, compliant: "是", do: "6.9", tn: "1.18", cond: "297.6", tp: "0.026", temp: "24.8", codmn: "1.9", ph: "7.8", turb: "14.9", nh3n: "0.233", factors: "不超标" },
     { seq: 116, name: "西排子河水库库心", city: "襄阳市", date: "2026-06-10", cls: "Ⅰ类", level: 1, target: "Ⅲ类", targetLevel: 3, compliant: "是", do: "7.9", tn: "0.23", cond: "181.5", tp: "0.012", temp: "24.5", codmn: "1.8", ph: "8.1", turb: "3.2", nh3n: "0.039", factors: "不超标" },
     { seq: 117, name: "重阳", city: "襄阳市", date: "2026-06-10", cls: "Ⅰ类", level: 1, target: "Ⅱ类", targetLevel: 2, compliant: "是", do: "8", tn: "0.59", cond: "190.6", tp: "0.04", temp: "22.6", codmn: "2.3", ph: "7.7", turb: "5.6", nh3n: "0.047", factors: "不超标" },
-    { seq: 118, name: "梁子湖长港出口", city: "鄂州市", date: "2026-06-10", cls: "Ⅱ类", level: 2, target: "Ⅱ类", targetLevel: 2, compliant: "是", do: "7.3", tn: "1.09", cond: "188.8", tp: "0.067", temp: "24.1", codmn: "2", ph: "8.2", turb: "8.5", nh3n: "0.077", factors: "不超标" },
+    { seq: 118, name: "梁子湖长港出口", city: "鄂州市", date: "2026-06-10", cls: "Ⅱ类", level: 2, target: "Ⅱ类", targetLevel: 2, compliant: "是", do: "7.3", tn: "1.09-PPT", cond: "188.8", tp: "0.067", temp: "24.1", codmn: "2", ph: "8.2", turb: "8.5", nh3n: "0.077", factors: "不超标" },
     { seq: 119, name: "樊口", city: "鄂州市", date: "2026-06-10", cls: "Ⅰ类", level: 1, target: "Ⅱ类", targetLevel: 2, compliant: "是", do: "8.2", tn: "0.5", cond: "236.2", tp: "0.016", temp: "22.8", codmn: "1.7", ph: "7.5", turb: "10.8", nh3n: "0.072", factors: "不超标" },
     { seq: 120, name: "港口桥", city: "鄂州市", date: "2026-06-10", cls: "Ⅰ类", level: 1, target: "Ⅱ类", targetLevel: 2, compliant: "是", do: "8", tn: "0.54", cond: "247.2", tp: "0.031", temp: "23.8", codmn: "1.9", ph: "7.4", turb: "7.4", nh3n: "0.056", factors: "不超标" },
     { seq: 121, name: "随应桥", city: "随州市", date: "2026-06-10", cls: "Ⅱ类", level: 2, target: "Ⅱ类", targetLevel: 2, compliant: "是", do: "7.3", tn: "0.82", cond: "276.8", tp: "0.069", temp: "25.1", codmn: "2.4", ph: "8.1", turb: "13.3", nh3n: "0.246", factors: "不超标" },

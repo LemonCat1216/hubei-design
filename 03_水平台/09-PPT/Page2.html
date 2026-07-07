@@ -9,19 +9,19 @@
 /* 目录项目区域 */
 .toc-body {
   flex: 1;
-  padding: 16px 36px;
+  padding: 10px 36px;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: 10px;
+  gap: 6px;
   position: relative;
   z-index: 1;
 }
 
 /* 覆盖全局 .toc-item 样式 */
 .toc-item {
-  gap: 12px !important;
-  padding: 11px 20px !important;
+  gap: 8px !important;
+  padding: 8px 20px !important;
 }
 
 /* 页码标 */
@@ -74,18 +74,21 @@
 
 <script>
 var ITS = [
-    ["排名情况", "国/省控断面排位 · 波动态势 · 17市州详情",       "03-05"],
-    ["全省态势", "市州达标率 · 风险预警 · 月度趋势 · 污染因子",  "06-10"],
-    ["流域湖库", "五大水系概览 · 12片区详情 · 重点湖库专项监测", "11-20"],
-    ["排口信息", "排污口排查整治 · 不达标清单 · 溯源预警 · 黑臭水体", "21-26"],
-    ["压实举措", "督办交办 · 资金调度 · 饮用水源 · 考核排名",   "27-32"]
+    ["国控水环境质量形势", "国控断面全国排位 · 波动态势 · CWQI城市排名",               "P03-P04A"],
+    ["省控市州达标分析",   "省控断面市州达标（当前月 / 累计月）",                         "P05-P06"],
+    ["流域湖库分析",   "三大流域 · 重点湖库 · 丹江口水库",                           "P11-P20A"],
+    ["风险断面攻坚",   "重点风险断面督办 · 污染因子根因分析 · 劣V类清零攻坚",        "P20B-P20D"],
+    ["排污口排查整治", "入河排污口排查 · 溯源整治 · 日常监管",                        "P21-P24, P26, P29"],
+    ["其他业务",   "饮用水水源地管理 · 资金项目调度 · 黑臭水体整治",                 "P25, P27-P28"],
+    ["问题聚焦与督办", "重点问题清单 · 线索跟踪处置",                                 "P30-P31"],
+    ["总结与展望",     "本月工作回顾 · 下月工作部署",                                 "P32"]
 ];
 var c = document.getElementById("toc-container");
 var h = "";
 for (var i = 0; i < ITS.length; i++) {
     h += '<div class="toc-item">' +
          '<span class="idx">' + (i + 1) + '</span>' +
-         '<div style="display:flex;flex-direction:column;gap:2px;">' +
+         '<div style="display:flex;flex-direction:row;gap:8px;align-items:baseline;white-space:nowrap;">' +
          '<span class="item-main">' + ITS[i][0] + '</span>' +
          '<span class="item-sub">' + ITS[i][1] + '</span>' +
          '</div>' +
@@ -97,9 +100,3 @@ c.innerHTML = h;
 
 </body>
 </html>
-
-
-
-
-
-

@@ -3,109 +3,94 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>全省态势 - 市州省控断面累计月情况</title>
+    <title>全省态势 - 市州省控断面当前月达标详情</title>
     <link rel="stylesheet" href="ppt-style.css">
     <style>
-        /* === 核心修复：17行满载表格极限压缩方案 === */
-        /* 1. 压缩单元格本身的上下间距 */
         .fit-table td { padding: 2px 8px !important; font-size: 8.5px !important; }
         .fit-table th { padding: 4px 8px !important; }
-
-        /* 2. 关键修复：压缩内部徽标（红绿底色标签）的垂直空间，防止其撑大行高 */
-        .fit-table .badge-g, .fit-table .badge-r {
-            padding: 1px 6px !important;
-            font-size: 8.5px !important;
-            display: inline-block;
-        }
-
-        /* 让左侧被拉伸的预警卡片内容垂直居中，保持美观 */
+        .trend-up { color: #DC2626 !important; font-weight: 700; }
+        .trend-down { color: #059669 !important; font-weight: 700; }
+        .trend-flat { color: #64748B !important; }
         .left-column .warning-card { justify-content: center; }
     </style>
 </head>
 <body>
 <div class="slide-container">
     <div class="ppt-header">
-        <span class="ppt-title">全省态势：市州省控断面1-5月累计达标详情</span>
+        <span class="ppt-title">省控断面当前月市州达标</span>
         <span class="nav-page-num">P06</span>
     </div>
 
-    <div class="core-bar">▎ 2026年1-5月，全省省控断面12个地市与目标存在差距，缺口集中在荆州市(18个)、武汉市(14个)、孝感市(10个)、潜江市(8个)。</div>
+    <div class="core-bar">▎ 2026年5月（当前月），全省334个省控断面Ⅰ-Ⅲ类比例86.8%，环比上升0.3%，同比下降0.5%。共13个地市76个断面超标。</div>
 
     <div class="bd">
-        <!-- 左侧分栏：纵向弹性布局，高度自动对齐右侧 -->
         <div class="left-column" style="display: flex; flex-direction: column; justify-content: space-between; gap: 8px;">
 
-            <!-- 核心通栏大卡片 -->
             <div class="kpi-block" style="padding: 12px 14px !important;">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <div class="kpi-title">省控Ⅰ-Ⅲ类比例（累计均值）</div>
-                    <span style="font-size: 8px; background: #EFF6FF; color: #1E40AF; padding: 1px 4px; border-radius: 0; font-weight: 700;">总体平稳</span>
+                    <div class="kpi-title">省控Ⅰ-Ⅲ类比例（当前月）</div>
+                    <div style="display:flex;gap:8px;font-size:9px;align-items:center;"><span style="color:#64748B;">同比 <span style="color:#DC2626;font-weight:700;">↓0.5%</span></span><span style="color:#64748B;">环比 <span style="color:#059669;font-weight:700;">↑0.3%</span></span></div>
                 </div>
-                <div class="kpi-num" style="font-size: 26px !important; margin: 2px 0 4px 0;">84.8%</div>
+                <div class="kpi-num" style="font-size: 26px !important; margin: 2px 0 4px 0;">86.8%</div>
                 <div class="progress-bar" style="background: #E2E8F0; height: 5px; border-radius: 0; overflow: hidden; margin-bottom: 4px;">
-                    <div class="progress-fill" style="width: 84.8%; background: #2563EB; height: 100%;"></div>
+                    <div class="progress-fill" style="width: 86.8%; background: #2563EB; height: 100%;"></div>
                 </div>
-                <div class="kpi-sub">数据口径：1-5月全省17市州拉通统计均值</div>
+                <div class="kpi-sub">数据口径：5月（当前月）17市州单月统计</div>
             </div>
 
-            <!-- 并排的两个小卡片 -->
             <div style="display: flex; gap: 10px;">
                 <div class="kpi-block hl" style="flex: 1;">
-                    <div class="kpi-title">绿灯领跑（满分）</div>
-                    <div class="kpi-num" style="font-size: 14px !important; color: #059669 !important; margin: 4px 0;">神农架/鄂州</div>
-                    <div class="kpi-sub">完美达成阶段目标</div>
+                    <div class="kpi-title">环比改善</div>
+                    <div class="kpi-num" style="font-size: 14px !important; color: #059669 !important; margin: 4px 0;">5 市</div>
+                    <div class="kpi-sub">十堰、宜昌、荆州、荆门、黄石</div>
                 </div>
                 <div class="kpi-block al" style="flex: 1;">
-                    <div class="kpi-title">红灯预警（未达标）</div>
-                    <div class="kpi-num" style="font-size: 14px !important; color: #DC2626 !important; margin: 4px 0;">全省 12 个</div>
-                    <div class="kpi-sub">地市存在考核缺口</div>
+                    <div class="kpi-title">环比恶化</div>
+                    <div class="kpi-num" style="font-size: 14px !important; color: #DC2626 !important; margin: 4px 0;">7 市</div>
+                    <div class="kpi-sub">黄冈、咸宁、孝感、潜江、天门、随州、襄阳</div>
                 </div>
             </div>
 
-            <!-- 预警卡片（flex: 1 吸收多余空间） -->
             <div class="warning-card" style="flex: 1;">
-                <div class="card-loc">🎯 目标差距预警</div>
-                <div class="card-det">全省<strong>12个</strong>地市未达标，断面缺口高度集中在荆州、武汉、孝感、潜江。</div>
+                <div class="card-loc">⚠ 当前月新增超标断面</div>
+                <div class="card-det">5月共新增<strong>12个</strong>超标断面，荆州（+3）、孝感（+2）、潜江（+2）居前。</div>
             </div>
 
             <div class="warning-card blue-card" style="flex: 1;">
-                <div class="card-loc">📈 同比反弹预警</div>
-                <div class="card-det">十堰、随州、黄冈、鄂州4市同比提升；另有<strong>12市</strong>同比呈现反弹下降。</div>
+                <div class="card-loc">✓ 当前月改善断面</div>
+                <div class="card-det">4月超标、5月达标的断面共<strong>8个</strong>，宜昌（2个）、十堰（2个）改善明显。</div>
             </div>
         </div>
 
-        <!-- 右侧分栏：强制高度 100%，包裹表格 -->
         <div class="right-column" style="height: 100%;">
             <div class="table-box fit-table" style="height: 100%; overflow: hidden; display: flex; flex-direction: column;">
                 <table style="width: 100%; flex: 1;">
                     <thead>
                     <tr>
                         <th>市州</th>
-                        <th>考核断面</th>
-                        <th>1-5月优良比</th>
-                        <th>目标</th>
-                        <th>差距</th>
-                        <th>缺口数</th>
+                        <th>当前月优良比</th>
+                        <th>环比上月</th>
+                        <th>当前月超标数</th><th>同比去年同月</th><th>态势</th>
                     </tr>
                     </thead>
                     <tbody>
-                    <tr><td class="td-left">神农架林区</td><td>8</td><td>100%</td><td>100%</td><td><span class="badge-g">0.0</span></td><td>0</td></tr>
-                    <tr><td class="td-left">鄂州市</td><td>18</td><td>100%</td><td>85.7%</td><td><span class="badge-g">+14.3%</span></td><td>0</td></tr>
-                    <tr><td class="td-left">十堰市</td><td>67</td><td>97.0%</td><td>92.6%</td><td><span class="badge-g">+4.4%</span></td><td>0</td></tr>
-                    <tr><td class="td-left">宜昌市</td><td>32</td><td>93.8%</td><td>90.6%</td><td><span class="badge-g">+3.2%</span></td><td>2</td></tr>
-                    <tr><td class="td-left">襄阳市</td><td>28</td><td>92.9%</td><td>89.3%</td><td><span class="badge-g">+3.6%</span></td><td>4</td></tr>
-                    <tr><td class="td-left">黄石市</td><td>22</td><td>90.9%</td><td>86.4%</td><td><span class="badge-g">+4.5%</span></td><td>0</td></tr>
-                    <tr><td class="td-left">武汉市</td><td>52</td><td>86.5%</td><td>82.7%</td><td><span class="badge-g">+3.8%</span></td><td>14</td></tr>
-                    <tr><td class="td-left">黄冈市</td><td>50</td><td>86.0%</td><td>96.2%</td><td><span class="badge-r">-10.2%</span></td><td>7</td></tr>
-                    <tr><td class="td-left">咸宁市</td><td>18</td><td>83.3%</td><td>88.9%</td><td><span class="badge-r">-5.6%</span></td><td>6</td></tr>
-                    <tr><td class="td-left">恩施州</td><td>20</td><td>80.0%</td><td>85.0%</td><td><span class="badge-r">-5.0%</span></td><td>1</td></tr>
-                    <tr><td class="td-left">荆门市</td><td>16</td><td>75.0%</td><td>81.3%</td><td><span class="badge-r">-6.3%</span></td><td>6</td></tr>
-                    <tr><td class="td-left">孝感市</td><td>40</td><td>75.0%</td><td>96.2%</td><td><span class="badge-r">-21.2%</span></td><td>10</td></tr>
-                    <tr><td class="td-left">荆州市</td><td>45</td><td>60.0%</td><td>84.4%</td><td><span class="badge-r">-24.4%</span></td><td>18</td></tr>
-                    <tr><td class="td-left">随州市</td><td>12</td><td>58.3%</td><td>83.3%</td><td><span class="badge-r">-25.0%</span></td><td>5</td></tr>
-                    <tr><td class="td-left">潜江市</td><td>14</td><td>57.1%</td><td>78.6%</td><td><span class="badge-r">-21.5%</span></td><td>8</td></tr>
-                    <tr><td class="td-left">仙桃市</td><td>8</td><td>50.0%</td><td>60.0%</td><td><span class="badge-r">-10.0%</span></td><td>4</td></tr>
-                    <tr><td class="td-left">天门市</td><td>13</td><td>46.2%</td><td>87.5%</td><td><span class="badge-r">-41.3%</span></td><td>7</td></tr>
+                    <tr><td class="td-left">神农架林区</td><td>100%</td><td>→ 持平</td><td>0</td><td>→ 持平</td><td><span class="trend-flat">→</span></td></tr>
+                    <tr><td class="td-left">鄂州市</td><td>100%</td><td>→ 持平</td><td>0</td><td>→ 持平</td><td><span class="trend-flat">→</span></td></tr>
+                    <tr><td class="td-left">十堰市</td><td>98.5%</td><td><span class="trend-down">↑ +1.5%</span></td><td>0</td><td><span class="trend-down">↑ +2.0%</span></td><td><span class="trend-down">↑</span></td></tr>
+                    <tr><td class="td-left">宜昌市</td><td>95.0%</td><td><span class="trend-down">↑ +1.2%</span></td><td>1</td><td><span class="trend-down">↑ +1.5%</span></td><td><span class="trend-down">↑</span></td></tr>
+                    <tr><td class="td-left">襄阳市</td><td>93.5%</td><td><span class="trend-up">↓ -0.6%</span></td><td>3</td><td><span class="trend-flat">→ -0.2%</span></td><td><span class="trend-up">↓</span></td></tr>
+                    <tr><td class="td-left">黄石市</td><td>92.0%</td><td><span class="trend-down">↑ +1.1%</span></td><td>0</td><td><span class="trend-down">↑ +0.8%</span></td><td><span class="trend-down">↑</span></td></tr>
+                    <tr><td class="td-left">武汉市</td><td>87.0%</td><td><span class="trend-flat">→ +0.5%</span></td><td>8</td><td><span class="trend-up">↓ -0.5%</span></td><td><span class="trend-flat">→</span></td></tr>
+                    <tr><td class="td-left">黄冈市</td><td>84.0%</td><td><span class="trend-up">↓ -2.0%</span></td><td>6</td><td><span class="trend-up">↓ -2.5%</span></td><td><span class="trend-up">↓</span></td></tr>
+                    <tr><td class="td-left">咸宁市</td><td>82.0%</td><td><span class="trend-up">↓ -1.3%</span></td><td>5</td><td><span class="trend-up">↓ -1.0%</span></td><td><span class="trend-up">↓</span></td></tr>
+                    <tr><td class="td-left">恩施州</td><td>80.0%</td><td><span class="trend-flat">→ 持平</span></td><td>2</td><td><span class="trend-flat">→ 持平</span></td><td><span class="trend-flat">→</span></td></tr>
+                    <tr><td class="td-left">荆门市</td><td>76.0%</td><td><span class="trend-down">↑ +1.0%</span></td><td>5</td><td><span class="trend-down">↑ +1.5%</span></td><td><span class="trend-down">↑</span></td></tr>
+                    <tr><td class="td-left">孝感市</td><td>74.0%</td><td><span class="trend-up">↓ -1.0%</span></td><td>9</td><td><span class="trend-up">↓ -1.5%</span></td><td><span class="trend-up">↓</span></td></tr>
+                    <tr><td class="td-left">荆州市</td><td>62.0%</td><td><span class="trend-down">↑ +2.0%</span></td><td>15</td><td><span class="trend-down">↑ +3.0%</span></td><td><span class="trend-down">↑</span></td></tr>
+                    <tr><td class="td-left">随州市</td><td>58.0%</td><td><span class="trend-up">↓ -0.3%</span></td><td>5</td><td><span class="trend-up">↓ -0.5%</span></td><td><span class="trend-up">↓</span></td></tr>
+                    <tr><td class="td-left">潜江市</td><td>56.0%</td><td><span class="trend-up">↓ -1.1%</span></td><td>7</td><td><span class="trend-up">↓ -2.0%</span></td><td><span class="trend-up">↓</span></td></tr>
+                    <tr><td class="td-left">仙桃市</td><td>50.0%</td><td><span class="trend-flat">→ 持平</span></td><td>4</td><td><span class="trend-flat">→ 持平</span></td><td><span class="trend-flat">→</span></td></tr>
+                    <tr><td class="td-left">天门市</td><td>45.0%</td><td><span class="trend-up">↓ -1.2%</span></td><td>6</td><td><span class="trend-up">↓ -3.0%</span></td><td><span class="trend-up">↓</span></td></tr>
                     </tbody>
                 </table>
             </div>
@@ -119,5 +104,7 @@
 </div>
 </body>
 </html>
+
+
 
 

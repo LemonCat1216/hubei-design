@@ -36,10 +36,21 @@
 </div>
 <script>
 var d=[{n:"青海",i:38,ii:50,iii:12},{n:"新疆",i:30,ii:44,iii:15},{n:"甘肃",i:29,ii:56,iii:7},{n:"广西",i:16,ii:61,iii:14},{n:"辽宁",i:15,ii:42,iii:21},{n:"陕西",i:14,ii:58,iii:19},{n:"云南",i:13,ii:52,iii:20},{n:"四川",i:12,ii:42,iii:38},{n:"重庆",i:11,ii:52,iii:29},{n:"湖北",i:9,ii:47,iii:31.6,h:1},{n:"浙江",i:8,ii:48,iii:34},{n:"河南",i:7,ii:38,iii:31},{n:"河北",i:6,ii:38,iii:36},{n:"海南",i:6,ii:54,iii:23},{n:"湖南",i:4,ii:69,iii:23},{n:"江西",i:3,ii:64,iii:27},{n:"山东",i:3,ii:21,iii:46},{n:"北京",i:3,ii:58,iii:33},{n:"安徽",i:1,ii:38,iii:35},{n:"广东",i:1,ii:38,iii:32},{n:"江苏",i:0,ii:43,iii:46}];
-var c=document.getElementById("chart1"),h="";
-d.forEach(function(p){var t=p.i+p.ii+p.iii,hl=p.h?" highlight":"";
-h+='<div class="bar-group'+hl+'"><div class="stacked-bar" style="height:'+Math.round(t*.8)+'px;"><div class="bar-seg cat1" style="height:'+(p.i/t*100)+'%;"></div><div class="bar-seg cat2" style="height:'+(p.ii/t*100)+'%;"></div><div class="bar-seg cat3" style="height:'+(p.iii/t*100)+'%;"></div></div><div class="prov-name">'+p.n+'</div></div>';});
-c.innerHTML=h;
+var chart1 = echarts.init(document.getElementById("chart1"));
+chart1.setOption({
+    tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+    legend: { data: ['Ⅰ类','Ⅱ类','Ⅲ类'], bottom: 0, textStyle: { fontSize: 10 } },
+    grid: { left: 55, right: 20, top: 10, bottom: 30 },
+    xAxis: { type: 'category', data: d.map(function(p){return p.n;}), axisLabel: { fontSize: 8, rotate: 45 } },
+    yAxis: { type: 'value', max: 100, axisLabel: { fontSize: 8, formatter: '{value}%' } },
+    series: [
+        { name: 'Ⅰ类', type: 'bar', stack: 'total', data: d.map(function(p){return p.i;}), itemStyle: { color: '#1E3A8A' } },
+        { name: 'Ⅱ类', type: 'bar', stack: 'total', data: d.map(function(p){return p.ii;}), itemStyle: { color: '#3B82F6' } },
+        { name: 'Ⅲ类', type: 'bar', stack: 'total', data: d.map(function(p){return p.iii;}), itemStyle: { color: '#93C5FD' } }
+    ]
+});
+window.addEventListener('resize',function(){chart1.resize();});
+
 </script>
 <script>
 var cityData = [

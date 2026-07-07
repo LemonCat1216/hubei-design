@@ -34,36 +34,24 @@
     /* 核心改动：调整为 3 列排布，让少断面情况下也能完美填满纵向空间 */
     .pill-grid { 
         display: grid; 
-        grid-template-columns: repeat(3, 1fr); 
+        grid-template-columns: repeat(5, 1fr);
         gap: 5px; 
     }
     
-    .pill-node { 
-        background: #F0FDF4; 
-        border: 1px solid #DCFCE7; 
-        padding: 5px 6px; 
-        border-radius: 3px; 
-        display: flex; 
-        align-items: center; 
-        justify-content: space-between; 
+    .pill-node {
+        padding: 3px 4px;
+        font-size: 7.5px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-radius: 1px;
+        border: 1px solid #E2E8F0;
     }
-    .pill-name { 
-        font-size: 8px; 
-        font-weight: 600; 
-        color: #166534; 
-        white-space: nowrap; 
-        overflow: hidden; 
-        text-overflow: ellipsis; 
-    }
-    .pill-status { 
-        font-size: 7px; 
-        font-weight: 700; 
-        color: #ffffff; 
-        background: #10B981; 
-        padding: 0px 3.5px; 
-        border-radius: 2px; 
-    }
-
+    .pill-node.class-i { background: #EFF6FF; border-color: #BFDBFE; }
+    .pill-node.class-ii { background: #F0FDF4; border-color: #BBF7D0; }
+    .pill-node.class-iii { background: #FEFCE8; border-color: #FEF08A; }
+    .pill-name { font-size: 8px; font-weight: 600; color: #166534; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     /* 右侧通用自适应组件的“全绿亮点版”（结构同P13/P14） */
     .risk-list-wrapper { display: flex; flex-direction: column; gap: 5px; flex: 1; min-height: 0; }
     .risk-row-item { background: #F0FDF4; border: 1px solid #DCFCE7; border-left: 4px solid #10B981; padding: 7px 10px; display: flex; align-items: center; justify-content: space-between; flex: 1; }
@@ -79,58 +67,66 @@
 </head>
 <body>
 <div class="slide-container">
-    <div class="ppt-header"><span class="ppt-title">流域湖库：清江流域分析</span><span class="nav-page-num">P15</span></div>
+    <div class="ppt-header"><span class="ppt-title">流域湖库分析：清江流域分析</span><span class="nav-page-num">P15</span></div>
     <div class="core-bar" style="background: #F0FDF4!important; border-left-color: #10B981!important; color: #166534!important;">▎ 2026年5月（当前月），清江流域水质总体较好，Ⅰ-Ⅲ类比例保持92.3%以上，全线国控断面实现劣Ⅴ类清零。</div>
     <div class="bd" style="flex-direction:column;gap:10px;">
         <div class="kpi-row" style="margin-bottom:0;">
             <div class="kpi-card" style="border-top-color:#2563EB;"><div class="kpi-label" style="color:#2563EB;">监测断面总数</div><div class="kpi-value" style="color:#2563EB;">26个</div></div>
             <div class="kpi-card" style="border-top-color:#059669;"><div class="kpi-label" style="color:#059669;">Ⅰ-Ⅲ类比例</div><div class="kpi-value" style="color:#059669;">92.3%</div></div>
-            <div class="kpi-card" style="border-top-color:#10B981; background: #F0FDF4;"><div class="kpi-label" style="color:#10B981;">劣Ⅴ类断面</div><div class="kpi-value" style="color:#10B981;">0个 (清零)</div></div>
+            <div class="kpi-card" style="border-top-color:#10B981; background: #F0FDF4;"><div class="kpi-label" style="color:#10B981;">超标断面</div><div class="kpi-value" style="color:#10B981;">0个 (清零)</div></div>
             <div class="kpi-card" style="border-top-color:#059669;"><div class="kpi-label" style="color:#059669;">同比变化</div><div class="kpi-value" style="color:#059669;">↑1.2%</div></div>
         </div>
         <div style="display:flex;gap:12px;flex:1;min-height:0;">
             <div class="table-box" style="flex:0 0 55%; display:flex; flex-direction:column; padding:6px; background:#F8FAFC;">
                 <div style="font-size:9px; font-weight:700; color:#1E293B; margin-bottom:5px; padding-left:2px;">🌿 清江全流域断面水质看板 (26个)</div>
                 <div class="qingjiang-wall">
-                    
                     <div class="section-block">
-                        <div class="section-title"><span style="color:#10B981;">💧</span> 恩施州片区 (生态屏障核心区)</div>
+                        <div class="section-title"><span style="color:#10B981;">💧</span> 🟦 Ⅰ类水质（5个）</div>
                         <div class="pill-grid">
-                            <div class="pill-node"><span class="pill-name">恩施国控</span><span class="pill-status">Ⅱ类</span></div>
-                            <div class="pill-node"><span class="pill-name">利川段干流</span><span class="pill-status">Ⅱ类</span></div>
-                            <div class="pill-node"><span class="pill-name">建始段干流</span><span class="pill-status">Ⅲ类</span></div>
-                            <div class="pill-node"><span class="pill-name">巴东清江口</span><span class="pill-status">Ⅱ类</span></div>
-                            <div class="pill-node"><span class="pill-name">宣恩贡水河</span><span class="pill-status">Ⅱ类</span></div>
-                            <div class="pill-node"><span class="pill-name">咸丰唐崖河</span><span class="pill-status">Ⅱ类</span></div>
-                            <div class="pill-node"><span class="pill-name">来凤酉水河</span><span class="pill-status">Ⅲ类</span></div>
-                            <div class="pill-node"><span class="pill-name">支流忠建河</span><span class="pill-status">Ⅱ类</span></div>
-                            <div class="pill-node"><span class="pill-name">支流野三河</span><span class="pill-status">Ⅱ类</span></div>
-                            <div class="pill-node"><span class="pill-name">鹤峰缕水河</span><span class="pill-status">Ⅱ类</span></div>
-                            <div class="pill-node"><span class="pill-name">利川二桥</span><span class="pill-status">Ⅲ类</span></div>
-                            <div class="pill-node"><span class="pill-name">建始马水河</span><span class="pill-status">Ⅲ类</span></div>
-                            <div class="pill-node"><span class="pill-name">恩施大沙河</span><span class="pill-status">Ⅱ类</span></div>
-                            <div class="pill-node"><span class="pill-name">屯堡国控</span><span class="pill-status">Ⅱ类</span></div>
+                            <div class="pill-node class-i"><span class="pill-name">五峰湾潭河</span><span class="node-dot"></span></div>
+                            <div class="pill-node class-i"><span class="pill-name">恩施大沙河</span><span class="node-dot"></span></div>
+                            <div class="pill-node class-i"><span class="pill-name">鹤峰缕水河</span><span class="node-dot"></span></div>
+                            <div class="pill-node class-i"><span class="pill-name">屯堡国控</span><span class="node-dot"></span></div>
+                            <div class="pill-node class-i"><span class="pill-name">高坝洲水库</span><span class="node-dot"></span></div>
                         </div>
                     </div>
 
                     <div class="section-block">
-                        <div class="section-title"><span style="color:#10B981;">💧</span> 宜昌市片区 (高峡平湖消落区)</div>
+                        <div class="section-title"><span style="color:#10B981;">💧</span> 🟩 Ⅱ类水质（18个）</div>
                         <div class="pill-grid">
-                            <div class="pill-node"><span class="pill-name">长阳段干流</span><span class="pill-status">Ⅱ类</span></div>
-                            <div class="pill-node"><span class="pill-name">五峰湾潭河</span><span class="pill-status">Ⅰ类</span></div>
-                            <div class="pill-node"><span class="pill-name">宜都清江口</span><span class="pill-status">Ⅱ类</span></div>
-                            <div class="pill-node"><span class="pill-name">高坝洲水库</span><span class="pill-status">Ⅱ类</span></div>
-                            <div class="pill-node"><span class="pill-name">隔河岩大坝</span><span class="pill-status">Ⅱ类</span></div>
-                            <div class="pill-node"><span class="pill-name">渔峡口国控</span><span class="pill-status">Ⅱ类</span></div>
-                            <div class="pill-node"><span class="pill-name">支流茅坪河</span><span class="pill-status">Ⅲ类</span></div>
-                            <div class="pill-node"><span class="pill-name">红花套断面</span><span class="pill-status">Ⅱ类</span></div>
-                            <div class="pill-node"><span class="pill-name">长阳龙舟坪</span><span class="pill-status">Ⅱ类</span></div>
-                            <div class="pill-node"><span class="pill-name">宜都红湖</span><span class="pill-status">Ⅲ类</span></div>
-                            <div class="pill-node"><span class="pill-name">五峰渔洋河</span><span class="pill-status">Ⅱ类</span></div>
-                            <div class="pill-node"><span class="pill-name">高坝洲尾水</span><span class="pill-status">Ⅱ类</span></div>
+                            <div class="pill-node class-ii"><span class="pill-name">恩施国控</span><span class="node-dot"></span></div>
+                            <div class="pill-node class-ii"><span class="pill-name">利川段干流</span><span class="node-dot"></span></div>
+                            <div class="pill-node class-ii"><span class="pill-name">巴东清江口</span><span class="node-dot"></span></div>
+                            <div class="pill-node class-ii"><span class="pill-name">宣恩贡水河</span><span class="node-dot"></span></div>
+                            <div class="pill-node class-ii"><span class="pill-name">咸丰唐崖河</span><span class="node-dot"></span></div>
+                            <div class="pill-node class-ii"><span class="pill-name">支流忠建河</span><span class="node-dot"></span></div>
+                            <div class="pill-node class-ii"><span class="pill-name">支流野三河</span><span class="node-dot"></span></div>
+                            <div class="pill-node class-ii"><span class="pill-name">长阳段干流</span><span class="node-dot"></span></div>
+                            <div class="pill-node class-ii"><span class="pill-name">宜都清江口</span><span class="node-dot"></span></div>
+                            <div class="pill-node class-ii"><span class="pill-name">隔河岩大坝</span><span class="node-dot"></span></div>
+                            <div class="pill-node class-ii"><span class="pill-name">渔峡口国控</span><span class="node-dot"></span></div>
+                            <div class="pill-node class-ii"><span class="pill-name">红花套断面</span><span class="node-dot"></span></div>
+                            <div class="pill-node class-ii"><span class="pill-name">长阳龙舟坪</span><span class="node-dot"></span></div>
+                            <div class="pill-node class-ii"><span class="pill-name">五峰渔洋河</span><span class="node-dot"></span></div>
+                            <div class="pill-node class-ii"><span class="pill-name">高坝洲尾水</span><span class="node-dot"></span></div>
+                            <div class="pill-node class-ii"><span class="pill-name">来凤酉水河</span><span class="node-dot"></span></div>
+                            <div class="pill-node class-ii"><span class="pill-name">利川二桥</span><span class="node-dot"></span></div>
+                            <div class="pill-node class-ii"><span class="pill-name">建始马水河</span><span class="node-dot"></span></div>
                         </div>
                     </div>
 
+                    <div class="section-block">
+                        <div class="section-title"><span style="color:#10B981;">💧</span> 🟨 Ⅲ类水质（7个）</div>
+                        <div class="pill-grid">
+                            <div class="pill-node class-iii"><span class="pill-name">建始段干流</span><span class="node-dot"></span></div>
+                            <div class="pill-node class-iii"><span class="pill-name">支流茅坪河</span><span class="node-dot"></span></div>
+                            <div class="pill-node class-iii"><span class="pill-name">宜都红湖</span><span class="node-dot"></span></div>
+                            <div class="pill-node class-iii"><span class="pill-name">唐崖河上游</span><span class="node-dot"></span></div>
+                            <div class="pill-node class-iii"><span class="pill-name">忠建河支流</span><span class="node-dot"></span></div>
+                            <div class="pill-node class-iii"><span class="pill-name">野三河支流</span><span class="node-dot"></span></div>
+                            <div class="pill-node class-iii"><span class="pill-name">恩施城区段</span><span class="node-dot"></span></div>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div style="flex:1; display:flex; flex-direction:column; gap:6px; min-height:0;">

@@ -51,6 +51,14 @@
     .mini-node.good { background: #F0FDF4; border-color: #BBF7D0; color: #15803D; }
     .mini-node.warn { background: #FFFBEB; border-color: #FDE68A; color: #B45309; }
     .mini-node.alert { background: #FEF2F2; border-color: #FEE2E2; color: #B91C1C; }
+.mini-node.class-i { background: #EFF6FF; border-color: #BFDBFE; color: #1E40AF; }
+    .mini-node.class-ii { background: #F0FDF4; border-color: #BBF7D0; color: #15803D; }
+    .mini-node.class-iii { background: #FEFCE8; border-color: #FEF08A; color: #A16207; }
+    .mini-node.class-iv-v { background: #FEF2F2; border-color: #FEE2E2; color: #B91C1C; }
+    .mini-node.class-i .node-dot { background: #3B82F6; }
+    .mini-node.class-ii .node-dot { background: #10B981; }
+    .mini-node.class-iii .node-dot { background: #F59E0B; }
+    .mini-node.class-iv-v .node-dot { background: #EF4444; }
     
     .node-dot { width: 3.5px; height: 3.5px; border-radius: 50%; }
     .mini-node.good .node-dot { background: #10B981; }
@@ -71,95 +79,90 @@
 </head>
 <body>
 <div class="slide-container">
-    <div class="ppt-header"><span class="ppt-title">流域湖库：汉江流域分析</span><span class="nav-page-num">P14</span></div>
+    <div class="ppt-header"><span class="ppt-title">流域湖库分析：汉江流域分析</span><span class="nav-page-num">P14</span></div>
     <div class="core-bar">▎ 2026年5月（当前月），汉江流域 52 个国控断面 Ⅰ-Ⅲ 类比例为 92.3%，整体水质保持优良，流域内共 2 个国控断面需靶向治理。</div>
     <div class="bd" style="flex-direction:column;gap:10px;">
         <div class="kpi-row" style="margin-bottom:0;">
             <div class="kpi-card" style="border-top-color:#2563EB;"><div class="kpi-label" style="color:#2563EB;">监测断面总数</div><div class="kpi-value" style="color:#2563EB;">52个</div></div>
             <div class="kpi-card" style="border-top-color:#059669;"><div class="kpi-label" style="color:#059669;">Ⅰ-Ⅲ类比例</div><div class="kpi-value" style="color:#059669;">92.3%</div></div>
-            <div class="kpi-card" style="border-top-color:#DC2626;"><div class="kpi-label" style="color:#DC2626;">异常/关注断面</div><div class="kpi-value" style="color:#DC2626;">2个</div></div>
+            <div class="kpi-card" style="border-top-color:#DC2626;"><div class="kpi-label" style="color:#DC2626;">超标断面</div><div class="kpi-value" style="color:#DC2626;">2个</div></div>
             <div class="kpi-card" style="border-top-color:#D97706;"><div class="kpi-label" style="color:#D97706;">同比变化</div><div class="kpi-value" style="color:#D97706;">↓0.8%</div></div>
         </div>
         <div style="display:flex;gap:12px;flex:1;min-height:0;">
             <div class="table-box" style="flex:0 0 55%; display:flex; flex-direction:column; padding:6px; background:#F8FAFC;">
-                <div style="font-size:9px; font-weight:700; color:#1E293B; margin-bottom:4px; padding-left:2px;">📊 汉江流域片区化断面状态墙 (52个)</div>
+                <div style="font-size:9px; font-weight:700; color:#1E293B; margin-bottom:4px; padding-left:2px;">📊 汉江流域水质分类断面墙 (52个)</div>
                 <div class="hanjiang-wall-box">
-                    
                     <div class="region-block">
-                        <div class="region-title"><span>📍 汉江上游及丹江口库区 (水质优良)</span><span style="color:#059669;">100% 达标</span></div>
+                        <div class="region-title"><span>🟦 Ⅰ类水质（10个）</span></div>
                         <div class="region-grid">
-                            <div class="mini-node good"><span>胡家营</span><span class="node-dot"></span></div>
-                            <div class="mini-node good"><span>孤山</span><span class="node-dot"></span></div>
-                            <div class="mini-node good"><span>黄龙滩</span><span class="node-dot"></span></div>
-                            <div class="mini-node good"><span>神定河口</span><span class="node-dot"></span></div>
-                            <div class="mini-node good"><span>泗河口</span><span class="node-dot"></span></div>
-                            <div class="mini-node good"><span>天河口</span><span class="node-dot"></span></div>
-                            <div class="mini-node good"><span>官山河</span><span class="node-dot"></span></div>
-                            <div class="mini-node good"><span>浪河口</span><span class="node-dot"></span></div>
-                            <div class="mini-node good"><span>剑河口</span><span class="node-dot"></span></div>
-                            <div class="mini-node good"><span>丹江口库</span><span class="node-dot"></span></div>
-                            <div class="mini-node good"><span>陶岔渠首</span><span class="node-dot"></span></div>
-                            <div class="mini-node good"><span>老河口段</span><span class="node-dot"></span></div>
-                            <div class="mini-node good"><span>谷城汉江</span><span class="node-dot"></span></div>
-                            <div class="mini-node good"><span>北河口</span><span class="node-dot"></span></div>
-                            <div class="mini-node good"><span>南河口</span><span class="node-dot"></span></div>
-                            <div class="mini-node good"><span>十堰国控</span><span class="node-dot"></span></div>
-                            <div class="mini-node good"><span>郧阳汉江</span><span class="node-dot"></span></div>
-                            <div class="mini-node good"><span>堵河口</span><span class="node-dot"></span></div>
-                            <div class="mini-node good"><span>金钱河</span><span class="node-dot"></span></div>
-                            <div class="mini-node good"><span>滔河水库</span><span class="node-dot"></span></div>
+                            <div class="mini-node class-i"><span>胡家营</span><span class="node-dot"></span></div>
+                            <div class="mini-node class-i"><span>孤山</span><span class="node-dot"></span></div>
+                            <div class="mini-node class-i"><span>黄龙滩</span><span class="node-dot"></span></div>
+                            <div class="mini-node class-i"><span>丹江口库</span><span class="node-dot"></span></div>
+                            <div class="mini-node class-i"><span>陶岔渠首</span><span class="node-dot"></span></div>
+                            <div class="mini-node class-i"><span>老河口段</span><span class="node-dot"></span></div>
+                            <div class="mini-node class-i"><span>谷城汉江</span><span class="node-dot"></span></div>
+                            <div class="mini-node class-i"><span>郧阳汉江</span><span class="node-dot"></span></div>
+                            <div class="mini-node class-i"><span>堵河口</span><span class="node-dot"></span></div>
+                            <div class="mini-node class-i"><span>金钱河</span><span class="node-dot"></span></div>
                         </div>
                     </div>
 
                     <div class="region-block">
-                        <div class="region-title"><span>📍 汉江中游及下游干流 (整体稳定)</span><span style="color:#475569;">稳定向好</span></div>
+                        <div class="region-title"><span>🟩 Ⅱ类水质（25个）</span></div>
                         <div class="region-grid">
-                            <div class="mini-node good"><span>襄阳白家湾</span><span class="node-dot"></span></div>
-                            <div class="mini-node good"><span>襄阳余家湖</span><span class="node-dot"></span></div>
-                            <div class="mini-node good"><span>宜城长渠</span><span class="node-dot"></span></div>
-                            <div class="mini-node good"><span>钟祥转斗</span><span class="node-dot"></span></div>
-                            <div class="mini-node good"><span>沙洋谢湾</span><span class="node-dot"></span></div>
-                            <div class="mini-node good"><span>天门岳口</span><span class="node-dot"></span></div>
-                            <div class="mini-node good"><span>仙桃仙河</span><span class="node-dot"></span></div>
-                            <div class="mini-node good"><span>汉川宗湾</span><span class="node-dot"></span></div>
-                            <div class="mini-node good"><span>武汉蔡甸</span><span class="node-dot"></span></div>
-                            <div class="mini-node good"><span>宗关水源</span><span class="node-dot"></span></div>
-                            <div class="mini-node good"><span>集家嘴口</span><span class="node-dot"></span></div>
-                            <div class="mini-node good"><span>潜江红旗</span><span class="node-dot"></span></div>
-                            <div class="mini-node good"><span>新沟国控</span><span class="node-dot"></span></div>
-                            <div class="mini-node good"><span>应市河口</span><span class="node-dot"></span></div>
-                            <div class="mini-node good"><span>蛮河河口</span><span class="node-dot"></span></div>
-                            <div class="mini-node good"><span>小清河口</span><span class="node-dot"></span></div>
+                            <div class="mini-node class-ii"><span>神定河口</span><span class="node-dot"></span></div>
+                            <div class="mini-node class-ii"><span>泗河口</span><span class="node-dot"></span></div>
+                            <div class="mini-node class-ii"><span>天河口</span><span class="node-dot"></span></div>
+                            <div class="mini-node class-ii"><span>官山河</span><span class="node-dot"></span></div>
+                            <div class="mini-node class-ii"><span>浪河口</span><span class="node-dot"></span></div>
+                            <div class="mini-node class-ii"><span>剑河口</span><span class="node-dot"></span></div>
+                            <div class="mini-node class-ii"><span>北河口</span><span class="node-dot"></span></div>
+                            <div class="mini-node class-ii"><span>南河口</span><span class="node-dot"></span></div>
+                            <div class="mini-node class-ii"><span>十堰国控</span><span class="node-dot"></span></div>
+                            <div class="mini-node class-ii"><span>滔河水库</span><span class="node-dot"></span></div>
+                            <div class="mini-node class-ii"><span>襄阳白家湾</span><span class="node-dot"></span></div>
+                            <div class="mini-node class-ii"><span>襄阳余家湖</span><span class="node-dot"></span></div>
+                            <div class="mini-node class-ii"><span>宜城长渠</span><span class="node-dot"></span></div>
+                            <div class="mini-node class-ii"><span>钟祥转斗</span><span class="node-dot"></span></div>
+                            <div class="mini-node class-ii"><span>沙洋谢湾</span><span class="node-dot"></span></div>
+                            <div class="mini-node class-ii"><span>潜江红旗</span><span class="node-dot"></span></div>
+                            <div class="mini-node class-ii"><span>新沟国控</span><span class="node-dot"></span></div>
+                            <div class="mini-node class-ii"><span>应市河口</span><span class="node-dot"></span></div>
+                            <div class="mini-node class-ii"><span>汉川分流</span><span class="node-dot"></span></div>
+                            <div class="mini-node class-ii"><span>西流河闸</span><span class="node-dot"></span></div>
+                            <div class="mini-node class-ii"><span>唐白河张湾</span><span class="node-dot"></span></div>
+                            <div class="mini-node class-ii"><span>滚河清河口</span><span class="node-dot"></span></div>
+                            <div class="mini-node class-ii"><span>东荆河新滩</span><span class="node-dot"></span></div>
+                            <div class="mini-node class-ii"><span>涢水河口</span><span class="node-dot"></span></div>
+                            <div class="mini-node class-ii"><span>府河出境</span><span class="node-dot"></span></div>
                         </div>
                     </div>
 
                     <div class="region-block">
-                        <div class="region-title"><span>📍 唐白河/天门河/东荆河等支流 (风险聚焦区)</span><span style="color:#DC2626;">动态监控</span></div>
+                        <div class="region-title"><span>🟨 Ⅲ类水质（14个）</span></div>
                         <div class="region-grid">
-                            <div class="mini-node alert"><span>竹皮河口</span><span class="node-dot"></span></div>
-                            <div class="mini-node warn"><span>天门河二</span><span class="node-dot"></span></div>
-                            
-                            <div class="mini-node good"><span>唐白河张湾</span><span class="node-dot"></span></div>
-                            <div class="mini-node good"><span>滚河清河口</span><span class="node-dot"></span></div>
-                            <div class="mini-node good"><span>东荆河新滩</span><span class="node-dot"></span></div>
-                            <div class="mini-node good"><span>通顺河口</span><span class="node-dot"></span></div>
-                            <div class="mini-node good"><span>涢水河口</span><span class="node-dot"></span></div>
-                            <div class="mini-node good"><span>府河出境</span><span class="node-dot"></span></div>
-                            <div class="mini-node good"><span>西流河闸</span><span class="node-dot"></span></div>
-                            <div class="mini-node good"><span>天门河头</span><span class="node-dot"></span></div>
-                            <div class="mini-node good"><span>汉川分流</span><span class="node-dot"></span></div>
-                            <div class="mini-node good"><span>竹皮河上</span><span class="node-dot"></span></div>
-                            <div class="mini-node good"><span>白河双沟</span><span class="node-dot"></span></div>
-                            <div class="mini-node good"><span>唐河清河</span><span class="node-dot"></span></div>
-                            <div class="mini-node good"><span>丰乐河口</span><span class="node-dot"></span></div>
-                            <div class="mini-node good"><span>沮河远安</span><span class="node-dot"></span></div>
+                            <div class="mini-node class-iii"><span>天门岳口</span><span class="node-dot"></span></div>
+                            <div class="mini-node class-iii"><span>仙桃仙河</span><span class="node-dot"></span></div>
+                            <div class="mini-node class-iii"><span>汉川宗湾</span><span class="node-dot"></span></div>
+                            <div class="mini-node class-iii"><span>武汉蔡甸</span><span class="node-dot"></span></div>
+                            <div class="mini-node class-iii"><span>宗关水源</span><span class="node-dot"></span></div>
+                            <div class="mini-node class-iii"><span>集家嘴口</span><span class="node-dot"></span></div>
+                            <div class="mini-node class-iii"><span>蛮河河口</span><span class="node-dot"></span></div>
+                            <div class="mini-node class-iii"><span>小清河口</span><span class="node-dot"></span></div>
+                            <div class="mini-node class-iii"><span>通顺河口</span><span class="node-dot"></span></div>
+                            <div class="mini-node class-iii"><span>天门河头</span><span class="node-dot"></span></div>
+                            <div class="mini-node class-iii"><span>丰乐河口</span><span class="node-dot"></span></div>
+                            <div class="mini-node class-iii"><span>沮河远安</span><span class="node-dot"></span></div>
+                            <div class="mini-node class-iii"><span>白河双沟</span><span class="node-dot"></span></div>
+                            <div class="mini-node class-iii"><span>唐河清河</span><span class="node-dot"></span></div>
                         </div>
                     </div>
 
                 </div>
             </div>
             <div style="flex:1; display:flex; flex-direction:column; gap:6px; min-height:0;">
-                <div style="font-size:9px; font-weight:700; color:#DC2626; padding:3px 0; border-bottom:1px solid #FEE2E2; flex-shrink:0;">⚠ 汉江水质靶向分类管控</div>
+                <div style="font-size:9px; font-weight:700; color:#DC2626; padding:3px 0; border-bottom:1px solid #FEE2E2; flex-shrink:0;">⚠ 汉江水质分级管控</div>
                 <div style="flex:1; display:grid; grid-template-rows: repeat(3, 1fr); gap:6px; min-height:0;">
                     
                     <div class="risk-row-item" style="padding:4px 10px; display:flex; align-items:center;">

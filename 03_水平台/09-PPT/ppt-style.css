@@ -23,11 +23,6 @@ body {
   max-width: 860px;
   aspect-ratio: 16 / 9;
   background: #ffffff;
-  border-radius: 6px;
-  width: 100%;
-  max-width: 860px;
-  aspect-ratio: 16 / 9;
-  background: #ffffff;
   border-radius: 0;
   box-shadow: 0 20px 60px rgba(0,0,0,.10), 0 4px 20px rgba(0,0,0,.06) !important;
   border: none !important;
@@ -54,9 +49,6 @@ body {
   text-shadow: 0 1px 2px rgba(0,0,0,.2);
 }
 .nav-page-num {
-  background: #059669 !important;
-  padding: 3px 10px !important;
-  border-radius: 3px;
   background: #059669 !important;
   padding: 3px 10px !important;
   border-radius: 0;
@@ -103,10 +95,6 @@ body {
 
 /* --- KPI 大卡片 --- */
 .kpi-block {
-  background: #fff !important;
-  border: 1px solid #E2E8F0 !important;
-  border-top: 3px solid #2563EB !important;
-  border-radius: 5px;
   background: #fff !important;
   border: 1px solid #E2E8F0 !important;
   border-top: 3px solid #2563EB !important;
@@ -157,10 +145,6 @@ body {
   background: #fff !important;
   border: 1px solid #E2E8F0 !important;
   border-top: 3px solid #2563EB !important;
-  border-radius: 5px;
-  background: #fff !important;
-  border: 1px solid #E2E8F0 !important;
-  border-top: 3px solid #2563EB !important;
   border-radius: 0;
   box-shadow: 0 2px 8px rgba(0,0,0,.04) !important;
   padding: 10px !important;
@@ -179,8 +163,6 @@ body {
 
 /* --- 表格 --- */
 .table-box {
-  border: 1px solid #E2E8F0 !important;
-  border-radius: 5px;
   border: 1px solid #E2E8F0 !important;
   border-radius: 0;
   overflow: hidden !important;
@@ -234,10 +216,6 @@ body {
   background: #FFFBEB !important;
   border: 1px solid #FDE68A !important;
   border-left: 4px solid #D97706 !important;
-  border-radius: 5px;
-  background: #FFFBEB !important;
-  border: 1px solid #FDE68A !important;
-  border-left: 4px solid #D97706 !important;
   border-radius: 0;
   padding: 8px 10px !important;
   box-shadow: 0 1px 4px rgba(0,0,0,.03);
@@ -280,9 +258,6 @@ body {
 .chart-wrapper {
   background: #fff !important;
   border: 1px solid #E2E8F0 !important;
-  border-radius: 5px;
-  background: #fff !important;
-  border: 1px solid #E2E8F0 !important;
   border-radius: 0;
   box-shadow: 0 1px 4px rgba(0,0,0,.03);
   padding: 10px 14px;
@@ -318,9 +293,6 @@ body {
 .ex-info {
   background: #F8FAFC !important;
   border: 1px solid #E2E8F0 !important;
-  border-radius: 4px;
-  background: #F8FAFC !important;
-  border: 1px solid #E2E8F0 !important;
   border-radius: 0;
   padding: 6px 14px !important;
   font-size: 9px !important;
@@ -345,11 +317,6 @@ body {
    封面页专用
    ============================ */
 .cover-container {
-  width: 100%;
-  max-width: 860px;
-  aspect-ratio: 16 / 9;
-  background: linear-gradient(135deg, #0B1D33 0%, #142B44 30%, #1A365D 60%, #0F2B46 100%) !important;
-  border-radius: 8px;
   width: 100%;
   max-width: 860px;
   aspect-ratio: 16 / 9;
@@ -394,11 +361,6 @@ body {
   max-width: 860px;
   aspect-ratio: 16 / 9;
   background: linear-gradient(135deg, #0B1D33 0%, #142B44 40%, #1E3A5F 100%);
-  border-radius: 8px;
-  width: 100%;
-  max-width: 860px;
-  aspect-ratio: 16 / 9;
-  background: linear-gradient(135deg, #0B1D33 0%, #142B44 40%, #1E3A5F 100%);
   border-radius: 0;
   box-shadow: 0 20px 60px rgba(13,43,69,.3);
   color: #fff;
@@ -415,9 +377,6 @@ body {
   margin-bottom: 14px;
 }
 .toc-item {
-  background: rgba(255,255,255,.06) !important;
-  border: 1px solid rgba(255,255,255,.08) !important;
-  border-radius: 5px;
   background: rgba(255,255,255,.06) !important;
   border: 1px solid rgba(255,255,255,.08) !important;
   border-radius: 0;
@@ -486,9 +445,6 @@ body {
 .sec-card {
   background: rgba(255,255,255,.06) !important;
   border: 1px solid rgba(255,255,255,.12) !important;
-  border-radius: 5px;
-  background: rgba(255,255,255,.06) !important;
-  border: 1px solid rgba(255,255,255,.12) !important;
   border-radius: 0;
   padding: 16px 12px !important;
   text-align: center;
@@ -536,10 +492,6 @@ body {
   width: 16px;
   display: flex;
   flex-direction: column-reverse;
-  border-radius: 2px;
-  width: 16px;
-  display: flex;
-  flex-direction: column-reverse;
   border-radius: 0;
   overflow: hidden;
   box-shadow: 1px 0 4px rgba(0,0,0,.1);
@@ -566,15 +518,10 @@ body {
 .progress-bar {
   height: 8px;
   background: #E2E8F0;
-  border-radius: 2px;
-  height: 8px;
-  background: #E2E8F0;
   border-radius: 0;
   overflow: hidden;
 }
 .progress-fill {
-  height: 100%;
-  border-radius: 2px;
   height: 100%;
   border-radius: 0;
   transition: width .3s;

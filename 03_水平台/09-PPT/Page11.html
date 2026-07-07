@@ -25,7 +25,7 @@
             background: #ffffff;
             border: 1px solid #E2E8F0;
             box-shadow: 0 2px 10px rgba(15, 23, 42, 0.03);
-            border-radius: 6px;
+            border-radius: 0;
             padding: 10px 12px;
             display: flex;
             flex-direction: column;
@@ -52,7 +52,7 @@
             font-weight: 600;
             background: #F1F5F9;
             padding: 2px 6px;
-            border-radius: 3px;
+            border-radius: 0;
         }
 
         /* =======================================
@@ -71,7 +71,7 @@
             gap: 10px;
             background: #F8FAFC;
             border: 1px solid #E2E8F0;
-            border-radius: 4px;
+            border-radius: 0;
             padding: 6px 8px;
             align-items: center;
             min-height: 0;
@@ -82,7 +82,7 @@
             height: 100%;
             background: #E2E8F0;
             border: 1px dashed #94A3B8;
-            border-radius: 4px;
+            border-radius: 0;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -135,8 +135,8 @@
 
         /* 进度条 */
         .progress-wrapper { display: flex; align-items: center; gap: 6px; width: 100%; }
-        .progress-track { flex: 1; height: 5px; background: #E2E8F0; border-radius: 3px; overflow: hidden; }
-        .progress-fill { height: 100%; background: #059669; border-radius: 3px; }
+        .progress-track { flex: 1; height: 5px; background: #E2E8F0; border-radius: 0; overflow: hidden; }
+        .progress-fill { height: 100%; background: #059669; border-radius: 0; }
         .progress-fill.warn { background: #D97706; }
 
         /* 核心结论区域 - 紧凑型双栏，取消 flex:1，靠自身内容撑开高度 */
@@ -145,7 +145,7 @@
             background: #F8FAFC;
             border: 1px solid #E2E8F0;
             border-left: 3px solid #3B82F6;
-            border-radius: 4px;
+            border-radius: 0;
             padding: 6px 10px; /* 进一步压缩内边距 */
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -182,7 +182,7 @@
             flex-direction: column;
             background: #ffffff;
             border: 1px dashed #CBD5E1;
-            border-radius: 4px;
+            border-radius: 0;
             padding: 6px 10px;
         }
         .trend-title {
@@ -200,7 +200,7 @@
 <div class="slide-container">
     <div class="ppt-header"><span class="ppt-title">流域湖库分析：一级流域概览（三大流域）</span><span class="nav-page-num">P11</span></div>
 
-    <div class="core-bar" style="padding: 6px 28px !important;">▎ 2026年5月（当前月）全省三大一级流域 167 个国控断面。具体各流域空间分布、占比情况及波动情况如下。</div>
+    <div class="core-bar" style="padding: 6px 28px !important;">▎ 2026年5月（当前月），全省三大一级流域 167 个国控断面，具体各流域空间分布、占比情况及波动情况如下。</div>
 
     <div class="bd" style="flex-direction:column; gap:8px;">
         <div class="content-layout">
@@ -300,7 +300,7 @@
                 <div class="business-summary-box">
                     <div class="summary-item">
                         <div class="dot"></div>
-                        <div><b>📊 水质占比：</b>本月优良（Ⅰ-Ⅲ类）比例为长江 89.9%、汉江 92.3%、清江 92.3%。清江流域断面劣Ⅴ类数量最多，总计8个。</div>
+                        <div><b>📊 水质占比：</b>本月优良（Ⅰ-Ⅲ类）比例为长江 89.9%、汉江 92.3%、清江 92.3%。长江流域劣Ⅴ类断面相对集中，总计3个。</div>
                     </div>
                     <div class="summary-item">
                         <div class="dot alert"></div>

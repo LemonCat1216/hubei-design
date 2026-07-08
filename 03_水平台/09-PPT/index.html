@@ -7,6 +7,7 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:#0f172a;color:#e2e8f0;height:100vh;display:flex;flex-direction:column}
+body.presentation-mode{background:#020617}
 
 /* 顶部工具栏 */
 .toolbar{display:flex;align-items:center;justify-content:space-between;padding:10px 20px;background:#1e293b;border-bottom:1px solid #334155;flex-shrink:0;gap:12px}
@@ -22,6 +23,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Micr
 .btn:active{background:#1e293b}
 .btn.primary{background:#2563eb;border-color:#3b82f6;color:#fff}
 .btn.primary:hover{background:#3b82f6}
+.btn.presentation{background:#047857;border-color:#10b981;color:#fff}
+.btn.presentation:hover{background:#059669;border-color:#34d399}
 .btn:disabled{opacity:.4;cursor:not-allowed}
 .page-indicator{font-size:13px;font-weight:600;color:#94a3b8;min-width:80px;text-align:center}
 
@@ -74,6 +77,43 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Micr
     transition: transform 0.15s ease-out;     /* 窗口拉伸时加入平滑动画 */
 }
 
+/* 全屏演示模式 */
+.presentation-mode .toolbar{display:none}
+.presentation-mode .main{height:100vh}
+.presentation-mode .sidebar{display:none}
+.presentation-mode .preview{background:#020617}
+.presentation-mode .preview-frame{box-shadow:none}
+.presentation-hud{
+    position:fixed;
+    top:16px;
+    right:16px;
+    z-index:20;
+    display:none;
+    align-items:center;
+    gap:6px;
+    padding:6px;
+    border:1px solid rgba(148,163,184,.24);
+    border-radius:8px;
+    background:rgba(15,23,42,.74);
+    box-shadow:0 10px 30px rgba(0,0,0,.28);
+    backdrop-filter:blur(12px);
+}
+.presentation-mode .presentation-hud{display:flex}
+.hud-page{min-width:70px;text-align:center;font-size:12px;font-weight:700;color:#e2e8f0}
+.hud-btn{
+    width:30px;
+    height:30px;
+    border:1px solid rgba(148,163,184,.32);
+    border-radius:6px;
+    background:rgba(30,41,59,.88);
+    color:#e2e8f0;
+    font-size:14px;
+    line-height:1;
+    cursor:pointer;
+}
+.hud-btn:hover{background:rgba(51,65,85,.96);border-color:rgba(203,213,225,.56)}
+.hud-btn:disabled{opacity:.4;cursor:not-allowed}
+
 /* 加载提示 */
 .loading{display:flex;align-items:center;justify-content:center;flex:1;color:#64748b;font-size:14px}
 
@@ -96,7 +136,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Micr
         <button class="btn" id="btnLast" title="最后一页">⏭</button>
     </div>
     <div class="toolbar-right">
-
+        <button class="btn presentation" id="btnPresent" title="全屏演示 (F)">⛶ 全屏演示</button>
         <span style="font-size:10px;color:#64748b;margin-left:8px"><span class="kbd">←</span> <span class="kbd">→</span> 翻页</span>
     </div>
 </div>
@@ -109,6 +149,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Micr
     <div class="preview">
         <iframe class="preview-frame" id="previewFrame" src="about:blank"></iframe>
     </div>
+</div>
+<div class="presentation-hud" id="presentationHud" aria-hidden="true">
+    <button class="hud-btn" id="hudPrev" title="上一页">◀</button>
+    <span class="hud-page" id="presentationIndicator">-- / --</span>
+    <button class="hud-btn" id="hudNext" title="下一页">▶</button>
+    <button class="hud-btn" id="btnExitPresentation" title="退出全屏">×</button>
 </div>
     <script type="text/javascript">
     // ============================================
@@ -172,8 +218,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Micr
     var currentIdx = 0;
     var frameEl = document.getElementById("previewFrame");
     var indicatorEl = document.getElementById("pageIndicator");
+    var presentationIndicatorEl = document.getElementById("presentationIndicator");
     var countEl = document.getElementById("pageCount");
     var listEl = document.getElementById("sidebarList");
+    var btnPresent = document.getElementById("btnPresent");
+    var btnExitPresentation = document.getElementById("btnExitPresentation");
+    var hudPrev = document.getElementById("hudPrev");
+    var hudNext = document.getElementById("hudNext");
 
     function renderSidebar() {
         listEl.innerHTML = "";
@@ -200,6 +251,29 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Micr
         }
         countEl.textContent = fileCount + " 页";
         updateNav();
+    }
+
+    function findPageIndex(startIdx, step) {
+        for (var i = startIdx; i >= 0 && i < pages.length; i += step) {
+            if (pages[i] && pages[i].file) return i;
+        }
+        return currentIdx;
+    }
+
+    function getFirstPageIndex() {
+        return findPageIndex(0, 1);
+    }
+
+    function getLastPageIndex() {
+        return findPageIndex(pages.length - 1, -1);
+    }
+
+    function goPrev() {
+        goTo(findPageIndex(currentIdx - 1, -1));
+    }
+
+    function goNext() {
+        goTo(findPageIndex(currentIdx + 1, 1));
     }
 
     function goTo(idx) {
@@ -230,24 +304,130 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Micr
             }
         }
         indicatorEl.textContent = fileIdx + " / " + totalFiles;
-        document.getElementById("btnFirst").disabled = currentIdx <= 0;
-        document.getElementById("btnPrev").disabled = currentIdx <= 0;
-        document.getElementById("btnNext").disabled = currentIdx >= pages.length - 1;
-        document.getElementById("btnLast").disabled = currentIdx >= pages.length - 1;
+        presentationIndicatorEl.textContent = fileIdx + " / " + totalFiles;
+
+        var atFirst = currentIdx === getFirstPageIndex();
+        var atLast = currentIdx === getLastPageIndex();
+        document.getElementById("btnFirst").disabled = atFirst;
+        document.getElementById("btnPrev").disabled = atFirst;
+        document.getElementById("btnNext").disabled = atLast;
+        document.getElementById("btnLast").disabled = atLast;
+        hudPrev.disabled = atFirst;
+        hudNext.disabled = atLast;
     }
 
-    document.getElementById("btnFirst").onclick = function() { goTo(0); };
-    document.getElementById("btnPrev").onclick = function() { goTo(currentIdx - 1); };
-    document.getElementById("btnNext").onclick = function() { goTo(currentIdx + 1); };
-    document.getElementById("btnLast").onclick = function() { goTo(pages.length - 1); };
+    document.getElementById("btnFirst").onclick = function() { goTo(getFirstPageIndex()); };
+    document.getElementById("btnPrev").onclick = goPrev;
+    document.getElementById("btnNext").onclick = goNext;
+    document.getElementById("btnLast").onclick = function() { goTo(getLastPageIndex()); };
+    hudPrev.onclick = goPrev;
+    hudNext.onclick = goNext;
+    btnPresent.onclick = startPresentation;
+    btnExitPresentation.onclick = stopPresentation;
 
-    document.addEventListener("keydown", function(e) {
-        if (e.target.tagName === "INPUT") return;
-        if (e.key === "ArrowLeft" || e.key === "ArrowUp") { e.preventDefault(); goTo(currentIdx - 1); }
-        if (e.key === "ArrowRight" || e.key === "ArrowDown") { e.preventDefault(); goTo(currentIdx + 1); }
-        if (e.key === "Home") { e.preventDefault(); goTo(0); }
-        if (e.key === "End") { e.preventDefault(); goTo(pages.length - 1); }
-    });
+    function isEditableTarget(target) {
+        if (!target || !target.tagName) return false;
+        var tagName = target.tagName.toUpperCase();
+        return tagName === "INPUT" || tagName === "TEXTAREA" || tagName === "SELECT" || target.isContentEditable;
+    }
+
+    function isFullscreenActive() {
+        return !!(document.fullscreenElement || document.webkitFullscreenElement || document.msFullscreenElement);
+    }
+
+    function requestFullscreen(el) {
+        if (el.requestFullscreen) return el.requestFullscreen();
+        if (el.webkitRequestFullscreen) return el.webkitRequestFullscreen();
+        if (el.msRequestFullscreen) return el.msRequestFullscreen();
+        return null;
+    }
+
+    function exitFullscreen() {
+        if (document.exitFullscreen) return document.exitFullscreen();
+        if (document.webkitExitFullscreen) return document.webkitExitFullscreen();
+        if (document.msExitFullscreen) return document.msExitFullscreen();
+        return null;
+    }
+
+    function setPresentationMode(active) {
+        document.body.classList.toggle("presentation-mode", active);
+        document.getElementById("presentationHud").setAttribute("aria-hidden", active ? "false" : "true");
+        btnPresent.textContent = active ? "退出演示" : "⛶ 全屏演示";
+        btnPresent.title = active ? "退出全屏" : "全屏演示 (F)";
+        setTimeout(autoScalePreview, 50);
+    }
+
+    function syncPresentationMode() {
+        setPresentationMode(isFullscreenActive());
+    }
+
+    function startPresentation() {
+        setPresentationMode(true);
+        var request = requestFullscreen(document.documentElement);
+        if (request && request.catch) {
+            request.catch(function() {
+                setPresentationMode(true);
+            });
+        }
+        setTimeout(function() {
+            try { frameEl.focus(); } catch (err) {}
+        }, 80);
+    }
+
+    function stopPresentation() {
+        if (isFullscreenActive()) {
+            var request = exitFullscreen();
+            if (request && request.catch) {
+                request.catch(function() {
+                    setPresentationMode(false);
+                });
+            }
+        } else {
+            setPresentationMode(false);
+        }
+    }
+
+    function handleKeydown(e) {
+        if (isEditableTarget(e.target)) return;
+        if (e.key === "ArrowLeft" || e.key === "ArrowUp" || e.key === "PageUp") {
+            e.preventDefault();
+            goPrev();
+        }
+        if (e.key === "ArrowRight" || e.key === "ArrowDown" || e.key === "PageDown" || (e.key === " " && document.body.classList.contains("presentation-mode"))) {
+            e.preventDefault();
+            goNext();
+        }
+        if (e.key === "Home") {
+            e.preventDefault();
+            goTo(getFirstPageIndex());
+        }
+        if (e.key === "End") {
+            e.preventDefault();
+            goTo(getLastPageIndex());
+        }
+        if ((e.key === "f" || e.key === "F") && !e.ctrlKey && !e.metaKey && !e.altKey) {
+            e.preventDefault();
+            if (document.body.classList.contains("presentation-mode")) stopPresentation();
+            else startPresentation();
+        }
+        if (e.key === "Escape" && document.body.classList.contains("presentation-mode") && !isFullscreenActive()) {
+            e.preventDefault();
+            setPresentationMode(false);
+        }
+    }
+
+    function wireFrameKeys() {
+        try {
+            var doc = frameEl.contentDocument || frameEl.contentWindow.document;
+            doc.addEventListener("keydown", handleKeydown);
+        } catch (err) {}
+    }
+
+    document.addEventListener("keydown", handleKeydown);
+    frameEl.addEventListener("load", wireFrameKeys);
+    document.addEventListener("fullscreenchange", syncPresentationMode);
+    document.addEventListener("webkitfullscreenchange", syncPresentationMode);
+    document.addEventListener("MSFullscreenChange", syncPresentationMode);
 
     renderSidebar();
     goTo(0);
@@ -256,8 +436,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Micr
         var previewArea = document.querySelector('.preview');
         var iframe = document.getElementById('previewFrame');
         if (!previewArea || !iframe) return;
-        var availWidth = previewArea.clientWidth - 40;
-        var availHeight = previewArea.clientHeight - 40;
+        var inset = document.body.classList.contains('presentation-mode') ? 0 : 40;
+        var availWidth = previewArea.clientWidth - inset;
+        var availHeight = previewArea.clientHeight - inset;
         var frameWidth = 1575;
         var frameHeight = 917;
         var scale = Math.min(availWidth / frameWidth, availHeight / frameHeight);

@@ -3,26 +3,122 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>排口信息 - 入河排污口排查整治总览</title>
+<title>排污口排查整治：全省入河排污口填报总览</title>
 <link rel="stylesheet" href="ppt-style.css">
+<style>
+  .bd { padding: 14px 24px; flex-direction: column; gap: 10px; }
+  .content-layout { display: flex; gap: 14px; flex: 1; min-height: 0; overflow: hidden; }
+  .left-panel { flex: 0 0 52%; display: flex; flex-direction: column; gap: 8px; min-height: 0; }
+  .right-panel { flex: 1; display: flex; flex-direction: column; gap: 8px; min-height: 0; }
+  .section-title { font-size: 10px; font-weight: 700; color: #0F172A; margin-bottom: 5px; }
+  .review-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+  .review-card { border-radius: 3px; padding: 8px 6px; text-align: center; border: 1px solid #E2E8F0; }
+  .review-card .lbl { font-size: 8.5px; font-weight: 600; margin-bottom: 3px; }
+  .review-card .val { font-size: 17px; font-weight: 800; line-height: 1.2; }
+  .water-row { display: flex; align-items: center; gap: 6px; padding: 3px 0; }
+  .water-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+  .water-name { flex: 1; font-size: 9px; font-weight: 600; color: #334155; }
+  .water-num { width: 50px; font-size: 10px; font-weight: 700; text-align: right; }
+  .water-pct { width: 38px; font-size: 9px; font-weight: 600; color: #64748B; text-align: right; }
+  .stack-row { display: flex; height: 8px; border-radius: 2px; overflow: hidden; }
+  table.p21-tbl td { padding: 5px 12px !important; font-size: 10px !important; }
+  table.p21-tbl th { padding: 6px 12px !important; font-size: 9px !important; }
+</style>
 </head>
 <body>
 <div class="slide-container">
-    <div class="ppt-header"><span class="ppt-title">排污口排查整治：入河排污口排查整治总览</span><span class="nav-page-num">P21</span></div>
-    <div class="core-bar">▎ 2026年5月，全省入河排污口共12847个，已完成整治8562个（完成率66.6%），整治中2847个（22.2%），待整治1438个（11.2%）。</div>
-    <div class="sec-bg">
-        <div class="sec-title">入 河 排 污 口 排 查 整 治</div>
-        <div class="sec-sub">全省入河排污口综合管理 · 17市州全覆盖</div>
-        <div class="sec-cards" style="grid-template-columns:repeat(4,1fr);">
-            <div class="sec-card"><div class="sc-l">全省排口总数</div><div class="sc-v">12,847</div><div class="sc-s">个入河排污口</div></div>
-            <div class="sec-card"><div class="sc-l">已整治</div><div class="sc-v" style="color:#34D399;">8,562</div><div class="sc-s">完成率 66.6%</div></div>
-            <div class="sec-card"><div class="sc-l">整治中</div><div class="sc-v" style="color:#FBBF24;">2,847</div><div class="sc-s">占比 22.2%</div></div>
-            <div class="sec-card"><div class="sc-l">待整治</div><div class="sc-v" style="color:#F87171;">1,438</div><div class="sc-s">占比 11.2%</div></div>
+  <div class="ppt-header">
+    <span class="ppt-title">排污口排查整治：全省入河排污口填报总览</span>
+    <span class="nav-page-num">P21</span>
+  </div>
+  <div class="core-bar">▎ 2026年1月，全省累计排查入河排污口共34,114个，其中 A类（三江一库排口）11,867个、B类（国家20个重点河湖排口）3,528个、C类（省级重点26个河湖排口）3,295个、D类（其他排口）15,424个。已完成监测13,795个（40.43%），已完成溯源25,451个（74.59%），已完成整治18,178个（53.28%）。</div>
+  <div class="bd">
+    <div class="kpi-row" style="margin-bottom:0; flex-shrink:0; gap:10px;">
+      <div class="kpi-card" style="border-top-color:#2563EB !important;"><div class="kpi-label" style="color:#2563EB;">A类（三江一库排口）</div><div class="kpi-value" style="color:#2563EB;">11,867</div></div>
+      <div class="kpi-card" style="border-top-color:#D97706 !important;"><div class="kpi-label" style="color:#D97706;">B类（国家20个重点河湖排口）</div><div class="kpi-value" style="color:#D97706;">3,528</div></div>
+      <div class="kpi-card"><div class="kpi-label" style="color:#059669;">C类（省级重点26个河湖排口）</div><div class="kpi-value" style="color:#059669;">3,295</div></div>
+      <div class="kpi-card"><div class="kpi-label" style="color:#64748B;">D类（其他排口）</div><div class="kpi-value" style="color:#64748B;">15,424</div></div>
+    </div>
+    <div class="content-layout">
+      <div class="left-panel">
+        <div class="chart-wrapper" style="flex-shrink:0; padding:10px 14px;">
+          <div class="section-title">任务完成情况</div>
+          <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">
+            <span style="font-size:9px; font-weight:600; color:#475569; width:60px; flex-shrink:0; text-align:right;">溯源任务</span>
+            <div class="progress-bar" style="flex:1;"><div class="progress-fill" style="width:74.6%;background:#059669;"></div></div>
+            <span style="font-size:10px; font-weight:700; color:#059669; width:46px; text-align:right;">74.59%</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">
+            <span style="font-size:9px; font-weight:600; color:#475569; width:60px; flex-shrink:0; text-align:right;">整治任务</span>
+            <div class="progress-bar" style="flex:1;"><div class="progress-fill" style="width:53.3%;background:#D97706;"></div></div>
+            <span style="font-size:10px; font-weight:700; color:#D97706; width:46px; text-align:right;">53.28%</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span style="font-size:9px; font-weight:600; color:#475569; width:60px; flex-shrink:0; text-align:right;">问题线索</span>
+            <div class="progress-bar" style="flex:1;"><div class="progress-fill" style="width:21.3%;background:#EF4444;"></div></div>
+            <span style="font-size:10px; font-weight:700; color:#EF4444; width:46px; text-align:right;">21.32%</span>
+          </div>
         </div>
+        <div class="table-box" style="flex:1; display:flex; flex-direction:column; overflow:hidden;">
+          <table class="p21-tbl" style="width:100%;">
+            <thead><tr><th>类别</th><th>数量</th><th>占比</th></tr></thead>
+            <tbody>
+              <tr><td class="td-left">工业企业排口</td><td style="font-weight:600;">2,268</td><td>6.6%</td></tr>
+              <tr><td class="td-left">城镇生活污水处理设施排口</td><td style="font-weight:600;">1,186</td><td>3.5%</td></tr>
+              <tr><td class="td-left">农业排口</td><td style="font-weight:600;">155</td><td>0.5%</td></tr>
+              <tr><td class="td-left">其他排口</td><td style="font-weight:600;">30,504</td><td>89.4%</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="right-panel">
+        <div class="chart-wrapper" style="flex-shrink:0; padding:10px 14px;">
+          <div class="section-title">排口整治审核进度</div>
+          <div class="review-grid">
+            <div class="review-card" style="background:#E0F2FE;border:1px solid #BAE6FD;">
+              <div class="lbl" style="color:#0369A1;">区县未提交</div>
+              <div class="val" style="color:#0284C7;">9,580</div>
+            </div>
+            <div class="review-card" style="background:#DBEAFE;border:1px solid #BFDBFE;">
+              <div class="lbl" style="color:#1D4ED8;">地市待审核</div>
+              <div class="val" style="color:#2563EB;">764</div>
+            </div>
+            <div class="review-card" style="background:#FEF3C7;border:1px solid #FDE68A;">
+              <div class="lbl" style="color:#92400E;">省级待审核</div>
+              <div class="val" style="color:#D97706;">2,666</div>
+            </div>
+            <div class="review-card" style="background:#DCFCE7;border:1px solid #BBF7D0;">
+              <div class="lbl" style="color:#166534;">省级已通过</div>
+              <div class="val" style="color:#16A34A;">21,223</div>
+            </div>
+          </div>
+        </div>
+        <div class="chart-wrapper" style="flex:1; padding:10px 14px; display:flex; flex-direction:column;">
+          <div class="section-title">各水体管理级别</div>
+          <div style="flex:1; display:flex; flex-direction:column; gap:5px; justify-content:center;">
+            <div style="display:flex; font-size:8.5px; color:#94A3B8; font-weight:600; padding:1px 0 4px 13px; gap:6px;">
+              <span style="flex:1;">级别</span><span style="width:50px; text-align:right;">数量</span><span style="width:38px; text-align:right;">占比</span>
+            </div>
+            <div class="water-row"><span class="water-dot" style="background:#2563EB;"></span><span class="water-name">A类 三江一库排口</span><span class="water-num" style="color:#2563EB;">11,867</span><span class="water-pct">34.8%</span></div>
+            <div class="water-row"><span class="water-dot" style="background:#D97706;"></span><span class="water-name">B类 国家20个重点河湖排口</span><span class="water-num" style="color:#D97706;">3,528</span><span class="water-pct">10.3%</span></div>
+            <div class="water-row"><span class="water-dot" style="background:#059669;"></span><span class="water-name">C类 省级重点26个河湖排口</span><span class="water-num" style="color:#059669;">3,295</span><span class="water-pct">9.7%</span></div>
+            <div class="water-row"><span class="water-dot" style="background:#94A3B8;"></span><span class="water-name">D类 其他排口</span><span class="water-num" style="color:#64748B;">15,424</span><span class="water-pct">45.2%</span></div>
+          </div>
+          <div class="stack-row" style="margin-top:7px;">
+            <div style="width:34.8%;height:100%;background:#2563EB;"></div>
+            <div style="width:10.3%;height:100%;background:#D97706;"></div>
+            <div style="width:9.7%;height:100%;background:#059669;"></div>
+            <div style="width:45.2%;height:100%;background:#94A3B8;"></div>
+          </div>
+          <div style="margin-top:4px; display:flex; font-size:8px; color:#94A3B8; font-weight:600; justify-content:space-between; padding:0 1px;">
+            <span>A 34.8%</span><span>B 10.3%</span><span>C 9.7%</span><span>D 45.2%</span>
+          </div>
+        </div>
+      </div>
     </div>
-    <div class="ft" style="border-top-color:rgba(255,255,255,.1);background:rgba(0,0,0,.1);color:rgba(255,255,255,.5);">
-        <span>2026年5月生态环境月度专报</span><span>提示：仅供汇报使用</span>
-    </div>
+  </div>
+  <div class="ft"><span>2026年1月生态环境月度专报</span><span>提示：仅供汇报使用</span></div>
 </div>
 </body>
 </html>
+

@@ -16,7 +16,7 @@
     }
     .region-block { 
         background: #FFFFFF; 
-        border: 1px solid #E2E8F0; 
+        
         padding: 5px 6px; 
     }
     .region-title { 
@@ -46,7 +46,7 @@
         align-items: center; 
         justify-content: space-between; 
         border-radius: 1px; 
-        border: 1px solid #E2E8F0; 
+        
     }
     .mini-node.good { background: #F0FDF4; border-color: #BBF7D0; color: #15803D; }
     .mini-node.warn { background: #FFFBEB; border-color: #FDE68A; color: #B45309; }
@@ -55,26 +55,27 @@
     .mini-node.class-ii { background: #F0FDF4; border-color: #BBF7D0; color: #15803D; }
     .mini-node.class-iii { background: #FEFCE8; border-color: #FEF08A; color: #A16207; }
     .mini-node.class-iv-v { background: #FEF2F2; border-color: #FEE2E2; color: #B91C1C; }
-    .mini-node.class-i .node-dot { background: #3B82F6; }
-    .mini-node.class-ii .node-dot { background: #10B981; }
-    .mini-node.class-iii .node-dot { background: #F59E0B; }
-    .mini-node.class-iv-v .node-dot { background: #EF4444; }
+    .mini-node.class-i .node-dot { background: #2B4C7E; }
+    .mini-node.class-ii .node-dot { background: #047857; }
+    .mini-node.class-iii .node-dot { background: #B45309; }
+    .mini-node.class-iv-v .node-dot { background: #991B1B; }
     
     .node-dot { width: 3.5px; height: 3.5px; border-radius: 50%; }
-    .mini-node.good .node-dot { background: #10B981; }
-    .mini-node.warn .node-dot { background: #F59E0B; }
-    .mini-node.alert .node-dot { background: #EF4444; }
+    .mini-node.good .node-dot { background: #047857; }
+    .mini-node.warn .node-dot { background: #B45309; }
+    .mini-node.alert .node-dot { background: #991B1B; }
 
     /* 右侧通用自适应列表组件（结构同P13） */
     .risk-list-wrapper { display: flex; flex-direction: column; gap: 5px; flex: 1; min-height: 0; }
-    .risk-row-item { background: #FEF2F2; border: 1px solid #FEE2E2; border-left: 4px solid #DC2626; padding: 7px 10px; display: flex; align-items: center; justify-content: space-between; flex: 1; }
-    .risk-row-item.warning-style { background: #FFFBEB; border-color: #FDE68A; border-left-color: #D97706; }
+    .risk-row-item { background: #FEF2F2; border: 1px solid #FEE2E2;
+    border-left: 0; ; padding: 7px 10px; display: flex; align-items: center; justify-content: space-between; flex: 1; }
+    .risk-row-item.warning-style { background: #FFFBEB; border-color: #FDE68A; border-color: #FDE68A; }
     .risk-loc-info { display: flex; flex-direction: column; gap: 1px; flex: 0 0 35%; }
     .risk-name { font-size: 9.5px; font-weight: 800; color: #991B1B; }
     .risk-row-item.warning-style .risk-name { color: #92400E; }
     .risk-type { font-size: 7.5px; color: #7F1D1D; opacity: 0.7; }
     .risk-detail-info { display: flex; flex-direction: column; gap: 1px; font-size: 8.5px; color: #475569; flex: 1; padding-left: 10px; }
-    .risk-badge { font-size: 8px; background: #DC2626; color: #fff; padding: 1px 6px; font-weight: 700; border-radius: 1px; white-space: nowrap; }
+    .risk-badge { font-size: 8px; background: #991B1B; color: #fff; padding: 1px 6px; font-weight: 700; border-radius: 1px; white-space: nowrap; }
 </style>
 </head>
 <body>
@@ -83,10 +84,10 @@
     <div class="core-bar">▎ 2026年5月（当前月），汉江流域 52 个国控断面 Ⅰ-Ⅲ 类比例为 92.3%，整体水质保持优良，流域内共 2 个国控断面需靶向治理。</div>
     <div class="bd" style="flex-direction:column;gap:10px;">
         <div class="kpi-row" style="margin-bottom:0;">
-            <div class="kpi-card" style="border-top-color:#2563EB;"><div class="kpi-label" style="color:#2563EB;">监测断面总数</div><div class="kpi-value" style="color:#2563EB;">52个</div></div>
-            <div class="kpi-card" style="border-top-color:#047857;"><div class="kpi-label" style="color:#047857;">Ⅰ-Ⅲ类比例</div><div class="kpi-value" style="color:#047857;">92.3%</div></div>
-            <div class="kpi-card" style="border-top-color:#DC2626;"><div class="kpi-label" style="color:#DC2626;">超标断面</div><div class="kpi-value" style="color:#DC2626;">2个</div></div>
-            <div class="kpi-card" style="border-top-color:#D97706;"><div class="kpi-label" style="color:#D97706;">同比变化</div><div class="kpi-value" style="color:#D97706;">↓0.8%</div></div>
+            <div class="kpi-card" style=""><div class="kpi-label" style="color:#1A3A5C;">监测断面总数</div><div class="kpi-value" style="color:#1A3A5C;">52个</div></div>
+            <div class="kpi-card" style=""><div class="kpi-label" style="color:#047857;">Ⅰ-Ⅲ类比例</div><div class="kpi-value" style="color:#047857;">92.3%</div></div>
+            <div class="kpi-card" style=""><div class="kpi-label" style="color:#991B1B;">超标断面</div><div class="kpi-value" style="color:#991B1B;">2个</div></div>
+            <div class="kpi-card" style=""><div class="kpi-label" style="color:#B45309;">同比变化</div><div class="kpi-value" style="color:#B45309;">↓0.8%</div></div>
         </div>
         <div style="display:flex;gap:12px;flex:1;min-height:0;">
             <div class="table-box" style="flex:0 0 55%; display:flex; flex-direction:column; padding:6px; background:#F8FAFC;">
@@ -162,14 +163,14 @@
                 </div>
             </div>
             <div style="flex:1; display:flex; flex-direction:column; gap:6px; min-height:0;">
-                <div style="font-size:9px; font-weight:700; color:#DC2626; padding:3px 0; border-bottom:1px solid #FEE2E2; flex-shrink:0;">⚠ 汉江水质分级管控</div>
+                <div style="font-size:9px; font-weight:700; color:#991B1B; padding:3px 0; border-bottom:1px solid #FEE2E2; flex-shrink:0;">⚠ 汉江水质分级管控</div>
                 <div style="flex:1; display:grid; grid-template-rows: repeat(3, 1fr); gap:6px; min-height:0;">
                     
                     <div class="risk-row-item" style="padding:4px 10px; display:flex; align-items:center;">
                         <div style="display:flex; flex-direction:column; justify-content:center; gap:2px; width:100%;">
                             <div style="display:flex; justify-content:space-between; align-items:center;">
                                 <span style="font-size:9px; font-weight:700; color:#991B1B; line-height:1.2;">🔴 劣Ⅴ类（3个）</span>
-                                <span class="risk-badge" style="font-size:7px; background:#DC2626; padding:2px 6px; line-height:1;">优先管控</span>
+                                <span class="risk-badge" style="font-size:7px; background:#991B1B; padding:2px 6px; line-height:1;">优先管控</span>
                             </div>
                             <div style="font-size:8px; line-height:1.4; color:#475569;">竹皮河口，所在市州：潜江 · 超标因子：氨氮</div>
                             <div style="font-size:8px; line-height:1.4; color:#475569;">天门河，所在市州：天门 · 超标因子：氨氮</div>
@@ -177,11 +178,11 @@
                         </div>
                     </div>
 
-                    <div class="risk-row-item" style="padding:4px 10px; background:#FFFBEB; border-color:#FDE68A; border-left-color:#D97706; display:flex; align-items:center;">
+                    <div class="risk-row-item" style="padding:4px 10px; background:#FFFBEB; border-color:#FDE68A;  display:flex; align-items:center;">
                         <div style="display:flex; flex-direction:column; justify-content:center; gap:2px; width:100%;">
                             <div style="display:flex; justify-content:space-between; align-items:center;">
                                 <span style="font-size:9px; font-weight:700; color:#92400E; line-height:1.2;">🟡 Ⅴ类（3个）</span>
-                                <span class="risk-badge" style="font-size:7px; background:#D97706; padding:2px 6px; line-height:1;">动态监控</span>
+                                <span class="risk-badge" style="font-size:7px; background:#B45309; padding:2px 6px; line-height:1;">动态监控</span>
                             </div>
                             <div style="font-size:8px; line-height:1.4; color:#475569;">天门河二，所在市州：襄阳 · 超标因子：氨氮、总磷</div>
                             <div style="font-size:8px; line-height:1.4; color:#475569;">东荆河，所在市州：潜江 · 超标因子：氨氮</div>
@@ -189,11 +190,11 @@
                         </div>
                     </div>
 
-                    <div class="risk-row-item" style="padding:4px 10px; background:#EFF6FF; border-color:#BFDBFE; border-left-color:#2563EB; display:flex; align-items:center;">
+                    <div class="risk-row-item" style="padding:4px 10px; background:#EFF6FF; border-color:#BFDBFE;  display:flex; align-items:center;">
                         <div style="display:flex; flex-direction:column; justify-content:center; gap:2px; width:100%;">
                             <div style="display:flex; justify-content:space-between; align-items:center;">
                                 <span style="font-size:9px; font-weight:700; color:#1E40AF; line-height:1.2;">🔵 Ⅳ类（3个）</span>
-                                <span class="risk-badge" style="font-size:7px; background:#2563EB; padding:2px 6px; line-height:1;">持续跟踪</span>
+                                <span class="risk-badge" style="font-size:7px; background:#1A3A5C; padding:2px 6px; line-height:1;">持续跟踪</span>
                             </div>
                             <div style="font-size:8px; line-height:1.4; color:#475569;">蛮河口，所在市州：襄阳 · 超标因子：溶解氧</div>
                             <div style="font-size:8px; line-height:1.4; color:#475569;">通顺河，所在市州：仙桃 · 超标因子：总磷</div>
@@ -209,3 +210,7 @@
 </div>
 </body>
 </html>
+
+
+
+

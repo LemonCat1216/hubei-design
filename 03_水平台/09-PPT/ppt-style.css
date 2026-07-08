@@ -60,7 +60,7 @@ body {
 /* --- 核心结论带条 --- */
 .core-bar {
   background: linear-gradient(90deg, #ECFDF5, #F0FDF4) !important;
-  border-left: 5px solid #047857 !important;
+  /* border-left removed per user request */
   border-bottom: 1px solid #D1FAE5 !important;
   color: #065F46 !important;
   padding: 10px 28px !important;
@@ -74,6 +74,7 @@ body {
 .bd {
   flex: 1;
   padding: 14px 24px;
+  background: #F5F7FA;
   display: flex;
   gap: 16px;
   overflow: hidden;
@@ -96,22 +97,22 @@ body {
 /* --- KPI 大卡片 --- */
 .kpi-block {
   background: #fff !important;
-  border: 1px solid #E2E8F0 !important;
-  border-top: 4px solid #2563EB !important;
+  /* border removed per user request */
+  /* border-top removed per user request */
   border-radius: 3px;
-  box-shadow: 0 2px 8px rgba(0,0,0,.04) !important;
+  box-shadow: 0 2px 12px rgba(15,23,42,.06) !important;
   padding: 12px 14px !important;
   display: flex;
   flex-direction: column;
   justify-content: center;
 }
 .kpi-block.hl, .kpi-block.highlight {
-  border-top-color: #047857 !important;
-  background: linear-gradient(180deg, #F0FDF4, #fff) !important;
+  background: #F0FDF4 !important;
+  border: 1px solid #A7F3D0 !important;
 }
 .kpi-block.al, .kpi-block.alert {
-  border-top-color: #DC2626 !important;
-  background: linear-gradient(180deg, #FEF2F2, #fff) !important;
+  background: #FEF2F2 !important;
+  border: 1px solid #FECACA !important;
 }
 .kpi-title {
   font-size: 11px !important;
@@ -127,7 +128,7 @@ body {
   line-height: 1.2;
 }
 .kpi-block.hl .kpi-num, .kpi-block.highlight .kpi-num { color: #047857 !important; }
-.kpi-block.al .kpi-num, .kpi-block.alert .kpi-num { color: #DC2626 !important; }
+.kpi-block.al .kpi-num, .kpi-block.alert .kpi-num { color: #991B1B !important; }
 .kpi-sub {
   font-size: 9px !important;
   color: #94A3B8 !important;
@@ -143,10 +144,10 @@ body {
 }
 .kpi-row .kpi-card {
   background: #fff !important;
-  border: 1px solid #E2E8F0 !important;
-  border-top: 4px solid #2563EB !important;
+  /* border removed per user request */
+  /* border-top removed per user request */
   border-radius: 3px;
-  box-shadow: 0 2px 8px rgba(0,0,0,.04) !important;
+  box-shadow: 0 2px 12px rgba(15,23,42,.06) !important;
   padding: 10px !important;
   text-align: center;
 }
@@ -163,7 +164,7 @@ body {
 
 /* --- 表格 --- */
 .table-box {
-  border: 1px solid #E2E8F0 !important;
+  /* border removed per user request */
   border-radius: 3px;
   overflow: hidden !important;
   box-shadow: 0 1px 4px rgba(0,0,0,.03);
@@ -194,9 +195,9 @@ body {
 .td-left { text-align: left !important; font-weight: 600; }
 
 /* --- 徽标 --- */
-.badge-r { color: #DC2626 !important; font-weight: 700 !important; }
+.badge-r { color: #991B1B !important; font-weight: 700 !important; }
 .badge-g { color: #047857 !important; font-weight: 700 !important; }
-.badge-y { color: #D97706 !important; font-weight: 700 !important; }
+.badge-y { color: #B45309 !important; font-weight: 700 !important; }
 
 /* --- 预警卡片 --- */
 .warning-wrapper {
@@ -215,7 +216,7 @@ body {
 .warning-card {
   background: #FFFBEB !important;
   border: 1px solid #FDE68A !important;
-  border-left: 4px solid #D97706 !important;
+  /* border-left removed per user request */
   border-radius: 3px;
   padding: 8px 10px !important;
   box-shadow: 0 1px 4px rgba(0,0,0,.03);
@@ -225,12 +226,12 @@ body {
 .warning-card.blue-card, .warning-card.blue {
   background: #EFF6FF !important;
   border-color: #BFDBFE !important;
-  border-left-color: #2563EB !important;
+  /* border-left-color removed per user request */
 }
 .warning-card.green-card, .warning-card.green {
   background: #F0FDF4 !important;
   border-color: #BBF7D0 !important;
-  border-left-color: #047857 !important;
+  /* border-left-color removed per user request */
 }
 .card-loc {
   font-size: 10px !important;
@@ -254,7 +255,7 @@ body {
 .warning-card.alert-card, .warning-card.alert {
   background: #FEF2F2 !important;
   border-color: #FECACA !important;
-  border-left-color: #DC2626 !important;
+  /* border-left-color removed per user request */
 }
 .warning-card.alert-card .card-loc, .warning-card.alert .card-loc {
   color: #991B1B !important;
@@ -268,7 +269,7 @@ body {
 /* --- 图表区 --- */
 .chart-wrapper {
   background: #fff !important;
-  border: 1px solid #E2E8F0 !important;
+  /* border removed per user request */
   border-radius: 3px;
   box-shadow: 0 1px 4px rgba(0,0,0,.03);
   padding: 10px 14px;
@@ -303,7 +304,7 @@ body {
 /* --- 说明信息条 --- */
 .ex-info {
   background: #F8FAFC !important;
-  border: 1px solid #E2E8F0 !important;
+  /* border removed per user request */
   border-radius: 3px;
   padding: 6px 14px !important;
   font-size: 10px !important;
@@ -360,7 +361,7 @@ body {
   left: -5%;
   width: 40%;
   height: 50%;
-  background: radial-gradient(circle, rgba(37,99,235,.06) 0%, rgba(37,99,235,0) 70%);
+  background: radial-gradient(circle, rgba(26,58,92,.06) 0%, rgba(26,58,92,0) 70%);
   pointer-events: none;
 }
 
@@ -508,9 +509,9 @@ body {
   box-shadow: 1px 0 4px rgba(0,0,0,.1);
 }
 .bar-seg { width: 100%; }
-.bar-seg.cat1 { background: #3b82f6; }
-.bar-seg.cat2 { background: #06b6d4; }
-.bar-seg.cat3 { background: #fbbf24; }
+.bar-seg.cat1 { background: #2B4C7E; }
+.bar-seg.cat2 { background: #2C7A4F; }
+.bar-seg.cat3 { background: #B45309; }
 .prov-name {
   font-size: 7px !important;
   color: #64748B !important;
@@ -518,12 +519,12 @@ body {
   margin-top: 4px;
   text-align: center;
 }
-.bar-group.highlight .prov-name { color: #DC2626 !important; font-weight: 800 !important; font-size: 8px !important; }
+.bar-group.highlight .prov-name { color: #991B1B !important; font-weight: 800 !important; font-size: 8px !important; }
 .bar-group.highlight .stacked-bar {
   width: 16px;
   display: flex;
   flex-direction: column-reverse;
-  border-radius: 2px; outline: 2px solid #DC2626; outline-offset: 1.5px; }
+  border-radius: 2px; outline: 2px solid #991B1B; outline-offset: 1.5px; }
 
 /* --- 进度条 --- */
 .progress-bar {
@@ -542,27 +543,27 @@ body {
 
 /* === KPI 卡片配色语义化规则（模板开发用） === */
 /* 第1位：维度标识 - 固定深蓝 */
-.kpi-card.pos1 { border-top-color: #2563EB !important; }
-.kpi-card.pos1 .kpi-label { color: #2563EB !important; }
+/* .kpi-card.pos1: border-top-color removed */
+.kpi-card.pos1 .kpi-label { color: #1A3A5C !important; }
 
 /* 第2-4位：按数值好坏自动变色 */
 /* 好 - 绿色 */
-.kpi-card.status-good { border-top-color: #047857 !important; }
+/* .kpi-card.status-good: border-top-color removed */
 .kpi-card.status-good .kpi-label { color: #047857 !important; }
 .kpi-card.status-good .kpi-value { color: #047857 !important; }
 
 /* 中等/警告 - 琥珀色 */
-.kpi-card.status-warn { border-top-color: #D97706 !important; }
-.kpi-card.status-warn .kpi-label { color: #D97706 !important; }
-.kpi-card.status-warn .kpi-value { color: #D97706 !important; }
+/* .kpi-card.status-warn: border-top-color removed */
+.kpi-card.status-warn .kpi-label { color: #B45309 !important; }
+.kpi-card.status-warn .kpi-value { color: #B45309 !important; }
 
 /* 差/预警 - 红色 */
-.kpi-card.status-alert { border-top-color: #DC2626 !important; }
-.kpi-card.status-alert .kpi-label { color: #DC2626 !important; }
-.kpi-card.status-alert .kpi-value { color: #DC2626 !important; }
+/* .kpi-card.status-alert: border-top-color removed */
+.kpi-card.status-alert .kpi-label { color: #991B1B !important; }
+.kpi-card.status-alert .kpi-value { color: #991B1B !important; }
 
 /* 中性 - 灰色（适用于说明性数值） */
-.kpi-card.status-neutral { border-top-color: #64748B !important; }
+/* .kpi-card.status-neutral: border-top-color removed */
 .kpi-card.status-neutral .kpi-label { color: #64748B !important; }
 .kpi-card.status-neutral .kpi-value { color: #0F172A !important; }
 /* === 优化右侧靶向管控卡片布局：强制等高平分空间 === */
@@ -581,6 +582,11 @@ body {
     flex-direction: column;
     gap: 2px;
 }
+
+
+
+
+
 
 
 

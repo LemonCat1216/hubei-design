@@ -28,15 +28,15 @@
                 <div id="chart-pie" style="width:150px; flex-shrink:0; background:transparent !important; border:none !important;"></div>
                 
                 <div style="display:flex; flex-direction:column; justify-content:center; gap:8px; flex:1; padding-right:4px;">
-                    <div style="padding:8px 12px; background:#FEF2F2; border-left:4px solid #DC2626; border-radius:0;">
-                        <div style="font-size:10px; font-weight:700; color:#DC2626;">总磷 62%</div>
-                        <div style="font-size:20px; font-weight:800; color:#DC2626; line-height:1.2;">14个</div>
-                        <div style="font-size:9px; color:#EF4444; margin-top:2px; white-space:nowrap;">涉及6市州，荆州(4)、潜江(2)最集中</div>
+                    <div style="padding:8px 12px; background:#FEF2F2; border-left:4px solid #991B1B; border-radius:0;">
+                        <div style="font-size:10px; font-weight:700; color:#991B1B;">总磷 62%</div>
+                        <div style="font-size:20px; font-weight:800; color:#991B1B; line-height:1.2;">14个</div>
+                        <div style="font-size:9px; color:#991B1B; margin-top:2px; white-space:nowrap;">涉及6市州，荆州(4)、潜江(2)最集中</div>
                     </div>
-                    <div style="padding:8px 12px; background:#FFFBEB; border-left:4px solid #D97706; border-radius:0;">
-                        <div style="font-size:10px; font-weight:700; color:#D97706;">氨氮 31%</div>
-                        <div style="font-size:20px; font-weight:800; color:#D97706; line-height:1.2;">7个</div>
-                        <div style="font-size:9px; color:#D97706; margin-top:2px; white-space:nowrap;">集中在孝感(3)、天门(2)</div>
+                    <div style="padding:8px 12px; background:#FFFBEB; border-left:4px solid #B45309; border-radius:0;">
+                        <div style="font-size:10px; font-weight:700; color:#B45309;">氨氮 31%</div>
+                        <div style="font-size:20px; font-weight:800; color:#B45309; line-height:1.2;">7个</div>
+                        <div style="font-size:9px; color:#B45309; margin-top:2px; white-space:nowrap;">集中在孝感(3)、天门(2)</div>
                     </div>
                 </div>
             </div>
@@ -96,8 +96,8 @@ pie.setOption({
         radius:["35%","52%"],
         center:["50%","50%"],
         data:[
-            {value:62,name:"\u603b\u78f7",itemStyle:{color:"#DC2626"}},
-            {value:31,name:"\u6c28\u6c2e",itemStyle:{color:"#D97706"}},
+            {value:62,name:"\u603b\u78f7",itemStyle:{color:"#991B1B"}},
+            {value:31,name:"\u6c28\u6c2e",itemStyle:{color:"#B45309"}},
             {value:7,name:"\u5176\u4ed6",itemStyle:{color:"#94A3B8"}}
         ],
         label:{
@@ -121,3 +121,4 @@ pie.setOption({
 window.addEventListener("resize",function(){pie.resize();});
 </script></body>
 </html>
+

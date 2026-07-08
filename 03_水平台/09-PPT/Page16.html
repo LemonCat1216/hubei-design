@@ -13,15 +13,15 @@
     
     /* 右侧模块：通过 flex: 1 让 3 个卡片严格等分高度，绝对不会冒出去 */
     .risk-panel { display: flex; flex-direction: column; gap: 4px; flex: 1; min-height: 0; overflow: hidden; }
-    .risk-large-card { flex: 1; background: #FFF; border: 1px solid #E2E8F0; border-radius: 4px; padding: 4px 8px; display: flex; flex-direction: column; justify-content: center; min-height: 0; overflow: hidden; }
+    .risk-large-card { flex: 1; background: #FFF; border-radius: 4px; padding: 4px 8px; display: flex; flex-direction: column; justify-content: center; min-height: 0; overflow: hidden; }
     
-    .risk-large-card.level-5 { border-top: 2px solid #DC2626; background: #FEF2F2; }
-    .risk-large-card.level-4 { border-top: 2px solid #D97706; background: #FFFBEB; }
-    .risk-large-card.level-3 { border-top: 2px solid #F59E0B; background: #FFFDF5; }
+    .risk-large-card.level-5 { border-top: 2px solid #991B1B; background: #FEF2F2; }
+    .risk-large-card.level-4 { border-top: 2px solid #B45309; background: #FFFBEB; }
+    .risk-large-card.level-3 { border-top: 2px solid #B45309; background: #FFFDF5; }
 
     /* 极致压缩的数据网格 */
     .data-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; margin-top: 3px; }
-    .data-item { background: rgba(255,255,255,0.7); border: 1px solid #E2E8F0; padding: 2px 4px; text-align: center; border-radius: 2px; }
+    .data-item { background: rgba(255,255,255,0.7); padding: 2px 4px; text-align: center; border-radius: 2px; }
     .data-label { font-size: 7px; color: #64748B; transform: scale(0.9); transform-origin: center center; }
     .data-val { font-size: 8.5px; font-weight: 700; color: #0F172A; margin-top: 0px; }
 </style>
@@ -40,12 +40,12 @@
             <div class="kpi-card status-good">
                 <div class="kpi-label">达标湖泊</div>
                 <div class="kpi-value">15<span style="font-size:9px;font-weight:normal;margin-left:2px;">个</span></div>
-            <div style="display:flex;gap:10px;margin-top:3px;font-size:9px;justify-content:center;"><span style="color:#64748B;">同比 <span style="color:#047857;font-weight:700;">↓2个</span></span><span style="color:#64748B;">环比 <span style="color:#DC2626;font-weight:700;">↑1个</span></span></div>
+            <div style="display:flex;gap:10px;margin-top:3px;font-size:9px;justify-content:center;"><span style="color:#64748B;">同比 <span style="color:#047857;font-weight:700;">↓2个</span></span><span style="color:#64748B;">环比 <span style="color:#991B1B;font-weight:700;">↑1个</span></span></div>
             </div>
             <div class="kpi-card status-alert">
                 <div class="kpi-label">超标湖泊</div>
                 <div class="kpi-value">9<span style="font-size:9px;font-weight:normal;margin-left:2px;">个</span></div>
-            <div style="display:flex;gap:10px;margin-top:3px;font-size:9px;justify-content:center;"><span style="color:#64748B;">同比 <span style="color:#DC2626;font-weight:700;">↑3个</span></span><span style="color:#64748B;">环比 <span style="color:#DC2626;font-weight:700;">↑1个</span></span></div>
+            <div style="display:flex;gap:10px;margin-top:3px;font-size:9px;justify-content:center;"><span style="color:#64748B;">同比 <span style="color:#991B1B;font-weight:700;">↑3个</span></span><span style="color:#64748B;">环比 <span style="color:#991B1B;font-weight:700;">↑1个</span></span></div>
             </div>
             <div class="kpi-card status-warn">
                 <div class="kpi-label">主要超标因子</div>
@@ -104,36 +104,36 @@
                     <div class="risk-large-card level-5">
                         <div style="display:flex; justify-content:space-between; align-items:center;">
                             <span style="font-size:9px; font-weight:800; color:#991B1B;">01. 洪湖湖心</span>
-                            <span style="font-size:6.5px; background:#DC2626; color:#fff; padding:0px 3px; font-weight:700; border-radius:1px;">红色预警</span>
+                            <span style="font-size:6.5px; background:#991B1B; color:#fff; padding:0px 3px; font-weight:700; border-radius:1px;">红色预警</span>
                         </div>
                         <div class="data-grid">
-                            <div class="data-item"><div class="data-label">当前水质</div><div class="data-val" style="color:#DC2626;">劣Ⅴ类</div></div>
+                            <div class="data-item"><div class="data-label">当前水质</div><div class="data-val" style="color:#991B1B;">劣Ⅴ类</div></div>
                             <div class="data-item"><div class="data-label">总磷浓度</div><div class="data-val">0.15</div></div>
-                            <div class="data-item"><div class="data-label">超标倍数</div><div class="data-val" style="color:#DC2626;">+2.00倍</div></div>
+                            <div class="data-item"><div class="data-label">超标倍数</div><div class="data-val" style="color:#991B1B;">+2.00倍</div></div>
                         </div>
                     </div>
 
                     <div class="risk-large-card level-4">
                         <div style="display:flex; justify-content:space-between; align-items:center;">
                             <span style="font-size:9px; font-weight:800; color:#92400E;">02. 长湖（荆门）</span>
-                            <span style="font-size:6.5px; background:#D97706; color:#fff; padding:0px 3px; font-weight:700; border-radius:1px;">橙色预警</span>
+                            <span style="font-size:6.5px; background:#B45309; color:#fff; padding:0px 3px; font-weight:700; border-radius:1px;">橙色预警</span>
                         </div>
                         <div class="data-grid">
-                            <div class="data-item"><div class="data-label">当前水质</div><div class="data-val" style="color:#D97706;">Ⅴ类</div></div>
+                            <div class="data-item"><div class="data-label">当前水质</div><div class="data-val" style="color:#B45309;">Ⅴ类</div></div>
                             <div class="data-item"><div class="data-label">总磷浓度</div><div class="data-val">0.12</div></div>
-                            <div class="data-item"><div class="data-label">超标倍数</div><div class="data-val" style="color:#D97706;">+1.40倍</div></div>
+                            <div class="data-item"><div class="data-label">超标倍数</div><div class="data-val" style="color:#B45309;">+1.40倍</div></div>
                         </div>
                     </div>
 
                     <div class="risk-large-card level-3">
                         <div style="display:flex; justify-content:space-between; align-items:center;">
                             <span style="font-size:9px; font-weight:800; color:#B45309;">03. 斧头湖</span>
-                            <span style="font-size:6.5px; background:#F59E0B; color:#fff; padding:0px 3px; font-weight:700; border-radius:1px;">黄色预警</span>
+                            <span style="font-size:6.5px; background:#B45309; color:#fff; padding:0px 3px; font-weight:700; border-radius:1px;">黄色预警</span>
                         </div>
                         <div class="data-grid">
-                            <div class="data-item"><div class="data-label">当前水质</div><div class="data-val" style="color:#F59E0B;">Ⅳ类</div></div>
+                            <div class="data-item"><div class="data-label">当前水质</div><div class="data-val" style="color:#B45309;">Ⅳ类</div></div>
                             <div class="data-item"><div class="data-label">总磷浓度</div><div class="data-val">0.08</div></div>
-                            <div class="data-item"><div class="data-label">超标倍数</div><div class="data-val" style="color:#F59E0B;">+0.60倍</div></div>
+                            <div class="data-item"><div class="data-label">超标倍数</div><div class="data-val" style="color:#B45309;">+0.60倍</div></div>
                         </div>
                     </div>
                 </div>
@@ -146,3 +146,5 @@
 </div>
 </body>
 </html>
+
+

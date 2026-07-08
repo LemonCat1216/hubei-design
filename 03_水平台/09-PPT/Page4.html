@@ -32,39 +32,39 @@
     <div class="bd" style="flex-direction:column;gap:8px;">
 
     <div class="kpi-row" style="margin-bottom: 0;flex-shrink:0;">
-        <div class="kpi-card" style="border-top-color: #2563EB;">
-            <div class="kpi-label" style="color: #2563EB;">累计达标率</div>
+        <div class="kpi-card" style="">
+            <div class="kpi-label" style="color: #1A3A5C;">累计达标率</div>
             <div class="kpi-value" style="color: #0F172A; font-size: 26px !important;">87.26%</div>
             <div style="font-size: 9px; color: #64748B; margin-top: 4px;">167个国控断面1-5月累计</div>
             <div style="display:flex;gap:10px;margin-top:3px;font-size:9px;justify-content:center;">
-                <span style="color:#64748B;">同比 <span style="color:#DC2626;font-weight:700;">↓0.8%</span></span>
+                <span style="color:#64748B;">同比 <span style="color:#991B1B;font-weight:700;">↓0.8%</span></span>
                 <span style="color:#64748B;">环比 <span style="color:#047857;font-weight:700;">↑0.3%</span></span>
             </div>
         </div>
-        <div class="kpi-card" style="border-top-color: #047857;">
+        <div class="kpi-card" style="">
             <div class="kpi-label" style="color: #047857;">当前月达标率</div>
             <div class="kpi-value" style="color: #0F172A; font-size: 26px !important;">86.8%</div>
             <div style="font-size: 9px; color: #64748B; margin-top: 4px;">167个国控断面5月单月统计</div>
             <div style="display:flex;gap:10px;margin-top:3px;font-size:9px;justify-content:center;">
-                <span style="color:#64748B;">同比 <span style="color:#DC2626;font-weight:700;">↓0.5%</span></span>
+                <span style="color:#64748B;">同比 <span style="color:#991B1B;font-weight:700;">↓0.5%</span></span>
                 <span style="color:#64748B;">环比 <span style="color:#047857;font-weight:700;">↑0.2%</span></span>
             </div>
         </div>
-        <div class="kpi-card" style="border-top-color: #D97706;">
-            <div class="kpi-label" style="color: #D97706;">当前月水质指数</div>
+        <div class="kpi-card" style="">
+            <div class="kpi-label" style="color: #B45309;">当前月水质指数</div>
             <div class="kpi-value" style="color: #0F172A; font-size: 26px !important;">3.97</div>
             <div style="font-size: 9px; color: #64748B; margin-top: 4px;">167个国控断面5月单月统计</div>
             <div style="display:flex;gap:10px;margin-top:3px;font-size:9px;justify-content:center;">
                 <span style="color:#64748B;">同比 <span style="color:#047857;font-weight:700;">↑0.12</span></span>
-                <span style="color:#64748B;">环比 <span style="color:#D97706;font-weight:700;">↓0.08</span></span>
+                <span style="color:#64748B;">环比 <span style="color:#B45309;font-weight:700;">↓0.08</span></span>
             </div>
         </div>
-        <div class="kpi-card" style="border-top-color: #DC2626;">
-            <div class="kpi-label" style="color: #DC2626;">累计月超标断面总数</div>
+        <div class="kpi-card" style="">
+            <div class="kpi-label" style="color: #991B1B;">累计月超标断面总数</div>
             <div class="kpi-value" style="color: #0F172A; font-size: 26px !important;">13个</div>
             <div style="font-size: 9px; color: #64748B; margin-top: 4px;">1-5月累计月超标断面统计</div>
             <div style="display:flex;gap:10px;margin-top:3px;font-size:9px;justify-content:center;">
-                <span style="color:#64748B;">同比 <span style="color:#DC2626;font-weight:700;">↑2个</span></span>
+                <span style="color:#64748B;">同比 <span style="color:#991B1B;font-weight:700;">↑2个</span></span>
                 <span style="color:#64748B;">环比 <span style="color:#047857;font-weight:700;">↓1个</span></span>
             </div>
         </div>
@@ -108,18 +108,20 @@ c.setOption({
     xAxis:{type:"category",data:months,axisLabel:{fontSize:10,fontWeight:700,color:'#1E293B'},axisLine:{lineStyle:{color:"#CBD5E1"}}},
     yAxis:{type:"value",min:0,max:100,splitLine:{lineStyle:{color:"#E2E8F0",type:"dashed"}},axisLabel:{fontSize:9,color:'#334155',fontWeight:600,formatter:"{value}%"}},
     series:[
-        {name:"\u56fd\u63a7 I-III\u7c7b\u6bd4\u4f8b",type:"line",data:[86.2,86.8,87.1,87.0,87.3],smooth:true,lineStyle:{color:"#2563EB",width:2.5},
-         areaStyle:{color:{type:"linear",x:0,y:0,x2:0,y2:1,colorStops:[{offset:0,color:"rgba(37,99,235,0.2)"},{offset:1,color:"rgba(37,99,235,0.02)"}]}},
-         symbol:"circle",symbolSize:6,itemStyle:{color:"#2563EB"}},
-        {name:"\u52a3\u2165\u7c7b\u7684\u6bd4\u4f8b",type:"line",data:[4.5,4.8,5.2,4.9,5.4],smooth:true,lineStyle:{color:"#DC2626",width:2.5},
-         areaStyle:{color:{type:"linear",x:0,y:0,x2:0,y2:1,colorStops:[{offset:0,color:"rgba(220,38,38,0.2)"},{offset:1,color:"rgba(220,38,38,0.02)"}]}},
-         symbol:"circle",symbolSize:6,itemStyle:{color:"#DC2626"}}
+        {name:"\u56fd\u63a7 I-III\u7c7b\u6bd4\u4f8b",type:"line",data:[86.2,86.8,87.1,87.0,87.3],smooth:true,lineStyle:{color:"#1A3A5C",width:2.5},
+         areaStyle:{color:{type:"linear",x:0,y:0,x2:0,y2:1,colorStops:[{offset:0,color:"rgba(26,58,92,0.2)"},{offset:1,color:"rgba(26,58,92,0.02)"}]}},
+         symbol:"circle",symbolSize:6,itemStyle:{color:"#1A3A5C"}},
+        {name:"\u52a3\u2165\u7c7b\u7684\u6bd4\u4f8b",type:"line",data:[4.5,4.8,5.2,4.9,5.4],smooth:true,lineStyle:{color:"#991B1B",width:2.5},
+         areaStyle:{color:{type:"linear",x:0,y:0,x2:0,y2:1,colorStops:[{offset:0,color:"rgba(153,27,27,0.2)"},{offset:1,color:"rgba(153,27,27,0.02)"}]}},
+         symbol:"circle",symbolSize:6,itemStyle:{color:"#991B1B"}}
     ],
     backgroundColor:"transparent"
 });
 window.addEventListener("resize",function(){c.resize();});
 </script></body>
 </html>
+
+
 
 
 

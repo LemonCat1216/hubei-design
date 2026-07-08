@@ -3,37 +3,80 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>排口信息 - 不达标断面对应排口清单</title>
+<title>排污口排查整治：重点河湖排口分布</title>
 <link rel="stylesheet" href="ppt-style.css">
+<style>
+  .bd { padding: 10px 24px; }
+  .content-layout { display: flex; gap: 12px; flex: 1; min-height: 0; }
+  .left-panel { flex: 0 0 55%; display: flex; flex-direction: column; min-height: 0; overflow:hidden; }
+  .right-panel { flex: 1; display: flex; flex-direction: column; gap:8px; min-height: 0; }
+  .fit-table { width:100%; border-collapse:collapse; }
+  .fit-table th { padding:3px 4px !important; font-size:7.5px !important; background:#F8FAFC; border-bottom:1px solid #E2E8F0; }
+  .fit-table td { padding:2px 4px !important; font-size:7.5px !important; }
+  .block-card { background:#F8FAFC; border:1px solid #E2E8F0; padding:8px 10px; }
+  .block-title { font-size:10px; font-weight:700; color:#1E293B; margin-bottom:6px; }
+</style>
 </head>
 <body>
 <div class="slide-container">
-    <div class="ppt-header"><span class="ppt-title">排污口排查整治：不达标断面对应排口清单</span><span class="nav-page-num">P23</span></div>
-    <div class="core-bar">▎ 2026年5月，全省23个不达标断面关联排污口856个，其中已整治412个(48.1%)，未整治444个(51.9%)。四湖总干渠关联排口最多(186个)。</div>
-    <div class="bd" style="flex-direction:column;gap:10px;">
-        <div class="kpi-row">
-            <div class="kpi-card" style="border-top-color:#DC2626;"><div class="kpi-label" style="color:#DC2626;">不达标断面</div><div class="kpi-value" style="color:#DC2626;">23个</div></div>
-            <div class="kpi-card" style="border-top-color:#2563EB;"><div class="kpi-label" style="color:#2563EB;">关联排口</div><div class="kpi-value">856个</div></div>
-            <div class="kpi-card" style="border-top-color:#047857;"><div class="kpi-label" style="color:#047857;">已整治</div><div class="kpi-value" style="color:#047857;">412个</div></div>
-            <div class="kpi-card" style="border-top-color:#DC2626;"><div class="kpi-label" style="color:#DC2626;">未整治</div><div class="kpi-value" style="color:#DC2626;">444个</div></div>
+  <div class="ppt-header"><span class="ppt-title">排污口排查整治：重点河湖排口分布</span><span class="nav-page-num">P23</span></div>
+  <div class="core-bar">▎ 2026年1月，全省50条重点河湖共分布排污口34,114个，其中长江6,986个、汉江3,457个、清江900个。A类水体排口密集，长江（6,986个）居首。</div>
+  <div class="bd" style="flex-direction:column; gap:8px;">
+    <div class="content-layout">
+      <div class="left-panel">
+        <div class="block-card" style="flex:1;">
+          <div class="block-title">重点河湖排口分布（Top 15）</div>
+          <div class="table-box fit-table" style="flex:1; overflow:hidden;">
+            <table style="width:100%;">
+              <thead><tr><th>水体名称</th><th style="width:40px;">排口数</th><th style="width:28px;">级别</th><th style="width:35px;">工业</th><th style="width:35px;">城镇生活</th><th style="width:30px;">农业</th><th style="width:35px;">其他</th></tr></thead>
+              <tbody>
+                <tr><td style="font-weight:700; color:#1E40AF;">长江</td><td class="num" style="font-weight:700;">6,986</td><td>A</td><td class="num">1,020</td><td class="num">103</td><td class="num">34</td><td class="num">5,829</td></tr>
+                <tr><td style="font-weight:700; color:#065F46;">汉江</td><td class="num" style="font-weight:700;">3,457</td><td>A</td><td class="num">559</td><td class="num">49</td><td class="num">7</td><td class="num">2,842</td></tr>
+                <tr><td style="font-weight:700; color:#0F5132;">清江</td><td class="num" style="font-weight:700;">900</td><td>A</td><td class="num">30</td><td class="num">12</td><td class="num">6</td><td class="num">852</td></tr>
+                <tr><td>丹江口水库</td><td class="num">524</td><td>A</td><td class="num">25</td><td class="num">9</td><td class="num">0</td><td class="num">490</td></tr>
+                <tr><td>四湖总干渠</td><td class="num">398</td><td>B</td><td class="num">37</td><td class="num">11</td><td class="num">0</td><td class="num">350</td></tr>
+                <tr><td>陆水</td><td class="num">292</td><td>B</td><td class="num">39</td><td class="num">18</td><td class="num">20</td><td class="num">215</td></tr>
+                <tr><td>斧头湖</td><td class="num">280</td><td>B</td><td class="num">2</td><td class="num">1</td><td class="num">0</td><td class="num">277</td></tr>
+                <tr><td>涢水</td><td class="num">241</td><td>B</td><td class="num">0</td><td class="num">0</td><td class="num">0</td><td class="num">241</td></tr>
+                <tr><td>竹皮河</td><td class="num">231</td><td>B</td><td class="num">8</td><td class="num">0</td><td class="num">0</td><td class="num">223</td></tr>
+                <tr><td>三峡库区</td><td class="num">200</td><td>B</td><td class="num">4</td><td class="num">7</td><td class="num">0</td><td class="num">189</td></tr>
+                <tr><td>府澴河</td><td class="num">577</td><td>C</td><td class="num">0</td><td class="num">0</td><td class="num">0</td><td class="num">577</td></tr>
+                <tr><td>通顺河</td><td class="num">305</td><td>C</td><td class="num">8</td><td class="num">2</td><td class="num">0</td><td class="num">295</td></tr>
+                <tr><td>举水（武汉段）</td><td class="num">276</td><td>C</td><td class="num">6</td><td class="num">19</td><td class="num">0</td><td class="num">251</td></tr>
+                <tr><td>四湖片区</td><td class="num">1,643</td><td>—</td><td class="num">241</td><td class="num">407</td><td class="num">19</td><td class="num">976</td></tr>
+                <tr><td>黄柏河片区</td><td class="num">463</td><td>—</td><td class="num">19</td><td class="num">0</td><td class="num">0</td><td class="num">444</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div style="margin-top:4px; font-size:7px; color:#94A3B8;">▁ 等级说明：A=三江一库排口，B=国家20个重点河湖排口，C=省级重点26个河湖排口，D=其他排口</div>
         </div>
-        <div class="table-box" style="flex:1;overflow-y:auto;"><table>
-            <thead><tr><th>序号</th><th>断面名称</th><th>级别</th><th>市州</th><th>关联排口</th><th>已整治</th><th>未整治</th><th>主要问题</th></tr></thead>
-            <tbody>
-                <tr><td>1</td><td class="td-left">四湖总干渠</td><td>国控</td><td>荆州</td><td><span class="badge-r">186</span></td><td>82</td><td><span class="badge-r">104</span></td><td>工业/生活混排</td></tr>
-                <tr><td>2</td><td class="td-left">洪湖湖心</td><td>省控</td><td>荆州</td><td><span class="badge-r">124</span></td><td>56</td><td><span class="badge-r">68</span></td><td>农业面源/养殖</td></tr>
-                <tr><td>3</td><td class="td-left">府河孝感</td><td>国控</td><td>孝感</td><td><span class="badge-r">98</span></td><td>45</td><td><span class="badge-r">53</span></td><td>生活污水直排</td></tr>
-                <tr><td>4</td><td class="td-left">天门河</td><td>国控</td><td>天门</td><td>76</td><td>32</td><td><span class="badge-r">44</span></td><td>管网未覆盖</td></tr>
-                <tr><td>5</td><td class="td-left">长湖荆门</td><td>省控</td><td>荆门</td><td>72</td><td>38</td><td>34</td><td>面源污染</td></tr>
-                <tr><td>6</td><td class="td-left">东荆河</td><td>国控</td><td>潜江</td><td>65</td><td>28</td><td>37</td><td>工业排放</td></tr>
-                <tr><td>7</td><td class="td-left">倒水新洲</td><td>国控</td><td>武汉</td><td>58</td><td>35</td><td>23</td><td>生活/工业</td></tr>
-                <tr><td>8</td><td class="td-left">竹皮河</td><td>省控</td><td>荆门</td><td>52</td><td>26</td><td>26</td><td>管网破损</td></tr>
-                <tr><td>9</td><td class="td-left">举水麻城</td><td>省控</td><td>黄冈</td><td>48</td><td>28</td><td>20</td><td>畜禽养殖</td></tr>
-                <tr><td>10</td><td class="td-left">通顺河</td><td>国控</td><td>仙桃</td><td>77</td><td>42</td><td>35</td><td>混合污染</td></tr>
-            </tbody>
-        </table></div>
+      </div>
+      <div class="right-panel">
+        <div class="block-card" style="flex:1;">
+          <div class="block-title">A/B/C/D 分类排口数</div>
+          <div style="display:flex; flex-direction:column; gap:6px;">
+            <div><span style="font-size:8px; color:#475569;">A类（三江一库排口）</span><div style="height:16px; background:#E2E8F0; margin-top:2px;"><div style="width:34.8%; height:100%; background:#1A3A5C; display:flex; align-items:center; justify-content:flex-end; padding-right:4px; font-size:7px; font-weight:700; color:#fff;">11,867</div></div></div>
+            <div><span style="font-size:8px; color:#475569;">B类（国家20个重点河湖排口）</span><div style="height:16px; background:#E2E8F0; margin-top:2px;"><div style="width:10.3%; height:100%; background:#B45309; display:flex; align-items:center; justify-content:flex-end; padding-right:4px; font-size:7px; font-weight:700; color:#fff;">3,528</div></div></div>
+            <div><span style="font-size:8px; color:#475569;">C类（省级重点26个河湖排口）</span><div style="height:16px; background:#E2E8F0; margin-top:2px;"><div style="width:9.7%; height:100%; background:#059669; display:flex; align-items:center; justify-content:flex-end; padding-right:4px; font-size:7px; font-weight:700; color:#fff;">3,295</div></div></div>
+            <div><span style="font-size:8px; color:#475569;">D类（其他排口）</span><div style="height:16px; background:#E2E8F0; margin-top:2px;"><div style="width:45.2%; height:100%; background:#94A3B8; display:flex; align-items:center; justify-content:flex-end; padding-right:4px; font-size:7px; font-weight:700; color:#fff;">15,424</div></div></div>
+          </div>
+        </div>
+        <div class="block-card" style="flex:1;">
+          <div class="block-title">排口数 Top 5 水体与流域联动</div>
+          <table style="width:100%; font-size:8px;">
+            <tr><th style="text-align:left; border-bottom:1px solid #E2E8F0; padding:2px 4px;">水体</th><th style="text-align:right; border-bottom:1px solid #E2E8F0; padding:2px 4px;">排口数</th><th style="border-bottom:1px solid #E2E8F0; padding:2px 4px;">联动页</th></tr>
+            <tr><td style="padding:2px 4px; font-weight:700;">长江</td><td style="text-align:right; padding:2px 4px; font-weight:700;">6,986</td><td style="padding:2px 4px;"><a href="Page13.html" style="color:#1A3A5C; font-size:7px;">P13 长江流域</a></td></tr>
+            <tr><td style="padding:2px 4px; font-weight:700;">汉江</td><td style="text-align:right; padding:2px 4px; font-weight:700;">3,457</td><td style="padding:2px 4px;"><a href="Page14.html" style="color:#1A3A5C; font-size:7px;">P14 汉江流域</a></td></tr>
+            <tr><td style="padding:2px 4px; font-weight:700;">清江</td><td style="text-align:right; padding:2px 4px; font-weight:700;">900</td><td style="padding:2px 4px;"><a href="Page15.html" style="color:#1A3A5C; font-size:7px;">P15 清江流域</a></td></tr>
+            <tr><td style="padding:2px 4px;">丹江口水库</td><td style="text-align:right; padding:2px 4px;">524</td><td style="padding:2px 4px;"><a href="Page20.html" style="color:#1A3A5C; font-size:7px;">P20 丹江口</a></td></tr>
+            <tr><td style="padding:2px 4px;">四湖总干渠</td><td style="text-align:right; padding:2px 4px;">398</td><td style="padding:2px 4px; font-size:7px; color:#94A3B8;">四湖片区</td></tr>
+          </table>
+        </div>
+      </div>
     </div>
-    <div class="ft"><span>2026年5月生态环境月度专报</span><span>提示：仅供汇报使用</span></div>
+  </div>
+  <div class="ft"><span>2026年1月生态环境月度专报</span><span>提示：仅供汇报使用</span></div>
 </div>
 </body>
 </html>
+

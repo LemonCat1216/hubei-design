@@ -3,35 +3,102 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>排口信息 - 污染溯源预警分析</title>
+<title>排污口排查整治：各片区排查整治进展</title>
 <link rel="stylesheet" href="ppt-style.css">
+<style>
+  .bd { padding: 10px 24px; }
+  .content-layout { display: flex; gap: 12px; flex: 1; min-height: 0; }
+  .left-panel { flex: 0 0 60%; display: flex; flex-direction: column; min-height: 0; }
+  .right-panel { flex: 1; display: flex; flex-direction: column; gap: 8px; min-height: 0; }
+  .fit-table { width: 100%; border-collapse: collapse; }
+  .fit-table th { padding: 3px 4px !important; font-size: 7.5px !important; background: #F8FAFC; border-bottom: 1px solid #E2E8F0; }
+  .fit-table td { padding: 2px 4px !important; font-size: 7.5px !important; }
+  .fit-table .nm { font-weight: 700; font-size: 8px; }
+  .fit-table .num { font-weight: 600; text-align: right; }
+  .fit-table .rate { text-align: right; font-weight: 600; font-size: 7.5px; }
+  .rate-hi { color: #059669; }
+  .rate-md { color: #B45309; }
+  .rate-lo { color: #991B1B; }
+  .block-card { background: #F8FAFC; padding: 8px 10px; flex: 1; display: flex; flex-direction: column; }
+  .block-title { font-size: 10px; font-weight: 700; color: #1E293B; margin-bottom: 6px; }
+  .bar-item-sm { display: flex; align-items: center; gap: 4px; margin-bottom: 4px; }
+  .bar-label-sm { font-size: 7.5px; color: #475569; width: 70px; flex-shrink: 0; text-align: right; }
+  .bar-track-sm { flex: 1; height: 10px; background: #E2E8F0; overflow: hidden; }
+  .bar-fill-sm { height: 100%; }
+  .bar-pct-sm { font-size: 7.5px; font-weight: 700; width: 45px; flex-shrink: 0; text-align: right; }
+</style>
 </head>
 <body>
 <div class="slide-container">
-    <div class="ppt-header"><span class="ppt-title">排污口排查整治：污染溯源预警分析</span><span class="nav-page-num">P24</span></div>
-    <div class="core-bar">▎ 2026年5月，基于排口-断面-污染源关联链条，识别出高风险排口126个，涉及15个断面、83家污染源企业。溯源完成率68.3%。</div>
-    <div class="bd" style="flex-direction:column;gap:10px;">
-        <div class="kpi-row">
-            <div class="kpi-card" style="border-top-color:#DC2626;"><div class="kpi-label" style="color:#DC2626;">高风险排口</div><div class="kpi-value" style="color:#DC2626;">126个</div></div>
-            <div class="kpi-card" style="border-top-color:#2563EB;"><div class="kpi-label" style="color:#2563EB;">涉及断面</div><div class="kpi-value">15个</div></div>
-            <div class="kpi-card" style="border-top-color:#D97706;"><div class="kpi-label" style="color:#D97706;">污染源企业</div><div class="kpi-value" style="color:#D97706;">83家</div></div>
-            <div class="kpi-card" style="border-top-color:#047857;"><div class="kpi-label" style="color:#047857;">溯源完成率</div><div class="kpi-value" style="color:#047857;">68.3%</div></div>
-        </div>
-        <div class="table-box" style="flex:1;overflow-y:auto;"><table>
-            <thead><tr><th>排口名称</th><th>所在河流</th><th>受影响断面</th><th>主要污染源</th><th>类型</th><th>风险</th></tr></thead>
-            <tbody>
-                <tr><td class="td-left">潜江东荆河工业排口</td><td>东荆河</td><td>东荆河</td><td>XX化工厂</td><td>工业</td><td><span class="badge-r">高</span></td></tr>
-                <tr><td class="td-left">荆州四湖生活排口</td><td>四湖总干渠</td><td>四湖总干渠</td><td>沙市城区</td><td>生活</td><td><span class="badge-r">高</span></td></tr>
-                <tr><td class="td-left">荆门竹皮河排口</td><td>竹皮河</td><td>竹皮河</td><td>XX化工园区</td><td>工业</td><td><span class="badge-r">高</span></td></tr>
-                <tr><td class="td-left">孝感府河排口</td><td>府河</td><td>府河孝感</td><td>城区生活污水</td><td>生活</td><td><span class="badge-r">高</span></td></tr>
-                <tr><td class="td-left">天门河城区排口</td><td>天门河</td><td>天门河</td><td>天门城区</td><td>生活</td><td><span class="badge-r">高</span></td></tr>
-                <tr><td class="td-left">武汉倒水排口</td><td>倒水</td><td>倒水新洲</td><td>工业混合</td><td>混合</td><td><span class="badge-y">中</span></td></tr>
-                <tr><td class="td-left">仙桃通顺河排口</td><td>通顺河</td><td>通顺河</td><td>城区管网</td><td>生活</td><td><span class="badge-y">中</span></td></tr>
-                <tr><td class="td-left">黄冈举水排口</td><td>举水</td><td>举水麻城</td><td>畜禽养殖</td><td>农业</td><td><span class="badge-y">中</span></td></tr>
-            </tbody>
-        </table></div>
+  <div class="ppt-header"><span class="ppt-title">排污口排查整治：各片区排查整治进展</span><span class="nav-page-num">P24</span></div>
+  <div class="core-bar">▎ 2026年1月，全省各片区累计排查入河排污口34,114个。长江干流南岸片区排查量最大（2,997个），四湖片区（2,310个）、清江片区（1,493个）次之。各片区溯源率均接近100%，整治率普遍在88%以上，其中长江干流北岸片区（99.32%）、四湖片区（99.05%）整治完成率领先。</div>
+  <div class="bd" style="flex-direction: column; gap: 8px;">
+    <div class="kpi-row" style="margin-bottom: 0; flex-shrink: 0;">
+      <div class="kpi-card" style=""><div class="kpi-label">排查总量</div><div class="kpi-value" style="font-size:20px;">34,114</div><div class="kpi-sub">全省累计</div></div>
+      <div class="kpi-card" style=""><div class="kpi-label">溯源率</div><div class="kpi-value" style="font-size:20px;color:#059669;">100%</div><div class="kpi-sub">主要片区均已完成溯源</div></div>
+      <div class="kpi-card" style=""><div class="kpi-label">整治率</div><div class="kpi-value" style="font-size:20px;color:#B45309;">93-99%</div><div class="kpi-sub">重点片区整治进展良好</div></div>
+      <div class="kpi-card" style=""><div class="kpi-label">监测率</div><div class="kpi-value" style="font-size:20px;color:#64748B;">24-100%</div><div class="kpi-sub">各片区差异较大</div></div>
     </div>
-    <div class="ft"><span>2026年5月生态环境月度专报</span><span>提示：仅供汇报使用</span></div>
+    <div class="content-layout">
+      <div class="left-panel">
+        <div class="block-card" style="flex:1;">
+          <div class="block-title">各片区排查/监测/溯源/整治统计</div>
+          <div class="table-box fit-table" style="flex:1; overflow: hidden;">
+            <table style="width:100%;">
+              <thead><tr><th>片区</th><th style="width:40px;">排查</th><th style="width:35px;">监测</th><th>监测率</th><th>溯源</th><th>溯源率</th><th>整治</th><th>整治率</th></tr></thead>
+              <tbody>
+                <tr><td class="nm">长江干流南岸片区</td><td class="num">2,997</td><td class="num">1,600</td><td class="rate rate-md">53.39%</td><td class="num">2,997</td><td class="rate rate-hi">100%</td><td class="num">2,639</td><td class="rate rate-hi">88.05%</td></tr>
+                <tr><td class="nm">四湖片区</td><td class="num">2,310</td><td class="num">1,767</td><td class="rate rate-hi">76.49%</td><td class="num">2,310</td><td class="rate rate-hi">100%</td><td class="num">2,288</td><td class="rate rate-hi">99.05%</td></tr>
+                <tr><td class="nm">清江片区</td><td class="num">1,493</td><td class="num">1,196</td><td class="rate rate-hi">80.11%</td><td class="num">1,493</td><td class="rate rate-hi">100%</td><td class="num">1,434</td><td class="rate rate-hi">96.05%</td></tr>
+                <tr><td class="nm">府澴河片区</td><td class="num">1,604</td><td class="num">734</td><td class="rate rate-md">45.76%</td><td class="num">1,604</td><td class="rate rate-hi">100%</td><td class="num">1,551</td><td class="rate rate-hi">96.70%</td></tr>
+                <tr><td class="nm">陆水片区</td><td class="num">1,248</td><td class="num">688</td><td class="rate rate-md">55.13%</td><td class="num">1,248</td><td class="rate rate-hi">100%</td><td class="num">1,099</td><td class="rate rate-hi">88.06%</td></tr>
+                <tr><td class="nm">富水片区</td><td class="num">1,186</td><td class="num">784</td><td class="rate rate-hi">66.10%</td><td class="num">1,186</td><td class="rate rate-hi">100%</td><td class="num">1,077</td><td class="rate rate-hi">90.81%</td></tr>
+                <tr><td class="nm">长江干流宜昌片区</td><td class="num">1,041</td><td class="num">847</td><td class="rate rate-hi">81.36%</td><td class="num">1,041</td><td class="rate rate-hi">100%</td><td class="num">1,018</td><td class="rate rate-hi">97.79%</td></tr>
+                <tr><td class="nm">长江干流北岸片区</td><td class="num">886</td><td class="num">503</td><td class="rate rate-md">56.77%</td><td class="num">886</td><td class="rate rate-hi">100%</td><td class="num">880</td><td class="rate rate-hi">99.32%</td></tr>
+                <tr><td class="nm">汉北河片区</td><td class="num">687</td><td class="num">597</td><td class="rate rate-hi">86.90%</td><td class="num">687</td><td class="rate rate-hi">100%</td><td class="num">671</td><td class="rate rate-hi">97.67%</td></tr>
+                <tr><td class="nm">黄柏河片区</td><td class="num">482</td><td class="num">160</td><td class="rate rate-lo">33.20%</td><td class="num">482</td><td class="rate rate-hi">100%</td><td class="num">471</td><td class="rate rate-hi">97.72%</td></tr>
+                <tr><td class="nm" style="color:#94A3B8;">三峡库区</td><td class="num">420</td><td class="num">225</td><td class="rate rate-md">53.57%</td><td class="num">420</td><td class="rate rate-hi">100%</td><td class="num">416</td><td class="rate rate-hi">99.05%</td></tr>
+                <tr><td class="nm">黄盖湖片区</td><td class="num" style="color:#94A3B8;">3,411</td><td class="num">1,569</td><td class="rate rate-md">46.00%</td><td class="num">3,411</td><td class="rate rate-hi">100%</td><td class="num">3,371</td><td class="rate rate-hi">98.83%</td></tr>
+                <tr><td class="nm">汉水片区</td><td class="num">175</td><td class="num">43</td><td class="rate rate-lo">24.57%</td><td class="num">175</td><td class="rate rate-hi">100%</td><td class="num">164</td><td class="rate rate-hi">93.71%</td></tr>
+                <tr><td class="nm">清江沮漳河水库片区</td><td class="num">95</td><td class="num">73</td><td class="rate rate-hi">76.84%</td><td class="num">95</td><td class="rate rate-hi">100%</td><td class="num">91</td><td class="rate rate-hi">95.79%</td></tr>
+                <tr><td class="nm">清江内荆河片区</td><td class="num">16</td><td class="num">16</td><td class="rate rate-hi">100%</td><td class="num">16</td><td class="rate rate-hi">100%</td><td class="num">15</td><td class="rate rate-hi">93.75%</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div style="margin-top: 4px; font-size: 7px; color: #94A3B8;">注：数据截至2026年1月。黄盖湖片区排查数含其他片区汇总数据。各片区基本完成溯源，整治进度集中在88%-99%。</div>
+        </div>
+      </div>
+      <div class="right-panel">
+        <div class="block-card" style="flex: 0 0 auto;">
+          <div class="block-title">各片区主要流域分布</div>
+          <div style="font-size: 8px; line-height: 1.6; color: #334155;">
+            <div>▸ 长江干流片区（南岸/北岸/宜昌）共排查<b>4,924</b>个，整治率均高于88%</div>
+            <div>▸ 清江片区（清江/沮漳河/内荆河）共排查<b>1,604</b>个，整治率均高于93%</div>
+            <div>▸ 四湖片区排查<b>2,310</b>个，整治率99.05%，为进展最快片区之一</div>
+            <div>▸ 汉水片区监测率最低（24.57%），为下一步重点提升方向</div>
+          </div>
+        </div>
+        <div class="block-card" style="flex:1;">
+          <div class="block-title">重点片区整治率对比（%）</div>
+          <div style="flex:1; display: flex; flex-direction: column; gap: 4px; justify-content: center;">
+            <div class="bar-item-sm"><span class="bar-label-sm">长江干流北岸</span><div class="bar-track-sm"><div class="bar-fill-sm" style="width:99.3%;background:#059669;"></div></div><span class="bar-pct-sm" style="color:#059669;">99.32%</span></div>
+            <div class="bar-item-sm"><span class="bar-label-sm">四湖片区</span><div class="bar-track-sm"><div class="bar-fill-sm" style="width:99.1%;background:#059669;"></div></div><span class="bar-pct-sm" style="color:#059669;">99.05%</span></div>
+            <div class="bar-item-sm"><span class="bar-label-sm">三峡库区</span><div class="bar-track-sm"><div class="bar-fill-sm" style="width:99.1%;background:#059669;"></div></div><span class="bar-pct-sm" style="color:#059669;">99.05%</span></div>
+            <div class="bar-item-sm"><span class="bar-label-sm">黄盖湖片区</span><div class="bar-track-sm"><div class="bar-fill-sm" style="width:98.8%;background:#059669;"></div></div><span class="bar-pct-sm" style="color:#059669;">98.83%</span></div>
+            <div class="bar-item-sm"><span class="bar-label-sm">汉北河片区</span><div class="bar-track-sm"><div class="bar-fill-sm" style="width:97.7%;background:#059669;"></div></div><span class="bar-pct-sm" style="color:#059669;">97.67%</span></div>
+            <div class="bar-item-sm"><span class="bar-label-sm">清江片区</span><div class="bar-track-sm"><div class="bar-fill-sm" style="width:96.1%;background:#059669;"></div></div><span class="bar-pct-sm" style="color:#059669;">96.05%</span></div>
+            <div class="bar-item-sm"><span class="bar-label-sm">汉水片区</span><div class="bar-track-sm"><div class="bar-fill-sm" style="width:93.7%;background:#047857;"></div></div><span class="bar-pct-sm" style="color:#047857;">93.71%</span></div>
+            <div class="bar-item-sm"><span class="bar-label-sm">陆水片区</span><div class="bar-track-sm"><div class="bar-fill-sm" style="width:88.1%;background:#047857;"></div></div><span class="bar-pct-sm" style="color:#047857;">88.06%</span></div>
+            <div class="bar-item-sm"><span class="bar-label-sm">长江干流南岸</span><div class="bar-track-sm"><div class="bar-fill-sm" style="width:88.1%;background:#047857;"></div></div><span class="bar-pct-sm" style="color:#047857;">88.05%</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="ft"><span>2026年1月生态环境月度专报</span><span>提示：仅供汇报使用</span></div>
 </div>
 </body>
 </html>
+
+
+

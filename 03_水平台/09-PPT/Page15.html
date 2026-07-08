@@ -16,7 +16,7 @@
     }
     .section-block { 
         background: #FFFFFF; 
-        border: 1px solid #E2E8F0; 
+        
         padding: 6px 10px; 
     }
     .section-title { 
@@ -46,7 +46,7 @@
         align-items: center;
         justify-content: space-between;
         border-radius: 1px;
-        border: 1px solid #E2E8F0;
+        
     }
     .pill-node.class-i { background: #EFF6FF; border-color: #BFDBFE; }
     .pill-node.class-ii { background: #F0FDF4; border-color: #BBF7D0; }
@@ -54,34 +54,35 @@
     .pill-name { font-size: 8px; font-weight: 600; color: #166534; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     /* 右侧通用自适应组件的“全绿亮点版”（结构同P13/P14） */
     .risk-list-wrapper { display: flex; flex-direction: column; gap: 5px; flex: 1; min-height: 0; }
-    .risk-row-item { background: #F0FDF4; border: 1px solid #DCFCE7; border-left: 4px solid #10B981; padding: 7px 10px; display: flex; align-items: center; justify-content: space-between; flex: 1; }
-    .risk-row-item.blue-style { background: #EFF6FF; border-color: #BFDBFE; border-left-color: #2563EB; }
+    .risk-row-item { background: #F0FDF4; border: 1px solid #DCFCE7;
+    border-left: 0; ; padding: 7px 10px; display: flex; align-items: center; justify-content: space-between; flex: 1; }
+    .risk-row-item.blue-style { background: #EFF6FF; border-color: #BFDBFE;  }
     .risk-loc-info { display: flex; flex-direction: column; gap: 1px; flex: 0 0 35%; }
     .risk-name { font-size: 9.5px; font-weight: 800; color: #166534; }
     .risk-row-item.blue-style .risk-name { color: #1E40AF; }
     .risk-type { font-size: 7.5px; color: #15803D; opacity: 0.7; }
     .risk-row-item.blue-style .risk-type { color: #1D4ED8; opacity: 0.7; }
     .risk-detail-info { display: flex; flex-direction: column; gap: 1px; font-size: 8.5px; color: #475569; flex: 1; padding-left: 10px; }
-    .risk-badge { font-size: 8px; background: #10B981; color: #fff; padding: 1px 6px; font-weight: 700; border-radius: 1px; white-space: nowrap; }
+    .risk-badge { font-size: 8px; background: #B45309; color: #fff; padding: 1px 6px; font-weight: 700; border-radius: 1px; white-space: nowrap; }
 </style>
 </head>
 <body>
 <div class="slide-container">
     <div class="ppt-header"><span class="ppt-title">流域湖库分析：清江流域分析</span><span class="nav-page-num">P15</span></div>
-    <div class="core-bar" style="background: #F0FDF4!important; border-left-color: #10B981!important; color: #166534!important;">▎ 2026年5月（当前月），清江流域水质总体较好，Ⅰ-Ⅲ类比例保持92.3%以上，全线国控断面实现劣Ⅴ类清零。</div>
+    <div class="core-bar" style="background: #F0FDF4!important;  color: #166534!important;">▎ 2026年5月（当前月），清江流域水质总体较好，Ⅰ-Ⅲ类比例保持92.3%以上，全线国控断面实现劣Ⅴ类清零。</div>
     <div class="bd" style="flex-direction:column;gap:10px;">
         <div class="kpi-row" style="margin-bottom:0;">
-            <div class="kpi-card" style="border-top-color:#2563EB;"><div class="kpi-label" style="color:#2563EB;">监测断面总数</div><div class="kpi-value" style="color:#2563EB;">26个</div></div>
-            <div class="kpi-card" style="border-top-color:#047857;"><div class="kpi-label" style="color:#047857;">Ⅰ-Ⅲ类比例</div><div class="kpi-value" style="color:#047857;">92.3%</div></div>
-            <div class="kpi-card" style="border-top-color:#10B981; background: #F0FDF4;"><div class="kpi-label" style="color:#10B981;">超标断面</div><div class="kpi-value" style="color:#10B981;">0个 (清零)</div></div>
-            <div class="kpi-card" style="border-top-color:#047857;"><div class="kpi-label" style="color:#047857;">同比变化</div><div class="kpi-value" style="color:#047857;">↑1.2%</div></div>
+            <div class="kpi-card" style=""><div class="kpi-label" style="color:#1A3A5C;">监测断面总数</div><div class="kpi-value" style="color:#1A3A5C;">26个</div></div>
+            <div class="kpi-card" style=""><div class="kpi-label" style="color:#047857;">Ⅰ-Ⅲ类比例</div><div class="kpi-value" style="color:#047857;">92.3%</div></div>
+            <div class="kpi-card" style="background: #F0FDF4;"><div class="kpi-label" style="color:#B45309;">超标断面</div><div class="kpi-value" style="color:#B45309;">0个 (清零)</div></div>
+            <div class="kpi-card" style=""><div class="kpi-label" style="color:#047857;">同比变化</div><div class="kpi-value" style="color:#047857;">↑1.2%</div></div>
         </div>
         <div style="display:flex;gap:12px;flex:1;min-height:0;">
             <div class="table-box" style="flex:0 0 55%; display:flex; flex-direction:column; padding:6px; background:#F8FAFC;">
                 <div style="font-size:9px; font-weight:700; color:#1E293B; margin-bottom:5px; padding-left:2px;">🌿 清江全流域断面水质看板 (26个)</div>
                 <div class="qingjiang-wall">
                     <div class="section-block">
-                        <div class="section-title"><span style="color:#10B981;">💧</span> 🟦 Ⅰ类水质（5个）</div>
+                        <div class="section-title"><span style="color:#B45309;">💧</span> 🟦 Ⅰ类水质（5个）</div>
                         <div class="pill-grid">
                             <div class="pill-node class-i"><span class="pill-name">五峰湾潭河</span><span class="node-dot"></span></div>
                             <div class="pill-node class-i"><span class="pill-name">恩施大沙河</span><span class="node-dot"></span></div>
@@ -92,7 +93,7 @@
                     </div>
 
                     <div class="section-block">
-                        <div class="section-title"><span style="color:#10B981;">💧</span> 🟩 Ⅱ类水质（18个）</div>
+                        <div class="section-title"><span style="color:#B45309;">💧</span> 🟩 Ⅱ类水质（18个）</div>
                         <div class="pill-grid">
                             <div class="pill-node class-ii"><span class="pill-name">恩施国控</span><span class="node-dot"></span></div>
                             <div class="pill-node class-ii"><span class="pill-name">利川段干流</span><span class="node-dot"></span></div>
@@ -116,7 +117,7 @@
                     </div>
 
                     <div class="section-block">
-                        <div class="section-title"><span style="color:#10B981;">💧</span> 🟨 Ⅲ类水质（7个）</div>
+                        <div class="section-title"><span style="color:#B45309;">💧</span> 🟨 Ⅲ类水质（7个）</div>
                         <div class="pill-grid">
                             <div class="pill-node class-iii"><span class="pill-name">建始段干流</span><span class="node-dot"></span></div>
                             <div class="pill-node class-iii"><span class="pill-name">支流茅坪河</span><span class="node-dot"></span></div>
@@ -133,21 +134,21 @@
                 <div style="font-size:9px; font-weight:700; color:#047857; padding:3px 0; border-bottom:1px solid #DCFCE7; flex-shrink:0;">🌿 清江水质靶向分类管控</div>
                 <div style="flex:1; display:grid; grid-template-rows: repeat(3, 1fr); gap:6px; min-height:0;">
                     
-                    <div class="risk-row-item" style="padding:4px 10px; background:#FEF2F2; border-color:#FEE2E2; border-left-color:#DC2626; display:flex; align-items:center;">
+                    <div class="risk-row-item" style="padding:4px 10px; background:#FEF2F2; border-color:#FEE2E2;  display:flex; align-items:center;">
                         <div style="display:flex; flex-direction:column; justify-content:center; gap:3px; width:100%;">
                             <div style="display:flex; justify-content:space-between; align-items:center;">
                                 <span style="font-size:9px; font-weight:700; color:#991B1B; line-height:1.2;">🔴 劣Ⅴ类（0个）</span>
-                                <span class="risk-badge" style="font-size:7px; background:#DC2626; padding:2px 6px; line-height:1;">持续清零</span>
+                                <span class="risk-badge" style="font-size:7px; background:#991B1B; padding:2px 6px; line-height:1;">持续清零</span>
                             </div>
                             <div style="font-size:8px; line-height:1.5; color:#475569;">清江全线已实现劣Ⅴ类断面"清零"，保持优良水质。</div>
                         </div>
                     </div>
 
-                    <div class="risk-row-item" style="padding:4px 10px; background:#FFFBEB; border-color:#FDE68A; border-left-color:#D97706; display:flex; align-items:center;">
+                    <div class="risk-row-item" style="padding:4px 10px; background:#FFFBEB; border-color:#FDE68A;  display:flex; align-items:center;">
                         <div style="display:flex; flex-direction:column; justify-content:center; gap:3px; width:100%;">
                             <div style="display:flex; justify-content:space-between; align-items:center;">
                                 <span style="font-size:9px; font-weight:700; color:#92400E; line-height:1.2;">🟡 Ⅴ类·动态监控（2个）</span>
-                                <span class="risk-badge" style="font-size:7px; background:#D97706; padding:2px 6px; line-height:1;">动态监控</span>
+                                <span class="risk-badge" style="font-size:7px; background:#B45309; padding:2px 6px; line-height:1;">动态监控</span>
                             </div>
                             <div style="font-size:8px; line-height:1.5; color:#475569;">清江支流忠建河，所在市州：恩施 · 超标因子：COD、总磷</div>
                             <div style="font-size:8px; line-height:1.5; color:#475569;">清江支流野三河，所在市州：恩施 · 超标因子：总磷</div>
@@ -158,7 +159,7 @@
                         <div style="display:flex; flex-direction:column; justify-content:center; gap:3px; width:100%;">
                             <div style="display:flex; justify-content:space-between; align-items:center;">
                                 <span style="font-size:9px; font-weight:700; color:#1E40AF; line-height:1.2;">🔵 Ⅳ类·关注（2个）</span>
-                                <span class="risk-badge" style="font-size:7px; background:#2563EB; padding:2px 6px; line-height:1;">常规监测</span>
+                                <span class="risk-badge" style="font-size:7px; background:#1A3A5C; padding:2px 6px; line-height:1;">常规监测</span>
                             </div>
                             <div style="font-size:8px; line-height:1.5; color:#475569;">清江利川段，所在市州：恩施 · 超标因子：总磷（阶段性波动）</div>
                             <div style="font-size:8px; line-height:1.5; color:#475569;">清江恩施段，所在市州：恩施 · 超标因子：氨氮</div>
@@ -173,3 +174,7 @@
 </div>
 </body>
 </html>
+
+
+
+

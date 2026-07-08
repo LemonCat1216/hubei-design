@@ -25,7 +25,7 @@
             background: #ffffff;
             border: 1px solid #E2E8F0;
             box-shadow: 0 2px 10px rgba(15, 23, 42, 0.03);
-            border-radius: 0;
+            border-radius: 3px;
             padding: 10px 12px;
             display: flex;
             flex-direction: column;
@@ -38,7 +38,6 @@
             font-size: 11px;
             font-weight: 800;
             color: #0F172A;
-            border-left: 4px solid #047857;
             padding-left: 8px;
             margin-bottom: 8px;
             display: flex;
@@ -71,7 +70,7 @@
             gap: 10px;
             background: #F8FAFC;
             border: 1px solid #E2E8F0;
-            border-radius: 0;
+            border-radius: 3px;
             padding: 6px 8px;
             align-items: center;
             min-height: 0;
@@ -125,7 +124,7 @@
         .map-stat-lbl { font-size: 8.5px; color: #475569; font-weight: 600; }
         .map-stat-val { font-size: 11px; font-weight: 900; }
         .val-green { color: #047857; }
-        .val-red { color: #DC2626; }
+        .val-red { color: #991B1B; }
 
         /* =======================================
            右侧：表格与总结区
@@ -137,15 +136,14 @@
         .progress-wrapper { display: flex; align-items: center; gap: 6px; width: 100%; }
         .progress-track { flex: 1; height: 5px; background: #E2E8F0; border-radius: 0; overflow: hidden; }
         .progress-fill { height: 100%; background: #047857; border-radius: 0; }
-        .progress-fill.warn { background: #D97706; }
+        .progress-fill.warn { background: #B45309; }
 
         /* 核心结论区域 - 紧凑型双栏，取消 flex:1，靠自身内容撑开高度 */
         .business-summary-box {
             margin-top: 8px;
             background: #F8FAFC;
             border: 1px solid #E2E8F0;
-            border-left: 3px solid #3B82F6;
-            border-radius: 0;
+            border-radius: 3px;
             padding: 6px 10px; /* 进一步压缩内边距 */
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -164,12 +162,12 @@
         .summary-item .dot {
             width: 4px;
             height: 4px;
-            background: #2563EB;
+            background: #1A3A5C;
             border-radius: 50%;
             margin-top: 4px;
             flex-shrink: 0;
         }
-        .summary-item .dot.alert { background: #DC2626; }
+        .summary-item .dot.alert { background: #991B1B; }
 
         /* =======================================
            右侧新增：趋势折线图容器 (吃掉剩余所有空间)
@@ -212,7 +210,7 @@
                 </div>
 
                 <div class="map-list">
-                    <div class="map-card" style="border-left: 3px solid #1E40AF;">
+                    <div class="map-card">
                         <div class="map-placeholder"><span>长江流域</span></div>
                         <div class="map-stats">
                             <div class="map-stat-title" style="color: #1E40AF;">长江流域</div>
@@ -222,7 +220,7 @@
                         </div>
                     </div>
 
-                    <div class="map-card" style="border-left: 3px solid #065F46;">
+                    <div class="map-card">
                         <div class="map-placeholder"><span>汉江流域</span></div>
                         <div class="map-stats">
                             <div class="map-stat-title" style="color: #065F46;">汉江流域</div>
@@ -232,7 +230,7 @@
                         </div>
                     </div>
 
-                    <div class="map-card" style="border-left: 3px solid #0F5132;">
+                    <div class="map-card">
                         <div class="map-placeholder"><span>清江流域</span></div>
                         <div class="map-stats">
                             <div class="map-stat-title" style="color: #0F5132;">清江流域</div>
@@ -267,7 +265,7 @@
                             <td class="td-left" style="font-weight:800; color:#1E40AF;">长江流域</td>
                             <td style="font-weight:600;">89</td>
                             <td style="font-weight:700; color:#047857;">80个</td>
-                            <td><span style="font-weight:700; font-size:8px; color:#D97706;">89.9%</span></td>
+                            <td><span style="font-weight:700; font-size:8px; color:#B45309;">89.9%</span></td>
                             <td><span class="badge-r" style="font-size:9px;">3个</span></td>
                             <td><span style="color:#94A3B8;font-weight:600;">3.4%</span></td>
                             <td><span class="badge-r">↓ 1.4%</span></td>
@@ -364,7 +362,7 @@
             },
             {
                 name: '清江', type: 'line', smooth: true, symbolSize: 4,
-                itemStyle: { color: '#10B981' }, lineStyle: { width: 2 },
+                itemStyle: { color: '#047857' }, lineStyle: { width: 2 },
                 data: [91.1, 91.5, 92.0, 92.0, 92.3, 92.3]
             }
         ]
@@ -378,3 +376,6 @@
 </script>
 </body>
 </html>
+
+
+

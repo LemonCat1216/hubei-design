@@ -19,7 +19,7 @@
         }
         .ch2-title {
             font-size: 13px; font-weight: 800; letter-spacing: 1px; color: #0F172A;
-            border-left: 4px solid #047857; padding-left: 10px; margin-bottom: 2px;
+            padding-left: 10px; margin-bottom: 2px;
             flex-shrink: 0;
         }
 
@@ -34,8 +34,7 @@
         .auto-card {
             background: #ffffff;
             border: 1px solid #E2E8F0;
-            border-top: 3px solid #10B981;
-            border-radius: 6px;
+            border-radius: 3px;
             padding: 10px 12px; /* 缩小卡片内部留白 */
             display: flex;
             flex-direction: column;
@@ -45,8 +44,8 @@
             transition: all 0.2s ease;
             min-height: 0;
         }
-        .auto-card.warn { border-top-color: #F59E0B; background: #FFFBEB; border-color: #FDE68A; box-shadow: 0 2px 8px rgba(245,158,11,0.04); }
-        .auto-card.alert { border-top-color: #EF4444; background: #FEF2F2; border-color: #FECACA; box-shadow: 0 2px 8px rgba(239,68,68,0.04); }
+        .auto-card.warn { background: #FFFBEB; border-color: #FDE68A; box-shadow: 0 2px 8px rgba(180,83,9,0.04); }
+        .auto-card.alert { background: #FEF2F2; border-color: #FECACA; box-shadow: 0 2px 8px rgba(153,27,27,0.04); }
 
         /* 卡片内部的数据结构 */
         .card-head {
@@ -72,16 +71,16 @@
             padding: 1px 4px; border-radius: 3px; margin: 0 2px 2px 2px;
             display: inline-block; line-height: 1.1;
         }
-        .var.bad { color: #DC2626; background: #FEE2E2; }
+        .var.bad { color: #991B1B; background: #FEE2E2; }
 
         .ch2-next {
             margin-top: 4px; padding: 8px 12px;
             background: #F8FAFC; border: 1px dashed #CBD5E1;
             text-align: center; font-size: 10px; color: #64748B; letter-spacing: 0.5px;
-            border-radius: 6px;
+            border-radius: 3px;
             flex-shrink: 0;
         }
-        .ch2-next strong { color: #2563EB; font-weight: 800; }
+        .ch2-next strong { color: #1A3A5C; font-weight: 800; }
     </style>
 </head>
 <body>
@@ -121,7 +120,7 @@
                 <div class="card-head"><span>重点湖泊考核</span><span class="card-icon">💧</span></div>
                 <div class="data-row">
                     <div class="data-main">62.5<span class="data-unit">%</span></div>
-                    <div class="template-text" style="margin-left:auto; font-weight:700; color:#DC2626;">总体达标率</div>
+                    <div class="template-text" style="margin-left:auto; font-weight:700; color:#991B1B;">总体达标率</div>
                 </div>
                 <div class="template-text" style="font-size:9px; color:#475569; line-height:1.5;">
                     <span class="var">4</span>个试点湖库32个国控断面中<span class="var">5</span>个未达标，<span class="var bad">总磷</span>为首要超标因子。
@@ -132,7 +131,7 @@
                 <div class="card-head"><span>水质劣变追踪</span><span class="card-icon">⚠️</span></div>
                 <div class="data-row">
                     <div class="data-main">1<span class="data-unit">个</span></div>
-                    <div class="template-text" style="margin-left:auto; font-weight:700; color:#D97706;">新增劣Ⅴ类</div>
+                    <div class="template-text" style="margin-left:auto; font-weight:700; color:#B45309;">新增劣Ⅴ类</div>
                 </div>
                 <div class="template-text" style="font-size:9px; color:#475569; line-height:1.5;">
                     <span class="var bad">洪湖湖心、四湖总干渠</span>劣Ⅴ类，<span class="var bad">长湖（荆门）、斧头湖</span>Ⅴ类，建议启动污染源排查。
@@ -158,3 +157,6 @@
 </div>
 </body>
 </html>
+
+
+

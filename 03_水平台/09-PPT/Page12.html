@@ -32,7 +32,7 @@
 .content-layout .data-block {
   flex: 1;
   background: #ffffff;
-  border: 1px solid #E2E8F0;
+  
   box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
   border-radius: 4px;
   padding: 10px 12px;
@@ -90,10 +90,10 @@
     <div class="core-bar">▎ 2026年5月（当前月），全省12个二级流域总计167个国控断面优良（Ⅰ-Ⅲ类）比例最高为神农架片区（100%），最低为四湖片区（66.7%）；劣Ⅴ类涉及6个片区，比例最高为四湖片区（16.7%），最低为汉江上游（6.7%）。</div>
     <div class="bd" style="flex-direction:column;gap:8px;">
         <div class="kpi-row" style="margin-bottom:0;">
-            <div class="kpi-card" style="border-top-color:#2563EB;"><div class="kpi-label" style="color:#2563EB;">长江片区</div><div class="kpi-value" style="color:#2563EB;">89个</div></div>
-            <div class="kpi-card" style="border-top-color:#047857;"><div class="kpi-label" style="color:#047857;">汉江片区</div><div class="kpi-value" style="color:#047857;">52个</div></div>
-            <div class="kpi-card" style="border-top-color:#10B981;"><div class="kpi-label" style="color:#10B981;">清江片区</div><div class="kpi-value" style="color:#10B981;">26个</div></div>
-            <div class="kpi-card" style="border-top-color:#D97706;"><div class="kpi-label" style="color:#D97706;">12片区Ⅰ-Ⅲ类比例</div><div class="kpi-value" style="color:#D97706;">85.6%</div></div>
+            <div class="kpi-card" style=""><div class="kpi-label" style="color:#1A3A5C;">长江片区</div><div class="kpi-value" style="color:#1A3A5C;">89个</div></div>
+            <div class="kpi-card" style=""><div class="kpi-label" style="color:#047857;">汉江片区</div><div class="kpi-value" style="color:#047857;">52个</div></div>
+            <div class="kpi-card" style=""><div class="kpi-label" style="color:#1A3A5C;">清江片区</div><div class="kpi-value" style="color:#1A3A5C;">26个</div></div>
+            <div class="kpi-card" style=""><div class="kpi-label" style="color:#B45309;">12片区Ⅰ-Ⅲ类比例</div><div class="kpi-value" style="color:#B45309;">85.6%</div></div>
         </div>
         
         <div class="content-layout">
@@ -160,7 +160,7 @@ districts.setOption({
         }
     },
     // 环保标准 6 色域配色方案 (由蓝变绿再变红)
-    color: ['#1E3A8A', '#3B82F6', '#60A5FA', '#FBBF24', '#F97316', '#EF4444'],
+    color: ['#1A3A5C', '#2B4C7E', '#60A5FA', '#B45309', '#F97316', '#991B1B'],
     legend: {
         data: ['Ⅰ类', 'Ⅱ类', 'Ⅲ类', 'Ⅳ类', 'Ⅴ类', '劣Ⅴ类'],
         icon: 'rect',
@@ -199,3 +199,7 @@ window.addEventListener('resize',function(){districts.resize();});
 </script>
 </body>
 </html>
+
+
+
+

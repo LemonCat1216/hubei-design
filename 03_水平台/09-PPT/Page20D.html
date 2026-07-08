@@ -24,16 +24,16 @@
         <!-- 左侧：战况仪表盘 -->
         <div class="left-column" style="display: flex; flex-direction: column; gap: 12px;">
             
-            <div class="kpi-block al" style="padding: 16px 20px !important; border-top-width: 4px; border-top-color: #0F172A;">
+            <div class="kpi-block al" style="padding: 16px 20px !important; border-top-width: 4px; ">
                 <div class="kpi-title" style="color:#0F172A; font-size: 13px !important;">当前实测劣Ⅴ类总数</div>
                 <div style="display:flex; align-items:baseline; gap:8px; margin: 8px 0;">
                     <div class="kpi-num" style="color:#0F172A !important; font-size: 36px !important;">11 个</div>
                     <div class="badge-r" style="font-size:10px;">攻坚难点</div>
                 </div>
-                <div style="display:flex;gap:10px;justify-content:center;font-size:9px;margin-bottom:6px;"><span style="color:#64748B;">同比 <span style="color:#047857;font-weight:700;">↓3个</span></span><span style="color:#64748B;">环比 <span style="color:#DC2626;font-weight:700;">↑1个</span></span></div>
+                <div style="display:flex;gap:10px;justify-content:center;font-size:9px;margin-bottom:6px;"><span style="color:#64748B;">同比 <span style="color:#047857;font-weight:700;">↓3个</span></span><span style="color:#64748B;">环比 <span style="color:#991B1B;font-weight:700;">↑1个</span></span></div>
                 <!-- 进度条反向使用：越少越好 -->
                 <div class="progress-bar" style="background: #E2E8F0; height: 6px; border-radius: 0; overflow: hidden; margin-bottom: 8px;">
-                    <div class="progress-fill" style="width: 15%; background: #DC2626; height: 100%;"></div>
+                    <div class="progress-fill" style="width: 15%; background: #991B1B; height: 100%;"></div>
                 </div>
                 <div class="kpi-sub" style="border-top:1px dashed #CBD5E1; padding-top:10px; margin-top: 6px; line-height: 1.5;">
                     距年度考核“全面清零”目标，<br>仍有 <strong>11</strong> 场歼灭战需打赢。
@@ -83,7 +83,7 @@ bar.setOption({
     xAxis:{type:"value",splitLine:{lineStyle:{color:"#E2E8F0",type:"dashed"}},axisLabel:{fontSize:8,color:'#334155',fontWeight:600}},
     yAxis:{type:"category",data:cities,axisLabel:{fontSize:10,fontWeight:700,color:'#0F172A'},axisTick:{show:false},axisLine:{show:false}},
     series:[{
-        type:"bar",data:values.map(function(v){return {value:v,itemStyle:{color:v>=2?"#DC2626":"#F97316"}};}),
+        type:"bar",data:values.map(function(v){return {value:v,itemStyle:{color:v>=2?"#991B1B":"#F97316"}};}),
         barWidth:12,label:{show:true,position:"right",fontSize:10,fontWeight:700,formatter:"{c}\u4e2a"},
         markLine:{silent:true,data:[{xAxis:0,label:{show:false},lineStyle:{color:"#CBD5E1",width:1}}]}
     }],
@@ -92,6 +92,8 @@ bar.setOption({
 window.addEventListener("resize",function(){bar.resize();});
 </script></body>
 </html>
+
+
 
 
 

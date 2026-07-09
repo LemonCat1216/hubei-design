@@ -40,12 +40,12 @@
             flex-direction: column;
             justify-content: center;
             gap: 6px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+            box-shadow: none !important;
             transition: all 0.2s ease;
             min-height: 0;
         }
-        .auto-card.warn { background: var(--ppt-bg-warn); border-color: var(--ppt-border-warn); box-shadow: 0 2px 8px rgba(180,83,9,0.04); }
-        .auto-card.alert { background: var(--ppt-bg-alert); border-color: var(--ppt-border-alert-strong); box-shadow: 0 2px 8px rgba(153,27,27,0.04); }
+        .auto-card.warn { background: var(--ppt-bg-warn); border-color: var(--ppt-border-warn); box-shadow: none !important; }
+        .auto-card.alert { background: var(--ppt-bg-alert); border-color: var(--ppt-border-alert); box-shadow: none !important; }
 
         /* 卡片内部的数据结构 */
         .card-head {
@@ -69,7 +69,7 @@
             padding: 1px 4px; border-radius: 3px; margin: 0 2px 2px 2px;
             display: inline-block; line-height: 1.1;
         }
-        .var.bad { color: #991B1B; background: var(--ppt-bg-alert-soft); }
+        .var.bad { color: #991B1B; background: var(--ppt-bg-alert); border: 1px solid var(--ppt-border-alert); }
 
         .ch2-next {
             margin-top: 4px; padding: 8px 12px;
@@ -104,7 +104,7 @@
                 </div>
             </div>
 
-            <div class="auto-card warn">
+            <div class="auto-card">
                 <div class="card-head"><span>二级片区监测</span><span class="card-icon">📍</span></div>
                 <div class="data-row">
                     <div class="data-main">12<span class="data-unit">个片区</span></div>
@@ -114,7 +114,7 @@
                 </div>
             </div>
 
-            <div class="auto-card alert">
+            <div class="auto-card">
                 <div class="card-head"><span>重点湖泊考核</span><span class="card-icon">💧</span></div>
                 <div class="data-row">
                     <div class="data-main">62.5<span class="data-unit">%</span></div>
@@ -125,11 +125,11 @@
                 </div>
             </div>
 
-            <div class="auto-card warn">
+            <div class="auto-card alert">
                 <div class="card-head"><span>水质劣变追踪</span><span class="card-icon">⚠️</span></div>
                 <div class="data-row">
                     <div class="data-main">1<span class="data-unit">个</span></div>
-                    <div class="template-text" style="margin-left:auto; font-weight:700; color:#B45309;">新增劣Ⅴ类</div>
+                    <div class="template-text" style="margin-left:auto; font-weight:700; color:#991B1B;">新增劣Ⅴ类</div>
                 </div>
                 <div class="template-text" style="font-size:9px; color:#475569; line-height:1.5;">
                     <span class="var bad">洪湖湖心、四湖总干渠</span>劣Ⅴ类，<span class="var bad">长湖（荆门）、斧头湖</span>Ⅴ类，建议启动污染源排查。

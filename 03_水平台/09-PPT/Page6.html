@@ -8,9 +8,6 @@
     <style>
         .fit-table td { padding: 2px 8px !important; font-size: 8.5px !important; }
         .fit-table th { padding: 4px 8px !important; }
-        .trend-up { color: #991B1B !important; font-weight: 700; }
-        .trend-down { color: #047857 !important; font-weight: 700; }
-        .trend-flat { color: #64748B !important; }
         .left-column .warning-card { justify-content: center; }
     </style>
 </head>
@@ -29,7 +26,7 @@
             <div class="kpi-block" style="padding: 12px 14px !important;">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
                     <div class="kpi-title">省控Ⅰ-Ⅲ类比例（当前月）</div>
-                    <div style="display:flex;gap:8px;font-size:9px;align-items:center;"><span style="color:#64748B;">同比 <span style="color:#B45309;font-weight:700;">↓0.5%</span></span><span style="color:#64748B;">环比 <span style="color:#047857;font-weight:700;">↑0.3%</span></span></div>
+                    <div style="display:flex;gap:8px;font-size:9px;align-items:center;"><span style="color:#64748B;">同比 <span class="trend-warn">↓0.5%</span></span><span style="color:#64748B;">环比 <span class="trend-good">↑0.3%</span></span></div>
                 </div>
                 <div class="kpi-num" style="font-size: 26px !important; margin: 2px 0 4px 0;">86.8%</div>
                 <div class="progress-bar" style="background: var(--ppt-bg-track); height: 5px; border-radius: 0; overflow: hidden; margin-bottom: 4px;">
@@ -74,23 +71,23 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <tr><td class="td-left">神农架林区</td><td>100%</td><td>→ 持平</td><td>0</td><td>→ 持平</td><td><span class="trend-flat">→</span></td></tr>
-                    <tr><td class="td-left">鄂州市</td><td>100%</td><td>→ 持平</td><td>0</td><td>→ 持平</td><td><span class="trend-flat">→</span></td></tr>
-                    <tr><td class="td-left">十堰市</td><td>98.5%</td><td><span class="trend-down">↑ +1.5%</span></td><td>0</td><td><span class="trend-down">↑ +2.0%</span></td><td><span class="trend-down">↑</span></td></tr>
-                    <tr><td class="td-left">宜昌市</td><td>95.0%</td><td><span class="trend-down">↑ +1.2%</span></td><td>1</td><td><span class="trend-down">↑ +1.5%</span></td><td><span class="trend-down">↑</span></td></tr>
-                    <tr><td class="td-left">襄阳市</td><td>93.5%</td><td><span class="trend-up">↓ -0.6%</span></td><td>3</td><td><span class="trend-flat">→ -0.2%</span></td><td><span class="trend-up">↓</span></td></tr>
-                    <tr><td class="td-left">黄石市</td><td>92.0%</td><td><span class="trend-down">↑ +1.1%</span></td><td>0</td><td><span class="trend-down">↑ +0.8%</span></td><td><span class="trend-down">↑</span></td></tr>
-                    <tr><td class="td-left">武汉市</td><td>87.0%</td><td><span class="trend-flat">→ +0.5%</span></td><td>8</td><td><span class="trend-up">↓ -0.5%</span></td><td><span class="trend-flat">→</span></td></tr>
-                    <tr><td class="td-left">黄冈市</td><td>84.0%</td><td><span class="trend-up">↓ -2.0%</span></td><td>6</td><td><span class="trend-up">↓ -2.5%</span></td><td><span class="trend-up">↓</span></td></tr>
-                    <tr><td class="td-left">咸宁市</td><td>82.0%</td><td><span class="trend-up">↓ -1.3%</span></td><td>5</td><td><span class="trend-up">↓ -1.0%</span></td><td><span class="trend-up">↓</span></td></tr>
-                    <tr><td class="td-left">恩施州</td><td>80.0%</td><td><span class="trend-flat">→ 持平</span></td><td>2</td><td><span class="trend-flat">→ 持平</span></td><td><span class="trend-flat">→</span></td></tr>
-                    <tr><td class="td-left">荆门市</td><td>76.0%</td><td><span class="trend-down">↑ +1.0%</span></td><td>5</td><td><span class="trend-down">↑ +1.5%</span></td><td><span class="trend-down">↑</span></td></tr>
-                    <tr><td class="td-left">孝感市</td><td>74.0%</td><td><span class="trend-up">↓ -1.0%</span></td><td>9</td><td><span class="trend-up">↓ -1.5%</span></td><td><span class="trend-up">↓</span></td></tr>
-                    <tr><td class="td-left">荆州市</td><td>62.0%</td><td><span class="trend-down">↑ +2.0%</span></td><td>15</td><td><span class="trend-down">↑ +3.0%</span></td><td><span class="trend-down">↑</span></td></tr>
-                    <tr><td class="td-left">随州市</td><td>58.0%</td><td><span class="trend-up">↓ -0.3%</span></td><td>5</td><td><span class="trend-up">↓ -0.5%</span></td><td><span class="trend-up">↓</span></td></tr>
-                    <tr><td class="td-left">潜江市</td><td>56.0%</td><td><span class="trend-up">↓ -1.1%</span></td><td>7</td><td><span class="trend-up">↓ -2.0%</span></td><td><span class="trend-up">↓</span></td></tr>
-                    <tr><td class="td-left">仙桃市</td><td>50.0%</td><td><span class="trend-flat">→ 持平</span></td><td>4</td><td><span class="trend-flat">→ 持平</span></td><td><span class="trend-flat">→</span></td></tr>
-                    <tr><td class="td-left">天门市</td><td>45.0%</td><td><span class="trend-up">↓ -1.2%</span></td><td>6</td><td><span class="trend-up">↓ -3.0%</span></td><td><span class="trend-up">↓</span></td></tr>
+                    <tr><td class="td-left">神农架林区</td><td>100%</td><td>→ 持平</td><td>0</td><td>→ 持平</td><td><span class="trend-neutral">→</span></td></tr>
+                    <tr><td class="td-left">鄂州市</td><td>100%</td><td>→ 持平</td><td>0</td><td>→ 持平</td><td><span class="trend-neutral">→</span></td></tr>
+                    <tr><td class="td-left">十堰市</td><td>98.5%</td><td><span class="trend-good">↑ +1.5%</span></td><td>0</td><td><span class="trend-good">↑ +2.0%</span></td><td><span class="trend-good">↑</span></td></tr>
+                    <tr><td class="td-left">宜昌市</td><td>95.0%</td><td><span class="trend-good">↑ +1.2%</span></td><td>1</td><td><span class="trend-good">↑ +1.5%</span></td><td><span class="trend-good">↑</span></td></tr>
+                    <tr><td class="td-left">襄阳市</td><td>93.5%</td><td><span class="trend-warn">↓ -0.6%</span></td><td>3</td><td><span class="trend-neutral">→ -0.2%</span></td><td><span class="trend-warn">↓</span></td></tr>
+                    <tr><td class="td-left">黄石市</td><td>92.0%</td><td><span class="trend-good">↑ +1.1%</span></td><td>0</td><td><span class="trend-good">↑ +0.8%</span></td><td><span class="trend-good">↑</span></td></tr>
+                    <tr><td class="td-left">武汉市</td><td>87.0%</td><td><span class="trend-neutral">→ +0.5%</span></td><td>8</td><td><span class="trend-warn">↓ -0.5%</span></td><td><span class="trend-neutral">→</span></td></tr>
+                    <tr><td class="td-left">黄冈市</td><td>84.0%</td><td><span class="trend-warn">↓ -2.0%</span></td><td>6</td><td><span class="trend-warn">↓ -2.5%</span></td><td><span class="trend-warn">↓</span></td></tr>
+                    <tr><td class="td-left">咸宁市</td><td>82.0%</td><td><span class="trend-warn">↓ -1.3%</span></td><td>5</td><td><span class="trend-warn">↓ -1.0%</span></td><td><span class="trend-warn">↓</span></td></tr>
+                    <tr><td class="td-left">恩施州</td><td>80.0%</td><td><span class="trend-neutral">→ 持平</span></td><td>2</td><td><span class="trend-neutral">→ 持平</span></td><td><span class="trend-neutral">→</span></td></tr>
+                    <tr><td class="td-left">荆门市</td><td>76.0%</td><td><span class="trend-good">↑ +1.0%</span></td><td>5</td><td><span class="trend-good">↑ +1.5%</span></td><td><span class="trend-good">↑</span></td></tr>
+                    <tr><td class="td-left">孝感市</td><td>74.0%</td><td><span class="trend-warn">↓ -1.0%</span></td><td>9</td><td><span class="trend-warn">↓ -1.5%</span></td><td><span class="trend-warn">↓</span></td></tr>
+                    <tr><td class="td-left">荆州市</td><td>62.0%</td><td><span class="trend-good">↑ +2.0%</span></td><td>15</td><td><span class="trend-good">↑ +3.0%</span></td><td><span class="trend-good">↑</span></td></tr>
+                    <tr><td class="td-left">随州市</td><td>58.0%</td><td><span class="trend-warn">↓ -0.3%</span></td><td>5</td><td><span class="trend-warn">↓ -0.5%</span></td><td><span class="trend-warn">↓</span></td></tr>
+                    <tr><td class="td-left">潜江市</td><td>56.0%</td><td><span class="trend-warn">↓ -1.1%</span></td><td>7</td><td><span class="trend-warn">↓ -2.0%</span></td><td><span class="trend-warn">↓</span></td></tr>
+                    <tr><td class="td-left">仙桃市</td><td>50.0%</td><td><span class="trend-neutral">→ 持平</span></td><td>4</td><td><span class="trend-neutral">→ 持平</span></td><td><span class="trend-neutral">→</span></td></tr>
+                    <tr><td class="td-left">天门市</td><td>45.0%</td><td><span class="trend-warn">↓ -1.2%</span></td><td>6</td><td><span class="trend-warn">↓ -3.0%</span></td><td><span class="trend-warn">↓</span></td></tr>
                     </tbody>
                 </table>
             </div>

@@ -17,7 +17,7 @@
         /* 加强全宽表格的视觉比重 */
         .full-table th, .full-table td { padding: 8px 12px !important; font-size: 11px !important; }
         /* 预警卡片内容垂直居中 */
-        .warning-col .warning-card { justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,.03); }
+        .warning-col .warning-card { justify-content: center; box-shadow: none !important; }
     </style>
 <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script></head>
 <body>
@@ -32,35 +32,35 @@
     <div class="bd" style="flex-direction:column;gap:8px;">
 
     <div class="kpi-row" style="margin-bottom: 0;flex-shrink:0;">
-        <div class="kpi-card" style="">
-            <div class="kpi-label" style="color: #1A3A5C;">累计达标率</div>
-            <div class="kpi-value" style="color: #0F172A; font-size: 26px !important;">87.26%</div>
+        <div class="kpi-card status-neutral" style="">
+            <div class="kpi-label">累计达标率</div>
+            <div class="kpi-value" style="font-size: 26px !important;">87.26%</div>
             <div style="display:flex;gap:10px;margin-top:3px;font-size:9px;justify-content:center;">
-                <span style="color:#64748B;">同比 <span style="color:#B45309;font-weight:700;">↓0.8%</span></span>
-                <span style="color:#64748B;">环比 <span style="color:#047857;font-weight:700;">↑0.3%</span></span>
+                <span style="color:#64748B;">同比 <span class="trend-warn">↓0.8%</span></span>
+                <span style="color:#64748B;">环比 <span class="trend-good">↑0.3%</span></span>
             </div>
         </div>
-        <div class="kpi-card status-good" style="">
-            <div class="kpi-label" style="color: #047857;">当前月达标率</div>
-            <div class="kpi-value" style="color: #0F172A; font-size: 26px !important;">86.8%</div>
+        <div class="kpi-card status-neutral" style="">
+            <div class="kpi-label">当前月达标率</div>
+            <div class="kpi-value" style="font-size: 26px !important;">86.8%</div>
             <div style="display:flex;gap:10px;margin-top:3px;font-size:9px;justify-content:center;">
-                <span style="color:#64748B;">同比 <span style="color:#B45309;font-weight:700;">↓0.5%</span></span>
-                <span style="color:#64748B;">环比 <span style="color:#047857;font-weight:700;">↑0.2%</span></span>
+                <span style="color:#64748B;">同比 <span class="trend-warn">↓0.5%</span></span>
+                <span style="color:#64748B;">环比 <span class="trend-good">↑0.2%</span></span>
             </div>
         </div>
-        <div class="kpi-card status-warn" style="">
-            <div class="kpi-label" style="color: #B45309;">当前月水质指数</div>
+        <div class="kpi-card status-neutral" style="">
+            <div class="kpi-label">当前月水质指数</div>
             <div class="kpi-value" style="color: #0F172A; font-size: 26px !important;">3.97</div>
             <div style="display:flex;gap:10px;margin-top:3px;font-size:9px;justify-content:center;">
-                <span style="color:#64748B;">同比 <span style="color:#B45309;font-weight:700;">↑0.12</span></span>
-                <span style="color:#64748B;">环比 <span style="color:#047857;font-weight:700;">↓0.08</span></span>
+                <span style="color:#64748B;">同比 <span class="trend-warn">↑0.12</span></span>
+                <span style="color:#64748B;">环比 <span class="trend-good">↓0.08</span></span>
             </div>
         </div>
         <div class="kpi-card status-alert" style=""><div class="kpi-label">累计月超标断面总数</div>
             <div class="kpi-value" style="color: #0F172A; font-size: 26px !important;">13个</div>
             <div style="display:flex;gap:10px;margin-top:3px;font-size:9px;justify-content:center;">
-                <span style="color:#64748B;">同比 <span style="color:#991B1B;font-weight:700;">↑2个</span></span>
-                <span style="color:#64748B;">环比 <span style="color:#047857;font-weight:700;">↓1个</span></span>
+                <span style="color:#64748B;">同比 <span class="trend-alert">↑2个</span></span>
+                <span style="color:#64748B;">环比 <span class="trend-good">↓1个</span></span>
             </div>
         </div>
     </div>

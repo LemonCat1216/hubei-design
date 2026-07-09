@@ -24,7 +24,7 @@
     .warning-row .warning-card {
       flex: 1;
       justify-content: center;
-      box-shadow: 0 2px 8px rgba(0,0,0,.03);
+      box-shadow: none !important;
     }
   </style>
 </head>
@@ -45,13 +45,13 @@
     <!-- 上方：全套沿用系统标准的 kpi-card 组合 -->
     <div class="kpi-row" style="margin-bottom: 0; flex-shrink: 0;">
       <!-- 1. 总体判断 -->
-      <div class="kpi-card" style="">
-        <div class="kpi-label" style="color: #047857;">Ⅰ-Ⅲ类水质比例</div>
+      <div class="kpi-card status-neutral" style="">
+        <div class="kpi-label">Ⅰ-Ⅲ类水质比例</div>
         <div class="kpi-value" style="color: #0F172A; font-size: 26px !important;">87.6%</div>
         <div style="font-size: 9px; color: #64748B; margin-top: 4px;">整体水质稳中向好</div>
         <div style="display:flex;gap:10px;margin-top:3px;font-size:9px;justify-content:center;">
           <span style="color:#64748B;">同比 <span style="color:#64748B;font-weight:700;">持平</span></span>
-          <span style="color:#64748B;">环比 <span style="color:#047857;font-weight:700;">↑0.3%</span></span>
+          <span style="color:#64748B;">环比 <span class="trend-good">↑0.3%</span></span>
         </div>
       </div>
 
@@ -66,23 +66,23 @@
       </div>
 
       <!-- 3. 向好趋势 -->
-      <div class="kpi-card" style="">
-        <div class="kpi-label" style="color: #1A3A5C;">全省 CWQI 指数</div>
-        <div class="kpi-value" style="color: #0F172A; font-size: 26px !important;">3.97</div>
+      <div class="kpi-card status-neutral" style="">
+        <div class="kpi-label">全省 CWQI 指数</div>
+        <div class="kpi-value" style="font-size: 26px !important;">3.97</div>
         <div style="font-size: 9px; color: #64748B; margin-top: 4px;">多地呈现持续改善</div>
         <div style="display:flex;gap:10px;margin-top:3px;font-size:9px;justify-content:center;">
-          <span style="color:#64748B;">同比 <span style="color:#B45309;font-weight:700;">↑0.12</span></span>
-          <span style="color:#64748B;">环比 <span style="color:#047857;font-weight:700;">↓0.05</span></span>
+          <span style="color:#64748B;">同比 <span class="trend-warn">↑0.12</span></span>
+          <span style="color:#64748B;">环比 <span class="trend-good">↓0.05</span></span>
         </div>
       </div>
 
       <!-- 4. 重点关注 -->
-      <div class="kpi-card status-warn" style=""><div class="kpi-label">主要超标因子</div>
+      <div class="kpi-card status-alert" style=""><div class="kpi-label">主要超标因子</div>
         <div class="kpi-value" style="color: #0F172A; font-size: 26px !important;">总磷 62%</div>
         <div style="font-size: 9px; color: #64748B; margin-top: 4px;">超标断面中总磷居首</div>
         <div style="display:flex;gap:10px;margin-top:3px;font-size:9px;justify-content:center;">
-          <span style="color:#64748B;">总磷 <span style="color:#B45309;font-weight:700;">14个</span></span>
-          <span style="color:#64748B;">氨氮 <span style="color:#B45309;font-weight:700;">7个</span></span>
+          <span style="color:#64748B;">总磷 <span class="trend-alert">14个</span></span>
+          <span style="color:#64748B;">氨氮 <span class="trend-alert">7个</span></span>
         </div>
       </div>
     </div>
@@ -108,8 +108,8 @@
       </div>
 
       <!-- 重点关注建议 -->
-      <div class="warning-card" style="padding:10px 14px!important; background: var(--ppt-bg-warn); border-color: var(--ppt-border-warn);">
-        <div class="card-loc" style="color: #92400E;">⚠️ 针对性攻坚建议</div>
+      <div class="warning-card alert-card" style="padding:10px 14px!important;">
+        <div class="card-loc">⚠️ 针对性攻坚建议</div>
         <div class="card-det"><strong>荆州、潜江</strong>总磷反弹最集中，<strong>孝感、天门</strong>氨氮问题突出，建议针对上述污染因子精准纳入下一阶段专项攻坚整治。</div>
       </div>
     </div>

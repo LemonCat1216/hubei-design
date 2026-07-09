@@ -23,8 +23,32 @@
   --ppt-bg-info-soft: #E0F2FE;
   --ppt-bg-info-strong: #DBEAFE;
   --ppt-bg-neutral: #F9FAFB;
-  --ppt-bg-class-iii: #FEFCE8;
-  --ppt-border-class-iii: #FEF08A;
+  --wq-bg-i: #EFF6FF;
+  --wq-border-i: #BFDBFE;
+  --wq-text-i: #1D4ED8;
+  --wq-chart-i: #2563EB;
+  --wq-bg-ii: #F0F9FF;
+  --wq-border-ii: #BAE6FD;
+  --wq-text-ii: #0284C7;
+  --wq-chart-ii: #0284C7;
+  --wq-bg-iii: #F0FDF4;
+  --wq-border-iii: #BBF7D0;
+  --wq-text-iii: #047857;
+  --wq-chart-iii: #059669;
+  --wq-bg-iv: #FFFBEB;
+  --wq-border-iv: #FDE68A;
+  --wq-text-iv: #B45309;
+  --wq-chart-iv: #D97706;
+  --wq-bg-v: #FFF7ED;
+  --wq-border-v: #FED7AA;
+  --wq-text-v: #C2410C;
+  --wq-chart-v: #EA580C;
+  --wq-bg-inferior-v: #FEF2F2;
+  --wq-border-inferior-v: #FECACA;
+  --wq-text-inferior-v: #991B1B;
+  --wq-chart-inferior-v: #991B1B;
+  --ppt-bg-class-iii: #F0FDF4;
+  --ppt-border-class-iii: #BBF7D0;
   --ppt-border-muted-strong: #94A3B8;
   --ppt-border-default: #E2E8F0;
   --ppt-border-subtle: #F1F5F9;
@@ -60,8 +84,8 @@ body {
   aspect-ratio: 16 / 9;
   background: var(--ppt-bg-slide);
   border-radius: 3px;
-  box-shadow: 0 20px 60px rgba(0,0,0,.10), 0 4px 20px rgba(0,0,0,.06) !important;
-  border: none !important;
+  box-shadow: none !important;
+  border: 1px solid var(--ppt-border-default) !important;
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -82,7 +106,7 @@ body {
   font-size: 14px !important;
   font-weight: 700 !important;
   letter-spacing: 1.5px !important;
-  text-shadow: 0 1px 2px rgba(0,0,0,.2);
+  text-shadow: none !important;
 }
 .nav-page-num {
   background: #1E4470 !important;
@@ -135,19 +159,23 @@ body {
   background: var(--ppt-bg-slide) !important;
   border: 1px solid var(--ppt-border-default) !important;
   border-radius: 3px;
-  box-shadow: 0 2px 12px rgba(15,23,42,.06) !important;
+  box-shadow: none !important;
   padding: 12px 14px !important;
   display: flex;
   flex-direction: column;
   justify-content: center;
 }
 .kpi-block.hl, .kpi-block.highlight {
-  background: var(--ppt-bg-good-soft) !important;
-  border: 1px solid #D1FAE5 !important;
+  background: var(--ppt-bg-good) !important;
+  border: 1px solid var(--ppt-border-good) !important;
+}
+.kpi-block.warn {
+  background: var(--ppt-bg-warn) !important;
+  border: 1px solid var(--ppt-border-warn) !important;
 }
 .kpi-block.al, .kpi-block.alert {
-  background: #FBF5F5 !important;
-  border: 1px solid #F1D5D5 !important;
+  background: var(--ppt-bg-alert) !important;
+  border: 1px solid var(--ppt-border-alert) !important;
 }
 .kpi-title {
   font-size: 11px !important;
@@ -163,6 +191,7 @@ body {
   line-height: 1.2;
 }
 .kpi-block.hl .kpi-num, .kpi-block.highlight .kpi-num { color: #047857 !important; }
+.kpi-block.warn .kpi-title, .kpi-block.warn .kpi-num { color: #B45309 !important; }
 .kpi-block.al .kpi-num, .kpi-block.alert .kpi-num { color: #991B1B !important; }
 .kpi-sub {
   font-size: 9px !important;
@@ -189,7 +218,7 @@ body {
   background: var(--ppt-bg-slide) !important;
   border: 1px solid var(--ppt-border-default) !important;
   border-radius: 3px;
-  box-shadow: 0 2px 12px rgba(15,23,42,.06) !important;
+  box-shadow: none !important;
   padding: 10px !important;
   text-align: center;
 }
@@ -208,7 +237,7 @@ body {
   background: var(--ppt-bg-slide);
   border: 1px solid var(--ppt-border-default);
   border-radius: 3px;
-  box-shadow: 0 2px 12px rgba(15,23,42,.06);
+  box-shadow: none !important;
   padding: 10px 12px;
   display: flex;
   flex-direction: column;
@@ -225,7 +254,7 @@ body {
   /* border removed per user request */
   background: var(--ppt-bg-slide) !important;
   border-radius: 3px;
-  box-shadow: 0 2px 12px rgba(15,23,42,.05);
+  box-shadow: none !important;
   overflow: hidden;
 }
 .table-box table {
@@ -258,6 +287,11 @@ body {
 .badge-g { color: #047857 !important; font-weight: 700 !important; }
 .badge-y { color: #B45309 !important; font-weight: 700 !important; }
 
+.trend-good { color: #047857 !important; font-weight: 700 !important; }
+.trend-warn { color: #B45309 !important; font-weight: 700 !important; }
+.trend-alert { color: #991B1B !important; font-weight: 700 !important; }
+.trend-neutral { color: #64748B !important; font-weight: 700 !important; }
+
 /* --- 预警卡片 --- */
 .warning-wrapper {
   flex: 1;
@@ -273,14 +307,18 @@ body {
   flex: 1;
 }
 .warning-card {
-  background: var(--ppt-bg-warn) !important;
-  border: 1px solid var(--ppt-border-warn) !important;
+  background: var(--ppt-bg-alert) !important;
+  border: 1px solid var(--ppt-border-alert) !important;
   /* border-left removed per user request */
   border-radius: 3px;
   padding: 8px 10px !important;
-  box-shadow: 0 1px 4px rgba(0,0,0,.03);
+  box-shadow: none !important;
   display: flex;
   flex-direction: column;
+}
+.warning-card.warn-card, .warning-card.warn {
+  background: var(--ppt-bg-warn) !important;
+  border-color: var(--ppt-border-warn) !important;
 }
 .warning-card.blue-card, .warning-card.blue {
   background: var(--ppt-bg-info) !important;
@@ -295,14 +333,14 @@ body {
 .card-loc {
   font-size: 10px !important;
   font-weight: 700 !important;
-  color: #92400E !important;
+  color: #7F1D1D !important;
   padding-bottom: 3px !important;
   margin-bottom: 4px !important;
 }
 .card-det {
   font-size: 10px !important;
   line-height: 1.55 !important;
-  color: #475569 !important;
+  color: #991B1B !important;
   font-weight: 500;
 }
 .card-det strong {
@@ -314,6 +352,16 @@ body {
 }
 .warning-card.green-card .card-loc, .warning-card.green .card-loc {
   color: #065F46 !important;
+}
+.warning-card.warn-card .card-loc, .warning-card.warn .card-loc {
+  color: #92400E !important;
+}
+.warning-card.blue-card .card-det, .warning-card.blue .card-det,
+.warning-card.green-card .card-det, .warning-card.green .card-det {
+  color: #475569 !important;
+}
+.warning-card.warn-card .card-det, .warning-card.warn .card-det {
+  color: #92400E !important;
 }
 /* --- 红色预警卡片（需关注/负面趋势） --- */
 .warning-card.alert-card, .warning-card.alert {
@@ -332,7 +380,7 @@ body {
   background: var(--ppt-bg-slide) !important;
   border: 1px solid var(--ppt-border-default) !important;
   border-radius: 3px;
-  box-shadow: 0 2px 12px rgba(15,23,42,.06) !important;
+  box-shadow: none !important;
   padding: 10px 14px;
   flex: 1;
   display: flex;
@@ -369,7 +417,7 @@ body {
   padding: 6px 14px !important;
   font-size: 10px !important;
   color: #64748B !important;
-  box-shadow: 0 2px 12px rgba(15,23,42,.06) !important;
+  box-shadow: none !important;
   flex-shrink: 0;
 }
 
@@ -395,7 +443,7 @@ body {
   aspect-ratio: 16 / 9;
   background: linear-gradient(135deg, #0F2942 0%, #1A3A5C 30%, #1E4470 60%, #133658 100%) !important;
   border-radius: 0;
-  box-shadow: 0 20px 60px rgba(13,43,69,.3) !important;
+  box-shadow: none !important;
   padding: 40px 48px;
   color: #ffffff;
   display: flex;
@@ -435,7 +483,7 @@ body {
   aspect-ratio: 16 / 9;
   background: linear-gradient(135deg, #0F2942 0%, #1A3A5C 40%, #1E4470 100%);
   border-radius: 0;
-  box-shadow: 0 20px 60px rgba(13,43,69,.3);
+  box-shadow: none !important;
   color: #fff;
   display: flex;
   flex-direction: column;
@@ -502,7 +550,7 @@ body {
   font-size: 22px !important;
   font-weight: 700 !important;
   letter-spacing: 4px !important;
-  text-shadow: 0 2px 4px rgba(0,0,0,.2);
+  text-shadow: none !important;
 }
 .sec-sub {
   font-size: 13px !important;
@@ -537,7 +585,7 @@ body {
 .sc-v {
   font-size: 20px !important;
   font-weight: 800 !important;
-  text-shadow: 0 1px 2px rgba(0,0,0,.2);
+  text-shadow: none !important;
 }
 .sc-s {
   font-size: 9px !important;
@@ -567,12 +615,12 @@ body {
   flex-direction: column-reverse;
   border-radius: 2px;
   overflow: hidden;
-  box-shadow: 1px 0 4px rgba(0,0,0,.1);
+  box-shadow: none !important;
 }
 .bar-seg { width: 100%; }
-.bar-seg.cat1 { background: #2B4C7E; }
-.bar-seg.cat2 { background: #2C7A4F; }
-.bar-seg.cat3 { background: #B45309; }
+.bar-seg.cat1 { background: var(--wq-chart-i); }
+.bar-seg.cat2 { background: var(--wq-chart-ii); }
+.bar-seg.cat3 { background: var(--wq-chart-iii); }
 .prov-name {
   font-size: 7px !important;
   color: #64748B !important;
@@ -608,17 +656,17 @@ body {
 .kpi-card.pos1 .kpi-label { color: #1A3A5C !important; }
 
 /* 好 - 绿色 */
-.kpi-card.status-good { background: #F5FBF7 !important; border-color: var(--ppt-border-good) !important; }
+.kpi-card.status-good { background: var(--ppt-bg-good) !important; border-color: var(--ppt-border-good) !important; }
 .kpi-card.status-good .kpi-label { color: #047857 !important; }
 .kpi-card.status-good .kpi-value { color: #047857 !important; }
 
 /* 中等/警告 - 琥珀色 */
-.kpi-card.status-warn { background: #FFFAF4 !important; border-color: var(--ppt-border-warn-soft) !important; }
+.kpi-card.status-warn { background: var(--ppt-bg-warn) !important; border-color: var(--ppt-border-warn) !important; }
 .kpi-card.status-warn .kpi-label { color: #B45309 !important; }
 .kpi-card.status-warn .kpi-value { color: #B45309 !important; }
 
 /* 差/预警 - 红色 */
-.kpi-card.status-alert { background: #FCF6F6 !important; border-color: var(--ppt-border-alert) !important; }
+.kpi-card.status-alert { background: var(--ppt-bg-alert) !important; border-color: var(--ppt-border-alert) !important; }
 .kpi-card.status-alert .kpi-label { color: #991B1B !important; }
 .kpi-card.status-alert .kpi-value { color: #991B1B !important; }
 
@@ -654,17 +702,38 @@ body {
 
 /* === 语义色块工具类（标准化背景/边框/文字色） === */
 /* 红色（严重/预警）- 对应 Page04A CWQI 红榜 */
-.bg-alert { background: var(--ppt-bg-alert) !important; }
+.bg-alert { background: var(--ppt-bg-alert) !important; border: 1px solid var(--ppt-border-alert) !important; }
 .border-alert { border-color: var(--ppt-border-alert) !important; }
 
 /* 绿色（良好/改善）- 对应 Page04A CWQI 绿榜 */
-.bg-good { background: var(--ppt-bg-good) !important; }
+.bg-good { background: var(--ppt-bg-good) !important; border: 1px solid var(--ppt-border-good) !important; }
 .border-good { border-color: var(--ppt-border-good) !important; }
 
 /* 黄色（提示/关注）- 对应 Page13 支流天门河 */
-.bg-warn { background: var(--ppt-bg-warn) !important; }
+.bg-warn { background: var(--ppt-bg-warn) !important; border: 1px solid var(--ppt-border-warn) !important; }
 .border-warn { border-color: var(--ppt-border-warn) !important; }
 
 /* 蓝色（信息提示） */
-.bg-info { background: var(--ppt-bg-info) !important; }
+.bg-info { background: var(--ppt-bg-info) !important; border: 1px solid var(--ppt-border-info) !important; }
 .border-info { border-color: var(--ppt-border-info) !important; }
+
+/* === 水质类别专用色阶（仅用于单独的水质类别分布/断面墙/图例） === */
+.wq-card {
+  background: var(--wq-bg) !important;
+  border: 1px solid var(--wq-border) !important;
+  color: var(--wq-text) !important;
+}
+.wq-card .wq-value,
+.wq-card .matrix-num {
+  color: var(--wq-text) !important;
+}
+.wq-card .wq-label,
+.wq-card .matrix-lbl {
+  color: #475569 !important;
+}
+.wq-i { --wq-bg: var(--wq-bg-i); --wq-border: var(--wq-border-i); --wq-text: var(--wq-text-i); }
+.wq-ii { --wq-bg: var(--wq-bg-ii); --wq-border: var(--wq-border-ii); --wq-text: var(--wq-text-ii); }
+.wq-iii { --wq-bg: var(--wq-bg-iii); --wq-border: var(--wq-border-iii); --wq-text: var(--wq-text-iii); }
+.wq-iv { --wq-bg: var(--wq-bg-iv); --wq-border: var(--wq-border-iv); --wq-text: var(--wq-text-iv); }
+.wq-v { --wq-bg: var(--wq-bg-v); --wq-border: var(--wq-border-v); --wq-text: var(--wq-text-v); }
+.wq-inferior-v { --wq-bg: var(--wq-bg-inferior-v); --wq-border: var(--wq-border-inferior-v); --wq-text: var(--wq-text-inferior-v); }

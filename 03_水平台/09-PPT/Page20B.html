@@ -10,10 +10,10 @@
     .fit-table th { padding: 6px 8px !important; }
     .fit-table td { padding: 5px 8px !important; font-size: 10px !important; }
     .risk-high td { background: var(--ppt-bg-alert) !important; border-bottom-color: var(--ppt-border-alert) !important; }
-    .risk-med td { background: var(--ppt-bg-warn) !important; border-bottom-color: var(--ppt-border-warn-soft) !important; }
+    .risk-med td { background: var(--ppt-bg-alert) !important; border-bottom-color: var(--ppt-border-alert) !important; }
     /* 行政动作角标 */
     .action-badge { padding: 3px 6px; border-radius: 0; font-weight: 700; font-size: 9px; color: #fff; display: inline-block; }
-    .ab-red { background: #991B1B; box-shadow: 0 2px 4px rgba(153,27,27,0.2); }
+    .ab-red { background: #991B1B; box-shadow: none !important; }
     .ab-orange { background: #B45309; }
     .ab-blue { background: #1A3A5C; }
 </style>
@@ -29,22 +29,22 @@
     
     <div class="bd" style="flex-direction:column; gap:12px; overflow: hidden;">
         <div class="kpi-row" style="margin-bottom: 0;">
-            <div class="kpi-card" style="padding: 12px !important;">
-                <div class="kpi-label" style="color:#991B1B;">劣V类断面</div>
-                <div class="kpi-value" style="color:#991B1B; font-size: 24px !important;">5 个</div>
-            <div style="display:flex;gap:6px;margin-top:2px;font-size:8px;justify-content:center;white-space:nowrap;"><span style="color:#64748B;">同比 <span style="color:#991B1B;">↑1个</span></span></div></div>
-            <div class="kpi-card" style="padding: 12px !important;">
-                <div class="kpi-label" style="color:#B45309;">连续超标断面</div>
-                <div class="kpi-value" style="color:#B45309; font-size: 24px !important;">8 个</div>
-            <div style="display:flex;gap:6px;margin-top:2px;font-size:8px;justify-content:center;white-space:nowrap;"><span style="color:#64748B;">同比 <span style="color:#991B1B;">↑2个</span></span></div></div>
-            <div class="kpi-card" style="padding: 12px !important;">
-                <div class="kpi-label" style="color:#1A3A5C;">指标恶化断面</div>
-                <div class="kpi-value" style="color:#1A3A5C; font-size: 24px !important;">10 个</div>
-            <div style="display:flex;gap:6px;margin-top:2px;font-size:8px;justify-content:center;white-space:nowrap;"><span style="color:#64748B;">同比 <span style="color:#991B1B;">↑1个</span></span></div></div>
-            <div class="kpi-card" style="padding: 12px !important; background: var(--ppt-bg-muted) !important;">
+            <div class="kpi-card status-alert" style="padding: 12px !important;">
+                <div class="kpi-label">劣V类断面</div>
+                <div class="kpi-value" style="font-size: 24px !important;">5 个</div>
+            <div style="display:flex;gap:6px;margin-top:2px;font-size:8px;justify-content:center;white-space:nowrap;"><span style="color:#64748B;">同比 <span class="trend-alert">↑1个</span></span></div></div>
+            <div class="kpi-card status-alert" style="padding: 12px !important;">
+                <div class="kpi-label">连续超标断面</div>
+                <div class="kpi-value" style="font-size: 24px !important;">8 个</div>
+            <div style="display:flex;gap:6px;margin-top:2px;font-size:8px;justify-content:center;white-space:nowrap;"><span style="color:#64748B;">同比 <span class="trend-alert">↑2个</span></span></div></div>
+            <div class="kpi-card status-alert" style="padding: 12px !important;">
+                <div class="kpi-label">指标恶化断面</div>
+                <div class="kpi-value" style="font-size: 24px !important;">10 个</div>
+            <div style="display:flex;gap:6px;margin-top:2px;font-size:8px;justify-content:center;white-space:nowrap;"><span style="color:#64748B;">同比 <span class="trend-alert">↑1个</span></span></div></div>
+            <div class="kpi-card status-alert" style="padding: 12px !important;">
                 <div class="kpi-label">水质恶化断面</div>
                 <div class="kpi-value" style="font-size: 24px !important;">2 个</div>
-            <div style="display:flex;gap:6px;margin-top:2px;font-size:8px;justify-content:center;white-space:nowrap;"><span style="color:#64748B;">同比 <span style="color:#64748B;">持平</span></span></div></div>
+            <div style="display:flex;gap:6px;margin-top:2px;font-size:8px;justify-content:center;white-space:nowrap;"><span style="color:#64748B;">同比 <span class="trend-neutral">持平</span></span></div></div>
         </div>
         
         <div class="table-box fit-table" style="flex:1; display: flex; flex-direction: column;">
@@ -67,10 +67,10 @@
                     <tr class="risk-high"><td>2</td><td class="td-left" style="font-weight: 800;">洪湖湖心</td><td>荆州</td><td>省控</td><td><span class="badge-r">劣V</span></td><td>总磷</td><td>0.15 / 0.05</td><td>3</td></tr>
                     <tr class="risk-high"><td>3</td><td class="td-left">长湖荆门</td><td>荆门</td><td>省控</td><td><span class="badge-r">劣V</span></td><td>总磷</td><td>0.12 / 0.05</td><td>2</td></tr>
                     <tr class="risk-high"><td>4</td><td class="td-left">府河孝感</td><td>孝感</td><td>国控</td><td><span class="badge-r">劣V</span></td><td>氨氮</td><td>3.8 / 2.0</td><td>1</td></tr>
-                    <tr class="risk-med"><td>5</td><td class="td-left">四湖总干渠</td><td>荆州</td><td>国控</td><td><span class="badge-y">连续超标</span></td><td>COD</td><td>28 / 20</td><td>4</td></tr>
-                    <tr class="risk-med"><td>6</td><td class="td-left">东荆河</td><td>潜江</td><td>国控</td><td><span class="badge-y">连续超标</span></td><td>氨氮</td><td>2.8 / 2.0</td><td>3</td></tr>
-                    <tr><td>7</td><td class="td-left">竹皮河</td><td>荆门</td><td>省控</td><td><span class="badge-y">连续超标</span></td><td>氨氮</td><td>2.5 / 2.0</td><td>3</td></tr>
-                    <tr><td>8</td><td class="td-left">倒水新洲</td><td>武汉</td><td>国控</td><td><span style="color:#1A3A5C;font-weight:700;">指标恶化</span></td><td>总磷</td><td>0.08 / 0.05</td><td>2</td></tr>
+                    <tr class="risk-med"><td>5</td><td class="td-left">四湖总干渠</td><td>荆州</td><td>国控</td><td><span class="badge-r">连续超标</span></td><td>COD</td><td>28 / 20</td><td>4</td></tr>
+                    <tr class="risk-med"><td>6</td><td class="td-left">东荆河</td><td>潜江</td><td>国控</td><td><span class="badge-r">连续超标</span></td><td>氨氮</td><td>2.8 / 2.0</td><td>3</td></tr>
+                    <tr class="risk-med"><td>7</td><td class="td-left">竹皮河</td><td>荆门</td><td>省控</td><td><span class="badge-r">连续超标</span></td><td>氨氮</td><td>2.5 / 2.0</td><td>3</td></tr>
+                    <tr class="risk-med"><td>8</td><td class="td-left">倒水新洲</td><td>武汉</td><td>国控</td><td><span class="badge-r">指标恶化</span></td><td>总磷</td><td>0.08 / 0.05</td><td>2</td></tr>
                 </tbody>
             </table>
         </div>

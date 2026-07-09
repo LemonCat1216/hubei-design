@@ -9,7 +9,7 @@
 <style>
     .bd table td { padding: 5px 6px !important; font-size: 8px !important; }
     /* 独占视觉：通栏警告大红牌 */
-    .red-alert-panel { flex: 1; background: var(--ppt-bg-alert); border: 2px solid var(--ppt-border-alert); border-radius: 4px; padding: 12px; display: flex; flex-direction: column; justify-content: space-between; min-height: 0; }
+    .red-alert-panel { flex: 1; background: var(--ppt-bg-alert); border: 1px solid var(--ppt-border-alert); border-radius: 4px; padding: 12px; display: flex; flex-direction: column; justify-content: space-between; min-height: 0; }
     .stat-hero { font-size: 32px; font-weight: 900; color: #991B1B; line-height: 1; font-family: monospace; }
     .sub-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin: 8px 0; }
     .sub-box { background: var(--ppt-bg-slide); border: 1px solid var(--ppt-border-alert); padding: 6px; border-radius: 2px; }
@@ -33,9 +33,9 @@
                     <thead><tr><th>点位名称</th><th>总磷(mg/L)</th><th>氨氮(mg/L)</th><th>高锰酸盐</th><th>超标污染物</th><th>水质</th></tr></thead>
                     <tbody>
                         <tr><td class="td-left">洪湖湖心</td><td>0.15</td><td>0.52</td><td>6.8</td><td>总磷、氨氮</td><td><span class="badge-r">劣Ⅴ类</span></td></tr>
-                        <tr><td class="td-left">洪湖南</td><td>0.11</td><td>0.42</td><td>5.5</td><td>总磷</td><td>Ⅴ类</td></tr>
-                        <tr><td class="td-left">洪湖北</td><td>0.10</td><td>0.40</td><td>5.2</td><td>总磷</td><td>Ⅴ类</td></tr>
-                        <tr><td class="td-left">洪湖东</td><td>0.09</td><td>0.38</td><td>4.8</td><td>总磷</td><td>Ⅴ类</td></tr>
+                        <tr><td class="td-left">洪湖南</td><td>0.11</td><td>0.42</td><td>5.5</td><td>总磷</td><td><span class="badge-r">Ⅴ类</span></td></tr>
+                        <tr><td class="td-left">洪湖北</td><td>0.10</td><td>0.40</td><td>5.2</td><td>总磷</td><td><span class="badge-r">Ⅴ类</span></td></tr>
+                        <tr><td class="td-left">洪湖东</td><td>0.09</td><td>0.38</td><td>4.8</td><td>总磷</td><td><span class="badge-r">Ⅴ类</span></td></tr>
                         <tr><td class="td-left">洪湖西</td><td>0.08</td><td>0.35</td><td>4.5</td><td>—</td><td>Ⅳ类</td></tr>
                         <tr><td class="td-left">小港入口</td><td>0.07</td><td>0.32</td><td>4.1</td><td>—</td><td>Ⅳ类</td></tr>
                     </tbody>

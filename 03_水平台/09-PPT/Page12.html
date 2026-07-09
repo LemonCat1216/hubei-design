@@ -32,8 +32,8 @@
 .content-layout .data-block {
   flex: 1;
   background: var(--ppt-bg-slide);
-  
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+  border: 1px solid var(--ppt-border-default);
+  box-shadow: none !important;
   border-radius: 4px;
   padding: 10px 12px;
   display: flex;
@@ -158,8 +158,8 @@ districts.setOption({
             return html;
         }
     },
-    // 环保标准 6 色域配色方案 (由蓝变绿再变红)
-    color: ['#1A3A5C', '#2B4C7E', '#60A5FA', '#B45309', '#F97316', '#991B1B'],
+    // 水质类别专用色阶：Ⅰ/Ⅱ蓝系，Ⅲ绿色，Ⅳ黄色，Ⅴ橙色，劣Ⅴ红色
+    color: ['#2563EB', '#0284C7', '#059669', '#D97706', '#EA580C', '#991B1B'],
     legend: {
         data: ['Ⅰ类', 'Ⅱ类', 'Ⅲ类', 'Ⅳ类', 'Ⅴ类', '劣Ⅴ类'],
         icon: 'rect',
@@ -185,12 +185,12 @@ districts.setOption({
         axisLine: { show: false }
     },
     series: [
-        { name: 'Ⅰ类', type: 'bar', stack: 'total', barWidth: 6, data: chartData.class1 },
-        { name: 'Ⅱ类', type: 'bar', stack: 'total', data: chartData.class2 },
-        { name: 'Ⅲ类', type: 'bar', stack: 'total', data: chartData.class3 },
-        { name: 'Ⅳ类', type: 'bar', stack: 'total', data: chartData.class4 },
-        { name: 'Ⅴ类', type: 'bar', stack: 'total', data: chartData.class5 },
-        { name: '劣Ⅴ类', type: 'bar', stack: 'total', data: chartData.class6 }
+        { name: 'Ⅰ类', type: 'bar', stack: 'total', barWidth: 6, data: chartData.class1, itemStyle: { borderColor: '#FFFFFF', borderWidth: 1 } },
+        { name: 'Ⅱ类', type: 'bar', stack: 'total', data: chartData.class2, itemStyle: { borderColor: '#FFFFFF', borderWidth: 1 } },
+        { name: 'Ⅲ类', type: 'bar', stack: 'total', data: chartData.class3, itemStyle: { borderColor: '#FFFFFF', borderWidth: 1 } },
+        { name: 'Ⅳ类', type: 'bar', stack: 'total', data: chartData.class4, itemStyle: { borderColor: '#FFFFFF', borderWidth: 1 } },
+        { name: 'Ⅴ类', type: 'bar', stack: 'total', data: chartData.class5, itemStyle: { borderColor: '#FFFFFF', borderWidth: 1 } },
+        { name: '劣Ⅴ类', type: 'bar', stack: 'total', data: chartData.class6, itemStyle: { borderColor: '#FFFFFF', borderWidth: 1 } }
     ],
     backgroundColor: 'transparent'
 });

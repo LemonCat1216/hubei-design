@@ -9,20 +9,13 @@
   .bd { padding: 10px 24px 12px; flex-direction: column; gap: 8px; }
   .content-layout {
     display: grid;
-    grid-template-columns: 52% minmax(0, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-rows: repeat(2, minmax(0, 1fr));
     gap: 12px;
     flex: 1;
     min-height: 0;
     overflow: hidden;
   }
-  .left-panel,
-  .right-panel {
-    display: grid;
-    grid-template-rows: minmax(0, 1fr) minmax(0, 1fr);
-    gap: 8px;
-    min-height: 0;
-  }
-  .right-panel { grid-template-rows: minmax(0, .82fr) minmax(0, 1.18fr); }
   .kpi-row { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); }
   .kpi-row .kpi-card {
     min-height: 49px;
@@ -61,18 +54,18 @@
     margin-bottom: 6px;
   }
   .section-title::before { content: ""; width: 3px; height: 11px; background: #1A3A5C; border-radius: 1px; }
-  .left-panel .chart-wrapper:first-child {
+  .task-card {
     display: flex !important;
     flex-direction: column;
     justify-content: center;
     padding: 10px 14px !important;
   }
-  .left-panel .chart-wrapper:first-child > div[style*="display:flex"] { padding: 2px 0; }
+  .task-card > div[style*="display:flex"] { padding: 2px 0; }
   .progress-bar { height: 6px; border-radius: 2px; background: #E5EAF1 !important; }
   .progress-fill { border-radius: 2px; }
-  .right-panel .chart-wrapper:first-child,
-  .right-panel .chart-wrapper:last-child { padding: 9px 14px !important; }
-  .right-panel .chart-wrapper:first-child {
+  .review-card-wrap,
+  .water-card { padding: 9px 14px !important; }
+  .review-card-wrap {
     display: flex !important;
     flex-direction: column;
   }
@@ -109,19 +102,18 @@
   .water-name { flex: 1; font-size: 8px; font-weight: 700; color: #334155; white-space: nowrap; }
   .water-num { width: 48px; font-size: 9px; font-weight: 800; text-align: right; font-variant-numeric: tabular-nums; }
   .water-pct { width: 34px; font-size: 8px; font-weight: 700; color: #64748B; text-align: right; font-variant-numeric: tabular-nums; }
-  .right-panel .chart-wrapper:last-child {
+  .water-card {
     display: flex !important;
     flex-direction: column;
   }
-  .right-panel .chart-wrapper:last-child > div[style*="flex:1"] {
-    justify-content: flex-start !important;
-    gap: 1px !important;
+  .water-card > div[style*="flex:1"] {
+    justify-content: center !important;
+    gap: 4px !important;
     min-height: 0;
   }
-  .right-panel .chart-wrapper:last-child > div[style*="display:flex; font-size:8.5px"] {
+  .water-card > div[style*="display:flex; font-size:8.5px"] {
     padding-bottom: 2px !important;
   }
-  .stack-row { display: flex; height: 6px; margin-top: 3px !important; border-radius: 2px; overflow: hidden; box-shadow: none !important; }
   table.p21-tbl { border-collapse: separate !important; border-spacing: 0; }
   table.p21-tbl th {
     padding: 5px 12px !important;
@@ -149,8 +141,7 @@
       <div class="kpi-card"><div class="kpi-label" style="color:#64748B;">D类（其他排口）</div><div class="kpi-value" style="color:#64748B;">15,424</div></div>
     </div>
     <div class="content-layout">
-      <div class="left-panel">
-        <div class="chart-wrapper" style="flex-shrink:0; padding:10px 14px;">
+        <div class="chart-wrapper task-card">
           <div class="section-title">任务完成情况</div>
           <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">
             <span style="font-size:9px; font-weight:600; color:#475569; width:60px; flex-shrink:0; text-align:right;">溯源任务</span>
@@ -168,20 +159,7 @@
             <span style="font-size:10px; font-weight:700; color:#EF4444; width:46px; text-align:right;">21.32%</span>
           </div>
         </div>
-        <div class="table-box" style="flex:1; display:flex; flex-direction:column; overflow:hidden;">
-          <table class="p21-tbl" style="width:100%;">
-            <thead><tr><th>类别</th><th>数量</th><th>占比</th></tr></thead>
-            <tbody>
-              <tr><td class="td-left">工业企业排口</td><td style="font-weight:600;">2,268</td><td>6.6%</td></tr>
-              <tr><td class="td-left">城镇生活污水处理设施排口</td><td style="font-weight:600;">1,186</td><td>3.5%</td></tr>
-              <tr><td class="td-left">农业排口</td><td style="font-weight:600;">155</td><td>0.5%</td></tr>
-              <tr><td class="td-left">其他排口</td><td style="font-weight:600;">30,504</td><td>89.4%</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-      <div class="right-panel">
-        <div class="chart-wrapper" style="flex-shrink:0; padding:10px 14px;">
+        <div class="chart-wrapper review-card-wrap">
           <div class="section-title">排口整治审核进度</div>
           <div class="review-grid">
             <div class="review-card" style="background:var(--ppt-bg-info);border:1px solid var(--ppt-border-info);">
@@ -202,7 +180,18 @@
             </div>
           </div>
         </div>
-        <div class="chart-wrapper" style="flex:1; padding:10px 14px; display:flex; flex-direction:column;">
+        <div class="table-box" style="display:flex; flex-direction:column; overflow:hidden;">
+          <table class="p21-tbl" style="width:100%;">
+            <thead><tr><th>类别</th><th>数量</th><th>占比</th></tr></thead>
+            <tbody>
+              <tr><td class="td-left">工业企业排口</td><td style="font-weight:600;">2,268</td><td>6.6%</td></tr>
+              <tr><td class="td-left">城镇生活污水处理设施排口</td><td style="font-weight:600;">1,186</td><td>3.5%</td></tr>
+              <tr><td class="td-left">农业排口</td><td style="font-weight:600;">155</td><td>0.5%</td></tr>
+              <tr><td class="td-left">其他排口</td><td style="font-weight:600;">30,504</td><td>89.4%</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="chart-wrapper water-card">
           <div class="section-title">各水体管理级别</div>
           <div style="flex:1; display:flex; flex-direction:column; gap:5px; justify-content:center;">
             <div style="display:flex; font-size:8.5px; color:#94A3B8; font-weight:600; padding:1px 0 4px 13px; gap:6px;">
@@ -213,17 +202,7 @@
             <div class="water-row"><span class="water-dot" style="background:#059669;"></span><span class="water-name">C类 省级重点26个河湖排口</span><span class="water-num" style="color:#059669;">3,295</span><span class="water-pct">9.7%</span></div>
             <div class="water-row"><span class="water-dot" style="background:#94A3B8;"></span><span class="water-name">D类 其他排口</span><span class="water-num" style="color:#64748B;">15,424</span><span class="water-pct">45.2%</span></div>
           </div>
-          <div class="stack-row" style="margin-top:7px;">
-            <div style="width:34.8%;height:100%;background:#2563EB;"></div>
-            <div style="width:10.3%;height:100%;background:#D97706;"></div>
-            <div style="width:9.7%;height:100%;background:#059669;"></div>
-            <div style="width:45.2%;height:100%;background:#94A3B8;"></div>
-          </div>
-          <div style="margin-top:4px; display:flex; font-size:8px; color:#94A3B8; font-weight:600; justify-content:space-between; padding:0 1px;">
-            <span>A 34.8%</span><span>B 10.3%</span><span>C 9.7%</span><span>D 45.2%</span>
-          </div>
         </div>
-      </div>
     </div>
   </div>
   <div class="ft"><span>2026年1月生态环境月度专报</span><span>提示：仅供汇报使用</span></div>

@@ -29,16 +29,30 @@
         gap: 1px;
     }
     .status-node::before { content: none; }
-    .status-node.good { background: var(--ppt-bg-good); border-color: var(--ppt-border-good); }
-    .status-node.alert { background: var(--ppt-bg-alert); border-color: var(--ppt-border-alert); }
-    .status-node.good .node-name { color: #047857; }
-    .status-node.alert .node-name { color: #991B1B; }
+    .status-node.wq-ii { background: var(--wq-bg-ii); border-color: var(--wq-border-ii); }
+    .status-node.wq-iii { background: var(--wq-bg-iii); border-color: var(--wq-border-iii); }
+    .status-node.wq-iv { background: var(--wq-bg-iv); border-color: var(--wq-border-iv); }
+    .status-node.wq-v { background: var(--wq-bg-v); border-color: var(--wq-border-v); }
+    .status-node.wq-inferior-v { background: var(--wq-bg-inferior-v); border-color: var(--wq-border-inferior-v); }
+    .status-node.wq-inferior-v { order: 1; }
+    .status-node.wq-v { order: 2; }
+    .status-node.wq-iv { order: 3; }
+    .status-node.wq-iii { order: 4; }
+    .status-node.wq-ii { order: 5; }
+    .status-node.wq-ii .node-name { color: var(--wq-text-ii); }
+    .status-node.wq-iii .node-name { color: var(--wq-text-iii); }
+    .status-node.wq-iv .node-name { color: var(--wq-text-iv); }
+    .status-node.wq-v .node-name { color: var(--wq-text-v); }
+    .status-node.wq-inferior-v .node-name { color: var(--wq-text-inferior-v); }
 
     .node-name { font-size: 8px; font-weight: 700; color: #1E293B; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .node-meta { display: flex; justify-content: space-between; align-items: center; font-size: 7.5px; color: #64748B; }
     .node-tag { padding: 0px 3px; font-size: 7px; font-weight: 700; border-radius: 1px; color: #fff; }
-    .node-tag.g { background: #047857; }
-    .node-tag.r { background: #991B1B; }
+    .node-tag.ii { background: var(--wq-chart-ii); }
+    .node-tag.iii { background: var(--wq-chart-iii); }
+    .node-tag.iv { background: var(--wq-chart-iv); }
+    .node-tag.v { background: var(--wq-chart-v); }
+    .node-tag.inferior-v { background: var(--wq-chart-inferior-v); }
 
     /* 右侧抗变形组件样式 - 抽离至样式表，规避内联样式拉伸冲突 */
     .risk-container-fixed {
@@ -110,55 +124,56 @@
             <div class="kpi-card status-warn" style=""><div class="kpi-label">同比变化</div><div class="kpi-value">↓1.2%</div></div>
         </div>
         
-        <div style="display:flex;gap:12px;flex:1;min-height:0;">
-            <div class="table-box" style="flex:0 0 54%; display:flex; flex-direction:column; padding:8px; background:var(--ppt-bg-muted);">
+        <div class="watershed-main-row">
+            <div class="table-box watershed-left-panel" style="flex:0 0 54%; display:flex; flex-direction:column; padding:8px; background:var(--ppt-bg-muted);">
                 <div style="font-size:9px; font-weight:700; color:#1E293B; margin-bottom:6px; display:flex; justify-content:space-between; align-items:center;">
                     <span>📊 长江干流及主要支流全断面状态墙 (42个)</span>
-                    <span style="font-size:7.5px; color:#64748B; font-weight:normal;">🟢 优良 37 | 🔴 异常 5</span>
+                    <span style="font-size:7.5px; color:#64748B; font-weight:normal;">按劣Ⅴ → Ⅴ → Ⅳ → Ⅲ → Ⅱ类排序</span>
                 </div>
                 <div class="status-wall-grid">
-                    <div class="status-node alert"><div class="node-name">四湖总干渠</div><div class="node-meta"><span>支流</span><span class="node-tag r">劣Ⅴ</span></div></div>
-                    <div class="status-node alert"><div class="node-name">府河孝感段</div><div class="node-meta"><span>支流</span><span class="node-tag r">劣Ⅴ</span></div></div>
-                    <div class="status-node alert"><div class="node-name">支流天门河</div><div class="node-meta"><span>支流</span><span class="node-tag r">Ⅴ类</span></div></div>
-                    <div class="status-node alert"><div class="node-name">汉川汉江口</div><div class="node-meta"><span>支流</span><span class="node-tag r">Ⅳ类</span></div></div>
-                    <div class="status-node alert"><div class="node-name">竹皮河口</div><div class="node-meta"><span>支流</span><span class="node-tag r">劣Ⅴ</span></div></div>
-                    
-                    <div class="status-node good"><div class="node-name">宜昌国控</div><div class="node-meta"><span>干流</span><span class="node-tag g">Ⅱ类</span></div></div>
-                    <div class="status-node good"><div class="node-name">荆州国控</div><div class="node-meta"><span>干流</span><span class="node-tag g">Ⅱ类</span></div></div>
-                    <div class="status-node good"><div class="node-name">武汉武昌段</div><div class="node-meta"><span>干流</span><span class="node-tag g">Ⅲ类</span></div></div>
-                    <div class="status-node good"><div class="node-name">黄冈黄州段</div><div class="node-meta"><span>干流</span><span class="node-tag g">Ⅱ类</span></div></div>
-                    <div class="status-node good"><div class="node-name">咸宁赤壁段</div><div class="node-meta"><span>干流</span><span class="node-tag g">Ⅱ类</span></div></div>
-                    <div class="status-node good"><div class="node-name">鄂州鄂城段</div><div class="node-meta"><span>干流</span><span class="node-tag g">Ⅱ类</span></div></div>
-                    <div class="status-node good"><div class="node-name">黄石港区段</div><div class="node-meta"><span>干流</span><span class="node-tag g">Ⅲ类</span></div></div>
-                    <div class="status-node good"><div class="node-name">宜昌枝江段</div><div class="node-meta"><span>干流</span><span class="node-tag g">Ⅱ类</span></div></div>
-                    <div class="status-node good"><div class="node-name">荆州石首段</div><div class="node-meta"><span>干流</span><span class="node-tag g">Ⅱ类</span></div></div>
-                    <div class="status-node good"><div class="node-name">荆州洪湖段</div><div class="node-meta"><span>干流</span><span class="node-tag g">Ⅲ类</span></div></div>
-                    <div class="status-node good"><div class="node-name">武汉汉阳段</div><div class="node-meta"><span>干流</span><span class="node-tag g">Ⅲ类</span></div></div>
-                    <div class="status-node good"><div class="node-name">武汉青山段</div><div class="node-meta"><span>干流</span><span class="node-tag g">Ⅱ类</span></div></div>
-                    <div class="status-node good"><div class="node-name">黄冈武穴段</div><div class="node-meta"><span>干流</span><span class="node-tag g">Ⅱ类</span></div></div>
-                    <div class="status-node good"><div class="node-name">黄冈稀水段</div><div class="node-meta"><span>干流</span><span class="node-tag g">Ⅱ类</span></div></div>
-                    <div class="status-node good"><div class="node-name">咸宁嘉鱼段</div><div class="node-meta"><span>干流</span><span class="node-tag g">Ⅱ类</span></div></div>
-                    <div class="status-node good"><div class="node-name">沮漳河口</div><div class="node-meta"><span>支流</span><span class="node-tag g">Ⅲ类</span></div></div>
-                    <div class="status-node good"><div class="node-name">陆水河国控</div><div class="node-meta"><span>支流</span><span class="node-tag g">Ⅱ类</span></div></div>
-                    <div class="status-node good"><div class="node-name">通顺河新沟</div><div class="node-meta"><span>支流</span><span class="node-tag g">Ⅲ类</span></div></div>
-                    <div class="status-node good"><div class="node-name">倒水河李集</div><div class="node-meta"><span>支流</span><span class="node-tag g">Ⅲ类</span></div></div>
-                    <div class="status-node good"><div class="node-name">举水河柳子港</div><div class="node-meta"><span>支流</span><span class="node-tag g">Ⅲ类</span></div></div>
-                    <div class="status-node good"><div class="node-name">巴水河麻城段</div><div class="node-meta"><span>支流</span><span class="node-tag g">Ⅱ类</span></div></div>
-                    <div class="status-node good"><div class="node-name">浠水河白莲河</div><div class="node-meta"><span>支流</span><span class="node-tag g">Ⅲ类</span></div></div>
-                    <div class="status-node good"><div class="node-name">蕲水河蕲春段</div><div class="node-meta"><span>支流</span><span class="node-tag g">Ⅱ类</span></div></div>
-                    <div class="status-node good"><div class="node-name">富水河阳新段</div><div class="node-meta"><span>支流</span><span class="node-tag g">Ⅲ类</span></div></div>
-                    <div class="status-node good"><div class="node-name">金水河江夏段</div><div class="node-meta"><span>支流</span><span class="node-tag g">Ⅲ类</span></div></div>
-                    <div class="status-node good"><div class="node-name">滠水河黄陂段</div><div class="node-meta"><span>支流</span><span class="node-tag g">Ⅲ类</span></div></div>
-                    <div class="status-node good"><div class="node-name">东荆河大柴湖</div><div class="node-meta"><span>支流</span><span class="node-tag g">Ⅲ类</span></div></div>
-                    <div class="status-node good"><div class="node-name">华容河段</div><div class="node-meta"><span>支流</span><span class="node-tag g">Ⅱ类</span></div></div>
-                    <div class="status-node good"><div class="node-name">梁子湖出水口</div><div class="node-meta"><span>支流</span><span class="node-tag g">Ⅲ类</span></div></div>
-                    <div class="status-node good"><div class="node-name">釜头湖出水口</div><div class="node-meta"><span>支流</span><span class="node-tag g">Ⅲ类</span></div></div>
-                    <div class="status-node good"><div class="node-name">洪湖排水闸</div><div class="node-meta"><span>支流</span><span class="node-tag g">Ⅲ类</span></div></div>
-                    <div class="status-node good"><div class="node-name">天门河竟陵段</div><div class="node-meta"><span>支流</span><span class="node-tag g">Ⅲ类</span></div></div>
+                    <div class="status-node wq-ii"><div class="node-name">宜昌国控</div><div class="node-meta"><span>干流</span><span class="node-tag ii">Ⅱ类</span></div></div>
+                    <div class="status-node wq-ii"><div class="node-name">荆州国控</div><div class="node-meta"><span>干流</span><span class="node-tag ii">Ⅱ类</span></div></div>
+                    <div class="status-node wq-ii"><div class="node-name">黄冈黄州段</div><div class="node-meta"><span>干流</span><span class="node-tag ii">Ⅱ类</span></div></div>
+                    <div class="status-node wq-ii"><div class="node-name">咸宁赤壁段</div><div class="node-meta"><span>干流</span><span class="node-tag ii">Ⅱ类</span></div></div>
+                    <div class="status-node wq-ii"><div class="node-name">鄂州鄂城段</div><div class="node-meta"><span>干流</span><span class="node-tag ii">Ⅱ类</span></div></div>
+                    <div class="status-node wq-ii"><div class="node-name">宜昌枝江段</div><div class="node-meta"><span>干流</span><span class="node-tag ii">Ⅱ类</span></div></div>
+                    <div class="status-node wq-ii"><div class="node-name">荆州石首段</div><div class="node-meta"><span>干流</span><span class="node-tag ii">Ⅱ类</span></div></div>
+                    <div class="status-node wq-ii"><div class="node-name">武汉青山段</div><div class="node-meta"><span>干流</span><span class="node-tag ii">Ⅱ类</span></div></div>
+                    <div class="status-node wq-ii"><div class="node-name">黄冈武穴段</div><div class="node-meta"><span>干流</span><span class="node-tag ii">Ⅱ类</span></div></div>
+                    <div class="status-node wq-ii"><div class="node-name">黄冈稀水段</div><div class="node-meta"><span>干流</span><span class="node-tag ii">Ⅱ类</span></div></div>
+                    <div class="status-node wq-ii"><div class="node-name">咸宁嘉鱼段</div><div class="node-meta"><span>干流</span><span class="node-tag ii">Ⅱ类</span></div></div>
+                    <div class="status-node wq-ii"><div class="node-name">陆水河国控</div><div class="node-meta"><span>支流</span><span class="node-tag ii">Ⅱ类</span></div></div>
+                    <div class="status-node wq-ii"><div class="node-name">巴水河麻城段</div><div class="node-meta"><span>支流</span><span class="node-tag ii">Ⅱ类</span></div></div>
+                    <div class="status-node wq-ii"><div class="node-name">蕲水河蕲春段</div><div class="node-meta"><span>支流</span><span class="node-tag ii">Ⅱ类</span></div></div>
+                    <div class="status-node wq-ii"><div class="node-name">华容河段</div><div class="node-meta"><span>支流</span><span class="node-tag ii">Ⅱ类</span></div></div>
+
+                    <div class="status-node wq-iii"><div class="node-name">武汉武昌段</div><div class="node-meta"><span>干流</span><span class="node-tag iii">Ⅲ类</span></div></div>
+                    <div class="status-node wq-iii"><div class="node-name">黄石港区段</div><div class="node-meta"><span>干流</span><span class="node-tag iii">Ⅲ类</span></div></div>
+                    <div class="status-node wq-iii"><div class="node-name">荆州洪湖段</div><div class="node-meta"><span>干流</span><span class="node-tag iii">Ⅲ类</span></div></div>
+                    <div class="status-node wq-iii"><div class="node-name">武汉汉阳段</div><div class="node-meta"><span>干流</span><span class="node-tag iii">Ⅲ类</span></div></div>
+                    <div class="status-node wq-iii"><div class="node-name">沮漳河口</div><div class="node-meta"><span>支流</span><span class="node-tag iii">Ⅲ类</span></div></div>
+                    <div class="status-node wq-iii"><div class="node-name">通顺河新沟</div><div class="node-meta"><span>支流</span><span class="node-tag iii">Ⅲ类</span></div></div>
+                    <div class="status-node wq-iii"><div class="node-name">倒水河李集</div><div class="node-meta"><span>支流</span><span class="node-tag iii">Ⅲ类</span></div></div>
+                    <div class="status-node wq-iii"><div class="node-name">举水河柳子港</div><div class="node-meta"><span>支流</span><span class="node-tag iii">Ⅲ类</span></div></div>
+                    <div class="status-node wq-iii"><div class="node-name">浠水河白莲河</div><div class="node-meta"><span>支流</span><span class="node-tag iii">Ⅲ类</span></div></div>
+                    <div class="status-node wq-iii"><div class="node-name">富水河阳新段</div><div class="node-meta"><span>支流</span><span class="node-tag iii">Ⅲ类</span></div></div>
+                    <div class="status-node wq-iii"><div class="node-name">金水河江夏段</div><div class="node-meta"><span>支流</span><span class="node-tag iii">Ⅲ类</span></div></div>
+                    <div class="status-node wq-iii"><div class="node-name">滠水河黄陂段</div><div class="node-meta"><span>支流</span><span class="node-tag iii">Ⅲ类</span></div></div>
+                    <div class="status-node wq-iii"><div class="node-name">东荆河大柴湖</div><div class="node-meta"><span>支流</span><span class="node-tag iii">Ⅲ类</span></div></div>
+                    <div class="status-node wq-iii"><div class="node-name">梁子湖出水口</div><div class="node-meta"><span>支流</span><span class="node-tag iii">Ⅲ类</span></div></div>
+                    <div class="status-node wq-iii"><div class="node-name">釜头湖出水口</div><div class="node-meta"><span>支流</span><span class="node-tag iii">Ⅲ类</span></div></div>
+                    <div class="status-node wq-iii"><div class="node-name">洪湖排水闸</div><div class="node-meta"><span>支流</span><span class="node-tag iii">Ⅲ类</span></div></div>
+                    <div class="status-node wq-iii"><div class="node-name">天门河竟陵段</div><div class="node-meta"><span>支流</span><span class="node-tag iii">Ⅲ类</span></div></div>
+
+                    <div class="status-node wq-iv"><div class="node-name">汉川汉江口</div><div class="node-meta"><span>支流</span><span class="node-tag iv">Ⅳ类</span></div></div>
+                    <div class="status-node wq-v"><div class="node-name">支流天门河</div><div class="node-meta"><span>支流</span><span class="node-tag v">Ⅴ类</span></div></div>
+                    <div class="status-node wq-inferior-v"><div class="node-name">四湖总干渠</div><div class="node-meta"><span>支流</span><span class="node-tag inferior-v">劣Ⅴ类</span></div></div>
+                    <div class="status-node wq-inferior-v"><div class="node-name">府河孝感段</div><div class="node-meta"><span>支流</span><span class="node-tag inferior-v">劣Ⅴ类</span></div></div>
+                    <div class="status-node wq-inferior-v"><div class="node-name">竹皮河口</div><div class="node-meta"><span>支流</span><span class="node-tag inferior-v">劣Ⅴ类</span></div></div>
                 </div>
             </div>
             
-            <div class="risk-container-fixed content-panel">
+            <div class="risk-container-fixed content-panel watershed-right-panel">
                 <div style="font-size: 9px; font-weight: 700; color: #991B1B; padding: 3px 0; border-bottom: 1px solid var(--ppt-border-alert); flex-shrink: 0;">
                     ⚠ 超标断面排查 (Top 5)
                 </div>

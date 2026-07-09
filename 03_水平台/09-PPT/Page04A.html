@@ -7,17 +7,19 @@
 <link rel="stylesheet" href="ppt-style.css">
 <style>
     /* 为红黑榜定制的特殊行内卡片 */
-    .rank-item { display: flex; align-items: center; justify-content: space-between; padding: 6px 10px; background: #F8FAFC; border-radius: 5px; margin-bottom: 6px; }
-    .rank-item .city-name { font-size: 14px; font-weight: 700; color: #1E293B; display: flex; align-items: center; gap: 8px; }
-    .rank-item .rank-num { width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: bold; color: #fff; }
+    .left-column .kpi-block { justify-content: flex-start; background: var(--ppt-bg-slide) !important; border-color: var(--ppt-border-default) !important; }
+    .rank-list { display: flex; flex-direction: column; gap: 6px; flex: 1; min-height: 0; }
+    .rank-item { flex: 1; display: flex; align-items: center; justify-content: space-between; padding: 5px 9px; border-radius: 4px; background: var(--rank-bg); border: 1px solid var(--rank-border); }
+    .rank-item .city-name { font-size: 13px; font-weight: 700; color: #1E293B; display: flex; align-items: center; gap: 8px; }
+    .rank-item .rank-num { width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: bold; color: #fff; }
     /* 绿榜(水质好/改善大) */
-    .rank-green .rank-item { border: 1px solid #DCFCE7; }
+    .rank-green { --rank-bg: var(--ppt-bg-good-strong); --rank-border: var(--ppt-border-good); }
     .rank-green .rank-num { background: #047857; }
-    .rank-green .score { color: #047857; font-weight: 800; font-size: 16px; }
+    .rank-green .score { color: #047857; font-weight: 800; font-size: 15px; }
     /* 红榜(水质差/恶化大) */
-    .rank-red .rank-item { background: #FEF2F2; border: 1px solid #FEE2E2; }
+    .rank-red { --rank-bg: var(--ppt-bg-alert-soft); --rank-border: var(--ppt-border-alert-strong); }
     .rank-red .rank-num { background: #991B1B; }
-    .rank-red .score { color: #991B1B; font-weight: 800; font-size: 16px; }
+    .rank-red .score { color: #991B1B; font-weight: 800; font-size: 15px; }
     .compact-table td { padding: 2px 4px !important; font-size: 8.5px !important; }
     .compact-table th { padding: 3px 4px !important; font-size: 8.5px !important; }
 </style>
@@ -29,23 +31,23 @@
         <span class="nav-page-num">P04A</span>
     </div>
     
-    <div class="core-bar">▎ 2026年1-5月（累计月），全省167个国控断面CWQI均值3.97，水质整体平稳。神农架、鄂州CWQI指数持续保持全省领先；天门、荆州水质排名垫底，建议制定专项整治方案。</div>
+    <div class="core-bar">▎ 2026年1-5月（累计月），全省167个国控断面CWQI均值3.97，水质整体平稳；神农架、鄂州CWQI指数处于全省较优水平，天门、荆州CWQI指数相对偏高，建议开展针对性排查整治。</div>
     
     <div class="bd">
         <!-- 左侧：绝对水质 CWQI 排名（红黑榜） -->
-        <div class="left-column" style="display:flex;flex-direction:column;gap:12px;height:100%;overflow:hidden;">
-            <div class="kpi-block hl" style="flex:1;padding:12px!important;min-height:0;overflow:hidden;">
-                <div class="kpi-title" style="font-size: 12px !important; margin-bottom: 10px;">🏆 CWQI 水质排名前三 (绿榜)</div>
-                <div class="rank-green">
+        <div class="left-column" style="display:flex;flex-direction:column;gap:10px;height:100%;overflow:hidden;">
+            <div class="kpi-block hl" style="flex:1;padding:10px 12px!important;min-height:0;overflow:hidden;">
+                <div class="kpi-title" style="font-size: 12px !important; margin-bottom: 8px;">🏆 CWQI 水质排名前三 (绿榜)</div>
+                <div class="rank-list rank-green">
                     <div class="rank-item"><div class="city-name"><span class="rank-num">1</span>神农架</div><div class="score">1.82</div></div>
                     <div class="rank-item"><div class="city-name"><span class="rank-num">2</span>鄂州市</div><div class="score">2.45</div></div>
                     <div class="rank-item"><div class="city-name"><span class="rank-num">3</span>十堰市</div><div class="score">2.91</div></div>
                 </div>
             </div>
             
-            <div class="kpi-block al" style="flex:1;padding:12px!important;min-height:0;overflow:hidden;">
-                <div class="kpi-title" style="font-size: 12px !important; margin-bottom: 10px;">⚠️ CWQI 水质排名后三 (红榜)</div>
-                <div class="rank-red">
+            <div class="kpi-block al" style="flex:1;padding:10px 12px!important;min-height:0;overflow:hidden;">
+                <div class="kpi-title" style="font-size: 12px !important; margin-bottom: 8px;">⚠️ CWQI 水质排名后三 (红榜)</div>
+                <div class="rank-list rank-red">
                     <div class="rank-item"><div class="city-name"><span class="rank-num" style="background:#475569;">15</span>孝感市</div><div class="score">5.21</div></div>
                     <div class="rank-item"><div class="city-name"><span class="rank-num" style="background:#64748B;">16</span>潜江市</div><div class="score">5.62</div></div>
                     <div class="rank-item"><div class="city-name"><span class="rank-num" style="background:#94A3B8;">17</span>天门市</div><div class="score">5.86</div></div>

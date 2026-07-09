@@ -57,7 +57,7 @@
   --ppt-border-alert-strong: #FECACA;
   --ppt-border-warn: #FDE68A;
   --ppt-border-warn-soft: #FEF3C7;
-  --ppt-border-good: #DCFCE7;
+  --ppt-border-good: #BBF7D0;
   --ppt-border-info: #BFDBFE;
 }
 /* --- 基础重置 --- */
@@ -246,6 +246,26 @@ body {
 .content-panel > .table-box {
   background: transparent !important;
   box-shadow: none !important;
+}
+
+/* --- 流域页双栏主体（P13-P15） --- */
+.watershed-main-row {
+  display: flex;
+  gap: 12px;
+  flex: 1;
+  min-height: 0;
+  align-items: stretch;
+}
+.watershed-left-panel,
+.watershed-right-panel {
+  height: 100%;
+  min-height: 0;
+  box-sizing: border-box;
+}
+.watershed-right-panel.content-panel {
+  padding: 6px 10px 8px !important;
+  gap: 5px !important;
+  justify-content: flex-start;
 }
 
 

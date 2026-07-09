@@ -9,6 +9,23 @@
         .fit-table td { padding: 2px 8px !important; font-size: 8.5px !important; }
         .fit-table th { padding: 4px 8px !important; }
         .left-column .warning-card { justify-content: center; }
+        .page6-left { gap: 6px !important; min-height: 0; overflow: hidden; }
+        .page6-left .kpi-block { padding: 9px 12px !important; }
+        .page6-left .kpi-sub { font-size: 8.5px !important; line-height: 1.35 !important; margin-top: 1px !important; }
+        .page6-left .kpi-num { line-height: 1.1; }
+        .page6-left .warning-card {
+            flex: 0 0 auto !important;
+            padding: 7px 10px !important;
+        }
+        .page6-left .warning-card .card-loc {
+            font-size: 9.5px !important;
+            margin-bottom: 2px !important;
+            padding-bottom: 2px !important;
+        }
+        .page6-left .warning-card .card-det {
+            font-size: 9.3px !important;
+            line-height: 1.4 !important;
+        }
     </style>
 </head>
 <body>
@@ -21,29 +38,29 @@
     <div class="core-bar">▎ 2026年5月（当前月），全省334个省控断面Ⅰ-Ⅲ类比例86.8%，环比上升0.3%，同比下降0.5%。共13个地市76个断面超标。</div>
 
     <div class="bd">
-        <div class="left-column" style="display: flex; flex-direction: column; justify-content: space-between; gap: 8px;">
+        <div class="left-column page6-left" style="display: flex; flex-direction: column; justify-content: space-between; gap: 8px;">
 
-            <div class="kpi-block" style="padding: 12px 14px !important;">
+            <div class="kpi-block" style="padding: 9px 12px !important;">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
                     <div class="kpi-title">省控Ⅰ-Ⅲ类比例（当前月）</div>
                     <div style="display:flex;gap:8px;font-size:9px;align-items:center;"><span style="color:#64748B;">同比 <span class="trend-warn">↓0.5%</span></span><span style="color:#64748B;">环比 <span class="trend-good">↑0.3%</span></span></div>
                 </div>
-                <div class="kpi-num" style="font-size: 26px !important; margin: 2px 0 4px 0;">86.8%</div>
+                <div class="kpi-num" style="font-size: 24px !important; margin: 1px 0 3px 0;">86.8%</div>
                 <div class="progress-bar" style="background: var(--ppt-bg-track); height: 5px; border-radius: 0; overflow: hidden; margin-bottom: 4px;">
                     <div class="progress-fill" style="width: 86.8%; background: #1A3A5C; height: 100%;"></div>
                 </div>
                 <div class="kpi-sub">数据口径：5月（当前月）17市州单月统计</div>
             </div>
 
-            <div style="display: flex; gap: 10px;">
+            <div style="display: flex; gap: 8px;">
                 <div class="kpi-block hl" style="flex: 1;">
                     <div class="kpi-title">环比改善</div>
-                    <div class="kpi-num" style="font-size: 14px !important; color: #047857 !important; margin: 4px 0;">5 市</div>
+                    <div class="kpi-num" style="font-size: 14px !important; color: #047857 !important; margin: 2px 0;">5 市</div>
                     <div class="kpi-sub">十堰、宜昌、荆州、荆门、黄石</div>
                 </div>
                 <div class="kpi-block al" style="flex: 1;">
                     <div class="kpi-title">环比恶化</div>
-                    <div class="kpi-num" style="font-size: 14px !important; color: #991B1B !important; margin: 4px 0;">7 市</div>
+                    <div class="kpi-num" style="font-size: 14px !important; color: #991B1B !important; margin: 2px 0;">7 市</div>
                     <div class="kpi-sub">黄冈、咸宁、孝感、潜江、天门、随州、襄阳</div>
                 </div>
             </div>

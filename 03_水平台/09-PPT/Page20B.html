@@ -1,91 +1,180 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>风险预警 - 重点风险断面督办清单</title>
+<title>风险断面攻坚 - 连续2个月状态识别</title>
 <link rel="stylesheet" href="ppt-style.css">
 <style>
-    /* 极致压缩表格，确保纵向不溢出 */
-    .fit-table th { padding: 6px 8px !important; }
-    .fit-table td { padding: 5px 8px !important; font-size: 10px !important; }
-    .risk-high td { background: var(--ppt-bg-alert) !important; border-bottom-color: var(--ppt-border-alert) !important; }
-    .risk-med td { background: var(--ppt-bg-alert) !important; border-bottom-color: var(--ppt-border-alert) !important; }
-    /* 行政动作角标 */
-    .action-badge { padding: 3px 6px; border-radius: 0; font-weight: 700; font-size: 9px; color: #fff; display: inline-block; }
-    .ab-red { background: #991B1B; box-shadow: none !important; }
-    .ab-orange { background: #B45309; }
-    .ab-blue { background: #1A3A5C; }
+    .state-page {
+        flex-direction: column;
+        gap: 10px;
+        overflow: hidden;
+    }
+    .state-kpi-row {
+        margin-bottom: 0;
+        flex-shrink: 0;
+    }
+    .state-kpi-row .kpi-card {
+        padding: 9px 10px !important;
+    }
+    .state-kpi-row .kpi-value {
+        font-size: 24px !important;
+        line-height: 1.15;
+    }
+    .kpi-note {
+        margin-top: 3px;
+        font-size: 8.5px;
+        color: #64748B;
+        white-space: nowrap;
+    }
+    .state-panel {
+        flex: 1;
+        min-height: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        background: var(--ppt-bg-slide);
+        border: 1px solid var(--ppt-border-default);
+        border-radius: 3px;
+        padding: 7px 10px 9px;
+        overflow: hidden;
+    }
+    .panel-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        flex-shrink: 0;
+    }
+    .panel-title {
+        font-size: 11px;
+        font-weight: 800;
+        color: #0F172A;
+        letter-spacing: .4px;
+    }
+    .panel-rule {
+        font-size: 8.5px;
+        color: #64748B;
+        line-height: 1.4;
+        text-align: right;
+    }
+    .state-table {
+        flex: 1;
+        min-height: 0;
+        border: 1px solid var(--ppt-border-default);
+    }
+    .state-table th {
+        padding: 4px 6px !important;
+        font-size: 8.2px !important;
+        line-height: 1.1;
+    }
+    .state-table td {
+        padding: 2px 6px !important;
+        font-size: 8.5px !important;
+        line-height: 1.15;
+    }
+    .state-chip {
+        display: inline-block;
+        min-width: 48px;
+        padding: 1px 5px;
+        border-radius: 2px;
+        font-size: 8.2px;
+        font-weight: 800;
+        line-height: 1.2;
+        border: 1px solid var(--ppt-border-default);
+        white-space: nowrap;
+    }
+    .state-chip.good {
+        background: var(--ppt-bg-good);
+        border-color: var(--ppt-border-good);
+        color: #047857;
+    }
+    .state-chip.alert {
+        background: var(--ppt-bg-alert);
+        border-color: var(--ppt-border-alert);
+        color: #991B1B;
+    }
+    .row-good td {
+        background: var(--ppt-bg-good) !important;
+        border-bottom-color: var(--ppt-border-good) !important;
+    }
+    .row-alert td {
+        background: var(--ppt-bg-alert) !important;
+        border-bottom-color: var(--ppt-border-alert) !important;
+    }
 </style>
 </head>
 <body>
 <div class="slide-container">
     <div class="ppt-header">
-        <span class="ppt-title">风险断面攻坚：重点风险断面督办清单</span>
+        <span class="ppt-title">风险断面攻坚：连续2个月状态识别</span>
         <span class="nav-page-num">P20B</span>
     </div>
-    
-    <div class="core-bar">▎ 2026年1-5月（累计月），全省8个高风险断面中劣Ⅴ类5个（同比↑1个），连续超标8个（同比↑2个），指标恶化10个（同比↑1个）。建议对潜江、荆州重点关注。</div>
-    
-    <div class="bd" style="flex-direction:column; gap:12px; overflow: hidden;">
-        <div class="kpi-row" style="margin-bottom: 0;">
-            <div class="kpi-card status-alert" style="padding: 12px !important;">
-                <div class="kpi-label">劣V类断面</div>
-                <div class="kpi-value" style="font-size: 24px !important;">5 个</div>
-            <div style="display:flex;gap:6px;margin-top:2px;font-size:8px;justify-content:center;white-space:nowrap;"><span style="color:#64748B;">同比 <span class="trend-alert">↑1个</span></span></div></div>
-            <div class="kpi-card status-alert" style="padding: 12px !important;">
-                <div class="kpi-label">连续超标断面</div>
-                <div class="kpi-value" style="font-size: 24px !important;">8 个</div>
-            <div style="display:flex;gap:6px;margin-top:2px;font-size:8px;justify-content:center;white-space:nowrap;"><span style="color:#64748B;">同比 <span class="trend-alert">↑2个</span></span></div></div>
-            <div class="kpi-card status-alert" style="padding: 12px !important;">
-                <div class="kpi-label">指标恶化断面</div>
-                <div class="kpi-value" style="font-size: 24px !important;">10 个</div>
-            <div style="display:flex;gap:6px;margin-top:2px;font-size:8px;justify-content:center;white-space:nowrap;"><span style="color:#64748B;">同比 <span class="trend-alert">↑1个</span></span></div></div>
-            <div class="kpi-card status-alert" style="padding: 12px !important;">
-                <div class="kpi-label">水质恶化断面</div>
-                <div class="kpi-value" style="font-size: 24px !important;">2 个</div>
-            <div style="display:flex;gap:6px;margin-top:2px;font-size:8px;justify-content:center;white-space:nowrap;"><span style="color:#64748B;">同比 <span class="trend-neutral">持平</span></span></div></div>
+
+    <div class="core-bar">▎ 2026年5月（当前月），全省167个国控断面按变化趋势和达标状态两类口径开展连续2个月识别，连续改善12个、连续恶化10个，连续达标145个、连续超标8个，环比连续超标↑2个，建议优先核查连续超标和连续恶化断面。</div>
+
+    <div class="bd state-page">
+        <div class="kpi-row state-kpi-row">
+            <div class="kpi-card status-good">
+                <div class="kpi-label">连续改善</div>
+                <div class="kpi-value">12<span style="font-size:9px;font-weight:normal;">个</span></div>
+                <div class="kpi-note">连续2个月向好，环比 <span class="trend-good">↑3个</span></div>
+            </div>
+            <div class="kpi-card status-alert">
+                <div class="kpi-label">连续恶化</div>
+                <div class="kpi-value">10<span style="font-size:9px;font-weight:normal;">个</span></div>
+                <div class="kpi-note">连续2个月变差，环比 <span class="trend-alert">↑1个</span></div>
+            </div>
+            <div class="kpi-card status-good">
+                <div class="kpi-label">连续达标</div>
+                <div class="kpi-value">145<span style="font-size:9px;font-weight:normal;">个</span></div>
+                <div class="kpi-note">连续2个月达标，环比 <span class="trend-neutral">持平</span></div>
+            </div>
+            <div class="kpi-card status-alert">
+                <div class="kpi-label">连续超标</div>
+                <div class="kpi-value">8<span style="font-size:9px;font-weight:normal;">个</span></div>
+                <div class="kpi-note">连续2个月超标，环比 <span class="trend-alert">↑2个</span></div>
+            </div>
         </div>
-        
-        <div class="table-box fit-table" style="flex:1; display: flex; flex-direction: column;">
-            <table style="width: 100%; height: 100%;">
-                <thead>
-                    <tr>
-                        <th>序号</th>
-                        <th>断面名称</th>
-                        <th>市州</th>
-                        <th>级别</th>
-                        <th>预警类型</th>
-                        <th>超标因子</th>
-                        <th>实测值/标准</th>
-                        <th>今年超标次数</th>
-                        
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr class="risk-high"><td>1</td><td class="td-left" style="font-weight: 800;">潜江总干渠</td><td>潜江</td><td>国控</td><td><span class="badge-r">劣V</span></td><td>氨氮</td><td>4.2 / 2.0</td><td>1</td></tr>
-                    <tr class="risk-high"><td>2</td><td class="td-left" style="font-weight: 800;">洪湖湖心</td><td>荆州</td><td>省控</td><td><span class="badge-r">劣V</span></td><td>总磷</td><td>0.15 / 0.05</td><td>3</td></tr>
-                    <tr class="risk-high"><td>3</td><td class="td-left">长湖荆门</td><td>荆门</td><td>省控</td><td><span class="badge-r">劣V</span></td><td>总磷</td><td>0.12 / 0.05</td><td>2</td></tr>
-                    <tr class="risk-high"><td>4</td><td class="td-left">府河孝感</td><td>孝感</td><td>国控</td><td><span class="badge-r">劣V</span></td><td>氨氮</td><td>3.8 / 2.0</td><td>1</td></tr>
-                    <tr class="risk-med"><td>5</td><td class="td-left">四湖总干渠</td><td>荆州</td><td>国控</td><td><span class="badge-r">连续超标</span></td><td>COD</td><td>28 / 20</td><td>4</td></tr>
-                    <tr class="risk-med"><td>6</td><td class="td-left">东荆河</td><td>潜江</td><td>国控</td><td><span class="badge-r">连续超标</span></td><td>氨氮</td><td>2.8 / 2.0</td><td>3</td></tr>
-                    <tr class="risk-med"><td>7</td><td class="td-left">竹皮河</td><td>荆门</td><td>省控</td><td><span class="badge-r">连续超标</span></td><td>氨氮</td><td>2.5 / 2.0</td><td>3</td></tr>
-                    <tr class="risk-med"><td>8</td><td class="td-left">倒水新洲</td><td>武汉</td><td>国控</td><td><span class="badge-r">指标恶化</span></td><td>总磷</td><td>0.08 / 0.05</td><td>2</td></tr>
-                </tbody>
-            </table>
+
+        <div class="state-panel">
+            <div class="panel-head">
+                <div class="panel-title">连续状态重点对象清单</div>
+                <div class="panel-rule">判定口径：4月、5月同一断面同一指标连续判断，污染物浓度下降为改善，上升为恶化。</div>
+            </div>
+            <div class="table-box state-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>序号</th>
+                            <th>断面名称</th>
+                            <th>市州</th>
+                            <th>级别</th>
+                            <th>指标</th>
+                            <th>状态类型</th>
+                            <th>4月值</th>
+                            <th>5月值</th>
+                            <th>标准值</th>
+                            <th>趋势</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="row-alert"><td>1</td><td class="td-left">潜江总干渠</td><td>潜江</td><td>国控</td><td>氨氮</td><td><span class="state-chip alert">连续超标</span></td><td>3.6</td><td>4.2</td><td>2.0</td><td><span class="trend-alert">↑</span></td></tr>
+                        <tr class="row-alert"><td>2</td><td class="td-left">洪湖湖心</td><td>荆州</td><td>国控</td><td>总磷</td><td><span class="state-chip alert">连续超标</span></td><td>0.13</td><td>0.15</td><td>0.05</td><td><span class="trend-alert">↑</span></td></tr>
+                        <tr class="row-alert"><td>3</td><td class="td-left">四湖总干渠</td><td>荆州</td><td>国控</td><td>COD</td><td><span class="state-chip alert">连续超标</span></td><td>26</td><td>28</td><td>20</td><td><span class="trend-alert">↑</span></td></tr>
+                        <tr class="row-alert"><td>4</td><td class="td-left">东荆河</td><td>潜江</td><td>国控</td><td>氨氮</td><td><span class="state-chip alert">连续超标</span></td><td>2.6</td><td>2.8</td><td>2.0</td><td><span class="trend-alert">↑</span></td></tr>
+                        <tr class="row-alert"><td>5</td><td class="td-left">倒水新洲</td><td>武汉</td><td>国控</td><td>总磷</td><td><span class="state-chip alert">连续恶化</span></td><td>0.06</td><td>0.08</td><td>0.05</td><td><span class="trend-alert">↑</span></td></tr>
+                        <tr class="row-alert"><td>6</td><td class="td-left">竹皮河</td><td>荆门</td><td>国控</td><td>氨氮</td><td><span class="state-chip alert">连续恶化</span></td><td>2.1</td><td>2.5</td><td>2.0</td><td><span class="trend-alert">↑</span></td></tr>
+                        <tr class="row-good"><td>7</td><td class="td-left">清江长阳</td><td>宜昌</td><td>国控</td><td>氨氮</td><td><span class="state-chip good">连续改善</span></td><td>0.42</td><td>0.35</td><td>1.0</td><td><span class="trend-good">↓</span></td></tr>
+                        <tr class="row-good"><td>8</td><td class="td-left">梁子湖心</td><td>鄂州</td><td>国控</td><td>总磷</td><td><span class="state-chip good">连续达标</span></td><td>0.03</td><td>0.03</td><td>0.05</td><td><span class="trend-neutral">→</span></td></tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
-    
+
     <div class="ft"><span>2026年5月生态环境月度专报</span><span>提示：仅供汇报使用</span></div>
 </div>
 </body>
 </html>
-
-
-
-
-
-
-
-
-

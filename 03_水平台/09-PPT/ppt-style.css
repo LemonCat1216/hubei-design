@@ -133,8 +133,7 @@ body {
 /* --- KPI 大卡片 --- */
 .kpi-block {
   background: var(--ppt-bg-slide) !important;
-  /* border removed per user request */
-  /* border-top removed per user request */
+  border: 1px solid var(--ppt-border-default) !important;
   border-radius: 3px;
   box-shadow: 0 2px 12px rgba(15,23,42,.06) !important;
   padding: 12px 14px !important;
@@ -172,6 +171,14 @@ body {
 }
 
 /* --- KPI 横向行 --- */
+/*
+   KPI card standard:
+   - All KPI cards keep a uniform 1px border only, without a separate top accent line.
+   - Default/neutral cards use white background and muted border.
+   - status-good/status-warn/status-alert map to the same semantic color system as
+     warning cards and other status blocks.
+   - Do not use ad-hoc gradient or top-only borders on individual pages.
+*/
 .kpi-row {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -180,8 +187,7 @@ body {
 }
 .kpi-row .kpi-card {
   background: var(--ppt-bg-slide) !important;
-  /* border removed per user request */
-  /* border-top removed per user request */
+  border: 1px solid var(--ppt-border-default) !important;
   border-radius: 3px;
   box-shadow: 0 2px 12px rgba(15,23,42,.06) !important;
   padding: 10px !important;
@@ -197,11 +203,30 @@ body {
   font-weight: 800 !important;
   margin-top: 2px;
 }
+/* --- Content panel --- */
+.content-panel {
+  background: var(--ppt-bg-slide);
+  border: 1px solid var(--ppt-border-default);
+  border-radius: 3px;
+  box-shadow: 0 2px 12px rgba(15,23,42,.06);
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.content-panel > .table-box {
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
 
 /* --- 表格 --- */
 .table-box {
   /* border removed per user request */
-  box-shadow: 0 1px 4px rgba(0,0,0,.03);
+  background: var(--ppt-bg-slide) !important;
+  border-radius: 3px;
+  box-shadow: 0 2px 12px rgba(15,23,42,.05);
+  overflow: hidden;
 }
 .table-box table {
   width: 100%;
@@ -271,17 +296,24 @@ body {
   font-size: 10px !important;
   font-weight: 700 !important;
   color: #92400E !important;
-  border-bottom: 1px dashed rgba(146,64,14,.2) !important;
   padding-bottom: 3px !important;
   margin-bottom: 4px !important;
 }
+.card-det {
+  font-size: 10px !important;
+  line-height: 1.55 !important;
+  color: #475569 !important;
+  font-weight: 500;
+}
+.card-det strong {
+  font-size: inherit;
+  font-weight: 800;
+}
 .warning-card.blue-card .card-loc, .warning-card.blue .card-loc {
   color: #1E40AF !important;
-  border-bottom-color: rgba(30,64,175,.2) !important;
 }
 .warning-card.green-card .card-loc, .warning-card.green .card-loc {
   color: #065F46 !important;
-  border-bottom-color: rgba(6,95,70,.2) !important;
 }
 /* --- 红色预警卡片（需关注/负面趋势） --- */
 .warning-card.alert-card, .warning-card.alert {
@@ -290,7 +322,6 @@ body {
   }
 .warning-card.alert-card .card-loc, .warning-card.alert .card-loc {
   color: #7F1D1D !important;
-  border-bottom-color: rgba(220,38,38,.25) !important;
 }
 .warning-card.alert-card .card-det, .warning-card.alert .card-det {
   color: #991B1B !important;
@@ -299,9 +330,9 @@ body {
 /* --- 图表区 --- */
 .chart-wrapper {
   background: var(--ppt-bg-slide) !important;
-  /* border removed per user request */
+  border: 1px solid var(--ppt-border-default) !important;
   border-radius: 3px;
-  box-shadow: 0 1px 4px rgba(0,0,0,.03);
+  box-shadow: 0 2px 12px rgba(15,23,42,.06) !important;
   padding: 10px 14px;
   flex: 1;
   display: flex;
@@ -313,7 +344,6 @@ body {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 6px;
-  border-bottom: 1px dashed var(--ppt-border-default);
   padding-bottom: 4px;
 }
 .chart-title {
@@ -333,12 +363,13 @@ body {
 
 /* --- 说明信息条 --- */
 .ex-info {
-  background: var(--ppt-bg-muted) !important;
-  /* border removed per user request */
+  background: var(--ppt-bg-slide) !important;
+  border: 1px solid var(--ppt-border-default) !important;
   border-radius: 3px;
   padding: 6px 14px !important;
   font-size: 10px !important;
   color: #64748B !important;
+  box-shadow: 0 2px 12px rgba(15,23,42,.06) !important;
   flex-shrink: 0;
 }
 
@@ -571,33 +602,28 @@ body {
 
 
 
-/* === KPI 卡片配色语义化规则（模板开发用） === */
-/* 第1位：维度标识 - 固定深蓝 */
-/* .kpi-card.pos1: border-top-color removed */
-.kpi-card.pos1 { background: var(--ppt-bg-muted) !important; }
+/* === KPI 卡片配色语义化规则 === */
+/* 默认/维度标识 - 固定深蓝 */
+.kpi-card.pos1 { background: var(--ppt-bg-muted) !important; border-color: var(--ppt-border-default) !important; }
 .kpi-card.pos1 .kpi-label { color: #1A3A5C !important; }
 
-/* 第2-4位：按数值好坏自动变色 */
 /* 好 - 绿色 */
-/* .kpi-card.status-good: border-top-color removed */
-.kpi-card.status-good { background: #F5FBF7 !important; }
+.kpi-card.status-good { background: #F5FBF7 !important; border-color: var(--ppt-border-good) !important; }
 .kpi-card.status-good .kpi-label { color: #047857 !important; }
 .kpi-card.status-good .kpi-value { color: #047857 !important; }
 
 /* 中等/警告 - 琥珀色 */
-/* .kpi-card.status-warn: border-top-color removed */
-.kpi-card.status-warn { background: #FFFAF4 !important; }
+.kpi-card.status-warn { background: #FFFAF4 !important; border-color: var(--ppt-border-warn-soft) !important; }
 .kpi-card.status-warn .kpi-label { color: #B45309 !important; }
 .kpi-card.status-warn .kpi-value { color: #B45309 !important; }
 
 /* 差/预警 - 红色 */
-/* .kpi-card.status-alert: border-top-color removed */
-.kpi-card.status-alert { background: #FCF6F6 !important; }
+.kpi-card.status-alert { background: #FCF6F6 !important; border-color: var(--ppt-border-alert) !important; }
 .kpi-card.status-alert .kpi-label { color: #991B1B !important; }
 .kpi-card.status-alert .kpi-value { color: #991B1B !important; }
 
 /* 中性 - 灰色（适用于说明性数值） */
-/* .kpi-card.status-neutral: border-top-color removed */
+.kpi-card.status-neutral { background: var(--ppt-bg-slide) !important; border-color: var(--ppt-border-default) !important; }
 .kpi-card.status-neutral .kpi-label { color: #64748B !important; }
 .kpi-card.status-neutral .kpi-value { color: #0F172A !important; }
 /* === 优化右侧靶向管控卡片布局：强制等高平分空间 === */
@@ -642,10 +668,3 @@ body {
 /* 蓝色（信息提示） */
 .bg-info { background: var(--ppt-bg-info) !important; }
 .border-info { border-color: var(--ppt-border-info) !important; }
-
-
-
-
-
-
-

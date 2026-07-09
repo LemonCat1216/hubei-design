@@ -3,45 +3,96 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>排口信息 - 入河排污口月度进展报告</title>
+<title>排污口排查整治：入河排污口闭环进度</title>
 <link rel="stylesheet" href="ppt-style.css">
+<style>
+  .bd { padding: 14px 24px; gap: 16px; }
+  .left-column { grid-template-columns: 1fr 1fr; align-content: stretch; }
+  .left-column .kpi-block { min-height: 92px; padding: 12px 14px !important; }
+  .left-column .kpi-title { margin-bottom: 6px; }
+  .left-column .kpi-num { font-size: 22px !important; line-height: 1.25; }
+  .rate-note { margin-top: 4px; font-size: 9px; font-weight: 700; color: #64748B; }
+  .right-column { gap: 10px; }
+  .task-list { flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 9px; }
+  .task-row { display: grid; grid-template-columns: 62px 1fr 58px; align-items: center; gap: 8px; }
+  .task-label { font-size: 9px; font-weight: 700; color: #334155; text-align: right; }
+  .task-value { font-size: 9px; font-weight: 800; text-align: right; }
+  .p26-bar { height: 11px; background: var(--ppt-bg-track); overflow: hidden; }
+  .p26-fill { height: 100%; }
+  .issue-list { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .issue-item { background: var(--ppt-bg-muted); border: 1px solid var(--ppt-border-default); padding: 8px 10px; min-height: 56px; }
+  .issue-label { font-size: 9px; color: #475569; font-weight: 700; }
+  .issue-num { margin-top: 3px; font-size: 15px; font-weight: 800; line-height: 1.15; }
+  .issue-desc { margin-top: 3px; font-size: 8px; color: #94A3B8; line-height: 1.35; }
+  .action-strip { margin-top: 8px; padding: 7px 10px; background: var(--ppt-bg-alert); color: #991B1B; font-size: 9px; line-height: 1.5; font-weight: 600; }
+</style>
 </head>
 <body>
 <div class="slide-container">
-    <div class="ppt-header"><span class="ppt-title">排污口排查整治：入河排污口月度进展报告</span><span class="nav-page-num">P26</span></div>
-    <div class="core-bar">▎ 2026年5月，新增排查排口326个，新整治完成478个。本月整治进度较上月提升12%，但仙桃、天门进度仍滞后。</div>
+    <div class="ppt-header"><span class="ppt-title">排污口排查整治：入河排污口闭环进度</span><span class="nav-page-num">P26</span></div>
+    <div class="core-bar">▎ 2026年1月，全省累计排查入河排污口34,114个；监测完成13,795个（40.43%）、溯源完成25,451个（74.59%）、整治完成18,178个（53.28%）。当前短板集中在监测补齐、整治销号和审核流转。</div>
     <div class="bd">
         <div class="left-column">
-            <div class="kpi-block"><div class="kpi-title">本月新排查</div><div class="kpi-num" style="font-size:20px;">+326</div><div class="kpi-sub">个排污口</div></div>
-            <div class="kpi-block highlight"><div class="kpi-title">本月新整治</div><div class="kpi-num" style="font-size:20px;">+478</div><div class="kpi-sub">整治完成</div></div>
-            <div class="kpi-block highlight"><div class="kpi-title">整治进度提升</div><div class="kpi-num" style="font-size:20px;">+12%</div><div class="kpi-sub">较上月</div></div>
-            <div class="kpi-block alert"><div class="kpi-title">滞后市州</div><div class="kpi-num" style="font-size:16px;">2个</div><div class="kpi-sub">仙桃/天门</div></div>
+            <div class="kpi-block">
+                <div class="kpi-title">排查总量</div>
+                <div class="kpi-num">34,114</div>
+                <div class="kpi-sub">全省入河排污口基数</div>
+            </div>
+            <div class="kpi-block al">
+                <div class="kpi-title">监测完成</div>
+                <div class="kpi-num" style="color:#B45309 !important;">13,795</div>
+                <div class="rate-note">40.43%</div>
+            </div>
+            <div class="kpi-block hl">
+                <div class="kpi-title">溯源完成</div>
+                <div class="kpi-num" style="color:#047857 !important;">25,451</div>
+                <div class="rate-note">74.59%</div>
+            </div>
+            <div class="kpi-block al">
+                <div class="kpi-title">整治完成</div>
+                <div class="kpi-num" style="color:#B45309 !important;">18,178</div>
+                <div class="rate-note">53.28%</div>
+            </div>
         </div>
         <div class="right-column">
             <div class="chart-wrapper" style="flex:1;">
-                <div class="chart-header"><div class="chart-title">近5月排污口整治进度趋势</div></div>
-                <div style="flex:1;display:flex;align-items:flex-end;gap:6px;padding:10px;">
-                    <div style="flex:1;text-align:center;"><div style="background:#2B4C7E;height:40px;border-radius:4px 4px 0 0;"></div><div style="font-size:8px;color:#64748B;margin-top:4px;">1月<br>312</div></div>
-                    <div style="flex:1;text-align:center;"><div style="background:#2B4C7E;height:55px;border-radius:4px 4px 0 0;"></div><div style="font-size:8px;color:#64748B;margin-top:4px;">2月<br>385</div></div>
-                    <div style="flex:1;text-align:center;"><div style="background:#2B4C7E;height:65px;border-radius:4px 4px 0 0;"></div><div style="font-size:8px;color:#64748B;margin-top:4px;">3月<br>428</div></div>
-                    <div style="flex:1;text-align:center;"><div style="background:#2B4C7E;height:60px;border-radius:4px 4px 0 0;"></div><div style="font-size:8px;color:#64748B;margin-top:4px;">4月<br>398</div></div>
-                    <div style="flex:1;text-align:center;"><div style="background:#047857;height:72px;border-radius:4px 4px 0 0;"></div><div style="font-size:8px;color:#047857;font-weight:700;margin-top:4px;">5月<br>478</div></div>
+                <div class="chart-header"><div class="chart-title">排查整治闭环完成率</div></div>
+                <div class="task-list">
+                    <div class="task-row"><div class="task-label">排查建档</div><div class="p26-bar"><div class="p26-fill" style="width:100%;background:#1A3A5C;"></div></div><div class="task-value" style="color:#1A3A5C;">100%</div></div>
+                    <div class="task-row"><div class="task-label">监测完成</div><div class="p26-bar"><div class="p26-fill" style="width:40.43%;background:#D97706;"></div></div><div class="task-value" style="color:#B45309;">40.43%</div></div>
+                    <div class="task-row"><div class="task-label">溯源完成</div><div class="p26-bar"><div class="p26-fill" style="width:74.59%;background:#059669;"></div></div><div class="task-value" style="color:#047857;">74.59%</div></div>
+                    <div class="task-row"><div class="task-label">整治完成</div><div class="p26-bar"><div class="p26-fill" style="width:53.28%;background:#F97316;"></div></div><div class="task-value" style="color:#B45309;">53.28%</div></div>
                 </div>
             </div>
-            <div class="table-box"><table>
-                <thead><tr><th>月份</th><th>新排查</th><th>新整治</th><th>累计完成率</th></tr></thead>
-                <tbody>
-                    <tr><td>1月</td><td>245</td><td>312</td><td>52.3%</td></tr>
-                    <tr><td>2月</td><td>198</td><td>385</td><td>56.8%</td></tr>
-                    <tr><td>3月</td><td>286</td><td>428</td><td>60.1%</td></tr>
-                    <tr><td>4月</td><td>312</td><td>398</td><td>63.2%</td></tr>
-                    <tr><td>5月</td><td>326</td><td><span class="badge-g">478</span></td><td><span class="badge-g">66.6%</span></td></tr>
-                </tbody>
-            </table></div>
+            <div class="chart-wrapper" style="flex:1;">
+                <div class="chart-header"><div class="chart-title">当前卡点与督办重点</div></div>
+                <div class="issue-list">
+                    <div class="issue-item">
+                        <div class="issue-label">未完成监测</div>
+                        <div class="issue-num" style="color:#B45309;">20,319</div>
+                        <div class="issue-desc">监测完成率仍不足一半</div>
+                    </div>
+                    <div class="issue-item">
+                        <div class="issue-label">未完成整治</div>
+                        <div class="issue-num" style="color:#B45309;">15,936</div>
+                        <div class="issue-desc">需推动分类整治销号</div>
+                    </div>
+                    <div class="issue-item">
+                        <div class="issue-label">区县未提交</div>
+                        <div class="issue-num" style="color:#991B1B;">9,580</div>
+                        <div class="issue-desc">填报审核流转卡点突出</div>
+                    </div>
+                    <div class="issue-item">
+                        <div class="issue-label">省级待审核</div>
+                        <div class="issue-num" style="color:#B45309;">2,666</div>
+                        <div class="issue-desc">需加快复核通过</div>
+                    </div>
+                </div>
+                <div class="action-strip">建议：优先压实区县提交责任，同步补齐监测任务；对整治未完成排口建立清单化销号和省级复核节奏。</div>
+            </div>
         </div>
     </div>
-    <div class="ft"><span>2026年5月生态环境月度专报</span><span>提示：仅供汇报使用</span></div>
+    <div class="ft"><span>2026年1月生态环境月度专报</span><span>提示：仅供汇报使用</span></div>
 </div>
 </body>
 </html>
-

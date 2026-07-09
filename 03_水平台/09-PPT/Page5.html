@@ -21,6 +21,20 @@
 
         /* 让左侧被拉伸的预警卡片内容垂直居中，保持美观 */
         .left-column .warning-card { justify-content: center; }
+        .left-column .warning-card .card-det {
+            font-size: 11.5px !important;
+            line-height: 1.45 !important;
+            font-weight: 500;
+        }
+        .left-column .warning-card .card-det strong { font-size: inherit; }
+        .heatmap-grid {
+            display: grid !important;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            grid-template-rows: repeat(5, minmax(0, 1fr));
+            align-content: stretch !important;
+            min-height: 0;
+            overflow: hidden;
+        }
     </style>
 </head>
 <body>
@@ -41,7 +55,7 @@
                 <div style="display: flex; justify-content: space-between; align-items: center;">
                     <div class="kpi-title">省控Ⅰ-Ⅲ类比例（累计月）</div>
                     <div style="display:flex;gap:8px;font-size:9px;align-items:center;">
-                        <span style="color:#64748B;">同比 <span style="color:#991B1B;font-weight:700;">↓0.5%</span></span>
+                        <span style="color:#64748B;">同比 <span style="color:#B45309;font-weight:700;">↓0.5%</span></span>
                         <span style="color:#64748B;">环比 <span style="color:#047857;font-weight:700;">↑0.3%</span></span>
                     </div>
                 </div>
@@ -79,7 +93,7 @@
         </div>
 
         <!-- 右侧分栏：强制高度 100%，包裹表格 -->
-        <div class="right-column" style="height:100%;display:flex;flex-direction:column;gap:8px;">
+        <div class="right-column content-panel" style="height:100%;display:flex;flex-direction:column;gap:8px;">
     <div style="display:flex;justify-content:space-between;align-items:center;flex-shrink:0;">
         <div style="font-size:11px;font-weight:700;color:#1E293B;">累计月省控断面达标图（17市州）</div>
         <div style="display:flex;gap:8px;font-size:8px;align-items:center;">
@@ -89,7 +103,7 @@
             <span><span style="display:inline-block;width:8px;height:8px;background:#991B1B;margin-right:2px;"></span>严重</span>
         </div>
     </div>
-    <div class="heatmap-grid" style="display:flex;flex-wrap:wrap;gap:4px;flex:1;align-content:flex-start;">
+    <div class="heatmap-grid" style="gap:4px;flex:1;">
         <div class="bg-alert" style="flex:0 0 calc(25% - 5px);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:7px 5px;/* border-left removed */border-radius:3px;gap:2px;">
             <span style="font-size:11px;font-weight:700;color:#1E293B;">荆州</span>
             <span style="font-size:8.5px;color:#475569;">60%</span>
@@ -186,6 +200,7 @@
 </div>
 </body>
 </html>
+
 
 
 

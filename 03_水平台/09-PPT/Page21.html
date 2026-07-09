@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
@@ -6,23 +6,131 @@
 <title>排污口排查整治：全省入河排污口填报总览</title>
 <link rel="stylesheet" href="ppt-style.css">
 <style>
-  .bd { padding: 14px 24px; flex-direction: column; gap: 10px; }
-  .content-layout { display: flex; gap: 14px; flex: 1; min-height: 0; overflow: hidden; }
-  .left-panel { flex: 0 0 52%; display: flex; flex-direction: column; gap: 8px; min-height: 0; }
-  .right-panel { flex: 1; display: flex; flex-direction: column; gap: 8px; min-height: 0; }
-  .section-title { font-size: 10px; font-weight: 700; color: #0F172A; margin-bottom: 5px; }
-  .review-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
-  .review-card { border-radius: 3px; padding: 8px 6px; text-align: center; border: 1px solid var(--ppt-border-default); }
-  .review-card .lbl { font-size: 8.5px; font-weight: 600; margin-bottom: 3px; }
-  .review-card .val { font-size: 17px; font-weight: 800; line-height: 1.2; }
-  .water-row { display: flex; align-items: center; gap: 6px; padding: 3px 0; }
-  .water-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
-  .water-name { flex: 1; font-size: 9px; font-weight: 600; color: #334155; }
-  .water-num { width: 50px; font-size: 10px; font-weight: 700; text-align: right; }
-  .water-pct { width: 38px; font-size: 9px; font-weight: 600; color: #64748B; text-align: right; }
-  .stack-row { display: flex; height: 8px; border-radius: 2px; overflow: hidden; }
-  table.p21-tbl td { padding: 5px 12px !important; font-size: 10px !important; }
-  table.p21-tbl th { padding: 6px 12px !important; font-size: 9px !important; }
+  .bd { padding: 10px 24px 12px; flex-direction: column; gap: 8px; }
+  .content-layout {
+    display: grid;
+    grid-template-columns: 52% minmax(0, 1fr);
+    gap: 12px;
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+  }
+  .left-panel,
+  .right-panel {
+    display: grid;
+    grid-template-rows: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 8px;
+    min-height: 0;
+  }
+  .kpi-row { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .kpi-row .kpi-card {
+    min-height: 49px;
+    padding: 7px 10px !important;
+    background: linear-gradient(180deg, #FFFFFF 0%, #F8FAFC 100%) !important;
+    border: 1px solid var(--ppt-border-default) !important;
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(15,23,42,.04) !important;
+  }
+  .kpi-row .kpi-label {
+    min-height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 8px !important;
+    line-height: 1.2;
+    font-weight: 700 !important;
+    text-align: center;
+  }
+  .kpi-row .kpi-value { margin-top: 1px; font-size: 17px !important; line-height: 1.05; }
+  .chart-wrapper, .table-box {
+    background: #FFFFFF !important;
+    border: 1px solid var(--ppt-border-default) !important;
+    border-radius: 4px;
+    box-shadow: 0 1px 8px rgba(15,23,42,.04) !important;
+    min-height: 0;
+    overflow: hidden;
+  }
+  .section-title {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 10px;
+    font-weight: 800;
+    color: #0F172A;
+    margin-bottom: 6px;
+  }
+  .section-title::before { content: ""; width: 3px; height: 11px; background: #1A3A5C; border-radius: 1px; }
+  .left-panel .chart-wrapper:first-child {
+    display: flex !important;
+    flex-direction: column;
+    justify-content: center;
+    padding: 10px 14px !important;
+  }
+  .left-panel .chart-wrapper:first-child > div[style*="display:flex"] { padding: 2px 0; }
+  .progress-bar { height: 6px; border-radius: 2px; background: #E5EAF1 !important; }
+  .progress-fill { border-radius: 2px; }
+  .right-panel .chart-wrapper:first-child,
+  .right-panel .chart-wrapper:last-child { padding: 9px 14px !important; }
+  .right-panel .chart-wrapper:first-child {
+    display: flex !important;
+    flex-direction: column;
+  }
+  .review-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: repeat(2, minmax(0, 1fr));
+    gap: 6px;
+    flex: 1;
+    min-height: 0;
+  }
+  .review-card {
+    min-height: 0;
+    border-radius: 4px;
+    padding: 5px 8px;
+    text-align: center;
+    border: 1px solid var(--ppt-border-default);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.65);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .review-card .lbl { font-size: 8px; font-weight: 700; margin-bottom: 2px; }
+  .review-card .val { font-size: 15px; font-weight: 850; line-height: 1.1; font-variant-numeric: tabular-nums; }
+  .water-row {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 3px 0;
+    border-bottom: 1px solid var(--ppt-border-subtle);
+  }
+  .water-row:last-child { border-bottom: 0; }
+  .water-dot { width: 7px; height: 7px; border-radius: 2px; flex-shrink: 0; }
+  .water-name { flex: 1; font-size: 9px; font-weight: 700; color: #334155; white-space: nowrap; }
+  .water-num { width: 50px; font-size: 10px; font-weight: 800; text-align: right; font-variant-numeric: tabular-nums; }
+  .water-pct { width: 38px; font-size: 9px; font-weight: 700; color: #64748B; text-align: right; font-variant-numeric: tabular-nums; }
+  .right-panel .chart-wrapper:last-child {
+    display: flex !important;
+    flex-direction: column;
+  }
+  .right-panel .chart-wrapper:last-child > div[style*="flex:1"] {
+    justify-content: space-evenly !important;
+    gap: 2px !important;
+    min-height: 0;
+  }
+  .right-panel .chart-wrapper:last-child > div[style*="display:flex; font-size:8.5px"] {
+    padding-bottom: 2px !important;
+  }
+  .stack-row { display: flex; height: 7px; border-radius: 2px; overflow: hidden; box-shadow: inset 0 0 0 1px rgba(15,23,42,.06); }
+  table.p21-tbl { border-collapse: separate !important; border-spacing: 0; }
+  table.p21-tbl th {
+    padding: 5px 12px !important;
+    font-size: 9px !important;
+    color: #FFFFFF !important;
+    background: #1A3A5C !important;
+  }
+  table.p21-tbl td { padding: 5px 12px !important; font-size: 10px !important; font-variant-numeric: tabular-nums; }
+  table.p21-tbl tbody tr:nth-child(even) { background: #F8FAFC !important; }
+  table.p21-tbl tbody tr:last-child td { border-bottom: 0 !important; }
 </style>
 </head>
 <body>
@@ -34,8 +142,8 @@
   <div class="core-bar">▎ 2026年1月，全省累计排查入河排污口共34,114个，其中 A类（三江一库排口）11,867个、B类（国家20个重点河湖排口）3,528个、C类（省级重点26个河湖排口）3,295个、D类（其他排口）15,424个。已完成监测13,795个（40.43%），已完成溯源25,451个（74.59%），已完成整治18,178个（53.28%）。</div>
   <div class="bd">
     <div class="kpi-row" style="margin-bottom:0; flex-shrink:0; gap:10px;">
-      <div class="kpi-card" style="border-top-color:#2563EB !important;"><div class="kpi-label" style="color:#2563EB;">A类（三江一库排口）</div><div class="kpi-value" style="color:#2563EB;">11,867</div></div>
-      <div class="kpi-card" style="border-top-color:#D97706 !important;"><div class="kpi-label" style="color:#D97706;">B类（国家20个重点河湖排口）</div><div class="kpi-value" style="color:#D97706;">3,528</div></div>
+      <div class="kpi-card" style=""><div class="kpi-label" style="color:#2563EB;">A类（三江一库排口）</div><div class="kpi-value" style="color:#2563EB;">11,867</div></div>
+      <div class="kpi-card" style=""><div class="kpi-label" style="color:#D97706;">B类（国家20个重点河湖排口）</div><div class="kpi-value" style="color:#D97706;">3,528</div></div>
       <div class="kpi-card"><div class="kpi-label" style="color:#059669;">C类（省级重点26个河湖排口）</div><div class="kpi-value" style="color:#059669;">3,295</div></div>
       <div class="kpi-card"><div class="kpi-label" style="color:#64748B;">D类（其他排口）</div><div class="kpi-value" style="color:#64748B;">15,424</div></div>
     </div>

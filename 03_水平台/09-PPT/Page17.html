@@ -9,7 +9,7 @@
 <style>
     .bd table td { padding: 5px 6px !important; font-size: 8px !important; }
     /* 独占视觉：通栏警告大红牌 */
-    .red-alert-panel { flex: 1; background: var(--ppt-bg-alert); border: 2px solid var(--ppt-border-alert); border-top: 4px solid #991B1B; border-radius: 4px; padding: 12px; display: flex; flex-direction: column; justify-content: space-between; min-height: 0; }
+    .red-alert-panel { flex: 1; background: var(--ppt-bg-alert); border: 2px solid var(--ppt-border-alert); border-radius: 4px; padding: 12px; display: flex; flex-direction: column; justify-content: space-between; min-height: 0; }
     .stat-hero { font-size: 32px; font-weight: 900; color: #991B1B; line-height: 1; font-family: monospace; }
     .sub-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin: 8px 0; }
     .sub-box { background: var(--ppt-bg-slide); border: 1px solid var(--ppt-border-alert); padding: 6px; border-radius: 2px; }
@@ -22,7 +22,7 @@
     <div class="bd" style="flex-direction:column;gap:8px;">
         <div class="kpi-row" style="margin-bottom:0; flex-shrink:0;">
             <div class="kpi-card pos1"><div class="kpi-label">监测点位</div><div class="kpi-value">6<span style="font-size:9px;font-weight:normal;color:#64748B;">个</span></div></div>
-            <div class="kpi-card status-warn"><div class="kpi-label">达标点位</div><div class="kpi-value">0<span style="font-size:9px;font-weight:normal;">个</span></div></div>
+            <div class="kpi-card status-alert"><div class="kpi-label">达标点位</div><div class="kpi-value">0<span style="font-size:9px;font-weight:normal;">个</span></div></div>
             <div class="kpi-card status-alert"><div class="kpi-label">超标点位</div><div class="kpi-value">6<span style="font-size:9px;font-weight:normal;">个</span></div></div>
             <div class="kpi-card status-alert"><div class="kpi-label">达标率</div><div class="kpi-value">0%</div></div>
         </div>
@@ -79,5 +79,3 @@ window.addEventListener('resize',function(){ch.resize();});
 </div>
 </body>
 </html>
-
-

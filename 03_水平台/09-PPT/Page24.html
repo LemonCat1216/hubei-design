@@ -11,7 +11,7 @@
   .left-panel { flex: 0 0 60%; display: flex; flex-direction: column; min-height: 0; }
   .right-panel { flex: 1; display: flex; flex-direction: column; gap: 8px; min-height: 0; }
   .fit-table { width: 100%; border-collapse: collapse; }
-  .fit-table th { padding: 3px 4px !important; font-size: 7.5px !important; background: #F8FAFC; border-bottom: 1px solid #E2E8F0; }
+  .fit-table th { padding: 3px 4px !important; font-size: 7.5px !important; background: var(--ppt-bg-muted); border-bottom: 1px solid var(--ppt-border-default); }
   .fit-table td { padding: 2px 4px !important; font-size: 7.5px !important; }
   .fit-table .nm { font-weight: 700; font-size: 8px; }
   .fit-table .num { font-weight: 600; text-align: right; }
@@ -19,11 +19,11 @@
   .rate-hi { color: #059669; }
   .rate-md { color: #B45309; }
   .rate-lo { color: #991B1B; }
-  .block-card { background: #F8FAFC; padding: 8px 10px; flex: 1; display: flex; flex-direction: column; }
+  .block-card { background: var(--ppt-bg-muted); padding: 8px 10px; flex: 1; display: flex; flex-direction: column; }
   .block-title { font-size: 10px; font-weight: 700; color: #1E293B; margin-bottom: 6px; }
   .bar-item-sm { display: flex; align-items: center; gap: 4px; margin-bottom: 4px; }
   .bar-label-sm { font-size: 7.5px; color: #475569; width: 70px; flex-shrink: 0; text-align: right; }
-  .bar-track-sm { flex: 1; height: 10px; background: #E2E8F0; overflow: hidden; }
+  .bar-track-sm { flex: 1; height: 10px; background: var(--ppt-bg-track); overflow: hidden; }
   .bar-fill-sm { height: 100%; }
   .bar-pct-sm { font-size: 7.5px; font-weight: 700; width: 45px; flex-shrink: 0; text-align: right; }
 </style>
@@ -99,6 +99,7 @@
 </div>
 </body>
 </html>
+
 
 
 

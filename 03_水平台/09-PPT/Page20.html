@@ -15,13 +15,13 @@
 
         /* 3. 2x3 矩阵卡片：缩小内部 padding 和 gap，完美嵌入 */
         .matrix-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; flex: 1; margin-top: 4px; min-height: 0; }
-        .matrix-box { display: flex; justify-content: space-between; align-items: center; border-radius: 3px; padding: 6px 10px; background: #F8FAFC; border: 1px solid #E2E8F0; }
+        .matrix-box { display: flex; justify-content: space-between; align-items: center; border-radius: 3px; padding: 6px 10px; background: var(--ppt-bg-muted); border: 1px solid var(--ppt-border-default); }
         .matrix-lbl { font-size: 9px; color: #475569; font-weight: 700; }
         .matrix-num { font-size: 13px; font-weight: 900; }
 
         /* 4. 趋势卡片：收紧高度，字号适中 */
         .anomaly-card { display: flex; gap: 6px; width: 100%; margin-top: 4px; flex: 1; min-height: 0; }
-        .anomaly-item { flex: 1; border-radius: 3px; padding: 6px 4px; display: flex; flex-direction: column; align-items: center; justify-content: center; border: 1px solid #E2E8F0; }
+        .anomaly-item { flex: 1; border-radius: 3px; padding: 6px 4px; display: flex; flex-direction: column; align-items: center; justify-content: center; border: 1px solid var(--ppt-border-default); }
     </style>
 </head>
 <body>
@@ -44,8 +44,8 @@
 
         <div style="display:flex; gap:12px; flex:1; min-height:0; overflow:hidden;">
 
-            <div class="table-box" style="flex:0 0 48%; display:flex; flex-direction:column; background:#fff; overflow:hidden;">
-                <div style="font-size:9.5px; font-weight:700; color:#1E293B; padding:6px 10px; border-bottom:1px solid #E2E8F0; flex-shrink:0; background:#F8FAFC;">📊 丹江口水库重点控制断面水质同比</div>
+            <div class="table-box" style="flex:0 0 48%; display:flex; flex-direction:column; background:var(--ppt-bg-slide); overflow:hidden;">
+                <div style="font-size:9.5px; font-weight:700; color:#1E293B; padding:6px 10px; border-bottom:1px solid var(--ppt-border-default); flex-shrink:0; background:var(--ppt-bg-muted);">📊 丹江口水库重点控制断面水质同比</div>
                 <table style="width:100%; flex:1;">
                     <thead><tr><th>点位名称</th><th>2025同期</th><th>2026当前</th><th>总磷变化</th><th>状态评估</th></tr></thead>
                     <tbody>
@@ -62,32 +62,32 @@
 
             <div class="summary-right-panel">
 
-                <div style="background:#fff; border:1px solid #E2E8F0; border-radius:3px; padding:8px 10px; flex: 1.2; display: flex; flex-direction: column;">
+                <div style="background:var(--ppt-bg-slide); border:1px solid var(--ppt-border-default); border-radius:3px; padding:8px 10px; flex: 1.2; display: flex; flex-direction: column;">
                     <div style="font-size:9.5px; font-weight:800; color:#0F172A;">📊 库区断面水质类别分布（共7个）</div>
                     <div class="matrix-grid">
                         <div class="matrix-box" ><div class="matrix-lbl">Ⅰ类(优)</div><div class="matrix-num" style="color:#0284C7;">0<span style="font-size:8px;color:#94A3B8;font-weight:normal;margin-left:2px;">个</span></div></div>
                         <div class="matrix-box" ><div class="matrix-lbl">Ⅱ类(优质)</div><div class="matrix-num" style="color:#047857;">7<span style="font-size:8px;color:#94A3B8;font-weight:normal;margin-left:2px;">个</span></div></div>
-                        <div class="matrix-box" ><div class="matrix-lbl">Ⅲ类(达标)</div><div class="matrix-num" style="color:#047857;">0<span style="font-size:8px;color:#94A3B8;font-weight:normal;margin-left:2px;">个</span></div></div>
+                        <div class="matrix-box" ><div class="matrix-lbl">Ⅲ类(达标)</div><div class="matrix-num" style="color:#6B7280;">0<span style="font-size:8px;color:#94A3B8;font-weight:normal;margin-left:2px;">个</span></div></div>
                         <div class="matrix-box" ><div class="matrix-lbl">Ⅳ类(临界)</div><div class="matrix-num" style="color:#B45309;">0<span style="font-size:8px;color:#94A3B8;font-weight:normal;margin-left:2px;">个</span></div></div>
                         <div class="matrix-box" ><div class="matrix-lbl">Ⅴ类(超标)</div><div class="matrix-num" style="color:#F97316;">0<span style="font-size:8px;color:#94A3B8;font-weight:normal;margin-left:2px;">个</span></div></div>
                         <div class="matrix-box" ><div class="matrix-lbl">劣Ⅴ(重污)</div><div class="matrix-num" style="color:#991B1B;">0<span style="font-size:8px;color:#94A3B8;font-weight:normal;margin-left:2px;">个</span></div></div>
                     </div>
                 </div>
 
-                <div style="background:#fff; border:1px solid #E2E8F0; border-radius:3px; padding:8px 10px; flex:0.9; display:flex; flex-direction:column;">
+                <div style="background:var(--ppt-bg-slide); border:1px solid var(--ppt-border-default); border-radius:3px; padding:8px 10px; flex:0.9; display:flex; flex-direction:column;">
                     <div style="font-size:9.5px; font-weight:800; color:#0F172A;">📈 断面水质同比变化态势</div>
                     <div class="anomaly-card">
-                        <div class="anomaly-item" style="background:#F0FDF4;">
+                        <div class="anomaly-item bg-good">
                             <div style="font-size:8.5px; font-weight:800; color:#065F46;">水质变好</div>
                             <div style="font-size:16px; font-weight:900; color:#047857; margin-top:2px;">1</div>
                             <div style="font-size:7.5px; color:#475569; margin-top:1px;">个断面</div>
                         </div>
-                        <div class="anomaly-item" style="background:#F9FAFB;">
+                        <div class="anomaly-item" style="background:var(--ppt-bg-neutral);">
                             <div style="font-size:8.5px; font-weight:800; color:#374151;">水质持平</div>
                             <div style="font-size:16px; font-weight:900; color:#4B5563; margin-top:2px;">6</div>
                             <div style="font-size:7.5px; color:#475569; margin-top:1px;">个断面</div>
                         </div>
-                        <div class="anomaly-item" style="background:#FEF2F2;">
+                        <div class="anomaly-item bg-alert">
                             <div style="font-size:8.5px; font-weight:800; color:#991B1B;">水质变差</div>
                             <div style="font-size:16px; font-weight:900; color:#991B1B; margin-top:2px;">0</div>
                             <div style="font-size:7.5px; color:#475569; margin-top:1px;">个断面</div>
@@ -95,7 +95,7 @@
                     </div>
                 </div>
 
-                <div class="ex-info" style="flex-shrink:0; background:#F8FAFC!important; padding:6px 10px!important;">
+                <div class="ex-info" style="flex-shrink:0; background:var(--ppt-bg-muted)!important; padding:6px 10px!important;">
                     <span style="font-size:8px; color:#1E40AF; line-height:1.4; display:block;">📊 <strong>总结性描述：</strong>丹江口水库整体水体运行平稳且保持优质。后续还需持续跟踪各断面水质变化趋势及核心指标的动态波动情况，全面保障水源地环境质量安全。</span>
                 </div>
             </div>
@@ -106,6 +106,9 @@
 </div>
 </body>
 </html>
+
+
+
 
 
 

@@ -15,7 +15,7 @@
         overflow-y: auto; 
     }
     .region-block { 
-        background: #FFFFFF; 
+        background: var(--ppt-bg-slide); 
         
         padding: 5px 6px; 
     }
@@ -27,7 +27,7 @@
         display: flex; 
         justify-content: space-between; 
         align-items: center; 
-        border-bottom: 1px dashed #E2E8F0; 
+        border-bottom: 1px dashed var(--ppt-border-default); 
         padding-bottom: 2px; 
     }
     
@@ -48,13 +48,13 @@
         border-radius: 1px; 
         
     }
-    .mini-node.good { background: #F0FDF4; border-color: #BBF7D0; color: #15803D; }
-    .mini-node.warn { background: #FFFBEB; border-color: #FDE68A; color: #B45309; }
-    .mini-node.alert { background: #FEF2F2; border-color: #FEE2E2; color: #B91C1C; }
-.mini-node.class-i { background: #EFF6FF; border-color: #BFDBFE; color: #1E40AF; }
-    .mini-node.class-ii { background: #F0FDF4; border-color: #BBF7D0; color: #15803D; }
-    .mini-node.class-iii { background: #FEFCE8; border-color: #FEF08A; color: #A16207; }
-    .mini-node.class-iv-v { background: #FEF2F2; border-color: #FEE2E2; color: #B91C1C; }
+    .mini-node.good { background: var(--ppt-bg-good); border-color: var(--ppt-border-good); color: #15803D; }
+    .mini-node.warn { background: var(--ppt-bg-warn); border-color: var(--ppt-border-warn); color: #B45309; }
+    .mini-node.alert { background: var(--ppt-bg-alert); border-color: var(--ppt-border-alert); color: #B91C1C; }
+.mini-node.class-i { background: var(--ppt-bg-info); border-color: var(--ppt-border-info); color: #1E40AF; }
+    .mini-node.class-ii { background: var(--ppt-bg-good); border-color: var(--ppt-border-good); color: #15803D; }
+    .mini-node.class-iii { background: var(--ppt-bg-class-iii); border-color: var(--ppt-border-class-iii); color: #A16207; }
+    .mini-node.class-iv-v { background: var(--ppt-bg-alert); border-color: var(--ppt-border-alert); color: #B91C1C; }
     .mini-node.class-i .node-dot { background: #2B4C7E; }
     .mini-node.class-ii .node-dot { background: #047857; }
     .mini-node.class-iii .node-dot { background: #B45309; }
@@ -67,9 +67,9 @@
 
     /* 右侧通用自适应列表组件（结构同P13） */
     .risk-list-wrapper { display: flex; flex-direction: column; gap: 5px; flex: 1; min-height: 0; }
-    .risk-row-item { background: #FEF2F2; border: 1px solid #FEE2E2;
+    .risk-row-item { background: var(--ppt-bg-alert); border: 1px solid var(--ppt-border-alert);
     border-left: 0; ; padding: 7px 10px; display: flex; align-items: center; justify-content: space-between; flex: 1; }
-    .risk-row-item.warning-style { background: #FFFBEB; border-color: #FDE68A; border-color: #FDE68A; }
+    .risk-row-item.warning-style { background: var(--ppt-bg-warn); border-color: var(--ppt-border-warn); border-color: var(--ppt-border-warn); }
     .risk-loc-info { display: flex; flex-direction: column; gap: 1px; flex: 0 0 35%; }
     .risk-name { font-size: 9.5px; font-weight: 800; color: #991B1B; }
     .risk-row-item.warning-style .risk-name { color: #92400E; }
@@ -87,10 +87,10 @@
             <div class="kpi-card" style=""><div class="kpi-label" style="color:#1A3A5C;">监测断面总数</div><div class="kpi-value" style="color:#1A3A5C;">52个</div></div>
             <div class="kpi-card" style=""><div class="kpi-label" style="color:#047857;">Ⅰ-Ⅲ类比例</div><div class="kpi-value" style="color:#047857;">92.3%</div></div>
             <div class="kpi-card" style=""><div class="kpi-label" style="color:#991B1B;">超标断面</div><div class="kpi-value" style="color:#991B1B;">2个</div></div>
-            <div class="kpi-card" style=""><div class="kpi-label" style="color:#B45309;">同比变化</div><div class="kpi-value" style="color:#B45309;">↓0.8%</div></div>
+            <div class="kpi-card" style=""><div class="kpi-label" style="color:#DC2626;">同比变化</div><div class="kpi-value" style="color:#B45309;">↓0.8%</div></div>
         </div>
         <div style="display:flex;gap:12px;flex:1;min-height:0;">
-            <div class="table-box" style="flex:0 0 55%; display:flex; flex-direction:column; padding:6px; background:#F8FAFC;">
+            <div class="table-box" style="flex:0 0 55%; display:flex; flex-direction:column; padding:6px; background:var(--ppt-bg-muted);">
                 <div style="font-size:9px; font-weight:700; color:#1E293B; margin-bottom:4px; padding-left:2px;">📊 汉江流域水质分类断面墙 (52个)</div>
                 <div class="hanjiang-wall-box">
                     <div class="region-block">
@@ -163,7 +163,7 @@
                 </div>
             </div>
             <div style="flex:1; display:flex; flex-direction:column; gap:6px; min-height:0;">
-                <div style="font-size:9px; font-weight:700; color:#991B1B; padding:3px 0; border-bottom:1px solid #FEE2E2; flex-shrink:0;">⚠ 汉江水质分级管控</div>
+                <div style="font-size:9px; font-weight:700; color:#991B1B; padding:3px 0; border-bottom:1px solid var(--ppt-border-alert); flex-shrink:0;">⚠ 汉江水质分级管控</div>
                 <div style="flex:1; display:grid; grid-template-rows: repeat(3, 1fr); gap:6px; min-height:0;">
                     
                     <div class="risk-row-item" style="padding:4px 10px; display:flex; align-items:center;">
@@ -178,7 +178,7 @@
                         </div>
                     </div>
 
-                    <div class="risk-row-item" style="padding:4px 10px; background:#FFFBEB; border-color:#FDE68A;  display:flex; align-items:center;">
+                    <div class="risk-row-item" style="padding:4px 10px; background:var(--ppt-bg-warn); border-color:var(--ppt-border-warn);  display:flex; align-items:center;">
                         <div style="display:flex; flex-direction:column; justify-content:center; gap:2px; width:100%;">
                             <div style="display:flex; justify-content:space-between; align-items:center;">
                                 <span style="font-size:9px; font-weight:700; color:#92400E; line-height:1.2;">🟡 Ⅴ类（3个）</span>
@@ -190,7 +190,7 @@
                         </div>
                     </div>
 
-                    <div class="risk-row-item" style="padding:4px 10px; background:#EFF6FF; border-color:#BFDBFE;  display:flex; align-items:center;">
+                    <div class="risk-row-item" style="padding:4px 10px; background:var(--ppt-bg-info); border-color:var(--ppt-border-info);  display:flex; align-items:center;">
                         <div style="display:flex; flex-direction:column; justify-content:center; gap:2px; width:100%;">
                             <div style="display:flex; justify-content:space-between; align-items:center;">
                                 <span style="font-size:9px; font-weight:700; color:#1E40AF; line-height:1.2;">🔵 Ⅳ类（3个）</span>
@@ -210,6 +210,8 @@
 </div>
 </body>
 </html>
+
+
 
 
 

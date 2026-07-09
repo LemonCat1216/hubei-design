@@ -39,14 +39,14 @@ var d=[{n:"青海",i:38,ii:50,iii:12},{n:"新疆",i:30,ii:44,iii:15},{n:"甘肃"
 var chart1 = echarts.init(document.getElementById("chart1"));
 chart1.setOption({
     tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
-    legend: { data: ['Ⅰ类','Ⅱ类','Ⅲ类'], bottom: 0, textStyle: { fontSize: 10 } },
-    grid: { left: 55, right: 20, top: 10, bottom: 30 },
-    xAxis: { type: 'category', data: d.map(function(p){return p.n;}), axisLabel: { fontSize: 8, rotate: 45 } },
+    legend: { show: false },
+    grid: { left: 8, right: 8, top: 8, bottom: 36, containLabel: true },
+    xAxis: { type: 'category', data: d.map(function(p){return p.n;}), axisLabel: { fontSize: 8, rotate: 35, interval: 0, margin: 6 } },
     yAxis: { type: 'value', max: 100, axisLabel: { fontSize: 8, formatter: '{value}%' } },
     series: [
-        { name: 'Ⅰ类', type: 'bar', stack: 'total', data: d.map(function(p){return p.i;}), itemStyle: { color: '#1A3A5C' } },
-        { name: 'Ⅱ类', type: 'bar', stack: 'total', data: d.map(function(p){return p.ii;}), itemStyle: { color: '#2B4C7E' } },
-        { name: 'Ⅲ类', type: 'bar', stack: 'total', data: d.map(function(p){return p.iii;}), itemStyle: { color: '#6B8FA3' } }
+        { name: 'Ⅰ类', type: 'bar', stack: 'total', barWidth: 14, data: d.map(function(p){return p.i;}), itemStyle: { color: '#1A3A5C' } },
+        { name: 'Ⅱ类', type: 'bar', stack: 'total', barWidth: 14, data: d.map(function(p){return p.ii;}), itemStyle: { color: '#2C7A4F' } },
+        { name: 'Ⅲ类', type: 'bar', stack: 'total', barWidth: 14, data: d.map(function(p){return p.iii;}), itemStyle: { color: '#B45309' } }
     ]
 });
 window.addEventListener('resize',function(){chart1.resize();});
@@ -74,6 +74,7 @@ c.setOption({
 window.addEventListener("resize",function(){c.resize();});
 </script></body>
 </html>
+
 
 
 

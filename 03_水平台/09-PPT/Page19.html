@@ -22,8 +22,8 @@
             <div class="kpi-card status-warn"><div class="kpi-label">达标率</div><div class="kpi-value">33.3%</div></div>
         </div>
         <div style="display:flex;gap:12px;flex:1;min-height:0;overflow:hidden;">
-            <div class="table-box" style="flex:0 0 52%;display:flex;flex-direction:column;background:#fff;">
-                <div style="font-size:9px;font-weight:700;color:#1E293B;padding:5px 10px;border-bottom:1px solid #E2E8F0;flex-shrink:0;">📊 斧头湖点位特征污染物监测数据</div>
+            <div class="table-box" style="flex:0 0 52%;display:flex;flex-direction:column;background:var(--ppt-bg-slide);">
+                <div style="font-size:9px;font-weight:700;color:#1E293B;padding:5px 10px;border-bottom:1px solid var(--ppt-border-default);flex-shrink:0;">📊 斧头湖点位特征污染物监测数据</div>
                 <table style="width:100%;flex:1;">
                     <thead><tr><th>点位名称</th><th>总磷(mg/L)</th><th>氨氮(mg/L)</th><th>COD(mg/L)</th><th>水质</th></tr></thead>
                     <tbody>
@@ -39,48 +39,48 @@
             
             <div style="flex:1; display:flex; flex-direction:column; gap:6px; min-height:0; overflow:hidden;">
                 <!-- 水质类别分布 -->
-                <div style="background:#fff; border:1px solid #E2E8F0; border-radius:4px; padding:6px 10px; flex-shrink:0;">
+                <div style="background:var(--ppt-bg-slide); border:1px solid var(--ppt-border-default); border-radius:4px; padding:6px 10px; flex-shrink:0;">
                     <div style="font-size:9px; font-weight:800; color:#0F172A; margin-bottom:4px;">📊 斧头湖水质类别分级（共6个监测点位）</div>
                     <div style="display:grid; grid-template-columns:repeat(6,1fr); gap:3px;">
-                        <div style="border-top:2px solid #0284C7; padding:3px 2px; text-align:center; border:1px solid #E2E8F0; background:#F8FAFC; border-radius:2px;">
+                        <div style="border-top:2px solid #0284C7; padding:3px 2px; text-align:center; border:1px solid var(--ppt-border-default); background:var(--ppt-bg-info); border-radius:2px;">
                             <div style="font-size:6.5px; color:#64748B;">Ⅰ类(优)</div>
                             <div style="font-size:9px; font-weight:800; color:#0284C7; margin-top:1px;">0个</div>
                         </div>
-                        <div style="border-top:2px solid #047857; padding:3px 2px; text-align:center; border:1px solid #E2E8F0; background:#F8FAFC; border-radius:2px;">
+                        <div class="bg-good" style="border-top:2px solid #047857; padding:3px 2px; text-align:center; border:1px solid var(--ppt-border-default); border-radius:2px;">
                             <div style="font-size:6.5px; color:#64748B;">Ⅱ类(优质)</div>
                             <div style="font-size:9px; font-weight:800; color:#047857; margin-top:1px;">0个</div>
                         </div>
-                        <div style="border-top:2px solid #047857; padding:3px 2px; text-align:center; border:1px solid #E2E8F0; background:#F8FAFC; border-radius:2px;">
+                        <div style="border-top:2px solid #558B6E; padding:3px 2px; text-align:center; border:1px solid var(--ppt-border-default); background:var(--ppt-bg-good-pale); border-radius:2px;">
                             <div style="font-size:6.5px; color:#64748B;">Ⅲ类(达标)</div>
-                            <div style="font-size:9px; font-weight:800; color:#047857; margin-top:1px;">2个</div>
+                            <div style="font-size:9px; font-weight:800; color:#558B6E; margin-top:1px;">2个</div>
                         </div>
-                        <div style="border-top:2px solid #B45309; padding:3px 2px; text-align:center; border:1px solid #E2E8F0; background:#F8FAFC; border-radius:2px;">
+                        <div style="border-top:2px solid #B45309; padding:3px 2px; text-align:center; border:1px solid var(--ppt-border-default); background:var(--ppt-bg-warn); border-radius:2px;">
                             <div style="font-size:6.5px; color:#64748B;">Ⅳ类(临界)</div>
                             <div style="font-size:9px; font-weight:800; color:#B45309; margin-top:1px;">3个</div>
                         </div>
-                        <div style="border-top:2px solid #F97316; padding:3px 2px; text-align:center; border:1px solid #E2E8F0; background:#F8FAFC; border-radius:2px;">
+                        <div style="border-top:2px solid #B76E2E; padding:3px 2px; text-align:center; border:1px solid var(--ppt-border-default); background:var(--ppt-bg-warn-soft); border-radius:2px;">
                             <div style="font-size:6.5px; color:#64748B;">Ⅴ类(超标)</div>
-                            <div style="font-size:9px; font-weight:800; color:#F97316; margin-top:1px;">1个</div>
+                            <div style="font-size:9px; font-weight:800; color:#B76E2E; margin-top:1px;">1个</div>
                         </div>
-                        <div style="border-top:2px solid #991B1B; padding:3px 2px; text-align:center; border:1px solid #E2E8F0; background:#F8FAFC; border-radius:2px;">
+                        <div class="bg-alert" style="border-top:2px solid #991B1B; padding:3px 2px; text-align:center; border:1px solid var(--ppt-border-default); border-radius:2px;">
                             <div style="font-size:6.5px; color:#64748B;">劣Ⅴ(重污)</div>
                             <div style="font-size:9px; font-weight:800; color:#991B1B; margin-top:1px;">0个</div>
                         </div>
                     </div>
                 </div>
                 <!-- 特征污染物均值全景 -->
-                <div style="flex:1; background:#fff; border:1px solid #E2E8F0; border-radius:4px; padding:6px 10px; display:flex; flex-direction:column; justify-content:center;">
+                <div style="flex:1; background:var(--ppt-bg-slide); border:1px solid var(--ppt-border-default); border-radius:4px; padding:6px 10px; display:flex; flex-direction:column; justify-content:center;">
                     <div style="font-size:9px; font-weight:800; color:#0F172A; margin-bottom:4px;">🟢 特征污染物综合分析</div>
                     <div style="display:flex; gap:6px; margin-bottom:4px;">
-                        <div style="flex:1; text-align:center; background:#F0FDF4; padding:3px; border-radius:3px; border:1px solid #BBF7D0;">
+                        <div class="bg-good border-good" style="flex:1; text-align:center; padding:3px; border-radius:3px;">
                             <div style="font-size:7px; color:#065F46;">全湖总磷均值</div>
                             <div style="font-size:13px; font-weight:800; color:#047857; line-height:1.2;">0.05<span style="font-size:7px; font-weight:400;">mg/L</span></div>
                         </div>
-                        <div style="flex:1; text-align:center; background:#F0FDF4; padding:3px; border-radius:3px; border:1px solid #BBF7D0;">
+                        <div class="bg-good border-good" style="flex:1; text-align:center; padding:3px; border-radius:3px;">
                             <div style="font-size:7px; color:#065F46;">全湖氨氮均值</div>
                             <div style="font-size:13px; font-weight:800; color:#047857; line-height:1.2;">0.24<span style="font-size:7px; font-weight:400;">mg/L</span></div>
                         </div>
-                        <div style="flex:1; text-align:center; background:#F0FDF4; padding:3px; border-radius:3px; border:1px solid #BBF7D0;">
+                        <div class="bg-good border-good" style="flex:1; text-align:center; padding:3px; border-radius:3px;">
                             <div style="font-size:7px; color:#065F46;">高锰酸盐均值</div>
                             <div style="font-size:13px; font-weight:800; color:#047857; line-height:1.2;">4.3<span style="font-size:7px; font-weight:400;">mg/L</span></div>
                         </div>
@@ -90,7 +90,7 @@
                     </div>
                 </div>
                 <!-- 预警与管控建议 -->
-                <div style="flex-shrink:0; background:#FEF2F2; border:1px solid #FCA5A5;  border-radius:4px; padding:6px 10px;">
+                <div class="bg-alert border-alert" style="flex-shrink:0; border-radius:4px; padding:6px 10px;">
                     <div style="font-size:9px; font-weight:800; color:#991B1B;">🚨 预警与管控建议</div>
                     <div style="font-size:7.5px; color:#7F1D1D; margin-top:2px; line-height:1.5;">
                         <strong>红色预警：</strong>xx断面总磷0.10mg/L（超Ⅳ类标准0.33倍）、COD 22mg/L（超Ⅳ类标准0.47倍），为首要管控节点。xx断面总磷0.10mg/L（超Ⅳ类标准0.33倍）、COD 22mg/L（超Ⅳ类标准0.47倍），为首要管控节点。
@@ -103,6 +103,9 @@
 </div>
 </body>
 </html>
+
+
+
 
 
 

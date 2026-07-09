@@ -1,9 +1,45 @@
 ﻿/* === 湖北省水生态环境形势分析 - 专业PPT设计系统 v3.0 === */
 
+/* --- 背景/边框设计变量 --- */
+:root {
+  --ppt-bg-page: #F1F4F9;
+  --ppt-bg-slide: #ffffff;
+  --ppt-bg-body: #F5F7FA;
+  --ppt-bg-muted: #F8FAFC;
+  --ppt-bg-track: #E2E8F0;
+  --ppt-bg-alert: #FEF2F2;
+  --ppt-bg-warn: #FFFBEB;
+  --ppt-bg-warn-soft: #FFF7ED;
+  --ppt-bg-good: #F0FDF4;
+  --ppt-bg-good-soft: #F2FAF5;
+  --ppt-bg-info: #EFF6FF;
+  --ppt-bg-subtle: #F1F5F9;
+  --ppt-bg-muted-strong: #CBD5E1;
+  --ppt-bg-alert-soft: #FEE2E2;
+  --ppt-bg-warn-strong: #FEF3C7;
+  --ppt-bg-good-strong: #DCFCE7;
+  --ppt-bg-cream: #FFFDF5;
+  --ppt-bg-good-pale: #ECFDF5;
+  --ppt-bg-info-soft: #E0F2FE;
+  --ppt-bg-info-strong: #DBEAFE;
+  --ppt-bg-neutral: #F9FAFB;
+  --ppt-bg-class-iii: #FEFCE8;
+  --ppt-border-class-iii: #FEF08A;
+  --ppt-border-muted-strong: #94A3B8;
+  --ppt-border-default: #E2E8F0;
+  --ppt-border-subtle: #F1F5F9;
+  --ppt-border-muted: #CBD5E1;
+  --ppt-border-alert: #FEE2E2;
+  --ppt-border-alert-strong: #FECACA;
+  --ppt-border-warn: #FDE68A;
+  --ppt-border-warn-soft: #FEF3C7;
+  --ppt-border-good: #DCFCE7;
+  --ppt-border-info: #BFDBFE;
+}
 /* --- 基础重置 --- */
 html {
   zoom: 175%;
-  background: #F1F4F9 !important;
+  background: var(--ppt-bg-page) !important;
   height: 100%;
 }
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -22,7 +58,7 @@ body {
   width: 100%;
   max-width: 860px;
   aspect-ratio: 16 / 9;
-  background: #ffffff;
+  background: var(--ppt-bg-slide);
   border-radius: 3px;
   box-shadow: 0 20px 60px rgba(0,0,0,.10), 0 4px 20px rgba(0,0,0,.06) !important;
   border: none !important;
@@ -39,7 +75,7 @@ body {
   background: linear-gradient(135deg, #0F2942 0%, #1A3A5C 50%, #1E4470 100%) !important;
   color: #fff;
   padding: 12px 28px !important;
-  border-bottom: 3px solid #047857 !important;
+  border-bottom: 3px solid #2B4C7E !important;
   flex-shrink: 0;
 }
 .ppt-title {
@@ -49,7 +85,7 @@ body {
   text-shadow: 0 1px 2px rgba(0,0,0,.2);
 }
 .nav-page-num {
-  background: #047857 !important;
+  background: #1E4470 !important;
   padding: 3px 10px !important;
   border-radius: 2px;
   font-size: 10px !important;
@@ -59,7 +95,7 @@ body {
 
 /* --- 核心结论带条 --- */
 .core-bar {
-  background: linear-gradient(90deg, #ECFDF5, #F0FDF4) !important;
+  background: linear-gradient(90deg, var(--ppt-bg-good-pale), var(--ppt-bg-good)) !important;
   /* border-left removed per user request */
   border-bottom: 1px solid #D1FAE5 !important;
   color: #065F46 !important;
@@ -74,7 +110,7 @@ body {
 .bd {
   flex: 1;
   padding: 14px 24px;
-  background: #F5F7FA;
+  background: var(--ppt-bg-body);
   display: flex;
   gap: 16px;
   overflow: hidden;
@@ -96,7 +132,7 @@ body {
 
 /* --- KPI 大卡片 --- */
 .kpi-block {
-  background: #fff !important;
+  background: var(--ppt-bg-slide) !important;
   /* border removed per user request */
   /* border-top removed per user request */
   border-radius: 3px;
@@ -107,12 +143,12 @@ body {
   justify-content: center;
 }
 .kpi-block.hl, .kpi-block.highlight {
-  background: #F0FDF4 !important;
-  border: 1px solid #A7F3D0 !important;
+  background: var(--ppt-bg-good-soft) !important;
+  border: 1px solid #D1FAE5 !important;
 }
 .kpi-block.al, .kpi-block.alert {
-  background: #FEF2F2 !important;
-  border: 1px solid #FECACA !important;
+  background: #FBF5F5 !important;
+  border: 1px solid #F1D5D5 !important;
 }
 .kpi-title {
   font-size: 11px !important;
@@ -143,7 +179,7 @@ body {
   margin-bottom: 10px;
 }
 .kpi-row .kpi-card {
-  background: #fff !important;
+  background: var(--ppt-bg-slide) !important;
   /* border removed per user request */
   /* border-top removed per user request */
   border-radius: 3px;
@@ -165,8 +201,6 @@ body {
 /* --- 表格 --- */
 .table-box {
   /* border removed per user request */
-  border-radius: 3px;
-  overflow: hidden !important;
   box-shadow: 0 1px 4px rgba(0,0,0,.03);
 }
 .table-box table {
@@ -187,10 +221,10 @@ body {
   padding: 5px 8px !important;
   font-size: 10px !important;
   color: #334155 !important;
-  border-bottom: 1px solid #F1F5F9 !important;
+  border-bottom: 1px solid var(--ppt-border-subtle) !important;
   text-align: center;
 }
-.table-box tr:nth-child(even) { background: #F8FAFC !important; }
+.table-box tr:nth-child(even) { background: var(--ppt-bg-muted) !important; }
 .table-box tr:hover { background: #F0F7FF !important; }
 .td-left { text-align: left !important; font-weight: 600; }
 
@@ -214,8 +248,8 @@ body {
   flex: 1;
 }
 .warning-card {
-  background: #FFFBEB !important;
-  border: 1px solid #FDE68A !important;
+  background: var(--ppt-bg-warn) !important;
+  border: 1px solid var(--ppt-border-warn) !important;
   /* border-left removed per user request */
   border-radius: 3px;
   padding: 8px 10px !important;
@@ -224,13 +258,13 @@ body {
   flex-direction: column;
 }
 .warning-card.blue-card, .warning-card.blue {
-  background: #EFF6FF !important;
-  border-color: #BFDBFE !important;
+  background: var(--ppt-bg-info) !important;
+  border-color: var(--ppt-border-info) !important;
   /* border-left-color removed per user request */
 }
 .warning-card.green-card, .warning-card.green {
-  background: #F0FDF4 !important;
-  border-color: #BBF7D0 !important;
+  background: var(--ppt-bg-good) !important;
+  border-color: var(--ppt-border-good) !important;
   /* border-left-color removed per user request */
 }
 .card-loc {
@@ -249,26 +283,22 @@ body {
   color: #065F46 !important;
   border-bottom-color: rgba(6,95,70,.2) !important;
 }
-.card-det {
-
 /* --- 红色预警卡片（需关注/负面趋势） --- */
 .warning-card.alert-card, .warning-card.alert {
-  background: #FEF2F2 !important;
-  border-color: #FECACA !important;
-  /* border-left-color removed per user request */
-}
+  background: var(--ppt-bg-alert) !important;
+  border-color: var(--ppt-border-alert) !important;
+  }
 .warning-card.alert-card .card-loc, .warning-card.alert .card-loc {
-  color: #991B1B !important;
-  border-bottom-color: rgba(153,27,27,.2) !important;
+  color: #7F1D1D !important;
+  border-bottom-color: rgba(220,38,38,.25) !important;
 }
-  font-size: 10px !important;
-  color: #374151 !important;
-  line-height: 1.5;
+.warning-card.alert-card .card-det, .warning-card.alert .card-det {
+  color: #991B1B !important;
 }
 
 /* --- 图表区 --- */
 .chart-wrapper {
-  background: #fff !important;
+  background: var(--ppt-bg-slide) !important;
   /* border removed per user request */
   border-radius: 3px;
   box-shadow: 0 1px 4px rgba(0,0,0,.03);
@@ -283,7 +313,7 @@ body {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 6px;
-  border-bottom: 1px dashed #e2e8f0;
+  border-bottom: 1px dashed var(--ppt-border-default);
   padding-bottom: 4px;
 }
 .chart-title {
@@ -303,7 +333,7 @@ body {
 
 /* --- 说明信息条 --- */
 .ex-info {
-  background: #F8FAFC !important;
+  background: var(--ppt-bg-muted) !important;
   /* border removed per user request */
   border-radius: 3px;
   padding: 6px 14px !important;
@@ -320,8 +350,8 @@ body {
   padding: 10px 28px !important;
   font-size: 10px !important;
   color: #94A3B8 !important;
-  border-top: 1px solid #E2E8F0 !important;
-  background: #F8FAFC !important;
+  border-top: 1px solid var(--ppt-border-default) !important;
+  background: var(--ppt-bg-muted) !important;
   flex-shrink: 0;
 }
 
@@ -381,7 +411,7 @@ body {
   overflow: hidden;
 }
 .toc-title {
-  border-left: 3px solid #047857 !important;
+  border-left: 3px solid #2B4C7E !important;
   font-size: 16px !important;
   font-weight: 700 !important;
   letter-spacing: 6px !important;
@@ -400,7 +430,7 @@ body {
 }
 .toc-item:hover { background: rgba(255,255,255,.12) !important; }
 .idx {
-  background: #047857 !important;
+  background: #1E4470 !important;
   width: 24px !important;
   height: 24px !important;
   border-radius: 50%;
@@ -490,7 +520,7 @@ body {
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
-  border-bottom: 2px solid #cbd5e1;
+  border-bottom: 2px solid var(--ppt-border-muted);
   padding: 16px 8px 2px 2px;
   margin-top: 4px;
 }
@@ -529,7 +559,7 @@ body {
 /* --- 进度条 --- */
 .progress-bar {
   height: 8px;
-  background: #E2E8F0;
+  background: var(--ppt-bg-track);
   border-radius: 2px;
   overflow: hidden;
 }
@@ -544,21 +574,25 @@ body {
 /* === KPI 卡片配色语义化规则（模板开发用） === */
 /* 第1位：维度标识 - 固定深蓝 */
 /* .kpi-card.pos1: border-top-color removed */
+.kpi-card.pos1 { background: var(--ppt-bg-muted) !important; }
 .kpi-card.pos1 .kpi-label { color: #1A3A5C !important; }
 
 /* 第2-4位：按数值好坏自动变色 */
 /* 好 - 绿色 */
 /* .kpi-card.status-good: border-top-color removed */
+.kpi-card.status-good { background: #F5FBF7 !important; }
 .kpi-card.status-good .kpi-label { color: #047857 !important; }
 .kpi-card.status-good .kpi-value { color: #047857 !important; }
 
 /* 中等/警告 - 琥珀色 */
 /* .kpi-card.status-warn: border-top-color removed */
+.kpi-card.status-warn { background: #FFFAF4 !important; }
 .kpi-card.status-warn .kpi-label { color: #B45309 !important; }
 .kpi-card.status-warn .kpi-value { color: #B45309 !important; }
 
 /* 差/预警 - 红色 */
 /* .kpi-card.status-alert: border-top-color removed */
+.kpi-card.status-alert { background: #FCF6F6 !important; }
 .kpi-card.status-alert .kpi-label { color: #991B1B !important; }
 .kpi-card.status-alert .kpi-value { color: #991B1B !important; }
 
@@ -584,6 +618,30 @@ body {
 }
 
 
+
+
+
+
+
+
+
+
+/* === 语义色块工具类（标准化背景/边框/文字色） === */
+/* 红色（严重/预警）- 对应 Page04A CWQI 红榜 */
+.bg-alert { background: var(--ppt-bg-alert) !important; }
+.border-alert { border-color: var(--ppt-border-alert) !important; }
+
+/* 绿色（良好/改善）- 对应 Page04A CWQI 绿榜 */
+.bg-good { background: var(--ppt-bg-good) !important; }
+.border-good { border-color: var(--ppt-border-good) !important; }
+
+/* 黄色（提示/关注）- 对应 Page13 支流天门河 */
+.bg-warn { background: var(--ppt-bg-warn) !important; }
+.border-warn { border-color: var(--ppt-border-warn) !important; }
+
+/* 蓝色（信息提示） */
+.bg-info { background: var(--ppt-bg-info) !important; }
+.border-info { border-color: var(--ppt-border-info) !important; }
 
 
 

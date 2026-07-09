@@ -14,7 +14,7 @@
             justify-content: center;
             padding: 8px 24px; /* 缩小上下内边距 */
             gap: 8px; /* 缩小板块间距 */
-            background: #ffffff;
+            background: var(--ppt-bg-slide);
             min-height: 0;
         }
         .ch2-title {
@@ -32,8 +32,8 @@
             min-height: 0;
         }
         .auto-card {
-            background: #ffffff;
-            border: 1px solid #E2E8F0;
+            background: var(--ppt-bg-slide);
+            border: 1px solid var(--ppt-border-default);
             border-radius: 3px;
             padding: 10px 12px; /* 缩小卡片内部留白 */
             display: flex;
@@ -44,17 +44,17 @@
             transition: all 0.2s ease;
             min-height: 0;
         }
-        .auto-card.warn { background: #FFFBEB; border-color: #FDE68A; box-shadow: 0 2px 8px rgba(180,83,9,0.04); }
-        .auto-card.alert { background: #FEF2F2; border-color: #FECACA; box-shadow: 0 2px 8px rgba(153,27,27,0.04); }
+        .auto-card.warn { background: var(--ppt-bg-warn); border-color: var(--ppt-border-warn); box-shadow: 0 2px 8px rgba(180,83,9,0.04); }
+        .auto-card.alert { background: var(--ppt-bg-alert); border-color: var(--ppt-border-alert-strong); box-shadow: 0 2px 8px rgba(153,27,27,0.04); }
 
         /* 卡片内部的数据结构 */
         .card-head {
             font-size: 10.5px; font-weight: 800; color: #1E293B;
             display: flex; justify-content: space-between; align-items: center;
-            padding-bottom: 4px; border-bottom: 1px dashed #E2E8F0;
+            padding-bottom: 4px; border-bottom: 1px dashed var(--ppt-border-default);
         }
-        .auto-card.warn .card-head { border-bottom-color: #FDE68A; }
-        .auto-card.alert .card-head { border-bottom-color: #FECACA; }
+        .auto-card.warn .card-head { border-bottom-color: var(--ppt-border-warn); }
+        .auto-card.alert .card-head { border-bottom-color: var(--ppt-border-alert-strong); }
         .card-icon { font-size: 11px; }
 
         /* 核心数字区 */
@@ -67,15 +67,15 @@
         /* 模板填空区 */
         .template-text { font-size: 9px; color: #475569; line-height: 1.5; }
         .var {
-            color: #1E293B; font-weight: 800; background: #F1F5F9;
+            color: #1E293B; font-weight: 800; background: var(--ppt-bg-subtle);
             padding: 1px 4px; border-radius: 3px; margin: 0 2px 2px 2px;
             display: inline-block; line-height: 1.1;
         }
-        .var.bad { color: #991B1B; background: #FEE2E2; }
+        .var.bad { color: #991B1B; background: var(--ppt-bg-alert-soft); }
 
         .ch2-next {
             margin-top: 4px; padding: 8px 12px;
-            background: #F8FAFC; border: 1px dashed #CBD5E1;
+            background: var(--ppt-bg-muted); border: 1px dashed var(--ppt-border-muted);
             text-align: center; font-size: 10px; color: #64748B; letter-spacing: 0.5px;
             border-radius: 3px;
             flex-shrink: 0;
@@ -157,6 +157,8 @@
 </div>
 </body>
 </html>
+
+
 
 
 

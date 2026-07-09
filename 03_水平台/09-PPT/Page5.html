@@ -10,7 +10,7 @@
         /* 1. 压缩单元格本身的上下间距 */
         .fit-table td { padding: 2px 8px !important; font-size: 8.5px !important; }
         .fit-table th { padding: 4px 8px !important; }
-        .heatmap-grid > div { border: 1px solid #E2E8F0; }
+        .heatmap-grid > div { border: 1px solid var(--ppt-border-default); }
 
         /* 2. 关键修复：压缩内部徽标（红绿底色标签）的垂直空间，防止其撑大行高 */
         .fit-table .badge-g, .fit-table .badge-r {
@@ -46,7 +46,7 @@
                     </div>
                 </div>
                 <div class="kpi-num" style="font-size: 26px !important; margin: 0 0 2px 0;">84.8%</div>
-                <div class="progress-bar" style="background: #E2E8F0; height: 5px; border-radius: 0; overflow: hidden; margin-bottom: 4px;">
+                <div class="progress-bar" style="background: var(--ppt-bg-track); height: 5px; border-radius: 0; overflow: hidden; margin-bottom: 4px;">
                     <div class="progress-fill" style="width: 84.8%; background: #1A3A5C; height: 100%;"></div>
                 </div>
                 <div class="kpi-sub">数据口径：基于全省1-5月17市州统计</div>
@@ -90,87 +90,87 @@
         </div>
     </div>
     <div class="heatmap-grid" style="display:flex;flex-wrap:wrap;gap:4px;flex:1;align-content:flex-start;">
-        <div style="flex:0 0 calc(25% - 5px);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:7px 5px;background:#FEF2F2;/* border-left removed */border-radius:3px;gap:2px;">
+        <div class="bg-alert" style="flex:0 0 calc(25% - 5px);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:7px 5px;/* border-left removed */border-radius:3px;gap:2px;">
             <span style="font-size:11px;font-weight:700;color:#1E293B;">荆州</span>
             <span style="font-size:8.5px;color:#475569;">60%</span>
             <span style="font-size:10.5px;font-weight:800;color:#991B1B;">超标 18</span>
         </div>
-        <div style="flex:0 0 calc(25% - 5px);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:7px 5px;background:#FEF2F2;/* border-left removed */border-radius:3px;gap:2px;">
+        <div class="bg-alert" style="flex:0 0 calc(25% - 5px);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:7px 5px;/* border-left removed */border-radius:3px;gap:2px;">
             <span style="font-size:11px;font-weight:700;color:#1E293B;">武汉</span>
             <span style="font-size:8.5px;color:#475569;">86.5%</span>
             <span style="font-size:10.5px;font-weight:800;color:#991B1B;">超标 14</span>
         </div>
-        <div style="flex:0 0 calc(25% - 5px);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:7px 5px;background:#FEF2F2;/* border-left removed */border-radius:3px;gap:2px;">
+        <div class="bg-alert" style="flex:0 0 calc(25% - 5px);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:7px 5px;/* border-left removed */border-radius:3px;gap:2px;">
             <span style="font-size:11px;font-weight:700;color:#1E293B;">孝感</span>
             <span style="font-size:8.5px;color:#475569;">75%</span>
             <span style="font-size:10.5px;font-weight:800;color:#991B1B;">超标 10</span>
         </div>
-        <div style="flex:0 0 calc(25% - 5px);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:7px 5px;background:#FEF2F2;/* border-left removed */border-radius:3px;gap:2px;">
+        <div class="bg-alert" style="flex:0 0 calc(25% - 5px);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:7px 5px;/* border-left removed */border-radius:3px;gap:2px;">
             <span style="font-size:11px;font-weight:700;color:#1E293B;">潜江</span>
             <span style="font-size:8.5px;color:#475569;">57.1%</span>
             <span style="font-size:10.5px;font-weight:800;color:#991B1B;">超标 8</span>
         </div>
-        <div style="flex:0 0 calc(25% - 5px);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:7px 5px;background:#FFF7ED;/* border-left removed */border-radius:3px;gap:2px;">
+        <div style="flex:0 0 calc(25% - 5px);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:7px 5px;background:var(--ppt-bg-warn-soft);/* border-left removed */border-radius:3px;gap:2px;">
             <span style="font-size:11px;font-weight:700;color:#1E293B;">天门</span>
             <span style="font-size:8.5px;color:#475569;">46.2%</span>
             <span style="font-size:10.5px;font-weight:800;color:#F97316;">超标 7</span>
         </div>
-        <div style="flex:0 0 calc(25% - 5px);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:7px 5px;background:#FFF7ED;/* border-left removed */border-radius:3px;gap:2px;">
+        <div style="flex:0 0 calc(25% - 5px);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:7px 5px;background:var(--ppt-bg-warn-soft);/* border-left removed */border-radius:3px;gap:2px;">
             <span style="font-size:11px;font-weight:700;color:#1E293B;">黄冈</span>
             <span style="font-size:8.5px;color:#475569;">86%</span>
             <span style="font-size:10.5px;font-weight:800;color:#F97316;">超标 7</span>
         </div>
-        <div style="flex:0 0 calc(25% - 5px);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:7px 5px;background:#FFF7ED;/* border-left removed */border-radius:3px;gap:2px;">
+        <div style="flex:0 0 calc(25% - 5px);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:7px 5px;background:var(--ppt-bg-warn-soft);/* border-left removed */border-radius:3px;gap:2px;">
             <span style="font-size:11px;font-weight:700;color:#1E293B;">荆门</span>
             <span style="font-size:8.5px;color:#475569;">75%</span>
             <span style="font-size:10.5px;font-weight:800;color:#F97316;">超标 6</span>
         </div>
-        <div style="flex:0 0 calc(25% - 5px);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:7px 5px;background:#FFF7ED;/* border-left removed */border-radius:3px;gap:2px;">
+        <div style="flex:0 0 calc(25% - 5px);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:7px 5px;background:var(--ppt-bg-warn-soft);/* border-left removed */border-radius:3px;gap:2px;">
             <span style="font-size:11px;font-weight:700;color:#1E293B;">咸宁</span>
             <span style="font-size:8.5px;color:#475569;">83.3%</span>
             <span style="font-size:10.5px;font-weight:800;color:#F97316;">超标 6</span>
         </div>
-        <div style="flex:0 0 calc(25% - 5px);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:7px 5px;background:#FFF7ED;/* border-left removed */border-radius:3px;gap:2px;">
+        <div style="flex:0 0 calc(25% - 5px);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:7px 5px;background:var(--ppt-bg-warn-soft);/* border-left removed */border-radius:3px;gap:2px;">
             <span style="font-size:11px;font-weight:700;color:#1E293B;">随州</span>
             <span style="font-size:8.5px;color:#475569;">58.3%</span>
             <span style="font-size:10.5px;font-weight:800;color:#F97316;">超标 5</span>
         </div>
-        <div style="flex:0 0 calc(25% - 5px);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:7px 5px;background:#FFF7ED;/* border-left removed */border-radius:3px;gap:2px;">
+        <div style="flex:0 0 calc(25% - 5px);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:7px 5px;background:var(--ppt-bg-warn-soft);/* border-left removed */border-radius:3px;gap:2px;">
             <span style="font-size:11px;font-weight:700;color:#1E293B;">仙桃</span>
             <span style="font-size:8.5px;color:#475569;">50%</span>
             <span style="font-size:10.5px;font-weight:800;color:#F97316;">超标 4</span>
         </div>
-        <div style="flex:0 0 calc(25% - 5px);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:7px 5px;background:#FFF7ED;/* border-left removed */border-radius:3px;gap:2px;">
+        <div style="flex:0 0 calc(25% - 5px);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:7px 5px;background:var(--ppt-bg-warn-soft);/* border-left removed */border-radius:3px;gap:2px;">
             <span style="font-size:11px;font-weight:700;color:#1E293B;">襄阳</span>
             <span style="font-size:8.5px;color:#475569;">92.9%</span>
             <span style="font-size:10.5px;font-weight:800;color:#F97316;">超标 4</span>
         </div>
-        <div style="flex:0 0 calc(25% - 5px);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:7px 5px;background:#FFFBEB;/* border-left removed */border-radius:3px;gap:2px;">
+        <div style="flex:0 0 calc(25% - 5px);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:7px 5px;background:var(--ppt-bg-warn);/* border-left removed */border-radius:3px;gap:2px;">
             <span style="font-size:11px;font-weight:700;color:#1E293B;">宜昌</span>
             <span style="font-size:8.5px;color:#475569;">93.8%</span>
             <span style="font-size:10.5px;font-weight:800;color:#B45309;">超标 2</span>
         </div>
-        <div style="flex:0 0 calc(25% - 5px);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:7px 5px;background:#FFFBEB;/* border-left removed */border-radius:3px;gap:2px;">
+        <div style="flex:0 0 calc(25% - 5px);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:7px 5px;background:var(--ppt-bg-warn);/* border-left removed */border-radius:3px;gap:2px;">
             <span style="font-size:11px;font-weight:700;color:#1E293B;">恩施</span>
             <span style="font-size:8.5px;color:#475569;">80%</span>
             <span style="font-size:10.5px;font-weight:800;color:#B45309;">超标 1</span>
         </div>
-        <div style="flex:0 0 calc(25% - 5px);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:7px 5px;background:#FFFBEB;/* border-left removed */border-radius:3px;gap:2px;">
+        <div style="flex:0 0 calc(25% - 5px);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:7px 5px;background:var(--ppt-bg-warn);/* border-left removed */border-radius:3px;gap:2px;">
             <span style="font-size:11px;font-weight:700;color:#1E293B;">黄石</span>
             <span style="font-size:8.5px;color:#475569;">90.9%</span>
             <span style="font-size:10.5px;font-weight:800;color:#B45309;">超标 0</span>
         </div>
-        <div style="flex:0 0 calc(25% - 5px);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:7px 5px;background:#FFFBEB;/* border-left removed */border-radius:3px;gap:2px;">
+        <div style="flex:0 0 calc(25% - 5px);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:7px 5px;background:var(--ppt-bg-warn);/* border-left removed */border-radius:3px;gap:2px;">
             <span style="font-size:11px;font-weight:700;color:#1E293B;">十堰</span>
             <span style="font-size:8.5px;color:#475569;">97%</span>
             <span style="font-size:10.5px;font-weight:800;color:#B45309;">超标 0</span>
         </div>
-        <div style="flex:0 0 calc(25% - 5px);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:7px 5px;background:#FFFBEB;/* border-left removed */border-radius:3px;gap:2px;">
+        <div style="flex:0 0 calc(25% - 5px);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:7px 5px;background:var(--ppt-bg-warn);/* border-left removed */border-radius:3px;gap:2px;">
             <span style="font-size:11px;font-weight:700;color:#1E293B;">鄂州</span>
             <span style="font-size:8.5px;color:#475569;">100%</span>
             <span style="font-size:10.5px;font-weight:800;color:#B45309;">超标 0</span>
         </div>
-        <div style="flex:0 0 calc(25% - 5px);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:7px 5px;background:#FFFBEB;/* border-left removed */border-radius:3px;gap:2px;">
+        <div style="flex:0 0 calc(25% - 5px);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:7px 5px;background:var(--ppt-bg-warn);/* border-left removed */border-radius:3px;gap:2px;">
             <span style="font-size:11px;font-weight:700;color:#1E293B;">神农架</span>
             <span style="font-size:8.5px;color:#475569;">100%</span>
             <span style="font-size:10.5px;font-weight:800;color:#B45309;">超标 0</span>
@@ -186,6 +186,8 @@
 </div>
 </body>
 </html>
+
+
 
 
 

@@ -31,7 +31,7 @@
 /* 将左右包装成标准的 PPT 大卡片块 */
 .content-layout .data-block {
   flex: 1;
-  background: #ffffff;
+  background: var(--ppt-bg-slide);
   
   box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
   border-radius: 4px;
@@ -53,7 +53,7 @@
 .content-layout .table-box th {
   padding: 4px 6px !important;
   font-size: 8.5px !important;
-  background: #F8FAFC;
+  background: var(--ppt-bg-muted);
 }
 .content-layout .table-box td {
   padding: 3px 6px !important; /* 极致压缩内边距，确保12行与图表严格平行 */
@@ -199,6 +199,7 @@ window.addEventListener('resize',function(){districts.resize();});
 </script>
 </body>
 </html>
+
 
 
 

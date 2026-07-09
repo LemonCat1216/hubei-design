@@ -9,8 +9,8 @@
     /* 极致压缩表格，确保纵向不溢出 */
     .fit-table th { padding: 6px 8px !important; }
     .fit-table td { padding: 5px 8px !important; font-size: 10px !important; }
-    .risk-high td { background: #FEF2F2 !important; border-bottom-color: #FEE2E2 !important; }
-    .risk-med td { background: #FFFBEB !important; border-bottom-color: #FEF3C7 !important; }
+    .risk-high td { background: var(--ppt-bg-alert) !important; border-bottom-color: var(--ppt-border-alert) !important; }
+    .risk-med td { background: var(--ppt-bg-warn) !important; border-bottom-color: var(--ppt-border-warn-soft) !important; }
     /* 行政动作角标 */
     .action-badge { padding: 3px 6px; border-radius: 0; font-weight: 700; font-size: 9px; color: #fff; display: inline-block; }
     .ab-red { background: #991B1B; box-shadow: 0 2px 4px rgba(153,27,27,0.2); }
@@ -41,7 +41,7 @@
                 <div class="kpi-label" style="color:#1A3A5C;">指标恶化断面</div>
                 <div class="kpi-value" style="color:#1A3A5C; font-size: 24px !important;">10 个</div>
             <div style="display:flex;gap:6px;margin-top:2px;font-size:8px;justify-content:center;white-space:nowrap;"><span style="color:#64748B;">同比 <span style="color:#991B1B;">↑1个</span></span></div></div>
-            <div class="kpi-card" style="padding: 12px !important; background: #F8FAFC !important;">
+            <div class="kpi-card" style="padding: 12px !important; background: var(--ppt-bg-muted) !important;">
                 <div class="kpi-label">水质恶化断面</div>
                 <div class="kpi-value" style="font-size: 24px !important;">2 个</div>
             <div style="display:flex;gap:6px;margin-top:2px;font-size:8px;justify-content:center;white-space:nowrap;"><span style="color:#64748B;">同比 <span style="color:#64748B;">持平</span></span></div></div>
@@ -80,6 +80,7 @@
 </div>
 </body>
 </html>
+
 
 
 

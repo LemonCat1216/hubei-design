@@ -9,15 +9,15 @@
     /* 极致优化静态表格：12+12完美填满左侧 */
     .static-table { width: 50%; flex: 1; table-layout: fixed; }
     .static-table th, .static-table td { padding: 4.5px 6px !important; font-size: 8px !important; line-height: 1.1 !important; }
-    .static-table th { background: #F8FAFC; font-weight: 700; color: #475569; border-bottom: 1px solid #E2E8F0; }
+    .static-table th { background: var(--ppt-bg-muted); font-weight: 700; color: #475569; border-bottom: 1px solid var(--ppt-border-default); }
     
     /* 右侧模块：通过 flex: 1 让 3 个卡片严格等分高度，绝对不会冒出去 */
     .risk-panel { display: flex; flex-direction: column; gap: 4px; flex: 1; min-height: 0; overflow: hidden; }
-    .risk-large-card { flex: 1; background: #FFF; border-radius: 4px; padding: 4px 8px; display: flex; flex-direction: column; justify-content: center; min-height: 0; overflow: hidden; }
+    .risk-large-card { flex: 1; background: var(--ppt-bg-slide); border-radius: 4px; padding: 4px 8px; display: flex; flex-direction: column; justify-content: center; min-height: 0; overflow: hidden; }
     
-    .risk-large-card.level-5 { border-top: 2px solid #991B1B; background: #FEF2F2; }
-    .risk-large-card.level-4 { border-top: 2px solid #B45309; background: #FFFBEB; }
-    .risk-large-card.level-3 { border-top: 2px solid #B45309; background: #FFFDF5; }
+    .risk-large-card.level-5 { background: var(--ppt-bg-alert); }
+    .risk-large-card.level-4 { background: var(--ppt-bg-warn); }
+    .risk-large-card.level-3 { background: var(--ppt-bg-cream); }
 
     /* 极致压缩的数据网格 */
     .data-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; margin-top: 3px; }
@@ -55,11 +55,11 @@
 
         <div style="display:flex; gap:12px; flex:1; min-height:0; overflow:hidden;">
             
-            <div class="table-box" style="flex:0 0 54%; display:flex; flex-direction:column; background:#fff; overflow:hidden;">
-                <div style="font-size:9px; font-weight:700; color:#1E293B; padding:6px 10px; border-bottom:1px solid #E2E8F0; flex-shrink:0;">📊 重点湖泊水质状况一览表</div>
+            <div class="table-box" style="flex:0 0 54%; display:flex; flex-direction:column; background:var(--ppt-bg-slide); overflow:hidden;">
+                <div style="font-size:9px; font-weight:700; color:#1E293B; padding:6px 10px; border-bottom:1px solid var(--ppt-border-default); flex-shrink:0;">📊 重点湖泊水质状况一览表</div>
                 
                 <div style="display: flex; flex: 1; min-height:0; overflow:hidden;">
-                    <table class="static-table" style="border-right: 1px solid #E2E8F0;">
+                    <table class="static-table" style="border-right: 1px solid var(--ppt-border-default);">
                         <thead><tr><th>湖库名称</th><th>水质</th><th>总磷</th><th>状态</th></tr></thead>
                         <tbody>
                             <tr><td class="td-left">洪湖</td><td><span class="badge-r">劣Ⅴ</span></td><td>0.15</td><td><span class="badge-r">未标</span></td></tr>
@@ -97,8 +97,8 @@
                 </div>
             </div>
 
-            <div style="flex:1; display:flex; flex-direction:column; background:#fff; border:1px solid #E2E8F0; padding:6px 8px; border-radius:4px; overflow:hidden;">
-                <div style="font-size:9px; font-weight:800; color:#0F172A; margin-bottom:4px; border-bottom:1px solid #F1F5F9; padding-bottom:2px; flex-shrink:0;">📊 重点超标断面污染物解析Top3</div>
+            <div style="flex:1; display:flex; flex-direction:column; background:var(--ppt-bg-slide); border:1px solid var(--ppt-border-default); padding:6px 8px; border-radius:4px; overflow:hidden;">
+                <div style="font-size:9px; font-weight:800; color:#0F172A; margin-bottom:4px; border-bottom:1px solid var(--ppt-border-subtle); padding-bottom:2px; flex-shrink:0;">📊 重点超标断面污染物解析Top3</div>
                 
                 <div class="risk-panel">
                     <div class="risk-large-card level-5">
@@ -146,5 +146,7 @@
 </div>
 </body>
 </html>
+
+
 
 

@@ -91,10 +91,8 @@
             overflow: hidden;
         }
         .map-placeholder::before {
-            content: '🗺️';
-            font-size: 18px;
-            margin-bottom: 2px;
-            opacity: 0.5;
+            content: '';
+            display: none;
         }
         .map-placeholder span {
             font-size: 8px;
@@ -123,8 +121,8 @@
         }
         .map-stat-lbl { font-size: 8.5px; color: #475569; font-weight: 600; }
         .map-stat-val { font-size: 11px; font-weight: 900; }
-        .val-green { color: #047857; }
-        .val-red { color: #991B1B; }
+        .val-green { color: var(--ppt-chart-good); }
+        .val-red { color: var(--ppt-chart-alert); }
 
         /* =======================================
            右侧：表格与总结区
@@ -135,8 +133,8 @@
         /* 进度条 */
         .progress-wrapper { display: flex; align-items: center; gap: 6px; width: 100%; }
         .progress-track { flex: 1; height: 5px; background: var(--ppt-bg-track); border-radius: 0; overflow: hidden; }
-        .progress-fill { height: 100%; background: #047857; border-radius: 0; }
-        .progress-fill.warn { background: #B45309; }
+        .progress-fill { height: 100%; background: var(--ppt-chart-good); border-radius: 0; }
+        .progress-fill.warn { background: var(--ppt-chart-warn); }
 
         /* 核心结论区域 - 紧凑型双栏，取消 flex:1，靠自身内容撑开高度 */
         .business-summary-box {
@@ -162,12 +160,12 @@
         .summary-item .dot {
             width: 4px;
             height: 4px;
-            background: #1A3A5C;
+            background: var(--ppt-chart-series-1);
             border-radius: 50%;
             margin-top: 4px;
             flex-shrink: 0;
         }
-        .summary-item .dot.alert { background: #991B1B; }
+        .summary-item .dot.alert { background: var(--ppt-chart-alert); }
 
         /* =======================================
            右侧新增：趋势折线图容器 (吃掉剩余所有空间)
@@ -213,7 +211,7 @@
                     <div class="map-card">
                         <div class="map-placeholder"><span>长江流域</span></div>
                         <div class="map-stats">
-                            <div class="map-stat-title" style="color: #1E40AF;">长江流域</div>
+                            <div class="map-stat-title" style="color: var(--basin-yangtze);">长江流域</div>
                             <div class="map-stat-row"><span class="map-stat-lbl">考核断面数</span><span class="map-stat-val">89 <small style="font-size:7.5px;font-weight:normal;color:#94A3B8;">个</small></span></div>
                             <div class="map-stat-row"><span class="map-stat-lbl">优良(Ⅰ-Ⅲ类)</span><span class="map-stat-val val-green">89.9%</span></div>
                             <div class="map-stat-row"><span class="map-stat-lbl">当前劣Ⅴ类</span><span class="map-stat-val val-red">3 <small style="font-size:7.5px;font-weight:normal;color:#94A3B8;">个</small></span></div>
@@ -223,7 +221,7 @@
                     <div class="map-card">
                         <div class="map-placeholder"><span>汉江流域</span></div>
                         <div class="map-stats">
-                            <div class="map-stat-title" style="color: #065F46;">汉江流域</div>
+                            <div class="map-stat-title" style="color: var(--basin-hanjiang);">汉江流域</div>
                             <div class="map-stat-row"><span class="map-stat-lbl">考核断面数</span><span class="map-stat-val">52 <small style="font-size:7.5px;font-weight:normal;color:#94A3B8;">个</small></span></div>
                             <div class="map-stat-row"><span class="map-stat-lbl">优良(Ⅰ-Ⅲ类)</span><span class="map-stat-val val-green">92.3%</span></div>
                             <div class="map-stat-row"><span class="map-stat-lbl">当前劣Ⅴ类</span><span class="map-stat-val val-red">2 <small style="font-size:7.5px;font-weight:normal;color:#94A3B8;">个</small></span></div>
@@ -233,7 +231,7 @@
                     <div class="map-card">
                         <div class="map-placeholder"><span>清江流域</span></div>
                         <div class="map-stats">
-                            <div class="map-stat-title" style="color: #0F5132;">清江流域</div>
+                            <div class="map-stat-title" style="color: var(--basin-qingjiang);">清江流域</div>
                             <div class="map-stat-row"><span class="map-stat-lbl">考核断面数</span><span class="map-stat-val">26 <small style="font-size:7.5px;font-weight:normal;color:#94A3B8;">个</small></span></div>
                             <div class="map-stat-row"><span class="map-stat-lbl">优良(Ⅰ-Ⅲ类)</span><span class="map-stat-val val-green">92.3%</span></div>
                             <div class="map-stat-row"><span class="map-stat-lbl">当前劣Ⅴ类</span><span class="map-stat-val" style="color:#64748B;">0 <small style="font-size:7.5px;font-weight:normal;">个</small></span></div>
@@ -262,7 +260,7 @@
                         </thead>
                         <tbody>
                         <tr>
-                            <td class="td-left" style="font-weight:800; color:#1E40AF;">长江流域</td>
+                            <td class="td-left" style="font-weight:800; color:var(--basin-yangtze);">长江流域</td>
                             <td style="font-weight:600;">89</td>
                             <td style="font-weight:700; color:#047857;">80个</td>
                             <td><span style="font-weight:700; font-size:8px; color:#B45309;">89.9%</span></td>
@@ -272,7 +270,7 @@
                             <td><span style="color:#64748B;font-weight:600;">持平</span></td>
                         </tr>
                         <tr>
-                            <td class="td-left" style="font-weight:800; color:#065F46;">汉江流域</td>
+                            <td class="td-left" style="font-weight:800; color:var(--basin-hanjiang);">汉江流域</td>
                             <td style="font-weight:600;">52</td>
                             <td style="font-weight:700; color:#047857;">48个</td>
                             <td><span style="font-weight:700; font-size:8px; color:#475569;">92.3%</span></td>
@@ -282,7 +280,7 @@
                             <td><span style="color:#64748B;font-weight:600;">持平</span></td>
                         </tr>
                         <tr>
-                            <td class="td-left" style="font-weight:800; color:#0F5132;">清江流域</td>
+                            <td class="td-left" style="font-weight:800; color:var(--basin-qingjiang);">清江流域</td>
                             <td style="font-weight:600;">26</td>
                             <td style="font-weight:700; color:#047857;">24个</td>
                             <td><span style="font-weight:700; font-size:8px; color:#475569;">92.3%</span></td>
@@ -298,17 +296,17 @@
                 <div class="business-summary-box">
                     <div class="summary-item">
                         <div class="dot"></div>
-                        <div><b>📊 水质占比：</b>本月优良（Ⅰ-Ⅲ类）比例为长江 89.9%、汉江 92.3%、清江 92.3%。长江流域劣Ⅴ类断面相对集中，总计3个。</div>
+                        <div><b>水质占比：</b>本月优良（Ⅰ-Ⅲ类）比例为长江 89.9%、汉江 92.3%、清江 92.3%。长江流域劣Ⅴ类断面相对集中，总计3个。</div>
                     </div>
                     <div class="summary-item">
                         <div class="dot alert"></div>
-                        <div><b>⚠️ 波动追踪：</b>清江流域优良（Ⅰ-Ⅲ类）同比上升1.2%最高，长江流域同比 -1.4%下降，本月合计 5 个劣Ⅴ类断面，系统将持续跟踪其指标数据波动。</div>
+                        <div><b>波动追踪：</b>清江流域优良（Ⅰ-Ⅲ类）同比上升1.2%最高，长江流域同比 -1.4%下降，本月合计 5 个劣Ⅴ类断面，系统将持续跟踪其指标数据波动。</div>
                     </div>
                 </div>
 
                 <div class="trend-wrapper">
                     <div class="trend-title">
-                        📉 近 6 个月三大流域优良（Ⅰ-Ⅲ类）水质走势
+                        近 6 个月三大流域优良（Ⅰ-Ⅲ类）水质走势
                         <span>单位：%</span>
                     </div>
                     <div id="trendChart" style="width:100%; flex:1;"></div>
@@ -324,13 +322,14 @@
 
 <script>
     // 初始化趋势图表
+    function cssVar(name){return getComputedStyle(document.documentElement).getPropertyValue(name).trim();}
     var trendChart = echarts.init(document.getElementById('trendChart'));
     var trendOption = {
         tooltip: { trigger: 'axis', textStyle: { fontSize: 10 } },
         legend: {
             data: ['长江', '汉江', '清江'],
             itemWidth: 12, itemHeight: 4,
-            textStyle: { fontSize: 8.5, color: '#64748B' },
+            textStyle: { fontSize: 8.5, color: cssVar('--ppt-chart-text-muted') },
             top: 0, right: 0
         },
         grid: { left: 25, right: 10, top: 20, bottom: 20 },
@@ -338,31 +337,31 @@
             type: 'category',
             boundaryGap: false,
             data: ['25/12', '26/01', '26/02', '26/03', '26/04', '26/05'],
-            axisLabel: { fontSize: 8, color: '#94A3B8' },
-            axisLine: { lineStyle: { color: '#E2E8F0' } },
+            axisLabel: { fontSize: 8, color: cssVar('--ppt-chart-neutral') },
+            axisLine: { lineStyle: { color: cssVar('--ppt-chart-grid') } },
             axisTick: { show: false }
         },
         yAxis: {
             type: 'value',
             min: 80, // 从80%起步让变化看起来更明显
             max: 100,
-            axisLabel: { fontSize: 8, color: '#94A3B8' },
-            splitLine: { lineStyle: { type: 'dashed', color: '#F1F5F9' } }
+            axisLabel: { fontSize: 8, color: cssVar('--ppt-chart-neutral') },
+            splitLine: { lineStyle: { type: 'dashed', color: cssVar('--ppt-chart-grid-subtle') } }
         },
         series: [
             {
                 name: '长江', type: 'line', smooth: true, symbolSize: 4,
-                itemStyle: { color: '#1E40AF' }, lineStyle: { width: 2 },
+                itemStyle: { color: cssVar('--ppt-chart-series-1') }, lineStyle: { width: 2 },
                 data: [91.3, 91.0, 90.5, 90.0, 89.9, 89.9]
             },
             {
                 name: '汉江', type: 'line', smooth: true, symbolSize: 4,
-                itemStyle: { color: '#047857' }, lineStyle: { width: 2 },
+                itemStyle: { color: cssVar('--ppt-chart-good') }, lineStyle: { width: 2 },
                 data: [93.1, 93.1, 92.8, 92.5, 92.3, 92.3]
             },
             {
                 name: '清江', type: 'line', smooth: true, symbolSize: 4,
-                itemStyle: { color: '#047857' }, lineStyle: { width: 2 },
+                itemStyle: { color: cssVar('--ppt-chart-series-5') }, lineStyle: { width: 2 },
                 data: [91.1, 91.5, 92.0, 92.0, 92.3, 92.3]
             }
         ]

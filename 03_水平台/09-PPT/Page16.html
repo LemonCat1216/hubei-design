@@ -9,7 +9,7 @@
     /* 极致优化静态表格：12+12完美填满左侧 */
     .static-table { width: 50%; flex: 1; table-layout: fixed; }
     .static-table th, .static-table td { padding: 4.5px 6px !important; font-size: 8px !important; line-height: 1.1 !important; }
-    .static-table th { background: var(--ppt-bg-muted); font-weight: 700; color: #475569; border-bottom: 1px solid var(--ppt-border-default); }
+    .static-table th { background: var(--ppt-table-header-muted-bg); font-weight: 700; color: var(--ppt-table-header-muted-text); border-bottom: 1px solid var(--ppt-table-header-muted-border); }
     
     /* 右侧模块：通过 flex: 1 让 3 个卡片严格等分高度，绝对不会冒出去 */
     .risk-panel { display: flex; flex-direction: column; gap: 4px; flex: 1; min-height: 0; overflow: hidden; }
@@ -56,7 +56,7 @@
         <div style="display:flex; gap:12px; flex:1; min-height:0; overflow:hidden;">
             
             <div class="table-box" style="flex:0 0 54%; display:flex; flex-direction:column; background:var(--ppt-bg-slide); overflow:hidden;">
-                <div style="font-size:9px; font-weight:700; color:#1E293B; padding:6px 10px; border-bottom:1px solid var(--ppt-border-default); flex-shrink:0;">📊 重点湖泊水质状况一览表</div>
+                <div style="font-size:9px; font-weight:700; color:#1E293B; padding:6px 10px; border-bottom:1px solid var(--ppt-border-default); flex-shrink:0;">重点湖泊水质状况一览表</div>
                 
                 <div style="display: flex; flex: 1; min-height:0; overflow:hidden;">
                     <table class="static-table" style="border-right: 1px solid var(--ppt-border-default);">
@@ -98,7 +98,7 @@
             </div>
 
             <div style="flex:1; display:flex; flex-direction:column; background:var(--ppt-bg-slide); border:1px solid var(--ppt-border-default); padding:6px 8px; border-radius:4px; overflow:hidden;">
-                <div style="font-size:9px; font-weight:800; color:#0F172A; margin-bottom:4px; border-bottom:1px solid var(--ppt-border-subtle); padding-bottom:2px; flex-shrink:0;">📊 重点超标断面污染物解析Top3</div>
+                <div class="right-panel-heading" style="font-weight:800!important; color:#0F172A; margin-bottom:4px;">重点超标断面污染物解析Top3</div>
                 
                 <div class="risk-panel">
                     <div class="risk-large-card level-5">

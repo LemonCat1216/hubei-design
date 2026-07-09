@@ -53,7 +53,7 @@
 .content-layout .table-box th {
   padding: 4px 6px !important;
   font-size: 8.5px !important;
-  background: var(--ppt-bg-muted);
+  background: var(--ppt-table-header-muted-bg);
 }
 .content-layout .table-box td {
   padding: 3px 6px !important; /* 极致压缩内边距，确保12行与图表严格平行 */
@@ -132,6 +132,7 @@
 </div>
 
 <script>
+function cssVar(name){return getComputedStyle(document.documentElement).getPropertyValue(name).trim();}
 var districts = echarts.init(document.getElementById('chart-district'));
 
 // 数据集定义（数组顺序需与下方 yAxis 的 reverse 保持对应，此处从上到下代表表格的第1行到第12行）
@@ -159,13 +160,13 @@ districts.setOption({
         }
     },
     // 水质类别专用色阶：Ⅰ/Ⅱ蓝系，Ⅲ绿色，Ⅳ黄色，Ⅴ橙色，劣Ⅴ红色
-    color: ['#2563EB', '#0284C7', '#059669', '#D97706', '#EA580C', '#991B1B'],
+    color: [cssVar('--wq-chart-i'), cssVar('--wq-chart-ii'), cssVar('--wq-chart-iii'), cssVar('--wq-chart-iv'), cssVar('--wq-chart-v'), cssVar('--wq-chart-inferior-v')],
     legend: {
         data: ['Ⅰ类', 'Ⅱ类', 'Ⅲ类', 'Ⅳ类', 'Ⅴ类', '劣Ⅴ类'],
         icon: 'rect',
         itemWidth: 8,
         itemHeight: 8,
-        textStyle: { fontSize: 7, fontWeight: 600, color: '#475569' },
+        textStyle: { fontSize: 7, fontWeight: 600, color: cssVar('--ppt-chart-text-muted') },
         top: 0
     },
     grid: { left: 55, right: 15, top: 20, bottom: 5 },
@@ -180,17 +181,17 @@ districts.setOption({
     yAxis: {
         type: 'category',
         data: chartData.districts,
-        axisLabel: { fontSize: 7, fontWeight: 600, color: '#1E293B' },
+        axisLabel: { fontSize: 7, fontWeight: 600, color: cssVar('--ppt-chart-text-strong') },
         axisTick: { show: false },
         axisLine: { show: false }
     },
     series: [
-        { name: 'Ⅰ类', type: 'bar', stack: 'total', barWidth: 6, data: chartData.class1, itemStyle: { borderColor: '#FFFFFF', borderWidth: 1 } },
-        { name: 'Ⅱ类', type: 'bar', stack: 'total', data: chartData.class2, itemStyle: { borderColor: '#FFFFFF', borderWidth: 1 } },
-        { name: 'Ⅲ类', type: 'bar', stack: 'total', data: chartData.class3, itemStyle: { borderColor: '#FFFFFF', borderWidth: 1 } },
-        { name: 'Ⅳ类', type: 'bar', stack: 'total', data: chartData.class4, itemStyle: { borderColor: '#FFFFFF', borderWidth: 1 } },
-        { name: 'Ⅴ类', type: 'bar', stack: 'total', data: chartData.class5, itemStyle: { borderColor: '#FFFFFF', borderWidth: 1 } },
-        { name: '劣Ⅴ类', type: 'bar', stack: 'total', data: chartData.class6, itemStyle: { borderColor: '#FFFFFF', borderWidth: 1 } }
+        { name: 'Ⅰ类', type: 'bar', stack: 'total', barWidth: 6, data: chartData.class1, itemStyle: { borderColor: cssVar('--ppt-chart-split'), borderWidth: 1 } },
+        { name: 'Ⅱ类', type: 'bar', stack: 'total', data: chartData.class2, itemStyle: { borderColor: cssVar('--ppt-chart-split'), borderWidth: 1 } },
+        { name: 'Ⅲ类', type: 'bar', stack: 'total', data: chartData.class3, itemStyle: { borderColor: cssVar('--ppt-chart-split'), borderWidth: 1 } },
+        { name: 'Ⅳ类', type: 'bar', stack: 'total', data: chartData.class4, itemStyle: { borderColor: cssVar('--ppt-chart-split'), borderWidth: 1 } },
+        { name: 'Ⅴ类', type: 'bar', stack: 'total', data: chartData.class5, itemStyle: { borderColor: cssVar('--ppt-chart-split'), borderWidth: 1 } },
+        { name: '劣Ⅴ类', type: 'bar', stack: 'total', data: chartData.class6, itemStyle: { borderColor: cssVar('--ppt-chart-split'), borderWidth: 1 } }
     ],
     backgroundColor: 'transparent'
 });

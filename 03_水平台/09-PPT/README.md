@@ -15,48 +15,43 @@
 ├── Page2a.html         # 月度核心研判（综述性）
 │
 ├── Page3.html          # 一、国控水环境质量形势
-├── Page4.html          #   全省国控断面水环境质量排位
-├── Page04A.html        #   全省水环境波动态势
-│                       #   城市 CWQI 排位
+├── Page4.html          #   全省水环境波动态势
+├── Page04A.html        #   城市 CWQI 排位
 ├── Page5.html          # 二、省控市州达标分析
-├── Page6.html          #   省控断面累计月市州达标
-│                       #   省控断面当前月市州达标
+├── Page6.html          #   省控断面当前月市州达标
 ├── Page11.html         # 三、流域湖库分析
-├── Page12.html         #   一级流域概览
-├── Page13.html         #   二级流域片区详情
-├── Page14.html         #   长江流域分析
-├── Page15.html         #   汉江流域分析
-├── Page16.html         #   清江流域分析
-├── Page17.html         #   重点湖泊水质总览
-├── Page18.html         #   洪湖专项监测分析
-├── Page19.html         #   梁子湖专项监测分析
-├── Page20.html         #   斧头湖专项监测分析
-├── Page20a.html        #   丹江口水库及同比分析
-│                       #   流域湖库·本章小结
+├── Page12.html         #   二级流域详情
+├── Page13.html         #   长江流域分析
+├── Page14.html         #   汉江流域分析
+├── Page15.html         #   清江流域分析
+├── Page16.html         #   重点湖泊水质总览
+├── Page17.html         #   洪湖专项监测分析
+├── Page18.html         #   梁子湖专项监测分析
+├── Page19.html         #   斧头湖专项监测分析
+├── Page20.html         #   丹江口水库及同比分析
+├── Page20a.html        #   流域湖库·本章小结
 ├── Page20B.html        # 四、风险断面攻坚
-├── Page20C.html        #   重点风险断面督办清单
-├── Page20D.html        #   重点污染因子根因分析
-│                       #   劣Ⅴ类断面"清零"攻坚战况
+├── Page20C.html        #   重点污染因子根因分析
+├── Page20D.html        #   劣Ⅴ类断面动态跟踪
 ├── Page21.html         # 五、排污口排查整治
-├── Page22.html         #   入河排污口排查整治总览
-├── Page23.html         #   各市州排污口排查进展
-├── Page24.html         #   不达标断面对应排口清单
-├── Page26.html         #   污染溯源预警分析
-├── Page29.html         #   入河排污口月度进展报告
-│                       #   排污口日常监管运行
+├── Page22.html         #   各市州排污口排查进展
+├── Page23.html         #   重点河湖排口分布
 ├── Page28.html         # 六、其他业务
-├── Page27.html         #   中央水污染防治资金项目调度
-├── Page25.html         #   饮用水水源地管理与督办
-│                       #   黑臭水体整治与督办
+├── Page27.html         #   饮用水水源地管理与督办
 ├── Page30.html         # 七、问题聚焦与督办
-├── Page31.html         #   重点问题清单与整改进展
-│                       #   问题线索跟踪处置
+├── Page31.html         #   问题线索跟踪处置
 ├── Page32.html         # 八、总结与展望
+│
+├── Page24.html         # 备用页：各片区排查整治进展（不进入 index 页面数组）
+├── Page25.html         # 备用页：黑臭水体整治与督办（不进入 index 页面数组）
+├── Page26.html         # 备用页：入河排污口闭环进度（不进入 index 页面数组）
+├── Page29.html         # 备用页：黑臭水体整治与督办（不进入 index 页面数组）
+├── Page6-备份.html     # 备用页：省控断面累计月情况（不进入 index 页面数组）
 │
 └── .od-skills/         # 技能配置文件（忽略）
 ```
 
-共 **36 个页面**（含封面、目录、分节导航、小结），覆盖 8 大章节。
+`index.html` 当前展示 **30 个正式页面**（含封面、目录、小结），覆盖 8 大章节。备用页保留文件，不计入正式预览目录。
 
 ---
 
@@ -75,6 +70,7 @@
 
 - 主页面：`Page{编号}.html`，如 `Page5.html`
 - 补充页：`Page{编号}{字母}.html`，字母大写，如 `Page04A.html`、`Page20B.html`
+- 备用页：文件可以保留，但必须在项目结构中标注“备用页”，且不得加入 `index.html` 的 `pages` 数组。
 - 样式：`ppt-style.css`（全局唯一）
 - 导航预览：`index.html`
 
@@ -87,13 +83,14 @@
 - 宽高比 **16:9**，最大宽度 `860px`
 - 页面缩放 `zoom: 175%`（适配高清屏）
 - 背景色 `#F1F4F9`
+- 页面 `body` 不保留额外上下 padding，并用 `min-height: calc(100vh / 1.75)` 抵消 `zoom: 175%` 对视口高度的放大；预览器 iframe 只包住真实幻灯片画布，避免所有页底部出现额外空白。
 - 外层页面容器统一保持扁平化，不依靠投影制造悬浮感
 
 ### 页眉（ppt-header）
 
 - 深蓝渐变 `#0F2942 → #1A3A5C → #1E4470`
-- 白色文字，底部绿色边框 `border-bottom: 3px solid #047857`
-  - 右侧页码徽章（深绿底色 `#047857`）
+- 白色文字，底部深蓝边框 `border-bottom: 3px solid #2B4C7E`
+  - 右侧页码徽章（深蓝底色 `#1E4470`）
 
 ### 核心结论条（core-bar）
 
@@ -106,6 +103,8 @@
 
 - 浅灰背景 `#F5F7FA`
 - 左右分栏：`left-column`（KPI 卡片 + 预警卡片） / `right-column`（图表 / 表格）
+- 主体必须使用 `flex: 1` + `min-height: 0` 的框架，内容多时优先压缩内部间距或表格密度，不允许把底部说明/卡片挤到页脚下方。
+- 页面布白要均匀：右下角不得出现孤立空洞或半截卡片；多块纵向内容优先使用 `.space-even-stack` 或等高 grid 分配空间。
 
 ### KPI 卡片
 
@@ -135,6 +134,26 @@
 - 页面层级关系只通过留白、分组、背景色、边框建立，不通过阴影建立。
 - 若新增模块视觉上显得“浮起来”，应优先减弱装饰、补齐边框，而不是加阴影。
 - 审核标准：任何新增或改版页面，只要出现明显阴影效果，即视为不符合规范，必须回退为扁平样式。
+- `index.html` 预览器也纳入扁平化规范：预览画框、演示 HUD、侧栏状态都不得使用 `box-shadow`，只允许用背景、边框、透明度和留白表达层级。
+
+### 图标 / Emoji 禁用规范
+
+以下规范为**强制要求**，所有页面必须严格执行：
+
+- PPT 页面正文、标题、卡片标题、表格标题、图表标题、说明文字、总结卡中不得使用 emoji 或装饰性图标作为前缀/后缀。
+- 禁用图表、趋势、预警、圆点、奖杯、定位、目标、灯泡、盾牌等 emoji/装饰符号来表达状态或强调。
+- 状态表达必须依靠文字、语义色 token、`1px` 边框、标题横线、`.status-badge` / `.risk-badge` 等标准样式，不依靠 emoji。
+- `index.html` 预览器标题不得使用 emoji；翻页、返回首页等导航控件可保留必要方向符号。
+
+### 流域固定色标准
+
+长江、汉江、清江等跨页重复出现的流域名称必须使用全局 token，不在页面内硬编码临时颜色。
+
+| 流域 | Token | 色值 | 用法 |
+|------|-------|------|------|
+| 长江 | `--basin-yangtze` | `#1A3A5C` | 长江流域标题、表格重点行、图例 |
+| 汉江 | `--basin-hanjiang` | `#047857` | 汉江流域标题、表格重点行、图例 |
+| 清江 | `--basin-qingjiang` | `#0E7490` | 清江流域标题、表格重点行、图例 |
 
 ### 语义色块配色标准
 
@@ -142,14 +161,21 @@
 
 | 语义级别 | 适用场景 | 背景色 | 边框色 | 强调色 |
 |----------|----------|--------|--------|--------|
-| 🔴 红色（预警/超标） | 超标、未达标、劣Ⅴ类、风险、预警、恶化、alert-card | `#FEF2F2` | `#FEE2E2` | `#991B1B` |
-| 🟢 绿色（良好/改善） | 达标断面、改善趋势、green-card | `#F0FDF4` | `#BBF7D0` | `#047857` |
-| 🟡 黄色（趋势关注） | 下降趋势、轻度回落、临界关注、trend-warn/status-warn | `#FFFBEB` | `#FDE68A` | `#B45309` |
-| 🔵 蓝色（信息提示） | 信息说明、blue-card | `#EFF6FF` | `#BFDBFE` | `#1E40AF` |
+| 红色（预警/超标） | 超标、未达标、劣Ⅴ类、风险、预警、恶化、alert-card | `#FEF2F2` | `#FEE2E2` | `#991B1B` |
+| 绿色（良好/改善） | 达标断面、改善趋势、green-card | `#F0FDF4` | `#BBF7D0` | `#047857` |
+| 黄色（趋势关注） | 下降趋势、轻度回落、临界关注、trend-warn/status-warn | `#FFFBEB` | `#FDE68A` | `#B45309` |
+| 蓝色（信息提示） | 信息说明、blue-card | `#EFF6FF` | `#BFDBFE` | `#1E40AF` |
 
 **红色边框配色说明（红榜参照）：** 源自 Page04A `CWQI 水质排名后三 (红榜)` 设计语义，红色块使用 `#FEF2F2` 浅红背景 + `#FEE2E2` 边框 + `#991B1B` 强调色，避免使用 `#FFF1F2`（偏粉）和 `#FCA5A5`（偏亮）等不一致色值。
 
 **无夹层直接色卡说明（榜单/重点解析参照）：** 参考 Page16 右侧“洪湖湖心”重点解析卡片，榜单类模块不再使用“外层语义容器 + 中间夹层 + 内层条目”的三层结构，而是在白色分组卡内直接放置语义色卡。绿色良好类采用 `#DCFCE7` 背景 + `#BBF7D0` 边框 + `#047857` 强调色；红色预警类采用 `#FEE2E2` 背景 + `#FECACA` 边框 + `#991B1B` 强调色。不使用阴影或渐变。
+
+### 小标签 / 状态徽标
+
+- 普通趋势文字继续使用 `.badge-r`、`.badge-g`、`.badge-y`，只表达文字强调，不强制做成色块。
+- 结构化小标签使用 `.status-badge` 或 `.risk-badge`，统一 `7px` 字号、`2px 6px` padding、`1px` 圆角、白色文字。
+- `.risk-badge` 的颜色由父级语义容器决定：`.bg-good` 内为绿色，`.bg-warn` 或 `.warning-style` 内为黄色，`.bg-info` 或 `.blue-style` 内为信息青色，其余风险场景默认为红色。
+- 新增页面不得在 `risk-badge` 上继续内联 `font-size`、`padding`、`background`、`border-radius`。
 
 ### 水质类别专用色系
 
@@ -167,7 +193,7 @@
 | 劣Ⅴ类 | 重度污染 | `#FEF2F2` | `#FECACA` | `#991B1B` | `#991B1B` |
 
 - 页面中优先使用全局类：`.wq-card.wq-i`、`.wq-card.wq-ii`、`.wq-card.wq-iii`、`.wq-card.wq-iv`、`.wq-card.wq-v`、`.wq-card.wq-inferior-v`。
-- ECharts 等图表按图表色顺序配置：`#2563EB`、`#0284C7`、`#059669`、`#D97706`、`#EA580C`、`#991B1B`。
+- ECharts 等图表必须通过水质类别 token 配置：`--wq-chart-i`、`--wq-chart-ii`、`--wq-chart-iii`、`--wq-chart-iv`、`--wq-chart-v`、`--wq-chart-inferior-v`。
 - Ⅲ类属于良好/达标水质，不使用黄色；Ⅴ类使用橙色，只有劣Ⅴ类使用红色。
 - 如果模块主题是“超标断面/风险预警/管控建议”，即使内容提到Ⅳ类、Ⅴ类、劣Ⅴ类，也按业务语义色处理，不按水质类别色处理。
 
@@ -194,10 +220,37 @@
 
 ### 表格
 
-- 表头深蓝渐变 `#1A365D → #2B4C7E`
+- 表头颜色统一从 `ppt-style.css :root` 的表格表头 token 读取，不在页面内临时写新的表头色。
+- 标准表头使用深蓝渐变：`--ppt-table-header-gradient-start: #1A365D` → `--ppt-table-header-gradient-end: #2B4C7E`，文字 `--ppt-table-header-text: #FFFFFF`。
+- 紧凑表格或局部汇总表允许使用实色表头：`--ppt-table-header-solid: #1A3A5C`，文字仍使用 `--ppt-table-header-text: #FFFFFF`。
+- 仅当表格承担“辅助明细/静态清单”角色，且页面视觉层级已经较重时，允许使用浅灰表头：`--ppt-table-header-muted-bg: #F8FAFC`、文字 `--ppt-table-header-muted-text: #475569`、下边框 `--ppt-table-header-muted-border: #E2E8F0`。
+- 新增或改版页面不得直接写 `#1A365D`、`#2B4C7E`、`#1A3A5C`、`#FFFFFF`、`#F8FAFC` 作为表头颜色；必须引用上方 token。
+
+| 表头类型 | Token | 色值 | 用法 |
+|----------|-------|------|------|
+| 标准表头渐变起点 | `--ppt-table-header-gradient-start` | `#1A365D` | 默认 `.table-box th` 背景渐变起点 |
+| 标准表头渐变终点 | `--ppt-table-header-gradient-end` | `#2B4C7E` | 默认 `.table-box th` 背景渐变终点 |
+| 标准/实色表头文字 | `--ppt-table-header-text` | `#FFFFFF` | 深色表头文字 |
+| 紧凑实色表头 | `--ppt-table-header-solid` | `#1A3A5C` | 紧凑统计表、局部汇总表 |
+| 辅助浅灰表头背景 | `--ppt-table-header-muted-bg` | `#F8FAFC` | 辅助明细/静态清单表 |
+| 辅助浅灰表头文字 | `--ppt-table-header-muted-text` | `#475569` | 浅灰表头文字 |
+| 辅助浅灰表头边框 | `--ppt-table-header-muted-border` | `#E2E8F0` | 浅灰表头下边框 |
+
 - 行斑马纹 `#F8FAFC`
 - 文字 `10px`，hover 高亮
 - 表格块本身保留边框，不使用投影
+
+#### 表格密度等级
+
+| 等级 | 推荐类 | 表头字号 / padding | 单元格字号 / padding | 适用场景 |
+|------|--------|--------------------|-----------------------|----------|
+| 普通表格 | `.table-box` | `9px` / `6px 8px` | `10px` / `5px 8px` | 常规 5-8 行核心表 |
+| 紧凑表格 | `.table-compact` / `.compact-table` | `8.5px` / `4px 6px` | `8.5px` / `3px 6px` | 8-12 行排名、列表 |
+| 密集表格 | `.table-dense` / `.fit-table` | `7.8px` / `3px 4px` | `8px` / `2px 4px` | 12-16 行明细表 |
+| 超密表格 | `.table-ultra` / `.ultra-compact-table` | `7.2px` / `2px 3px` | `7.2px` / `1.5px 3px` | 仅用于信息必须同页展示的附表 |
+
+- 优先选择密度等级类，不在单页反复写 `.fit-table th/td` 的字号和 padding。
+- 表格过高时先使用密度等级和父容器等高分配，再考虑删减字段；不得让页脚或说明文字被遮挡。
 
 ### 预警卡片
 
@@ -207,11 +260,48 @@
 - 绿色背景 `#F0FDF4`（向好提示）
 - 标题 `.card-loc`，内容 `.card-det`
 
+### 一句话研判/总结句
+
+- 一句话研判、总结性描述、自动诊断句、口径说明等连续自然语言句子，严禁使用背景色、边框、胶囊、标签、色块样式。
+- 这类句子只允许用正文色、加粗或语义文字色强调关键词；不得添加 `background`、`border`、`border-radius`、`padding` 形成块状高亮。
+- 只有独立 KPI 卡、预警卡片、表格状态标签、断面节点、图表标记等结构化元素可以使用语义背景色。
+- 示例：`神农架片区100%达标；四湖片区与府琴河片区以Ⅳ-劣Ⅴ类为主，需重点预警。`、`洪湖湖心、四湖总干渠劣Ⅴ类，长湖（荆门）、斧头湖Ⅴ类，建议启动污染源排查。`
+
+### 说明文字 / 注释文字
+
+- 注释、口径说明、数据来源、分类说明统一使用 `--ppt-text-note: #94A3B8`。
+- 标准注释类：`.ppt-note`、`.stat-note`、`.summary-note`、`.table-note`。
+- 默认字号 `7px`，行高 `1.45`；内容较长时优先换行或压缩上方模块间距，不使用醒目的蓝色大段文字。
+- 注释文字只做辅助说明，不承担主要结论；主要结论仍放入 `core-bar`、KPI 或正文研判区域。
+
 ### 图表区（chart-wrapper）
 
 - ECharts 5 渲染堆叠柱状图、趋势折线图、CWQI 横向条形图
 - 白色背景，圆角 `3px`
 - 图表容器统一保留 `1px` 边框，不使用阴影
+- 所有图表颜色统一从 `ppt-style.css :root` 的图表 token 读取，不在页面脚本或内联样式中临时新增色值。
+- 普通业务图表使用 `--ppt-chart-series-*` 作为系列色，语义图表使用 `--ppt-chart-good`、`--ppt-chart-warn`、`--ppt-chart-alert`、`--ppt-chart-neutral`。
+- 坐标轴、网格线、标签文字必须使用 `--ppt-chart-axis`、`--ppt-chart-grid`、`--ppt-chart-grid-subtle`、`--ppt-chart-text`、`--ppt-chart-text-muted`。
+- 折线图面积渐变使用 `--ppt-chart-*-area-top/bottom`，饼图、柱状图、手写进度条也必须使用同一套图表 token。
+- 只有“水质类别分布、类别图例、类别堆叠柱、断面墙”可使用 `--wq-chart-*` 水质类别 token；其他风险、趋势、进度、排口统计图表不得套用水质类别色。
+- 新增或改版图表不得直接写 `#1A3A5C`、`#047857`、`#B45309`、`#991B1B`、`#94A3B8` 等散落色值，必须引用下方 token。
+
+| 图表类型 | Token | 色值 | 用法 |
+|----------|-------|------|------|
+| 主系列 | `--ppt-chart-series-1` | `#1A3A5C` | 默认主柱、主折线、核心进度 |
+| 辅助系列 | `--ppt-chart-series-2` | `#047857` | 正向辅助系列 |
+| 关注系列 | `--ppt-chart-series-3` | `#B45309` | 关注、轻度风险系列 |
+| 风险系列 | `--ppt-chart-series-4` | `#991B1B` | 风险、超标、劣Ⅴ类业务图表 |
+| 扩展系列 | `--ppt-chart-series-5` | `#0E7490` | 第五系列或水文/因子补充线 |
+| 中性系列 | `--ppt-chart-series-6` | `#64748B` | 其他、未分类、中性统计 |
+| 良好 | `--ppt-chart-good` / `--ppt-chart-good-strong` | `#047857` / `#059669` | 达标、改善、高完成率 |
+| 关注 | `--ppt-chart-warn` / `--ppt-chart-warn-strong` | `#B45309` / `#D97706` | 进度一般、临界关注 |
+| 预警 | `--ppt-chart-alert` / `--ppt-chart-alert-strong` | `#991B1B` / `#DC2626` | 超标、恶化、高风险 |
+| 中性 | `--ppt-chart-neutral` | `#94A3B8` | 参考线、其他类 |
+| 坐标轴 | `--ppt-chart-axis` | `#CBD5E1` | 轴线、零线 |
+| 网格线 | `--ppt-chart-grid` / `--ppt-chart-grid-subtle` | `#E2E8F0` / `#F1F5F9` | 主网格、弱网格 |
+| 文字 | `--ppt-chart-text` / `--ppt-chart-text-muted` | `#334155` / `#64748B` | 图表标签、图例文字 |
+| 分隔线 | `--ppt-chart-split` | `#FFFFFF` | 堆叠柱、饼图切片分隔 |
 
 ### 页脚
 

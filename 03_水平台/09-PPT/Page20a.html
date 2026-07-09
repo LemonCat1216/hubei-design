@@ -11,15 +11,19 @@
             flex: 1;
             display: flex;
             flex-direction: column;
-            justify-content: center;
-            padding: 8px 24px; /* 缩小上下内边距 */
-            gap: 8px; /* 缩小板块间距 */
+            justify-content: flex-start;
+            padding: 8px 24px 7px;
+            gap: 5px;
             background: var(--ppt-bg-slide);
             min-height: 0;
         }
+        .core-bar {
+            padding: 8px 28px !important;
+            line-height: 1.55 !important;
+        }
         .ch2-title {
-            font-size: 13px; font-weight: 800; letter-spacing: 1px; color: #0F172A;
-            padding-left: 10px; margin-bottom: 2px;
+            font-size: 12px; font-weight: 800; letter-spacing: 1px; color: #0F172A;
+            padding-left: 8px; margin-bottom: 0; line-height: 1.2;
             flex-shrink: 0;
         }
 
@@ -27,19 +31,20 @@
         .grid-container {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 10px; /* 缩小列间距和行间距 */
-            flex: 1;
+            grid-auto-rows: 62px;
+            gap: 7px 10px;
+            flex: 0 0 auto;
             min-height: 0;
         }
         .auto-card {
             background: var(--ppt-bg-slide);
             border: 1px solid var(--ppt-border-default);
             border-radius: 3px;
-            padding: 10px 12px; /* 缩小卡片内部留白 */
+            padding: 6px 10px;
             display: flex;
             flex-direction: column;
-            justify-content: center;
-            gap: 6px;
+            justify-content: flex-start;
+            gap: 3px;
             box-shadow: none !important;
             transition: all 0.2s ease;
             min-height: 0;
@@ -49,36 +54,50 @@
 
         /* 卡片内部的数据结构 */
         .card-head {
-            font-size: 10.5px; font-weight: 800; color: #1E293B;
+            font-size: 9.5px; font-weight: 800; color: #1E293B;
             display: flex; justify-content: space-between; align-items: center;
-            padding-bottom: 4px;
+            padding-bottom: 0;
+            line-height: 1.1;
         }
         .card-icon { font-size: 11px; }
 
         /* 核心数字区 */
-        .data-row { display: flex; align-items: baseline; gap: 8px; margin-top: 2px; }
-        .data-main { font-size: 20px; font-weight: 900; color: #0F172A; letter-spacing: -0.5px; } /* 回退字号防溢出 */
+        .data-row { display: flex; align-items: baseline; gap: 8px; margin-top: 0; line-height: 1; }
+        .data-main { font-size: 17px; line-height: 1; font-weight: 900; color: #0F172A; letter-spacing: -0.5px; } /* 回退字号防溢出 */
         .auto-card.warn .data-main { color: #B45309; }
         .auto-card.alert .data-main { color: #B91C1C; }
-        .data-unit { font-size: 9px; color: #64748B; font-weight: normal; margin-left: 2px; }
+        .data-unit { font-size: 9px; line-height: 1; color: #64748B; font-weight: normal; margin-left: 2px; }
 
         /* 模板填空区 */
-        .template-text { font-size: 9px; color: #475569; line-height: 1.5; }
+        .template-text { font-size: 9px; color: #475569; line-height: 1.25; }
         .var {
-            color: #1E293B; font-weight: 800; background: var(--ppt-bg-subtle);
-            padding: 1px 4px; border-radius: 3px; margin: 0 2px 2px 2px;
-            display: inline-block; line-height: 1.1;
+            color: #1E293B;
+            font-weight: 800;
+            background: transparent;
+            border: 0;
+            padding: 0;
+            border-radius: 0;
+            margin: 0;
+            display: inline;
+            line-height: inherit;
         }
-        .var.bad { color: #991B1B; background: var(--ppt-bg-alert); border: 1px solid var(--ppt-border-alert); }
+        .var.bad { color: #991B1B; }
 
         .ch2-next {
-            margin-top: 4px; padding: 8px 12px;
+            margin-top: 0; padding: 4px 10px;
             background: var(--ppt-bg-muted); border: 1px dashed var(--ppt-border-muted);
-            text-align: center; font-size: 10px; color: #64748B; letter-spacing: 0.5px;
+            text-align: center; font-size: 9.5px; line-height: 1.35; color: #64748B; letter-spacing: 0.5px;
             border-radius: 3px;
             flex-shrink: 0;
         }
         .ch2-next strong { color: #1A3A5C; font-weight: 800; }
+        .water-card {
+            padding: 6px 10px;
+            gap: 3px;
+            flex-shrink: 0;
+        }
+        .water-card .card-head { padding-bottom: 2px; }
+        .water-card .template-text { line-height: 1.35; }
     </style>
 </head>
 <body>
@@ -94,7 +113,7 @@
         <div class="grid-container">
 
             <div class="auto-card">
-                <div class="card-head"><span>一级流域概览</span><span class="card-icon">🌊</span></div>
+                <div class="card-head"><span>一级流域概览</span></div>
                 <div class="data-row">
                     <div class="data-main">92.3<span class="data-unit">%</span></div>
                     <div class="template-text" style="margin-left:auto; font-weight:700; color:#047857;">最高达标率</div>
@@ -105,7 +124,7 @@
             </div>
 
             <div class="auto-card">
-                <div class="card-head"><span>二级片区监测</span><span class="card-icon">📍</span></div>
+                <div class="card-head"><span>二级片区监测</span></div>
                 <div class="data-row">
                     <div class="data-main">12<span class="data-unit">个片区</span></div>
                 </div>
@@ -126,7 +145,7 @@
             </div>
 
             <div class="auto-card alert">
-                <div class="card-head"><span>水质劣变追踪</span><span class="card-icon">⚠️</span></div>
+                <div class="card-head"><span>水质劣变追踪</span></div>
                 <div class="data-row">
                     <div class="data-main">1<span class="data-unit">个</span></div>
                     <div class="template-text" style="margin-left:auto; font-weight:700; color:#991B1B;">新增劣Ⅴ类</div>
@@ -138,14 +157,14 @@
 
         </div>
 
-        <div class="auto-card" style="margin-top: 2px; flex-shrink: 0;">
-            <div class="card-head"><span>南水北调水源地 (丹江口水库) 整体水质分布</span><span class="card-icon">🛡️</span></div>
+        <div class="auto-card water-card">
+            <div class="card-head"><span>南水北调水源地 (丹江口水库) 整体水质分布</span></div>
             <div class="template-text" style="margin-top: 2px;">
                 本月库区断面水质类别分布为：Ⅰ类 <span class="var">0</span> 个，Ⅱ类 <span class="var">7</span> 个，Ⅲ类 <span class="var">0</span> 个，Ⅳ类 <span class="var">0</span> 个，Ⅴ类 <span class="var">0</span> 个，劣Ⅴ类 <span class="var">0</span> 个。整体水体质量稳定可控，各项核心理化指标未见异常波动，建议维持现有总体管控强度。
             </div>
         </div>
 
-        <div class="ch2-next">➜ 第三章重点分析 <strong>水污染源排放分析</strong>，系统梳理断面超标污染源清单与追溯数据</div>
+        <div class="ch2-next">第三章重点分析 <strong>水污染源排放分析</strong>，系统梳理断面超标污染源清单与追溯数据</div>
     </div>
 
     <div class="ft">

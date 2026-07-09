@@ -22,9 +22,9 @@
                 <div class="chart-header">
                     <div class="chart-title">累计月省级行政辖区Ⅰ-Ⅲ类比例</div>
                     <div class="chart-legend">
-                        <div class="legend-item"><span class="legend-dot" style="background:#2563EB;"></span>I类</div>
-                        <div class="legend-item"><span class="legend-dot" style="background:#0284C7;"></span>II类</div>
-                        <div class="legend-item"><span class="legend-dot" style="background:#059669;"></span>III类</div>
+                        <div class="legend-item"><span class="legend-dot" style="background:var(--wq-chart-i);"></span>I类</div>
+                        <div class="legend-item"><span class="legend-dot" style="background:var(--wq-chart-ii);"></span>II类</div>
+                        <div class="legend-item"><span class="legend-dot" style="background:var(--wq-chart-iii);"></span>III类</div>
                     </div>
                 </div>
                 <div class="chart-container" id="chart1"></div>
@@ -35,18 +35,19 @@
     <div class="ft"><span>2026年5月生态环境月度专报</span><span>提示：仅供汇报使用</span></div>
 </div>
 <script>
+function cssVar(name){return getComputedStyle(document.documentElement).getPropertyValue(name).trim();}
 var d=[{n:"青海",i:38,ii:50,iii:12},{n:"新疆",i:30,ii:44,iii:15},{n:"甘肃",i:29,ii:56,iii:7},{n:"广西",i:16,ii:61,iii:14},{n:"辽宁",i:15,ii:42,iii:21},{n:"陕西",i:14,ii:58,iii:19},{n:"云南",i:13,ii:52,iii:20},{n:"四川",i:12,ii:42,iii:38},{n:"重庆",i:11,ii:52,iii:29},{n:"湖北",i:9,ii:47,iii:31.6,h:1},{n:"浙江",i:8,ii:48,iii:34},{n:"河南",i:7,ii:38,iii:31},{n:"河北",i:6,ii:38,iii:36},{n:"海南",i:6,ii:54,iii:23},{n:"湖南",i:4,ii:69,iii:23},{n:"江西",i:3,ii:64,iii:27},{n:"山东",i:3,ii:21,iii:46},{n:"北京",i:3,ii:58,iii:33},{n:"安徽",i:1,ii:38,iii:35},{n:"广东",i:1,ii:38,iii:32},{n:"江苏",i:0,ii:43,iii:46}];
 var chart1 = echarts.init(document.getElementById("chart1"));
 chart1.setOption({
     tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
     legend: { show: false },
     grid: { left: 8, right: 8, top: 8, bottom: 36, containLabel: true },
-    xAxis: { type: 'category', data: d.map(function(p){return p.n;}), axisLabel: { fontSize: 8, rotate: 35, interval: 0, margin: 6 } },
-    yAxis: { type: 'value', max: 100, axisLabel: { fontSize: 8, formatter: '{value}%' } },
+    xAxis: { type: 'category', data: d.map(function(p){return p.n;}), axisLabel: { fontSize: 8, rotate: 35, interval: 0, margin: 6, color: cssVar('--ppt-chart-text') }, axisLine: { lineStyle: { color: cssVar('--ppt-chart-axis') } } },
+    yAxis: { type: 'value', max: 100, axisLabel: { fontSize: 8, formatter: '{value}%', color: cssVar('--ppt-chart-text') }, splitLine: { lineStyle: { color: cssVar('--ppt-chart-grid'), type: 'dashed' } } },
     series: [
-        { name: 'Ⅰ类', type: 'bar', stack: 'total', barWidth: 14, data: d.map(function(p){return p.i;}), itemStyle: { color: '#2563EB' } },
-        { name: 'Ⅱ类', type: 'bar', stack: 'total', barWidth: 14, data: d.map(function(p){return p.ii;}), itemStyle: { color: '#0284C7' } },
-        { name: 'Ⅲ类', type: 'bar', stack: 'total', barWidth: 14, data: d.map(function(p){return p.iii;}), itemStyle: { color: '#059669' } }
+        { name: 'Ⅰ类', type: 'bar', stack: 'total', barWidth: 14, data: d.map(function(p){return p.i;}), itemStyle: { color: cssVar('--wq-chart-i') } },
+        { name: 'Ⅱ类', type: 'bar', stack: 'total', barWidth: 14, data: d.map(function(p){return p.ii;}), itemStyle: { color: cssVar('--wq-chart-ii') } },
+        { name: 'Ⅲ类', type: 'bar', stack: 'total', barWidth: 14, data: d.map(function(p){return p.iii;}), itemStyle: { color: cssVar('--wq-chart-iii') } }
     ]
 });
 window.addEventListener('resize',function(){chart1.resize();});
@@ -59,19 +60,22 @@ var cityData = [
     {n:"\u8944\u9633\u5e02",v:88.2},{n:"\u8346\u95e8\u5e02",v:87.2},{n:"\u6b66\u6c49\u5e02",v:86.8},{n:"\u9ec4\u5188\u5e02",v:85.5},
     {n:"\u5b5d\u611f\u5e02",v:82.4},{n:"\u4ed9\u6843\u5e02",v:80.1},{n:"\u6f5c\u6c5f\u5e02",v:78.6},{n:"\u8346\u5dde\u5e02",v:76.3},{n:"\u5929\u95e8\u5e02",v:74.5}
 ];
-var c = echarts.init(document.getElementById("chart-city"));
-c.setOption({
-    grid:{left:75,right:40,top:12,bottom:8,containLabel:false},
-    xAxis:{type:"value",max:105,splitLine:{lineStyle:{color:"#E2E8F0",type:"dashed"}},axisLabel:{fontSize:8,color:'#334155'}},
-    yAxis:{type:"category",data:cityData.map(function(d){return d.n;}).reverse(),axisLabel:{fontSize:9,fontWeight:600,color:"#334155"},axisTick:{show:false},axisLine:{show:false}},
-    series:[{
-        type:"bar",data:cityData.map(function(d){return {value:d.v,itemStyle:{color:d.v>=85?"#047857":"#991B1B"}};}).reverse(),
-        barWidth:10,label:{show:true,position:"right",fontSize:9,fontWeight:700,formatter:function(p){return p.value.toFixed(1)+"%";}},
-        markLine:{silent:true,data:[{xAxis:85,label:{show:true,formatter:"\u8fbe\u6807\u7ebf 85%",fontSize:8,color:"#64748B",position:"end"},lineStyle:{color:"#94A3B8",type:"dashed",width:1}}]}
-    }],
-    backgroundColor:"transparent"
-});
-window.addEventListener("resize",function(){c.resize();});
+var cityEl = document.getElementById("chart-city");
+if (cityEl) {
+    var c = echarts.init(cityEl);
+    c.setOption({
+        grid:{left:75,right:40,top:12,bottom:8,containLabel:false},
+        xAxis:{type:"value",max:105,splitLine:{lineStyle:{color:cssVar('--ppt-chart-grid'),type:"dashed"}},axisLabel:{fontSize:8,color:cssVar('--ppt-chart-text')}},
+        yAxis:{type:"category",data:cityData.map(function(d){return d.n;}).reverse(),axisLabel:{fontSize:9,fontWeight:600,color:cssVar('--ppt-chart-text')},axisTick:{show:false},axisLine:{show:false}},
+        series:[{
+            type:"bar",data:cityData.map(function(d){return {value:d.v,itemStyle:{color:d.v>=85?cssVar('--ppt-chart-good'):cssVar('--ppt-chart-alert')}};}).reverse(),
+            barWidth:10,label:{show:true,position:"right",fontSize:9,fontWeight:700,formatter:function(p){return p.value.toFixed(1)+"%";}},
+            markLine:{silent:true,data:[{xAxis:85,label:{show:true,formatter:"\u8fbe\u6807\u7ebf 85%",fontSize:8,color:cssVar('--ppt-chart-text-muted'),position:"end"},lineStyle:{color:cssVar('--ppt-chart-neutral'),type:"dashed",width:1}}]}
+        }],
+        backgroundColor:"transparent"
+    });
+    window.addEventListener("resize",function(){c.resize();});
+}
 </script></body>
 </html>
 

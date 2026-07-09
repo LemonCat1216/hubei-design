@@ -29,20 +29,20 @@
                 
                 <div style="display:flex; flex-direction:column; justify-content:center; gap:8px; flex:1; padding-right:4px;">
                     <div class="bg-alert" style="padding:8px 12px; border-radius:0;">
-                        <div style="font-size:10px; font-weight:700; color:#991B1B;">总磷 62%</div>
-                        <div style="font-size:20px; font-weight:800; color:#991B1B; line-height:1.2;">14个</div>
-                        <div style="font-size:9px; color:#991B1B; margin-top:2px; white-space:nowrap;">涉及6市州，荆州(4)、潜江(2)最集中</div>
+                        <div style="font-size:10px; font-weight:700; color:var(--ppt-chart-alert);">总磷 62%</div>
+                        <div style="font-size:20px; font-weight:800; color:var(--ppt-chart-alert); line-height:1.2;">14个</div>
+                        <div style="font-size:9px; color:var(--ppt-chart-alert); margin-top:2px; white-space:nowrap;">涉及6市州，荆州(4)、潜江(2)最集中</div>
                     </div>
                     <div style="padding:8px 12px; background:var(--ppt-bg-alert); border:1px solid var(--ppt-border-alert); border-radius:0;">
-                        <div style="font-size:10px; font-weight:700; color:#991B1B;">氨氮 31%</div>
-                        <div style="font-size:20px; font-weight:800; color:#991B1B; line-height:1.2;">7个</div>
-                        <div style="font-size:9px; color:#991B1B; margin-top:2px; white-space:nowrap;">集中在孝感(3)、天门(2)</div>
+                        <div style="font-size:10px; font-weight:700; color:var(--ppt-chart-alert);">氨氮 31%</div>
+                        <div style="font-size:20px; font-weight:800; color:var(--ppt-chart-alert); line-height:1.2;">7个</div>
+                        <div style="font-size:9px; color:var(--ppt-chart-alert); margin-top:2px; white-space:nowrap;">集中在孝感(3)、天门(2)</div>
                     </div>
                 </div>
             </div>
 
             <div class="warning-card" style="flex:1; justify-content:center; background:linear-gradient(135deg,#0F172A,#1E293B); border:1px solid #334155; color:#fff;">
-                <div class="card-loc" style="color:#38BDF8; font-size:11px!important; margin-bottom:8px!important;">💡 支撑建议</div>
+                <div class="card-loc" style="color:#38BDF8; font-size:11px!important; margin-bottom:8px!important;">支撑建议</div>
                 <div class="card-det" style="color:#CBD5E1; font-size:10px!important; line-height:1.6;">
                     总磷超标涉及 6 市共 14 个断面（同比↑2个），以荆州（4个）最为集中，潜江（2个）、荆门（2个）次之；氨氮超标涉及 4 市州共 7 个断面（同比↓1个），集中在孝感（3个）、天门（2个）；高猛酸盐指数超标涉及 4 市州共 7 个断面，集中在孝感（3个）、天门（2个）。
                 </div>
@@ -87,6 +87,7 @@
     <div class="ft"><span>2026年5月生态环境月度专报</span><span>提示：仅供汇报使用</span></div>
 </div>
 <script>
+function cssVar(name){return getComputedStyle(document.documentElement).getPropertyValue(name).trim();}
 var pie = echarts.init(document.getElementById("chart-pie"));
 pie.setOption({
     tooltip:{trigger:"item",formatter:"{b}: {c}%"},
@@ -96,9 +97,9 @@ pie.setOption({
         radius:["35%","52%"],
         center:["50%","50%"],
         data:[
-            {value:62,name:"\u603b\u78f7",itemStyle:{color:"#991B1B"}},
-            {value:31,name:"\u6c28\u6c2e",itemStyle:{color:"#B45309"}},
-            {value:7,name:"\u5176\u4ed6",itemStyle:{color:"#94A3B8"}}
+            {value:62,name:"\u603b\u78f7",itemStyle:{color:cssVar('--ppt-chart-alert')}},
+            {value:31,name:"\u6c28\u6c2e",itemStyle:{color:cssVar('--ppt-chart-warn')}},
+            {value:7,name:"\u5176\u4ed6",itemStyle:{color:cssVar('--ppt-chart-neutral')}}
         ],
         label:{
             position: 'inner',
@@ -106,7 +107,7 @@ pie.setOption({
             fontSize:8,
             fontWeight:700,
             distance:2,
-            color:'#334155',
+            color:cssVar('--ppt-chart-text'),
             formatter:"{b}\n{d}%"
         },
         labelLine:{
@@ -114,7 +115,7 @@ pie.setOption({
             length2:4,
             smooth:true
         },
-        emphasis:{itemStyle:{shadowBlur:8,shadowColor:"rgba(0,0,0,0.1)"}}
+        emphasis:{itemStyle:{shadowBlur:0}}
     }],
     backgroundColor:"transparent"
 });

@@ -23,6 +23,10 @@
   --ppt-bg-info-soft: #E0F2FE;
   --ppt-bg-info-strong: #DBEAFE;
   --ppt-bg-neutral: #F9FAFB;
+  --ppt-text-note: #94A3B8;
+  --basin-yangtze: #1A3A5C;
+  --basin-hanjiang: #047857;
+  --basin-qingjiang: #0E7490;
   --wq-bg-i: #EFF6FF;
   --wq-border-i: #BFDBFE;
   --wq-text-i: #1D4ED8;
@@ -59,6 +63,43 @@
   --ppt-border-warn-soft: #FEF3C7;
   --ppt-border-good: #BBF7D0;
   --ppt-border-info: #BFDBFE;
+  --ppt-table-header-gradient-start: #1A365D;
+  --ppt-table-header-gradient-end: #2B4C7E;
+  --ppt-table-header-solid: #1A3A5C;
+  --ppt-table-header-text: #FFFFFF;
+  --ppt-table-header-muted-bg: #F8FAFC;
+  --ppt-table-header-muted-text: #475569;
+  --ppt-table-header-muted-border: #E2E8F0;
+  --ppt-chart-series-1: #1A3A5C;
+  --ppt-chart-series-2: #047857;
+  --ppt-chart-series-3: #B45309;
+  --ppt-chart-series-4: #991B1B;
+  --ppt-chart-series-5: #0E7490;
+  --ppt-chart-series-6: #64748B;
+  --ppt-chart-good: #047857;
+  --ppt-chart-good-strong: #059669;
+  --ppt-chart-warn: #B45309;
+  --ppt-chart-warn-strong: #D97706;
+  --ppt-chart-alert: #991B1B;
+  --ppt-chart-alert-strong: #DC2626;
+  --ppt-chart-neutral: #94A3B8;
+  --ppt-chart-axis: #CBD5E1;
+  --ppt-chart-grid: #E2E8F0;
+  --ppt-chart-grid-subtle: #F1F5F9;
+  --ppt-chart-text: #334155;
+  --ppt-chart-text-strong: #1E293B;
+  --ppt-chart-text-muted: #64748B;
+  --ppt-chart-split: #FFFFFF;
+  --ppt-chart-primary-area-top: rgba(26,58,92,.20);
+  --ppt-chart-primary-area-bottom: rgba(26,58,92,.02);
+  --ppt-chart-good-area-top: rgba(4,120,87,.18);
+  --ppt-chart-good-area-bottom: rgba(4,120,87,.02);
+  --ppt-chart-warn-area-top: rgba(180,83,9,.18);
+  --ppt-chart-warn-area-bottom: rgba(180,83,9,.02);
+  --ppt-chart-alert-area-top: rgba(153,27,27,.20);
+  --ppt-chart-alert-area-bottom: rgba(153,27,27,.02);
+  --ppt-chart-cyan-area-top: rgba(14,116,144,.18);
+  --ppt-chart-cyan-area-bottom: rgba(14,116,144,.02);
 }
 /* --- 基础重置 --- */
 html {
@@ -70,11 +111,12 @@ html {
 body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", "Noto Sans SC", sans-serif !important;
   -webkit-font-smoothing: antialiased;
-  min-height: 100vh;
+  min-height: calc(100vh / 1.75);
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: center;
-  padding: 20px;
+  padding: 0;
+  overflow: hidden;
 }
 
 /* --- 主容器 16:9 --- */
@@ -133,6 +175,7 @@ body {
 /* --- 主体区域 --- */
 .bd {
   flex: 1;
+  min-height: 0;
   padding: 14px 24px;
   background: var(--ppt-bg-body);
   display: flex;
@@ -151,6 +194,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: 10px;
+  min-height: 0;
   overflow: hidden;
 }
 
@@ -267,6 +311,13 @@ body {
   gap: 5px !important;
   justify-content: flex-start;
 }
+.right-panel-heading {
+  font-size: 9px !important;
+  font-weight: 700 !important;
+  padding: 3px 0 5px !important;
+  border-bottom: 1px solid var(--ppt-border-default) !important;
+  flex-shrink: 0;
+}
 
 
 /* --- 表格 --- */
@@ -282,8 +333,8 @@ body {
   border-collapse: collapse;
 }
 .table-box th {
-  background: linear-gradient(180deg, #1A365D, #2B4C7E) !important;
-  color: #fff !important;
+  background: linear-gradient(180deg, var(--ppt-table-header-gradient-start), var(--ppt-table-header-gradient-end)) !important;
+  color: var(--ppt-table-header-text) !important;
   padding: 6px 8px !important;
   font-size: 9px !important;
   font-weight: 600 !important;
@@ -302,10 +353,84 @@ body {
 .table-box tr:hover { background: #F0F7FF !important; }
 .td-left { text-align: left !important; font-weight: 600; }
 
+/* --- 表格密度标准 --- */
+.table-compact th,
+.compact-table th {
+  padding: 4px 6px !important;
+  font-size: 8.5px !important;
+  line-height: 1.2 !important;
+}
+.table-compact td,
+.compact-table td {
+  padding: 3px 6px !important;
+  font-size: 8.5px !important;
+  line-height: 1.25 !important;
+}
+.table-dense th,
+.fit-table th {
+  padding: 3px 4px !important;
+  font-size: 7.8px !important;
+  line-height: 1.15 !important;
+}
+.table-dense td,
+.fit-table td {
+  padding: 2px 4px !important;
+  font-size: 8px !important;
+  line-height: 1.2 !important;
+}
+.table-ultra th,
+.ultra-compact-table th {
+  padding: 2px 3px !important;
+  font-size: 7.2px !important;
+  line-height: 1.1 !important;
+}
+.table-ultra td,
+.ultra-compact-table td {
+  padding: 1.5px 3px !important;
+  font-size: 7.2px !important;
+  line-height: 1.12 !important;
+}
+
 /* --- 徽标 --- */
 .badge-r { color: #991B1B !important; font-weight: 700 !important; }
 .badge-g { color: #047857 !important; font-weight: 700 !important; }
 .badge-y { color: #B45309 !important; font-weight: 700 !important; }
+.status-badge,
+.risk-badge {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  min-height: 12px;
+  padding: 2px 6px !important;
+  border-radius: 1px !important;
+  font-size: 7px !important;
+  line-height: 1 !important;
+  font-weight: 700 !important;
+  white-space: nowrap;
+  color: #FFFFFF !important;
+  background: var(--ppt-chart-alert) !important;
+}
+.status-badge.good,
+.bg-good .risk-badge,
+.risk-row-item.bg-good .risk-badge,
+.risk-row-item.good-style .risk-badge {
+  background: var(--ppt-chart-good) !important;
+}
+.status-badge.warn,
+.bg-warn .risk-badge,
+.risk-row-item.bg-warn .risk-badge,
+.risk-row-item.warning-style .risk-badge {
+  background: var(--ppt-chart-warn) !important;
+}
+.status-badge.info,
+.bg-info .risk-badge,
+.risk-row-item.bg-info .risk-badge,
+.risk-row-item.blue-style .risk-badge {
+  background: var(--ppt-chart-series-5) !important;
+}
+.status-badge.neutral {
+  background: var(--ppt-chart-text-muted) !important;
+}
 
 .trend-good { color: #047857 !important; font-weight: 700 !important; }
 .trend-warn { color: #B45309 !important; font-weight: 700 !important; }
@@ -439,6 +564,40 @@ body {
   color: #64748B !important;
   box-shadow: none !important;
   flex-shrink: 0;
+}
+.ppt-note,
+.stat-note,
+.summary-note,
+.table-note {
+  font-size: 7px !important;
+  line-height: 1.45 !important;
+  color: var(--ppt-text-note) !important;
+}
+.ppt-note strong,
+.summary-note strong,
+.table-note strong {
+  color: #475569 !important;
+  font-weight: 800;
+}
+
+/* --- 页面空间分配工具 --- */
+.slide-stack {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+.space-even-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+.space-even-stack > * {
+  min-height: 0;
 }
 
 /* --- 页脚 --- */

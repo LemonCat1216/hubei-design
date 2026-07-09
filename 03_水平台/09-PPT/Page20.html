@@ -10,18 +10,26 @@
         .bd table td { padding: 4.5px 6px !important; font-size: 8.5px !important; }
         .table-box th { padding: 5px 6px !important; font-size: 9px !important; }
 
-        /* 2. 右侧面板：缩小 gap 间距，强制自适应收缩 (min-height:0) */
-        .summary-right-panel { flex: 1.15; display: flex; flex-direction: column; gap: 8px; min-height: 0; }
+        /* 2. 右侧面板：压缩纵向间距，确保三块内容不越过页脚 */
+        .summary-right-panel { flex: 1.15; display: flex; flex-direction: column; gap: 6px; min-height: 0; overflow: hidden; }
 
-        /* 3. 2x3 矩阵卡片：缩小内部 padding 和 gap，完美嵌入 */
-        .matrix-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; flex: 1; margin-top: 4px; min-height: 0; }
-        .matrix-box { display: flex; justify-content: space-between; align-items: center; border-radius: 3px; padding: 6px 10px; background: var(--ppt-bg-muted); border: 1px solid var(--ppt-border-default); }
-        .matrix-lbl { font-size: 9px; color: #475569; font-weight: 700; }
-        .matrix-num { font-size: 13px; font-weight: 900; }
+        /* 3. 2x3 矩阵卡片：使用弹性高度，避免右下角说明被挤出 */
+        .wq-matrix-card { flex: 1.15 1 0 !important; min-height: 0; padding: 5px 7px !important; overflow: hidden; }
+        .matrix-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 2px 4px; flex: 1; margin-top: 2px; min-height: 0; }
+        .matrix-box { display: flex; justify-content: space-between; align-items: center; border-radius: 2px; padding: 1px 6px; background: var(--ppt-bg-muted); border: 1px solid var(--ppt-border-default); min-height: 0; }
+        .matrix-lbl { font-size: 7px; color: #475569; font-weight: 700; }
+        .matrix-num { font-size: 9px; font-weight: 900; line-height: 1; }
+        .matrix-unit { font-size: 6px !important; color: #94A3B8; font-weight: 600 !important; margin-left: 1px !important; }
 
-        /* 4. 趋势卡片：收紧高度，字号适中 */
-        .anomaly-card { display: flex; gap: 6px; width: 100%; margin-top: 4px; flex: 1; min-height: 0; }
-        .anomaly-item { flex: 1; border-radius: 3px; padding: 6px 4px; display: flex; flex-direction: column; align-items: center; justify-content: center; border: 1px solid var(--ppt-border-default); }
+        /* 4. 趋势卡片：和矩阵卡按剩余空间均匀分配 */
+        .trend-card { flex: 0.9 1 0 !important; min-height: 0; padding: 5px 7px !important; overflow: hidden; }
+        .anomaly-card { display: flex; gap: 4px; width: 100%; margin-top: 2px; flex: 1; min-height: 0; }
+        .anomaly-item { flex: 1; border-radius: 2px; padding: 1px 3px; display: flex; flex-direction: column; align-items: center; justify-content: center; border: 1px solid var(--ppt-border-default); min-height: 0; }
+        .anomaly-item .a-title { font-size: 7px !important; line-height: 1.05; }
+        .anomaly-item .a-num { font-size: 10px !important; line-height: 1; margin-top: 0 !important; }
+        .anomaly-item .a-sub { font-size: 6px !important; line-height: 1.05; margin-top: 0 !important; }
+        .summary-note { flex: 0 0 auto !important; min-height: 34px; padding: 5px 8px !important; line-height: 1.35 !important; overflow: visible; }
+        .summary-note span { font-size: 7px !important; line-height: 1.35 !important; color: var(--ppt-chart-text-muted) !important; }
     </style>
 </head>
 <body>
@@ -45,7 +53,7 @@
         <div style="display:flex; gap:12px; flex:1; min-height:0; overflow:hidden;">
 
             <div class="table-box" style="flex:0 0 48%; display:flex; flex-direction:column; background:var(--ppt-bg-slide); overflow:hidden;">
-                <div style="font-size:9.5px; font-weight:700; color:#1E293B; padding:6px 10px; border-bottom:1px solid var(--ppt-border-default); flex-shrink:0; background:var(--ppt-bg-muted);">📊 丹江口水库重点控制断面水质同比</div>
+                <div style="font-size:9.5px; font-weight:700; color:#1E293B; padding:6px 10px; border-bottom:1px solid var(--ppt-border-default); flex-shrink:0; background:var(--ppt-bg-muted);">丹江口水库重点控制断面水质同比</div>
                 <table style="width:100%; flex:1;">
                     <thead><tr><th>点位名称</th><th>2025同期</th><th>2026当前</th><th>总磷变化</th><th>状态评估</th></tr></thead>
                     <tbody>
@@ -62,41 +70,41 @@
 
             <div class="summary-right-panel">
 
-                <div style="background:var(--ppt-bg-slide); border:1px solid var(--ppt-border-default); border-radius:3px; padding:8px 10px; flex: 1.2; display: flex; flex-direction: column;">
-                    <div style="font-size:9.5px; font-weight:800; color:#0F172A;">📊 库区断面水质类别分布（共7个）</div>
+                <div class="wq-matrix-card" style="background:var(--ppt-bg-slide); border:1px solid var(--ppt-border-default); border-radius:3px; display: flex; flex-direction: column;">
+                    <div style="font-size:8px; font-weight:800; color:#0F172A;">库区断面水质类别分布（共7个）</div>
                     <div class="matrix-grid">
-                        <div class="matrix-box wq-card wq-i"><div class="matrix-lbl">Ⅰ类(优)</div><div class="matrix-num">0<span style="font-size:8px;color:#94A3B8;font-weight:normal;margin-left:2px;">个</span></div></div>
-                        <div class="matrix-box wq-card wq-ii"><div class="matrix-lbl">Ⅱ类(优质)</div><div class="matrix-num">7<span style="font-size:8px;color:#94A3B8;font-weight:normal;margin-left:2px;">个</span></div></div>
-                        <div class="matrix-box wq-card wq-iii"><div class="matrix-lbl">Ⅲ类(达标)</div><div class="matrix-num">0<span style="font-size:8px;color:#94A3B8;font-weight:normal;margin-left:2px;">个</span></div></div>
-                        <div class="matrix-box wq-card wq-iv"><div class="matrix-lbl">Ⅳ类(临界)</div><div class="matrix-num">0<span style="font-size:8px;color:#94A3B8;font-weight:normal;margin-left:2px;">个</span></div></div>
-                        <div class="matrix-box wq-card wq-v"><div class="matrix-lbl">Ⅴ类(超标)</div><div class="matrix-num">0<span style="font-size:8px;color:#94A3B8;font-weight:normal;margin-left:2px;">个</span></div></div>
-                        <div class="matrix-box wq-card wq-inferior-v"><div class="matrix-lbl">劣Ⅴ(重污)</div><div class="matrix-num">0<span style="font-size:8px;color:#94A3B8;font-weight:normal;margin-left:2px;">个</span></div></div>
+                        <div class="matrix-box wq-card wq-i"><div class="matrix-lbl">Ⅰ类(优)</div><div class="matrix-num">0<span class="matrix-unit">个</span></div></div>
+                        <div class="matrix-box wq-card wq-ii"><div class="matrix-lbl">Ⅱ类(优质)</div><div class="matrix-num">7<span class="matrix-unit">个</span></div></div>
+                        <div class="matrix-box wq-card wq-iii"><div class="matrix-lbl">Ⅲ类(达标)</div><div class="matrix-num">0<span class="matrix-unit">个</span></div></div>
+                        <div class="matrix-box wq-card wq-iv"><div class="matrix-lbl">Ⅳ类(临界)</div><div class="matrix-num">0<span class="matrix-unit">个</span></div></div>
+                        <div class="matrix-box wq-card wq-v"><div class="matrix-lbl">Ⅴ类(超标)</div><div class="matrix-num">0<span class="matrix-unit">个</span></div></div>
+                        <div class="matrix-box wq-card wq-inferior-v"><div class="matrix-lbl">劣Ⅴ(重污)</div><div class="matrix-num">0<span class="matrix-unit">个</span></div></div>
                     </div>
                 </div>
 
-                <div style="background:var(--ppt-bg-slide); border:1px solid var(--ppt-border-default); border-radius:3px; padding:8px 10px; flex:0.9; display:flex; flex-direction:column;">
-                    <div style="font-size:9.5px; font-weight:800; color:#0F172A;">📈 断面水质同比变化态势</div>
+                <div class="trend-card" style="background:var(--ppt-bg-slide); border:1px solid var(--ppt-border-default); border-radius:3px; display:flex; flex-direction:column;">
+                    <div style="font-size:8px; font-weight:800; color:#0F172A;">断面水质同比变化态势</div>
                     <div class="anomaly-card">
                         <div class="anomaly-item bg-good">
-                            <div style="font-size:8.5px; font-weight:800; color:#065F46;">水质变好</div>
-                            <div style="font-size:16px; font-weight:900; color:#047857; margin-top:2px;">1</div>
-                            <div style="font-size:7.5px; color:#475569; margin-top:1px;">个断面</div>
+                            <div class="a-title" style="font-weight:800; color:#065F46;">水质变好</div>
+                            <div class="a-num" style="font-weight:900; color:#047857;">1</div>
+                            <div class="a-sub" style="color:#475569;">个断面</div>
                         </div>
                         <div class="anomaly-item" style="background:var(--ppt-bg-neutral);">
-                            <div style="font-size:8.5px; font-weight:800; color:#374151;">水质持平</div>
-                            <div style="font-size:16px; font-weight:900; color:#4B5563; margin-top:2px;">6</div>
-                            <div style="font-size:7.5px; color:#475569; margin-top:1px;">个断面</div>
+                            <div class="a-title" style="font-weight:800; color:#374151;">水质持平</div>
+                            <div class="a-num" style="font-weight:900; color:#4B5563;">6</div>
+                            <div class="a-sub" style="color:#475569;">个断面</div>
                         </div>
                         <div class="anomaly-item bg-alert">
-                            <div style="font-size:8.5px; font-weight:800; color:#991B1B;">水质变差</div>
-                            <div style="font-size:16px; font-weight:900; color:#991B1B; margin-top:2px;">0</div>
-                            <div style="font-size:7.5px; color:#475569; margin-top:1px;">个断面</div>
+                            <div class="a-title" style="font-weight:800; color:#991B1B;">水质变差</div>
+                            <div class="a-num" style="font-weight:900; color:#991B1B;">0</div>
+                            <div class="a-sub" style="color:#475569;">个断面</div>
                         </div>
                     </div>
                 </div>
 
-                <div class="ex-info" style="flex-shrink:0; background:var(--ppt-bg-muted)!important; padding:6px 10px!important;">
-                    <span style="font-size:8px; color:#1E40AF; line-height:1.4; display:block;">📊 <strong>总结性描述：</strong>丹江口水库整体水体运行平稳且保持优质。后续还需持续跟踪各断面水质变化趋势及核心指标的动态波动情况，全面保障水源地环境质量安全。</span>
+                <div class="ex-info summary-note" style="background:var(--ppt-bg-muted)!important;">
+                    <span style="display:block;"><strong>总结性描述：</strong>丹江口水库整体水体运行平稳且保持优质。后续还需持续跟踪各断面水质变化趋势及核心指标的动态波动情况，全面保障水源地环境质量安全。</span>
                 </div>
             </div>
 

@@ -59,19 +59,18 @@ body.presentation-mode{background:#020617}
     display: flex;
     align-items: center;       /* 关键：垂直居中 */
     justify-content: center;   /* 关键：水平居中 */
-    background: #cbd5e1;       /* 改用深一点的背景色，让 PPT 卡片更凸显 */
+    background: #e2e8f0;
     overflow: hidden;
     position: relative;
 }
 
-/* 核心画框：设定为固定的虚拟分辨率 */
+/* 核心画框：只包住 860px * 175% 的真实 16:9 幻灯片画布 */
 .preview-frame {
     border: none;
-    background: #f0f4f8;
-    /* 根据你子页面 860px 宽度 * 1.75 放大率精确计算出的完美画布尺寸 */
-    width: 1575px;
-    height: 917px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.15); /* 增加真实的阴影立体感 */
+    background: #ffffff;
+    width: 1505px;
+    height: 847px;
+    box-shadow: none;
     transform-origin: center center;          /* 缩放中心改为正中央 */
     flex-shrink: 0;
     transition: transform 0.15s ease-out;     /* 窗口拉伸时加入平滑动画 */
@@ -95,7 +94,7 @@ body.presentation-mode{background:#020617}
     border:1px solid rgba(148,163,184,.24);
     border-radius:8px;
     background:rgba(15,23,42,.74);
-    box-shadow:0 10px 30px rgba(0,0,0,.28);
+    box-shadow:none;
     backdrop-filter:blur(12px);
 }
 .presentation-mode .presentation-hud{display:flex}
@@ -125,7 +124,7 @@ body.presentation-mode{background:#020617}
 
 <div class="toolbar">
     <div class="toolbar-left">
-        <span class="toolbar-title">📊 PPT页面预览</span>
+        <span class="toolbar-title">PPT页面预览</span>
         <span class="toolbar-badge" id="pageCount">加载中...</span>
     </div>
     <div class="toolbar-center">
@@ -136,7 +135,7 @@ body.presentation-mode{background:#020617}
         <button class="btn" id="btnLast" title="最后一页">⏭</button>
     </div>
     <div class="toolbar-right">
-        <button class="btn presentation" id="btnPresent" title="全屏演示 (F)">⛶ 全屏演示</button>
+        <button class="btn presentation" id="btnPresent" title="全屏演示 (F)">全屏演示</button>
         <span style="font-size:10px;color:#64748b;margin-left:8px"><span class="kbd">←</span> <span class="kbd">→</span> 翻页</span>
     </div>
 </div>
@@ -193,15 +192,11 @@ body.presentation-mode{background:#020617}
       { section: "五、排污口排查整治" },
       { file: "Page21.html", label: "P21 入河排污口排查整治总览", idx: 25 },
       { file: "Page22.html", label: "P22 各市州排污口排查进展", idx: 26 },
-      { file: "Page23.html", label: "P23 不达标断面对应排口清单", idx: 27 },
-      { file: "Page24.html", label: "P24 污染溯源预警分析", idx: 28 },
-      { file: "Page26.html", label: "P26 入河排污口闭环进度", idx: 30 },
-      { file: "Page29.html", label: "P29 排污口日常监管运行", idx: 33 },
+      { file: "Page23.html", label: "P23 重点河湖排口分布", idx: 27 },
       // --- 第六幕：其他业务 ---
       { section: "六、其他业务" },
       { file: "Page28.html", label: "P28 中央水污染防治资金项目调度", idx: 32 },
       { file: "Page27.html", label: "P27 饮用水水源地管理与督办", idx: 31 },
-      { file: "Page25.html", label: "P25 黑臭水体整治与督办", idx: 29 },
       // --- 第七幕：问题聚焦与督办 ---
       { section: "七、问题聚焦与督办" },
       { file: "Page30.html", label: "P30 重点问题清单与整改进展", idx: 34 },
@@ -352,7 +347,7 @@ body.presentation-mode{background:#020617}
     function setPresentationMode(active) {
         document.body.classList.toggle("presentation-mode", active);
         document.getElementById("presentationHud").setAttribute("aria-hidden", active ? "false" : "true");
-        btnPresent.textContent = active ? "退出演示" : "⛶ 全屏演示";
+        btnPresent.textContent = active ? "退出演示" : "全屏演示";
         btnPresent.title = active ? "退出全屏" : "全屏演示 (F)";
         setTimeout(autoScalePreview, 50);
     }
@@ -439,8 +434,8 @@ body.presentation-mode{background:#020617}
         var inset = document.body.classList.contains('presentation-mode') ? 0 : 40;
         var availWidth = previewArea.clientWidth - inset;
         var availHeight = previewArea.clientHeight - inset;
-        var frameWidth = 1575;
-        var frameHeight = 917;
+        var frameWidth = 1505;
+        var frameHeight = 847;
         var scale = Math.min(availWidth / frameWidth, availHeight / frameHeight);
         iframe.style.transform = 'scale(' + scale + ')';
     }

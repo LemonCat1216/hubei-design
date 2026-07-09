@@ -67,11 +67,11 @@
     .risk-row-item.blue-style { background: var(--ppt-bg-info); border-color: var(--ppt-border-info);  }
     .risk-loc-info { display: flex; flex-direction: column; gap: 1px; flex: 0 0 35%; }
     .risk-name { font-size: 9.5px; font-weight: 800; color: #166534; }
-    .risk-row-item.blue-style .risk-name { color: #1E40AF; }
+    .risk-row-item.blue-style .risk-name { color: var(--ppt-chart-series-5); }
     .risk-type { font-size: 7.5px; color: #15803D; opacity: 0.7; }
-    .risk-row-item.blue-style .risk-type { color: #1D4ED8; opacity: 0.7; }
+    .risk-row-item.blue-style .risk-type { color: var(--ppt-chart-series-5); opacity: 0.7; }
     .risk-detail-info { display: flex; flex-direction: column; gap: 1px; font-size: 8.5px; color: #475569; flex: 1; padding-left: 10px; }
-    .risk-badge { font-size: 8px; background: #B45309; color: #fff; padding: 1px 6px; font-weight: 700; border-radius: 1px; white-space: nowrap; }
+    .risk-badge { white-space: nowrap; }
 </style>
 </head>
 <body>
@@ -87,10 +87,10 @@
         </div>
         <div class="watershed-main-row">
             <div class="table-box watershed-left-panel" style="flex:0 0 55%; display:flex; flex-direction:column; padding:6px; background:var(--ppt-bg-muted);">
-                <div style="font-size:9px; font-weight:700; color:#1E293B; margin-bottom:5px; padding-left:2px;">🌿 清江全流域断面水质看板 (26个)</div>
+                <div style="font-size:9px; font-weight:700; color:#1E293B; margin-bottom:5px; padding-left:2px;">清江全流域断面水质看板 (26个)</div>
                 <div class="qingjiang-wall">
                     <div class="section-block">
-                        <div class="section-title">🟦 Ⅰ类水质（5个）</div>
+                        <div class="section-title">Ⅰ类水质（5个）</div>
                         <div class="pill-grid">
                             <div class="pill-node class-i"><span class="pill-name">五峰湾潭河</span><span class="node-dot"></span></div>
                             <div class="pill-node class-i"><span class="pill-name">恩施大沙河</span><span class="node-dot"></span></div>
@@ -101,7 +101,7 @@
                     </div>
 
                     <div class="section-block">
-                        <div class="section-title">🟦 Ⅱ类水质（18个）</div>
+                        <div class="section-title">Ⅱ类水质（18个）</div>
                         <div class="pill-grid">
                             <div class="pill-node class-ii"><span class="pill-name">恩施国控</span><span class="node-dot"></span></div>
                             <div class="pill-node class-ii"><span class="pill-name">利川段干流</span><span class="node-dot"></span></div>
@@ -125,7 +125,7 @@
                     </div>
 
                     <div class="section-block">
-                        <div class="section-title">🟩 Ⅲ类水质（7个）</div>
+                        <div class="section-title">Ⅲ类水质（7个）</div>
                         <div class="pill-grid">
                             <div class="pill-node class-iii"><span class="pill-name">建始段干流</span><span class="node-dot"></span></div>
                             <div class="pill-node class-iii"><span class="pill-name">支流茅坪河</span><span class="node-dot"></span></div>
@@ -139,14 +139,14 @@
                 </div>
             </div>
             <div class="content-panel watershed-right-panel" style="flex:1; display:flex; flex-direction:column; gap:6px; min-height:0;">
-                <div style="font-size:9px; font-weight:700; color:#047857; padding:3px 0; flex-shrink:0;">🌿 清江水质靶向分类管控</div>
+                <div class="right-panel-heading" style="color:#047857;">清江水质靶向分类管控</div>
                 <div style="flex:1; display:grid; grid-template-rows: repeat(3, 1fr); gap:6px; min-height:0;">
                     
                     <div class="risk-row-item bg-good border-good" style="padding:4px 10px; display:flex; align-items:center;">
                         <div style="display:flex; flex-direction:column; justify-content:center; gap:3px; width:100%;">
                             <div style="display:flex; justify-content:space-between; align-items:center;">
                                 <span style="font-size:9px; font-weight:700; color:#047857; line-height:1.2;">劣Ⅴ类·动态清零（0个）</span>
-                                <span class="risk-badge" style="font-size:7px; background:#047857; padding:2px 6px; line-height:1;">持续清零</span>
+                                <span class="risk-badge">持续清零</span>
                             </div>
                             <div style="font-size:8px; line-height:1.5; color:#475569;">清江全线已实现劣Ⅴ类断面动态"清零"。</div>
                             <div style="font-size:8px; line-height:1.5; color:#475569;">整体水质保持优良水平，无超标断面。</div>
@@ -156,8 +156,8 @@
                     <div class="risk-row-item" style="padding:4px 10px; background:var(--ppt-bg-alert); border-color:var(--ppt-border-alert);  display:flex; align-items:center;">
                         <div style="display:flex; flex-direction:column; justify-content:center; gap:3px; width:100%;">
                             <div style="display:flex; justify-content:space-between; align-items:center;">
-                                <span style="font-size:9px; font-weight:700; color:#991B1B; line-height:1.2;">🔴 Ⅴ类·动态监控（2个）</span>
-                                <span class="risk-badge" style="font-size:7px; background:#991B1B; padding:2px 6px; line-height:1;">动态监控</span>
+                                <span style="font-size:9px; font-weight:700; color:#991B1B; line-height:1.2;">Ⅴ类·动态监控（2个）</span>
+                                <span class="risk-badge">动态监控</span>
                             </div>
                             <div style="font-size:8px; line-height:1.5; color:#475569;">清江支流忠建河，所在市州：恩施 · 超标因子：COD、总磷</div>
                             <div style="font-size:8px; line-height:1.5; color:#475569;">清江支流野三河，所在市州：恩施 · 超标因子：总磷</div>
@@ -167,8 +167,8 @@
                     <div class="risk-row-item" style="padding:4px 10px; background:var(--ppt-bg-alert); border-color:var(--ppt-border-alert); display:flex; align-items:center;">
                         <div style="display:flex; flex-direction:column; justify-content:center; gap:3px; width:100%;">
                             <div style="display:flex; justify-content:space-between; align-items:center;">
-                                <span style="font-size:9px; font-weight:700; color:#991B1B; line-height:1.2;">🔴 Ⅳ类·关注（2个）</span>
-                                <span class="risk-badge" style="font-size:7px; background:#991B1B; padding:2px 6px; line-height:1;">常规监测</span>
+                                <span style="font-size:9px; font-weight:700; color:#991B1B; line-height:1.2;">Ⅳ类·关注（2个）</span>
+                                <span class="risk-badge">常规监测</span>
                             </div>
                             <div style="font-size:8px; line-height:1.5; color:#475569;">清江利川段，所在市州：恩施 · 超标因子：总磷（阶段性波动）</div>
                             <div style="font-size:8px; line-height:1.5; color:#475569;">清江恩施段，所在市州：恩施 · 超标因子：氨氮</div>

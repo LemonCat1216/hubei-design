@@ -75,7 +75,7 @@
     .risk-row-item.warning-style .risk-name { color: #92400E; }
     .risk-type { font-size: 7.5px; color: #7F1D1D; opacity: 0.7; }
     .risk-detail-info { display: flex; flex-direction: column; gap: 1px; font-size: 8.5px; color: #475569; flex: 1; padding-left: 10px; }
-    .risk-badge { font-size: 8px; background: #991B1B; color: #fff; padding: 1px 6px; font-weight: 700; border-radius: 1px; white-space: nowrap; }
+    .risk-badge { white-space: nowrap; }
 </style>
 </head>
 <body>
@@ -91,10 +91,10 @@
         </div>
         <div class="watershed-main-row">
             <div class="table-box watershed-left-panel" style="flex:0 0 55%; display:flex; flex-direction:column; padding:6px; background:var(--ppt-bg-muted);">
-                <div style="font-size:9px; font-weight:700; color:#1E293B; margin-bottom:4px; padding-left:2px;">📊 汉江流域水质分类断面墙 (52个)</div>
+                <div style="font-size:9px; font-weight:700; color:#1E293B; margin-bottom:4px; padding-left:2px;">汉江流域水质分类断面墙 (52个)</div>
                 <div class="hanjiang-wall-box">
                     <div class="region-block">
-                        <div class="region-title"><span>🟦 Ⅰ类水质（10个）</span></div>
+                        <div class="region-title"><span>Ⅰ类水质（10个）</span></div>
                         <div class="region-grid">
                             <div class="mini-node class-i"><span>胡家营</span><span class="node-dot"></span></div>
                             <div class="mini-node class-i"><span>孤山</span><span class="node-dot"></span></div>
@@ -110,7 +110,7 @@
                     </div>
 
                     <div class="region-block">
-                        <div class="region-title"><span>🟦 Ⅱ类水质（25个）</span></div>
+                        <div class="region-title"><span>Ⅱ类水质（25个）</span></div>
                         <div class="region-grid">
                             <div class="mini-node class-ii"><span>神定河口</span><span class="node-dot"></span></div>
                             <div class="mini-node class-ii"><span>泗河口</span><span class="node-dot"></span></div>
@@ -141,7 +141,7 @@
                     </div>
 
                     <div class="region-block">
-                        <div class="region-title"><span>🟩 Ⅲ类水质（14个）</span></div>
+                        <div class="region-title"><span>Ⅲ类水质（14个）</span></div>
                         <div class="region-grid">
                             <div class="mini-node class-iii"><span>天门岳口</span><span class="node-dot"></span></div>
                             <div class="mini-node class-iii"><span>仙桃仙河</span><span class="node-dot"></span></div>
@@ -163,14 +163,14 @@
                 </div>
             </div>
             <div class="content-panel watershed-right-panel" style="flex:1; display:flex; flex-direction:column; gap:6px; min-height:0;">
-                <div style="font-size:9px; font-weight:700; color:#991B1B; padding:3px 0; flex-shrink:0;">⚠ 汉江水质分级管控</div>
+                <div class="right-panel-heading" style="color:#991B1B;">汉江水质分级管控</div>
                 <div style="flex:1; display:grid; grid-template-rows: repeat(3, 1fr); gap:6px; min-height:0;">
                     
                     <div class="risk-row-item" style="padding:4px 10px; display:flex; align-items:center;">
                         <div style="display:flex; flex-direction:column; justify-content:center; gap:2px; width:100%;">
                             <div style="display:flex; justify-content:space-between; align-items:center;">
-                                <span style="font-size:9px; font-weight:700; color:#991B1B; line-height:1.2;">🔴 劣Ⅴ类（3个）</span>
-                                <span class="risk-badge" style="font-size:7px; background:#991B1B; padding:2px 6px; line-height:1;">优先管控</span>
+                                <span style="font-size:9px; font-weight:700; color:#991B1B; line-height:1.2;">劣Ⅴ类（3个）</span>
+                                <span class="risk-badge">优先管控</span>
                             </div>
                             <div style="font-size:8px; line-height:1.4; color:#475569;">竹皮河口，所在市州：潜江 · 超标因子：氨氮</div>
                             <div style="font-size:8px; line-height:1.4; color:#475569;">天门河，所在市州：天门 · 超标因子：氨氮</div>
@@ -181,8 +181,8 @@
                     <div class="risk-row-item" style="padding:4px 10px; background:var(--ppt-bg-alert); border-color:var(--ppt-border-alert);  display:flex; align-items:center;">
                         <div style="display:flex; flex-direction:column; justify-content:center; gap:2px; width:100%;">
                             <div style="display:flex; justify-content:space-between; align-items:center;">
-                                <span style="font-size:9px; font-weight:700; color:#991B1B; line-height:1.2;">🔴 Ⅴ类（3个）</span>
-                                <span class="risk-badge" style="font-size:7px; background:#991B1B; padding:2px 6px; line-height:1;">动态监控</span>
+                                <span style="font-size:9px; font-weight:700; color:#991B1B; line-height:1.2;">Ⅴ类（3个）</span>
+                                <span class="risk-badge">动态监控</span>
                             </div>
                             <div style="font-size:8px; line-height:1.4; color:#475569;">天门河二，所在市州：襄阳 · 超标因子：氨氮、总磷</div>
                             <div style="font-size:8px; line-height:1.4; color:#475569;">东荆河，所在市州：潜江 · 超标因子：氨氮</div>
@@ -193,8 +193,8 @@
                     <div class="risk-row-item" style="padding:4px 10px; background:var(--ppt-bg-alert); border-color:var(--ppt-border-alert);  display:flex; align-items:center;">
                         <div style="display:flex; flex-direction:column; justify-content:center; gap:2px; width:100%;">
                             <div style="display:flex; justify-content:space-between; align-items:center;">
-                                <span style="font-size:9px; font-weight:700; color:#991B1B; line-height:1.2;">🔴 Ⅳ类（3个）</span>
-                                <span class="risk-badge" style="font-size:7px; background:#991B1B; padding:2px 6px; line-height:1;">持续跟踪</span>
+                                <span style="font-size:9px; font-weight:700; color:#991B1B; line-height:1.2;">Ⅳ类（3个）</span>
+                                <span class="risk-badge">持续跟踪</span>
                             </div>
                             <div style="font-size:8px; line-height:1.4; color:#475569;">蛮河口，所在市州：襄阳 · 超标因子：溶解氧</div>
                             <div style="font-size:8px; line-height:1.4; color:#475569;">通顺河，所在市州：仙桃 · 超标因子：总磷</div>

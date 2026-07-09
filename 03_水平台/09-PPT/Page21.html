@@ -10,32 +10,12 @@
   .content-layout {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    grid-template-rows: repeat(2, minmax(0, 1fr));
+    grid-template-rows: minmax(0, .9fr) minmax(0, 1fr);
     gap: 12px;
     flex: 1;
     min-height: 0;
     overflow: hidden;
   }
-  .kpi-row { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); }
-  .kpi-row .kpi-card {
-    min-height: 49px;
-    padding: 7px 10px !important;
-    background: linear-gradient(180deg, #FFFFFF 0%, #F8FAFC 100%) !important;
-    border: 1px solid var(--ppt-border-default) !important;
-    border-radius: 4px;
-    box-shadow: none !important;
-  }
-  .kpi-row .kpi-label {
-    min-height: 18px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 8px !important;
-    line-height: 1.2;
-    font-weight: 700 !important;
-    text-align: center;
-  }
-  .kpi-row .kpi-value { margin-top: 1px; font-size: 17px !important; line-height: 1.05; }
   .chart-wrapper, .table-box {
     background: #FFFFFF !important;
     border: 1px solid var(--ppt-border-default) !important;
@@ -53,18 +33,17 @@
     color: #0F172A;
     margin-bottom: 6px;
   }
-  .section-title::before { content: ""; width: 3px; height: 11px; background: #1A3A5C; border-radius: 1px; }
+  .section-title::before { content: ""; width: 3px; height: 11px; background: var(--ppt-chart-series-1); border-radius: 1px; }
   .task-card {
     display: flex !important;
     flex-direction: column;
     justify-content: center;
-    padding: 10px 14px !important;
+    padding: 8px 14px !important;
   }
-  .task-card > div[style*="display:flex"] { padding: 2px 0; }
+  .task-card > div[style*="display:flex"] { padding: 1px 0; }
   .progress-bar { height: 6px; border-radius: 2px; background: #E5EAF1 !important; }
   .progress-fill { border-radius: 2px; }
-  .review-card-wrap,
-  .water-card { padding: 9px 14px !important; }
+  .review-card-wrap { padding: 9px 14px !important; }
   .review-card-wrap {
     display: flex !important;
     flex-direction: column;
@@ -90,40 +69,20 @@
   }
   .review-card .lbl { font-size: 8px; font-weight: 700; margin-bottom: 2px; }
   .review-card .val { font-size: 15px; font-weight: 850; line-height: 1.1; font-variant-numeric: tabular-nums; }
-  .water-row {
-    display: flex;
-    align-items: center;
-    gap: 7px;
-    padding: 1px 0;
-    border-bottom: 1px solid var(--ppt-border-subtle);
-  }
-  .water-row:last-child { border-bottom: 0; }
-  .water-dot { width: 6px; height: 6px; border-radius: 2px; flex-shrink: 0; }
-  .water-name { flex: 1; font-size: 8px; font-weight: 700; color: #334155; white-space: nowrap; }
-  .water-num { width: 48px; font-size: 9px; font-weight: 800; text-align: right; font-variant-numeric: tabular-nums; }
-  .water-pct { width: 34px; font-size: 8px; font-weight: 700; color: #64748B; text-align: right; font-variant-numeric: tabular-nums; }
-  .water-card {
-    display: flex !important;
-    flex-direction: column;
-  }
-  .water-card > div[style*="flex:1"] {
-    justify-content: center !important;
-    gap: 4px !important;
-    min-height: 0;
-  }
-  .water-card > div[style*="display:flex; font-size:8.5px"] {
-    padding-bottom: 2px !important;
-  }
   table.p21-tbl { border-collapse: separate !important; border-spacing: 0; }
   table.p21-tbl th {
     padding: 5px 12px !important;
     font-size: 9px !important;
-    color: #FFFFFF !important;
-    background: #1A3A5C !important;
+    color: var(--ppt-table-header-text) !important;
+    background: var(--ppt-table-header-solid) !important;
   }
   table.p21-tbl td { padding: 5px 12px !important; font-size: 10px !important; font-variant-numeric: tabular-nums; }
   table.p21-tbl tbody tr:nth-child(even) { background: #F8FAFC !important; }
   table.p21-tbl tbody tr:last-child td { border-bottom: 0 !important; }
+  .table-panel { display:flex; flex-direction:column; overflow:hidden; }
+  .table-panel .p21-tbl { height: 100%; }
+  .table-panel .p21-tbl th,
+  .table-panel .p21-tbl td { vertical-align: middle; }
 </style>
 </head>
 <body>
@@ -134,29 +93,23 @@
   </div>
   <div class="core-bar">▎ 2026年1月，全省累计排查入河排污口共34,114个，其中 A类（三江一库排口）11,867个、B类（国家20个重点河湖排口）3,528个、C类（省级重点26个河湖排口）3,295个、D类（其他排口）15,424个。已完成监测13,795个（40.43%），已完成溯源25,451个（74.59%），已完成整治18,178个（53.28%）。</div>
   <div class="bd">
-    <div class="kpi-row" style="margin-bottom:0; flex-shrink:0; gap:10px;">
-      <div class="kpi-card" style=""><div class="kpi-label" style="color:#2563EB;">A类（三江一库排口）</div><div class="kpi-value" style="color:#2563EB;">11,867</div></div>
-      <div class="kpi-card" style=""><div class="kpi-label" style="color:#D97706;">B类（国家20个重点河湖排口）</div><div class="kpi-value" style="color:#D97706;">3,528</div></div>
-      <div class="kpi-card"><div class="kpi-label" style="color:#059669;">C类（省级重点26个河湖排口）</div><div class="kpi-value" style="color:#059669;">3,295</div></div>
-      <div class="kpi-card"><div class="kpi-label" style="color:#64748B;">D类（其他排口）</div><div class="kpi-value" style="color:#64748B;">15,424</div></div>
-    </div>
     <div class="content-layout">
         <div class="chart-wrapper task-card">
           <div class="section-title">任务完成情况</div>
           <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">
             <span style="font-size:9px; font-weight:600; color:#475569; width:60px; flex-shrink:0; text-align:right;">溯源任务</span>
-            <div class="progress-bar" style="flex:1;"><div class="progress-fill" style="width:74.6%;background:#059669;"></div></div>
-            <span style="font-size:10px; font-weight:700; color:#059669; width:46px; text-align:right;">74.59%</span>
+            <div class="progress-bar" style="flex:1;"><div class="progress-fill" style="width:74.6%;background:var(--ppt-chart-good-strong);"></div></div>
+            <span style="font-size:10px; font-weight:700; color:var(--ppt-chart-good-strong); width:46px; text-align:right;">74.59%</span>
           </div>
           <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">
             <span style="font-size:9px; font-weight:600; color:#475569; width:60px; flex-shrink:0; text-align:right;">整治任务</span>
-            <div class="progress-bar" style="flex:1;"><div class="progress-fill" style="width:53.3%;background:#D97706;"></div></div>
-            <span style="font-size:10px; font-weight:700; color:#D97706; width:46px; text-align:right;">53.28%</span>
+            <div class="progress-bar" style="flex:1;"><div class="progress-fill" style="width:53.3%;background:var(--ppt-chart-warn-strong);"></div></div>
+            <span style="font-size:10px; font-weight:700; color:var(--ppt-chart-warn-strong); width:46px; text-align:right;">53.28%</span>
           </div>
           <div style="display:flex; align-items:center; gap:8px;">
             <span style="font-size:9px; font-weight:600; color:#475569; width:60px; flex-shrink:0; text-align:right;">问题线索</span>
-            <div class="progress-bar" style="flex:1;"><div class="progress-fill" style="width:21.3%;background:#EF4444;"></div></div>
-            <span style="font-size:10px; font-weight:700; color:#EF4444; width:46px; text-align:right;">21.32%</span>
+            <div class="progress-bar" style="flex:1;"><div class="progress-fill" style="width:21.3%;background:var(--ppt-chart-alert-strong);"></div></div>
+            <span style="font-size:10px; font-weight:700; color:var(--ppt-chart-alert-strong); width:46px; text-align:right;">21.32%</span>
           </div>
         </div>
         <div class="chart-wrapper review-card-wrap">
@@ -180,7 +133,7 @@
             </div>
           </div>
         </div>
-        <div class="table-box" style="display:flex; flex-direction:column; overflow:hidden;">
+        <div class="table-box table-panel">
           <table class="p21-tbl" style="width:100%;">
             <thead><tr><th>类别</th><th>数量</th><th>占比</th></tr></thead>
             <tbody>
@@ -191,17 +144,16 @@
             </tbody>
           </table>
         </div>
-        <div class="chart-wrapper water-card">
-          <div class="section-title">各水体管理级别</div>
-          <div style="flex:1; display:flex; flex-direction:column; gap:5px; justify-content:center;">
-            <div style="display:flex; font-size:8.5px; color:#94A3B8; font-weight:600; padding:1px 0 4px 13px; gap:6px;">
-              <span style="flex:1;">级别</span><span style="width:50px; text-align:right;">数量</span><span style="width:38px; text-align:right;">占比</span>
-            </div>
-            <div class="water-row"><span class="water-dot" style="background:#2563EB;"></span><span class="water-name">A类 三江一库排口</span><span class="water-num" style="color:#2563EB;">11,867</span><span class="water-pct">34.8%</span></div>
-            <div class="water-row"><span class="water-dot" style="background:#D97706;"></span><span class="water-name">B类 国家20个重点河湖排口</span><span class="water-num" style="color:#D97706;">3,528</span><span class="water-pct">10.3%</span></div>
-            <div class="water-row"><span class="water-dot" style="background:#059669;"></span><span class="water-name">C类 省级重点26个河湖排口</span><span class="water-num" style="color:#059669;">3,295</span><span class="water-pct">9.7%</span></div>
-            <div class="water-row"><span class="water-dot" style="background:#94A3B8;"></span><span class="water-name">D类 其他排口</span><span class="water-num" style="color:#64748B;">15,424</span><span class="water-pct">45.2%</span></div>
-          </div>
+        <div class="table-box table-panel">
+          <table class="p21-tbl" style="width:100%;">
+            <thead><tr><th>管理级别</th><th>数量</th><th>占比</th></tr></thead>
+            <tbody>
+              <tr><td class="td-left">A类（三江一库排口）</td><td style="font-weight:600;color:var(--ppt-chart-series-1);">11,867</td><td>34.8%</td></tr>
+              <tr><td class="td-left">B类（国家20个重点河湖排口）</td><td style="font-weight:600;color:var(--ppt-chart-warn-strong);">3,528</td><td>10.3%</td></tr>
+              <tr><td class="td-left">C类（省级重点26个河湖排口）</td><td style="font-weight:600;color:var(--ppt-chart-good-strong);">3,295</td><td>9.7%</td></tr>
+              <tr><td class="td-left">D类（其他排口）</td><td style="font-weight:600;color:var(--ppt-chart-text-muted);">15,424</td><td>45.2%</td></tr>
+            </tbody>
+          </table>
         </div>
     </div>
   </div>

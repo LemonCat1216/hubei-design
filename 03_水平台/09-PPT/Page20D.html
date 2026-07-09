@@ -33,7 +33,7 @@
                 <div style="display:flex;gap:10px;justify-content:center;font-size:9px;margin-bottom:6px;"><span style="color:#64748B;">同比 <span style="color:#047857;font-weight:700;">↓3个</span></span><span style="color:#64748B;">环比 <span style="color:#991B1B;font-weight:700;">↑1个</span></span></div>
                 <!-- 进度条反向使用：越少越好 -->
                 <div class="progress-bar" style="background: var(--ppt-bg-track); height: 6px; border-radius: 0; overflow: hidden; margin-bottom: 8px;">
-                    <div class="progress-fill" style="width: 15%; background: #991B1B; height: 100%;"></div>
+                    <div class="progress-fill" style="width: 15%; background: var(--ppt-chart-alert); height: 100%;"></div>
                 </div>
                 <div class="kpi-sub" style="padding-top:6px; margin-top: 6px; line-height: 1.5;">
                     对照年度考核目标，<br>仍有 <strong>11</strong> 个劣Ⅴ类断面需持续治理。
@@ -74,18 +74,19 @@
     <div class="ft"><span>2026年5月生态环境月度专报</span><span>提示：仅供汇报使用</span></div>
 </div>
 <script>
+function cssVar(name){return getComputedStyle(document.documentElement).getPropertyValue(name).trim();}
 var cities = ["\u8346\u5dde","\u5929\u95e8","\u6f5c\u6c5f","\u5b5d\u611f","\u8346\u95e8","\u4ed9\u6843","\u5176\u4ed6"];
 var values = [4,2,1,1,1,1,1];
 var bar = echarts.init(document.getElementById("chart-classV"));
 bar.setOption({
     tooltip:{trigger:"item",formatter:function(p){return p.name+": "+p.value+"\u4e2a\u52a3V\u7c7b\u65ad\u9762";}},
     grid:{left:55,right:25,top:5,bottom:5},
-    xAxis:{type:"value",splitLine:{lineStyle:{color:"#E2E8F0",type:"dashed"}},axisLabel:{fontSize:8,color:'#334155',fontWeight:600}},
-    yAxis:{type:"category",data:cities,axisLabel:{fontSize:10,fontWeight:700,color:'#0F172A'},axisTick:{show:false},axisLine:{show:false}},
+    xAxis:{type:"value",splitLine:{lineStyle:{color:cssVar('--ppt-chart-grid'),type:"dashed"}},axisLabel:{fontSize:8,color:cssVar('--ppt-chart-text'),fontWeight:600}},
+    yAxis:{type:"category",data:cities,axisLabel:{fontSize:10,fontWeight:700,color:cssVar('--ppt-chart-text-strong')},axisTick:{show:false},axisLine:{show:false}},
     series:[{
-        type:"bar",data:values.map(function(v){return {value:v,itemStyle:{color:v>=2?"#991B1B":"#DC2626"}};}),
+        type:"bar",data:values.map(function(v){return {value:v,itemStyle:{color:v>=2?cssVar('--ppt-chart-alert'):cssVar('--ppt-chart-alert-strong')}};}),
         barWidth:12,label:{show:true,position:"right",fontSize:10,fontWeight:700,formatter:"{c}\u4e2a"},
-        markLine:{silent:true,data:[{xAxis:0,label:{show:false},lineStyle:{color:"#CBD5E1",width:1}}]}
+        markLine:{silent:true,data:[{xAxis:0,label:{show:false},lineStyle:{color:cssVar('--ppt-chart-axis'),width:1}}]}
     }],
     backgroundColor:"transparent"
 });

@@ -18,6 +18,48 @@
         .full-table th, .full-table td { padding: 8px 12px !important; font-size: 11px !important; }
         /* 预警卡片内容垂直居中 */
         .warning-col .warning-card { justify-content: center; box-shadow: none !important; }
+        .bd .warning-card.alert-card {
+            min-height: 0 !important;
+            padding: 5px 10px !important;
+        }
+        .bd .warning-card .card-loc {
+            font-size: 8px !important;
+            margin-bottom: 2px !important;
+        }
+        .bd .warning-card .card-det {
+            font-size: 8px !important;
+            line-height: 1.3 !important;
+        }
+        .bd .ex-info {
+            padding: 5px 10px !important;
+            font-size: 8px !important;
+            line-height: 1.3 !important;
+        }
+        .page4-trend-card {
+            flex: 1 1 148px !important;
+            min-height: 140px;
+            padding: 8px 12px 6px !important;
+        }
+        .page4-chart-title {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-shrink: 0;
+            margin-bottom: 4px;
+        }
+        .page4-chart-title strong {
+            font-size: 10px;
+            color: var(--ppt-chart-text-strong);
+        }
+        .page4-chart-title span {
+            font-size: 7px;
+            color: var(--ppt-text-note);
+        }
+        #chart-trend {
+            flex: 1;
+            min-height: 0;
+            width: 100%;
+        }
     </style>
 <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script></head>
 <body>
@@ -65,8 +107,12 @@
         </div>
     </div>
 
-    <div class="chart-wrapper" style="flex:1;min-height:0;">
-        <div id="chart-trend" style="flex:1;min-height:0;"></div>
+    <div class="chart-wrapper page4-trend-card">
+        <div class="page4-chart-title">
+            <strong>国控断面优良率与劣Ⅴ类比例月度趋势</strong>
+            <span>左轴：I-III 类比例；右轴：劣Ⅴ类比例</span>
+        </div>
+        <div id="chart-trend"></div>
     </div>
 
     <div style="display:flex;gap:10px;flex-shrink:0;">
@@ -96,21 +142,23 @@
 </div>
 </div>
 <script>
+function cssVar(name){return getComputedStyle(document.documentElement).getPropertyValue(name).trim();}
 var months = ["1\u6708","2\u6708","3\u6708","4\u6708","5\u6708"];
 var c = echarts.init(document.getElementById("chart-trend"));
 c.setOption({
     tooltip:{trigger:"axis",formatter:function(p){var h=p[0].axisValue+"<br/>";p.forEach(function(i){h+=i.marker+i.seriesName+": "+i.value+"%<br/>";});return h;}},
-    legend:{data:["\u56fd\u63a7 I-III\u7c7b\u6bd4\u4f8b","\u52a3\u2165\u7c7b\u7684\u6bd4\u4f8b"],top:0,right:0,textStyle:{fontSize:9,color:'#334155',fontWeight:600},itemWidth:14,itemHeight:8},
-    grid:{left:40,right:20,top:28,bottom:20},
-    xAxis:{type:"category",data:months,axisLabel:{fontSize:10,fontWeight:700,color:'#1E293B'},axisLine:{lineStyle:{color:"#CBD5E1"}}},
-    yAxis:{type:"value",min:0,max:100,splitLine:{lineStyle:{color:"#E2E8F0",type:"dashed"}},axisLabel:{fontSize:9,color:'#334155',fontWeight:600,formatter:"{value}%"}},
+    legend:{data:["\u56fd\u63a7 I-III\u7c7b\u6bd4\u4f8b","\u52a3\u2165\u7c7b\u6bd4\u4f8b"],top:0,right:0,textStyle:{fontSize:8,color:cssVar('--ppt-chart-text'),fontWeight:600},itemWidth:14,itemHeight:8},
+    grid:{left:38,right:44,top:28,bottom:18},
+    xAxis:{type:"category",data:months,axisLabel:{fontSize:10,fontWeight:700,color:cssVar('--ppt-chart-text-strong')},axisLine:{lineStyle:{color:cssVar('--ppt-chart-axis')}}},
+    yAxis:[
+        {type:"value",min:84,max:89,splitLine:{lineStyle:{color:cssVar('--ppt-chart-grid'),type:"dashed"}},axisLabel:{fontSize:8,color:cssVar('--ppt-chart-text'),fontWeight:600,formatter:"{value}%"}},
+        {type:"value",min:0,max:8,splitLine:{show:false},axisLabel:{fontSize:8,color:cssVar('--ppt-chart-alert'),fontWeight:600,formatter:"{value}%"}}
+    ],
     series:[
-        {name:"\u56fd\u63a7 I-III\u7c7b\u6bd4\u4f8b",type:"line",data:[86.2,86.8,87.1,87.0,87.3],smooth:true,lineStyle:{color:"#1A3A5C",width:2.5},
-         areaStyle:{color:{type:"linear",x:0,y:0,x2:0,y2:1,colorStops:[{offset:0,color:"rgba(26,58,92,0.2)"},{offset:1,color:"rgba(26,58,92,0.02)"}]}},
-         symbol:"circle",symbolSize:6,itemStyle:{color:"#1A3A5C"}},
-        {name:"\u52a3\u2165\u7c7b\u7684\u6bd4\u4f8b",type:"line",data:[4.5,4.8,5.2,4.9,5.4],smooth:true,lineStyle:{color:"#991B1B",width:2.5},
-         areaStyle:{color:{type:"linear",x:0,y:0,x2:0,y2:1,colorStops:[{offset:0,color:"rgba(153,27,27,0.2)"},{offset:1,color:"rgba(153,27,27,0.02)"}]}},
-         symbol:"circle",symbolSize:6,itemStyle:{color:"#991B1B"}}
+        {name:"\u56fd\u63a7 I-III\u7c7b\u6bd4\u4f8b",type:"line",yAxisIndex:0,data:[86.2,86.8,87.1,87.0,87.3],smooth:true,lineStyle:{color:cssVar('--ppt-chart-series-1'),width:2.5},
+         areaStyle:{color:{type:"linear",x:0,y:0,x2:0,y2:1,colorStops:[{offset:0,color:cssVar('--ppt-chart-primary-area-top')},{offset:1,color:cssVar('--ppt-chart-primary-area-bottom')}] }},
+         symbol:"circle",symbolSize:6,itemStyle:{color:cssVar('--ppt-chart-series-1')}},
+        {name:"\u52a3\u2165\u7c7b\u6bd4\u4f8b",type:"bar",yAxisIndex:1,data:[4.5,4.8,5.2,4.9,5.4],barWidth:14,itemStyle:{color:cssVar('--ppt-chart-alert')}}
     ],
     backgroundColor:"transparent"
 });

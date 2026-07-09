@@ -11,14 +11,14 @@
   .left-panel { flex: 0 0 60%; display: flex; flex-direction: column; min-height: 0; }
   .right-panel { flex: 1; display: flex; flex-direction: column; gap: 8px; min-height: 0; }
   .fit-table { width: 100%; border-collapse: collapse; }
-  .fit-table th { padding: 3px 4px !important; font-size: 7.5px !important; background: var(--ppt-bg-muted); border-bottom: 1px solid var(--ppt-border-default); }
+  .fit-table th { padding: 3px 4px !important; font-size: 7.5px !important; background: var(--ppt-table-header-muted-bg); border-bottom: 1px solid var(--ppt-table-header-muted-border); }
   .fit-table td { padding: 2px 4px !important; font-size: 7.5px !important; }
   .fit-table .nm { font-weight: 700; font-size: 8px; }
   .fit-table .num { font-weight: 600; text-align: right; }
   .fit-table .rate { text-align: right; font-weight: 600; font-size: 7.5px; }
-  .rate-hi { color: #059669; }
-  .rate-md { color: #B45309; }
-  .rate-lo { color: #991B1B; }
+  .rate-hi { color: var(--ppt-chart-good-strong); }
+  .rate-md { color: var(--ppt-chart-warn); }
+  .rate-lo { color: var(--ppt-chart-alert); }
   .block-card { background: var(--ppt-bg-muted); padding: 8px 10px; flex: 1; display: flex; flex-direction: column; }
   .block-title { font-size: 10px; font-weight: 700; color: #1E293B; margin-bottom: 6px; }
   .bar-item-sm { display: flex; align-items: center; gap: 4px; margin-bottom: 4px; }
@@ -35,9 +35,9 @@
   <div class="bd" style="flex-direction: column; gap: 8px;">
     <div class="kpi-row" style="margin-bottom: 0; flex-shrink: 0;">
       <div class="kpi-card" style=""><div class="kpi-label">排查总量</div><div class="kpi-value" style="font-size:20px;">34,114</div><div class="kpi-sub">全省累计</div></div>
-      <div class="kpi-card" style=""><div class="kpi-label">溯源率</div><div class="kpi-value" style="font-size:20px;color:#059669;">100%</div><div class="kpi-sub">主要片区均已完成溯源</div></div>
-      <div class="kpi-card" style=""><div class="kpi-label">整治率</div><div class="kpi-value" style="font-size:20px;color:#B45309;">93-99%</div><div class="kpi-sub">重点片区整治进展良好</div></div>
-      <div class="kpi-card" style=""><div class="kpi-label">监测率</div><div class="kpi-value" style="font-size:20px;color:#64748B;">24-100%</div><div class="kpi-sub">各片区差异较大</div></div>
+      <div class="kpi-card" style=""><div class="kpi-label">溯源率</div><div class="kpi-value" style="font-size:20px;color:var(--ppt-chart-good-strong);">100%</div><div class="kpi-sub">主要片区均已完成溯源</div></div>
+      <div class="kpi-card" style=""><div class="kpi-label">整治率</div><div class="kpi-value" style="font-size:20px;color:var(--ppt-chart-warn);">93-99%</div><div class="kpi-sub">重点片区整治进展良好</div></div>
+      <div class="kpi-card" style=""><div class="kpi-label">监测率</div><div class="kpi-value" style="font-size:20px;color:var(--ppt-chart-text-muted);">24-100%</div><div class="kpi-sub">各片区差异较大</div></div>
     </div>
     <div class="content-layout">
       <div class="left-panel">
@@ -65,31 +65,31 @@
               </tbody>
             </table>
           </div>
-          <div style="margin-top: 4px; font-size: 7px; color: #94A3B8;">注：数据截至2026年1月。黄盖湖片区排查数含其他片区汇总数据。各片区基本完成溯源，整治进度集中在88%-99%。</div>
+          <div class="table-note" style="margin-top: 4px;">注：数据截至2026年1月。黄盖湖片区排查数含其他片区汇总数据。各片区基本完成溯源，整治进度集中在88%-99%。</div>
         </div>
       </div>
       <div class="right-panel">
         <div class="block-card" style="flex: 0 0 auto;">
           <div class="block-title">各片区主要流域分布</div>
           <div style="font-size: 8px; line-height: 1.6; color: #334155;">
-            <div>▸ 长江干流片区（南岸/北岸/宜昌）共排查<b>4,924</b>个，整治率均高于88%</div>
-            <div>▸ 清江片区（清江/沮漳河/内荆河）共排查<b>1,604</b>个，整治率均高于93%</div>
-            <div>▸ 四湖片区排查<b>2,310</b>个，整治率99.05%，为进展最快片区之一</div>
-            <div>▸ 汉水片区监测率最低（24.57%），为下一步重点提升方向</div>
+            <div>长江干流片区（南岸/北岸/宜昌）共排查<b>4,924</b>个，整治率均高于88%</div>
+            <div>清江片区（清江/沮漳河/内荆河）共排查<b>1,604</b>个，整治率均高于93%</div>
+            <div>四湖片区排查<b>2,310</b>个，整治率99.05%，为进展最快片区之一</div>
+            <div>汉水片区监测率最低（24.57%），为下一步重点提升方向</div>
           </div>
         </div>
         <div class="block-card" style="flex:1;">
           <div class="block-title">重点片区整治率对比（%）</div>
           <div style="flex:1; display: flex; flex-direction: column; gap: 4px; justify-content: center;">
-            <div class="bar-item-sm"><span class="bar-label-sm">长江干流北岸</span><div class="bar-track-sm"><div class="bar-fill-sm" style="width:99.3%;background:#059669;"></div></div><span class="bar-pct-sm" style="color:#059669;">99.32%</span></div>
-            <div class="bar-item-sm"><span class="bar-label-sm">四湖片区</span><div class="bar-track-sm"><div class="bar-fill-sm" style="width:99.1%;background:#059669;"></div></div><span class="bar-pct-sm" style="color:#059669;">99.05%</span></div>
-            <div class="bar-item-sm"><span class="bar-label-sm">三峡库区</span><div class="bar-track-sm"><div class="bar-fill-sm" style="width:99.1%;background:#059669;"></div></div><span class="bar-pct-sm" style="color:#059669;">99.05%</span></div>
-            <div class="bar-item-sm"><span class="bar-label-sm">黄盖湖片区</span><div class="bar-track-sm"><div class="bar-fill-sm" style="width:98.8%;background:#059669;"></div></div><span class="bar-pct-sm" style="color:#059669;">98.83%</span></div>
-            <div class="bar-item-sm"><span class="bar-label-sm">汉北河片区</span><div class="bar-track-sm"><div class="bar-fill-sm" style="width:97.7%;background:#059669;"></div></div><span class="bar-pct-sm" style="color:#059669;">97.67%</span></div>
-            <div class="bar-item-sm"><span class="bar-label-sm">清江片区</span><div class="bar-track-sm"><div class="bar-fill-sm" style="width:96.1%;background:#059669;"></div></div><span class="bar-pct-sm" style="color:#059669;">96.05%</span></div>
-            <div class="bar-item-sm"><span class="bar-label-sm">汉水片区</span><div class="bar-track-sm"><div class="bar-fill-sm" style="width:93.7%;background:#047857;"></div></div><span class="bar-pct-sm" style="color:#047857;">93.71%</span></div>
-            <div class="bar-item-sm"><span class="bar-label-sm">陆水片区</span><div class="bar-track-sm"><div class="bar-fill-sm" style="width:88.1%;background:#047857;"></div></div><span class="bar-pct-sm" style="color:#047857;">88.06%</span></div>
-            <div class="bar-item-sm"><span class="bar-label-sm">长江干流南岸</span><div class="bar-track-sm"><div class="bar-fill-sm" style="width:88.1%;background:#047857;"></div></div><span class="bar-pct-sm" style="color:#047857;">88.05%</span></div>
+            <div class="bar-item-sm"><span class="bar-label-sm">长江干流北岸</span><div class="bar-track-sm"><div class="bar-fill-sm" style="width:99.3%;background:var(--ppt-chart-good-strong);"></div></div><span class="bar-pct-sm" style="color:var(--ppt-chart-good-strong);">99.32%</span></div>
+            <div class="bar-item-sm"><span class="bar-label-sm">四湖片区</span><div class="bar-track-sm"><div class="bar-fill-sm" style="width:99.1%;background:var(--ppt-chart-good-strong);"></div></div><span class="bar-pct-sm" style="color:var(--ppt-chart-good-strong);">99.05%</span></div>
+            <div class="bar-item-sm"><span class="bar-label-sm">三峡库区</span><div class="bar-track-sm"><div class="bar-fill-sm" style="width:99.1%;background:var(--ppt-chart-good-strong);"></div></div><span class="bar-pct-sm" style="color:var(--ppt-chart-good-strong);">99.05%</span></div>
+            <div class="bar-item-sm"><span class="bar-label-sm">黄盖湖片区</span><div class="bar-track-sm"><div class="bar-fill-sm" style="width:98.8%;background:var(--ppt-chart-good-strong);"></div></div><span class="bar-pct-sm" style="color:var(--ppt-chart-good-strong);">98.83%</span></div>
+            <div class="bar-item-sm"><span class="bar-label-sm">汉北河片区</span><div class="bar-track-sm"><div class="bar-fill-sm" style="width:97.7%;background:var(--ppt-chart-good-strong);"></div></div><span class="bar-pct-sm" style="color:var(--ppt-chart-good-strong);">97.67%</span></div>
+            <div class="bar-item-sm"><span class="bar-label-sm">清江片区</span><div class="bar-track-sm"><div class="bar-fill-sm" style="width:96.1%;background:var(--ppt-chart-good-strong);"></div></div><span class="bar-pct-sm" style="color:var(--ppt-chart-good-strong);">96.05%</span></div>
+            <div class="bar-item-sm"><span class="bar-label-sm">汉水片区</span><div class="bar-track-sm"><div class="bar-fill-sm" style="width:93.7%;background:var(--ppt-chart-good);"></div></div><span class="bar-pct-sm" style="color:var(--ppt-chart-good);">93.71%</span></div>
+            <div class="bar-item-sm"><span class="bar-label-sm">陆水片区</span><div class="bar-track-sm"><div class="bar-fill-sm" style="width:88.1%;background:var(--ppt-chart-good);"></div></div><span class="bar-pct-sm" style="color:var(--ppt-chart-good);">88.06%</span></div>
+            <div class="bar-item-sm"><span class="bar-label-sm">长江干流南岸</span><div class="bar-track-sm"><div class="bar-fill-sm" style="width:88.1%;background:var(--ppt-chart-good);"></div></div><span class="bar-pct-sm" style="color:var(--ppt-chart-good);">88.05%</span></div>
           </div>
         </div>
       </div>

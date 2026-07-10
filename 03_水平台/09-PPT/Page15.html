@@ -72,109 +72,120 @@
     .risk-row-item.blue-style .risk-type { color: var(--ppt-chart-series-5); opacity: 0.7; }
     .risk-detail-info { display: flex; flex-direction: column; gap: 1px; font-size: 8.5px; color: #475569; flex: 1; padding-left: 10px; }
     .risk-badge { white-space: nowrap; }
+    .wq-category-grid {
+        flex: 1;
+        display: grid;
+        grid-template-rows: repeat(3, minmax(0, 1fr));
+        gap: 6px;
+        min-height: 0;
+    }
+    .wq-class-card {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 4px;
+        min-height: 0;
+        padding: 7px 10px;
+        border: 1px solid var(--ppt-border-default);
+        border-radius: 3px;
+        background: var(--ppt-bg-slide);
+    }
+    .wq-class-card.inferior { background: var(--wq-bg-inferior-v); border-color: var(--wq-border-inferior-v); }
+    .wq-class-card.class-v { background: var(--wq-bg-v); border-color: var(--wq-border-v); }
+    .wq-class-card.class-iv { background: var(--wq-bg-iv); border-color: var(--wq-border-iv); }
+    .wq-class-card.class-iii { background: var(--wq-bg-iii); border-color: var(--wq-border-iii); }
+    .wq-card-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+    .wq-card-title { font-size: 9.2px; line-height: 1.2; font-weight: 800; }
+    .wq-class-card.inferior .wq-card-title { color: var(--wq-text-inferior-v); }
+    .wq-class-card.class-v .wq-card-title { color: var(--wq-text-v); }
+    .wq-class-card.class-iv .wq-card-title { color: var(--wq-text-iv); }
+    .wq-class-card.class-iii .wq-card-title { color: var(--wq-text-iii); }
+    .wq-card-badge { flex-shrink: 0; padding: 1px 5px; border-radius: 1px; font-size: 7.2px; line-height: 1.25; font-weight: 800; color: var(--ppt-bg-slide); }
+    .wq-class-card.inferior .wq-card-badge { background: var(--wq-chart-inferior-v); }
+    .wq-class-card.class-v .wq-card-badge { background: var(--wq-chart-v); }
+    .wq-class-card.class-iv .wq-card-badge { background: var(--wq-chart-iv); }
+    .wq-class-card.class-iii .wq-card-badge { background: var(--wq-chart-iii); }
+    .wq-card-line { font-size: 8px; line-height: 1.45; color: var(--ppt-chart-text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .basin-map-placeholder {
+        flex: 1;
+        min-height: 0;
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--ppt-bg-slide);
+        border: 1px solid var(--ppt-border-default);
+        border-radius: 3px;
+        overflow: hidden;
+    }
+    .basin-map-placeholder::before {
+        content: "";
+        position: absolute;
+        width: 78%;
+        height: 58%;
+        border: 2px solid var(--ppt-border-info);
+        background: var(--ppt-bg-info);
+        clip-path: polygon(8% 44%, 22% 22%, 42% 30%, 56% 16%, 78% 26%, 92% 48%, 82% 70%, 62% 64%, 46% 82%, 26% 72%);
+    }
+    .basin-map-placeholder::after {
+        content: "";
+        position: absolute;
+        width: 56%;
+        height: 2px;
+        background: var(--ppt-chart-series-5);
+        transform: rotate(-8deg);
+        opacity: .75;
+    }
+    .basin-map-title {
+        position: relative;
+        z-index: 1;
+        padding: 8px 14px;
+        background: var(--ppt-bg-slide);
+        border: 1px solid var(--ppt-border-default);
+        border-radius: 3px;
+        font-size: 18px;
+        line-height: 1.25;
+        font-weight: 800;
+        color: var(--ppt-chart-text-strong);
+        letter-spacing: 0;
+    }
 </style>
 </head>
 <body>
 <div class="slide-container">
     <div class="ppt-header"><span class="ppt-title">流域湖库分析：清江流域分析</span><span class="nav-page-num">P15</span></div>
-    <div class="core-bar" style="background: var(--ppt-bg-good)!important;  color: #166534!important;">▎ 2026年5月（当前月），清江流域水质总体较好，Ⅰ-Ⅲ类比例保持92.3%以上，本月未检出劣Ⅴ类国控断面。</div>
+    <div class="core-bar" style="background: var(--wq-bg-iii)!important; color: var(--wq-text-iii)!important;">▎ 2026年5月（当前月），清江流域水质总体较好，Ⅰ-Ⅲ类比例保持92.3%以上，本月未检出劣Ⅴ类国控断面。</div>
     <div class="bd" style="flex-direction:column;gap:10px;">
         <div class="kpi-row" style="margin-bottom:0;">
             <div class="kpi-card" style=""><div class="kpi-label" style="color:#1A3A5C;">监测断面总数</div><div class="kpi-value" style="color:#1A3A5C;">26个</div></div>
-            <div class="kpi-card" style=""><div class="kpi-label" style="color:#047857;">Ⅰ-Ⅲ类比例</div><div class="kpi-value" style="color:#047857;">92.3%</div></div>
+            <div class="kpi-card" style=""><div class="kpi-label" style="color:var(--wq-text-iii);">Ⅰ-Ⅲ类比例</div><div class="kpi-value" style="color:var(--wq-text-iii);">92.3%</div></div>
             <div class="kpi-card status-good"><div class="kpi-label">超标断面</div><div class="kpi-value">0个 (清零)</div></div>
             <div class="kpi-card status-good"><div class="kpi-label">同比变化</div><div class="kpi-value">↑1.2%</div></div>
         </div>
         <div class="watershed-main-row">
-            <div class="table-box watershed-left-panel" style="flex:0 0 55%; display:flex; flex-direction:column; padding:6px; background:var(--ppt-bg-muted); border:1px solid var(--ppt-border-default); border-radius:4px;">
-                <div style="font-size:9px; font-weight:700; color:#1E293B; margin-bottom:5px; padding-left:2px;">清江全流域断面水质看板 (26个)</div>
-                <div class="qingjiang-wall">
-                    <div class="section-block">
-                        <div class="section-title">Ⅰ类水质（5个）</div>
-                        <div class="pill-grid">
-                            <div class="pill-node class-i"><span class="pill-name">五峰湾潭河</span><span class="node-dot"></span></div>
-                            <div class="pill-node class-i"><span class="pill-name">恩施大沙河</span><span class="node-dot"></span></div>
-                            <div class="pill-node class-i"><span class="pill-name">鹤峰缕水河</span><span class="node-dot"></span></div>
-                            <div class="pill-node class-i"><span class="pill-name">屯堡国控</span><span class="node-dot"></span></div>
-                            <div class="pill-node class-i"><span class="pill-name">高坝洲水库</span><span class="node-dot"></span></div>
-                        </div>
-                    </div>
-
-                    <div class="section-block">
-                        <div class="section-title">Ⅱ类水质（18个）</div>
-                        <div class="pill-grid">
-                            <div class="pill-node class-ii"><span class="pill-name">恩施国控</span><span class="node-dot"></span></div>
-                            <div class="pill-node class-ii"><span class="pill-name">利川段干流</span><span class="node-dot"></span></div>
-                            <div class="pill-node class-ii"><span class="pill-name">巴东清江口</span><span class="node-dot"></span></div>
-                            <div class="pill-node class-ii"><span class="pill-name">宣恩贡水河</span><span class="node-dot"></span></div>
-                            <div class="pill-node class-ii"><span class="pill-name">咸丰唐崖河</span><span class="node-dot"></span></div>
-                            <div class="pill-node class-ii"><span class="pill-name">支流忠建河</span><span class="node-dot"></span></div>
-                            <div class="pill-node class-ii"><span class="pill-name">支流野三河</span><span class="node-dot"></span></div>
-                            <div class="pill-node class-ii"><span class="pill-name">长阳段干流</span><span class="node-dot"></span></div>
-                            <div class="pill-node class-ii"><span class="pill-name">宜都清江口</span><span class="node-dot"></span></div>
-                            <div class="pill-node class-ii"><span class="pill-name">隔河岩大坝</span><span class="node-dot"></span></div>
-                            <div class="pill-node class-ii"><span class="pill-name">渔峡口国控</span><span class="node-dot"></span></div>
-                            <div class="pill-node class-ii"><span class="pill-name">红花套断面</span><span class="node-dot"></span></div>
-                            <div class="pill-node class-ii"><span class="pill-name">长阳龙舟坪</span><span class="node-dot"></span></div>
-                            <div class="pill-node class-ii"><span class="pill-name">五峰渔洋河</span><span class="node-dot"></span></div>
-                            <div class="pill-node class-ii"><span class="pill-name">高坝洲尾水</span><span class="node-dot"></span></div>
-                            <div class="pill-node class-ii"><span class="pill-name">来凤酉水河</span><span class="node-dot"></span></div>
-                            <div class="pill-node class-ii"><span class="pill-name">利川二桥</span><span class="node-dot"></span></div>
-                            <div class="pill-node class-ii"><span class="pill-name">建始马水河</span><span class="node-dot"></span></div>
-                        </div>
-                    </div>
-
-                    <div class="section-block">
-                        <div class="section-title">Ⅲ类水质（7个）</div>
-                        <div class="pill-grid">
-                            <div class="pill-node class-iii"><span class="pill-name">建始段干流</span><span class="node-dot"></span></div>
-                            <div class="pill-node class-iii"><span class="pill-name">支流茅坪河</span><span class="node-dot"></span></div>
-                            <div class="pill-node class-iii"><span class="pill-name">宜都红湖</span><span class="node-dot"></span></div>
-                            <div class="pill-node class-iii"><span class="pill-name">唐崖河上游</span><span class="node-dot"></span></div>
-                            <div class="pill-node class-iii"><span class="pill-name">忠建河支流</span><span class="node-dot"></span></div>
-                            <div class="pill-node class-iii"><span class="pill-name">野三河支流</span><span class="node-dot"></span></div>
-                            <div class="pill-node class-iii"><span class="pill-name">恩施城区段</span><span class="node-dot"></span></div>
-                        </div>
-                    </div>
+            <div class="table-box watershed-left-panel" style="flex:0 0 55%; display:flex; flex-direction:column; padding:8px; background:var(--ppt-bg-muted); border:1px solid var(--ppt-border-default); border-radius:4px;">
+                <div class="basin-map-placeholder">
+                    <div class="basin-map-title">清江流域 超标断面分布</div>
                 </div>
             </div>
             <div class="content-panel watershed-right-panel" style="flex:1; display:flex; flex-direction:column; gap:6px; min-height:0;">
-                <div class="right-panel-heading" style="color:#047857;">清江水质靶向分类管控</div>
-                <div style="flex:1; display:grid; grid-template-rows: repeat(3, 1fr); gap:6px; min-height:0;">
-                    
-                    <div class="risk-row-item bg-good border-good" style="padding:4px 10px; display:flex; align-items:center;">
-                        <div style="display:flex; flex-direction:column; justify-content:center; gap:3px; width:100%;">
-                            <div style="display:flex; justify-content:space-between; align-items:center;">
-                                <span style="font-size:9px; font-weight:700; color:#047857; line-height:1.2;">劣Ⅴ类·动态清零（0个）</span>
-                                <span class="risk-badge">持续清零</span>
-                            </div>
-                            <div style="font-size:8px; line-height:1.5; color:#475569;">清江全线已实现劣Ⅴ类断面动态"清零"。</div>
-                            <div style="font-size:8px; line-height:1.5; color:#475569;">整体水质保持优良水平，无超标断面。</div>
-                        </div>
+                <div class="right-panel-heading" style="color: var(--wq-text-iii);">清江水质分类管控</div>
+                <div class="wq-category-grid">
+                    <div class="wq-class-card inferior">
+                        <div class="wq-card-head"><span class="wq-card-title">劣Ⅴ类（0个）</span><span class="wq-card-badge">动态清零</span></div>
+                        <div class="wq-card-line">清江全线本月未检出劣Ⅴ类断面</div>
+                        <div class="wq-card-line">保持清零状态，继续跟踪重点支流</div>
                     </div>
-
-                    <div class="risk-row-item" style="padding:4px 10px; background:var(--ppt-bg-alert); border-color:var(--ppt-border-alert);  display:flex; align-items:center;">
-                        <div style="display:flex; flex-direction:column; justify-content:center; gap:3px; width:100%;">
-                            <div style="display:flex; justify-content:space-between; align-items:center;">
-                                <span style="font-size:9px; font-weight:700; color:#991B1B; line-height:1.2;">Ⅴ类·动态监控（2个）</span>
-                                <span class="risk-badge">动态监控</span>
-                            </div>
-                            <div style="font-size:8px; line-height:1.5; color:#475569;">清江支流忠建河，所在市州：恩施 · 超标因子：COD、总磷</div>
-                            <div style="font-size:8px; line-height:1.5; color:#475569;">清江支流野三河，所在市州：恩施 · 超标因子：总磷</div>
-                        </div>
+                    <div class="wq-class-card class-v">
+                        <div class="wq-card-head"><span class="wq-card-title">Ⅴ类（2个）</span><span class="wq-card-badge">动态监控</span></div>
+                        <div class="wq-card-line">清江支流忠建河：COD、总磷偏高</div>
+                        <div class="wq-card-line">清江支流野三河：总磷偏高</div>
                     </div>
-
-                    <div class="risk-row-item" style="padding:4px 10px; background:var(--ppt-bg-alert); border-color:var(--ppt-border-alert); display:flex; align-items:center;">
-                        <div style="display:flex; flex-direction:column; justify-content:center; gap:3px; width:100%;">
-                            <div style="display:flex; justify-content:space-between; align-items:center;">
-                                <span style="font-size:9px; font-weight:700; color:#991B1B; line-height:1.2;">Ⅳ类·关注（2个）</span>
-                                <span class="risk-badge">常规监测</span>
-                            </div>
-                            <div style="font-size:8px; line-height:1.5; color:#475569;">清江利川段，所在市州：恩施 · 超标因子：总磷（阶段性波动）</div>
-                            <div style="font-size:8px; line-height:1.5; color:#475569;">清江恩施段，所在市州：恩施 · 超标因子：氨氮</div>
-                        </div>
+                    <div class="wq-class-card class-iv">
+                        <div class="wq-card-head"><span class="wq-card-title">Ⅳ类（2个）</span><span class="wq-card-badge">常规监测</span></div>
+                        <div class="wq-card-line">清江利川段、清江恩施段</div>
+                        <div class="wq-card-line">总磷、氨氮阶段性波动，保持常规监测</div>
                     </div>
-
                 </div>
             </div>
         </div>
@@ -183,6 +194,12 @@
 </div>
 </body>
 </html>
+
+
+
+
+
+
 
 
 

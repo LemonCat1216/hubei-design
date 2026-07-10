@@ -12,18 +12,27 @@
   .right-panel { flex: 1; display: flex; flex-direction: column; gap:8px; min-height: 0; }
   .fit-table { width:100%; border-collapse:collapse; }
   .fit-table table { height:100%; table-layout:fixed; }
-  .fit-table th { padding:6px 4px !important; font-size:7.8px !important; background:var(--ppt-table-header-muted-bg); border-bottom:1px solid var(--ppt-table-header-muted-border); }
+  .fit-table th { padding:6px 4px !important; font-size:7.8px !important; background:var(--ppt-table-header-solid) !important; color:var(--ppt-table-header-text) !important; border-bottom:1px solid var(--ppt-table-header-solid) !important; }
   .fit-table td { padding:6px 4px !important; font-size:8px !important; }
   .fit-table tbody tr { height:9.2%; }
   .block-card { background:var(--ppt-bg-slide); border:1px solid var(--ppt-border-default); border-radius:3px; box-shadow:none !important; padding:8px 10px; display:flex; flex-direction:column; }
-  .block-title { font-size:10px; font-weight:700; color:#1E293B; margin-bottom:6px; }
+  .block-title { font-size:10px; font-weight:800; color:var(--ppt-chart-text-strong); margin-bottom:6px; }
   .stat-list { display:flex; flex-direction:column; gap:7px; flex:1; justify-content:center; }
-  .stat-row { display:grid; grid-template-columns:64px 1fr 94px; gap:6px; align-items:center; }
-  .stat-name { font-size:8px; font-weight:700; color:#475569; white-space:nowrap; }
-  .stat-track { height:14px; background:var(--ppt-bg-track); border-radius:2px; overflow:hidden; }
-  .stat-fill { height:100%; border-radius:2px; min-width:2px; }
-  .stat-val { font-size:7.5px; font-weight:800; color:#0F172A; text-align:right; font-variant-numeric:tabular-nums; white-space:nowrap; }
-  .stat-note { margin-top:4px; font-size:7px; line-height:1.45; color:#94A3B8; }
+  .stat-row { display:grid; grid-template-columns:66px 1fr 94px; gap:7px; align-items:center; }
+  .stat-name { font-size:8px; font-weight:800; color:var(--ppt-chart-text); white-space:nowrap; }
+  .stat-track { height:14px; background:var(--ppt-bg-info); border:1px solid var(--ppt-border-info); border-radius:2px; overflow:hidden; }
+  .stat-fill { height:100%; border-radius:1px; min-width:5px; }
+  .stat-val { font-size:7.5px; font-weight:800; color:var(--ppt-chart-text-strong); text-align:right; font-variant-numeric:tabular-nums; white-space:nowrap; }
+  .stat-note { margin-top:4px; font-size:7px; line-height:1.45; color:var(--ppt-text-note); }
+  .fit-table tbody tr:nth-child(even) { background:var(--ppt-bg-slide) !important; }
+  .type-other { background:var(--ppt-chart-series-5); }
+  .type-industry { background:var(--ppt-chart-series-1); }
+  .type-town { background:var(--ppt-chart-series-2); }
+  .type-agri { background:var(--ppt-chart-series-3); }
+  .level-a { background:var(--ppt-chart-series-1); }
+  .level-b { background:var(--ppt-chart-series-3); }
+  .level-c { background:var(--ppt-chart-series-2); }
+  .level-d { background:var(--ppt-chart-series-5); }
 </style>
 </head>
 <body>
@@ -57,22 +66,22 @@
       </div>
       <div class="right-panel">
         <div class="block-card" style="flex:1;">
-          <div class="block-title">Top 10 排口类型构成</div>
+          <div class="block-title">Top 10 排口类型汇总</div>
           <div class="stat-list">
-            <div class="stat-row"><span class="stat-name">其他排口</span><div class="stat-track"><div class="stat-fill" style="width:85.2%; background:var(--ppt-chart-series-6);"></div></div><span class="stat-val">11,508 / 85.2%</span></div>
-            <div class="stat-row"><span class="stat-name">工业排口</span><div class="stat-track"><div class="stat-fill" style="width:12.8%; background:var(--ppt-chart-series-1);"></div></div><span class="stat-val">1,724 / 12.8%</span></div>
-            <div class="stat-row"><span class="stat-name">城镇生活</span><div class="stat-track"><div class="stat-fill" style="width:1.6%; background:var(--ppt-chart-good);"></div></div><span class="stat-val">210 / 1.6%</span></div>
-            <div class="stat-row"><span class="stat-name">农业排口</span><div class="stat-track"><div class="stat-fill" style="width:0.5%; background:var(--ppt-chart-warn);"></div></div><span class="stat-val">67 / 0.5%</span></div>
+            <div class="stat-row"><span class="stat-name">其他排口</span><div class="stat-track"><div class="stat-fill type-other" style="width:85.2%;"></div></div><span class="stat-val">11,508 / 85.2%</span></div>
+            <div class="stat-row"><span class="stat-name">工业排口</span><div class="stat-track"><div class="stat-fill type-industry" style="width:12.8%;"></div></div><span class="stat-val">1,724 / 12.8%</span></div>
+            <div class="stat-row"><span class="stat-name">城镇生活</span><div class="stat-track"><div class="stat-fill type-town" style="width:1.6%;"></div></div><span class="stat-val">210 / 1.6%</span></div>
+            <div class="stat-row"><span class="stat-name">农业排口</span><div class="stat-track"><div class="stat-fill type-agri" style="width:0.5%;"></div></div><span class="stat-val">67 / 0.5%</span></div>
           </div>
           <div class="stat-note">按左侧 Top 10 表内工业、城镇生活、农业、其他四列汇总，合计 13,509 个。</div>
         </div>
         <div class="block-card" style="flex:1;">
           <div class="block-title">管理级别统计</div>
           <div class="stat-list">
-            <div class="stat-row"><span class="stat-name">A类</span><div class="stat-track"><div class="stat-fill" style="width:34.8%; background:var(--ppt-chart-series-1);"></div></div><span class="stat-val">11,867 / 34.8%</span></div>
-            <div class="stat-row"><span class="stat-name">B类</span><div class="stat-track"><div class="stat-fill" style="width:10.3%; background:var(--ppt-chart-warn);"></div></div><span class="stat-val">3,528 / 10.3%</span></div>
-            <div class="stat-row"><span class="stat-name">C类</span><div class="stat-track"><div class="stat-fill" style="width:9.7%; background:var(--ppt-chart-good);"></div></div><span class="stat-val">3,295 / 9.7%</span></div>
-            <div class="stat-row"><span class="stat-name">D类</span><div class="stat-track"><div class="stat-fill" style="width:45.2%; background:var(--ppt-chart-neutral);"></div></div><span class="stat-val">15,424 / 45.2%</span></div>
+            <div class="stat-row"><span class="stat-name">A类</span><div class="stat-track"><div class="stat-fill level-a" style="width:34.8%;"></div></div><span class="stat-val">11,867 / 34.8%</span></div>
+            <div class="stat-row"><span class="stat-name">B类</span><div class="stat-track"><div class="stat-fill level-b" style="width:10.3%;"></div></div><span class="stat-val">3,528 / 10.3%</span></div>
+            <div class="stat-row"><span class="stat-name">C类</span><div class="stat-track"><div class="stat-fill level-c" style="width:9.7%;"></div></div><span class="stat-val">3,295 / 9.7%</span></div>
+            <div class="stat-row"><span class="stat-name">D类</span><div class="stat-track"><div class="stat-fill level-d" style="width:45.2%;"></div></div><span class="stat-val">15,424 / 45.2%</span></div>
           </div>
           <div class="stat-note">按全省入河排污口管理分类口径统计，合计 34,114 个。</div>
         </div>
@@ -83,5 +92,7 @@
 </div>
 </body>
 </html>
+
+
 
 

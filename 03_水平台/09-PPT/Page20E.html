@@ -1,0 +1,364 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>数据实时分析：省控自动站超标分布</title>
+<link rel="stylesheet" href="ppt-style.css">
+<style>
+    .auto-overview-page {
+        flex-direction: column;
+        gap: 8px;
+        padding: 10px 20px;
+        overflow: hidden;
+    }
+    .auto-kpi-row {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 8px;
+        margin-bottom: 0;
+        flex-shrink: 0;
+    }
+    .auto-kpi-row .kpi-card {
+        padding: 7px 9px !important;
+        min-height: 58px;
+    }
+    .auto-kpi-row .kpi-label {
+        font-size: 8.2px !important;
+        color: var(--ppt-chart-text-muted);
+    }
+    .auto-kpi-row .kpi-value {
+        font-size: 21px !important;
+        line-height: 1.05;
+        color: var(--ppt-chart-text-strong);
+    }
+    .kpi-unit {
+        font-size: 8px;
+        font-weight: 600;
+        margin-left: 2px;
+    }
+    .kpi-dual-value {
+        display: flex;
+        align-items: baseline;
+        justify-content: center;
+        gap: 9px;
+    }
+    .kpi-note-small {
+        margin-top: 3px;
+        font-size: 7.2px;
+        line-height: 1.25;
+        color: var(--ppt-text-note);
+        white-space: nowrap;
+    }
+    .overview-main {
+        flex: 1;
+        min-height: 0;
+        display: grid;
+        grid-template-columns: 1.46fr .82fr;
+        gap: 10px;
+    }
+    .map-panel,
+    .side-panel {
+        background: var(--ppt-bg-slide);
+        border: 1px solid var(--ppt-border-default);
+        border-radius: 3px;
+        min-height: 0;
+        overflow: hidden;
+    }
+    .map-panel {
+        display: flex;
+        flex-direction: column;
+        padding: 8px 10px;
+    }
+    .panel-headline {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 8px;
+        padding-bottom: 5px;
+        border-bottom: 1px solid var(--ppt-border-subtle);
+        flex-shrink: 0;
+    }
+    .panel-title {
+        font-size: 10px;
+        font-weight: 800;
+        color: var(--ppt-chart-text-strong);
+    }
+    .panel-note {
+        font-size: 7px;
+        color: var(--ppt-text-note);
+        white-space: nowrap;
+    }
+    .hubei-map-board {
+        position: relative;
+        flex: 1;
+        min-height: 0;
+        margin-top: 7px;
+        background: var(--ppt-bg-muted);
+        border: 1px solid var(--ppt-border-default);
+        border-radius: 3px;
+        overflow: hidden;
+    }
+    .hubei-shape {
+        position: absolute;
+        inset: 18px 28px 20px 28px;
+        background: var(--ppt-bg-info);
+        border: 1px solid var(--ppt-border-info);
+        clip-path: polygon(7% 47%, 16% 27%, 34% 18%, 50% 14%, 70% 21%, 86% 34%, 94% 52%, 83% 67%, 64% 79%, 43% 83%, 24% 76%, 11% 63%);
+    }
+    .city-node {
+        position: absolute;
+        width: 62px;
+        min-height: 33px;
+        padding: 3px 4px;
+        border: 1px solid var(--ppt-border-default);
+        border-radius: 2px;
+        background: var(--ppt-bg-slide);
+        color: var(--ppt-chart-text);
+        font-size: 7.2px;
+        line-height: 1.15;
+        text-align: center;
+    }
+    .city-node strong {
+        display: block;
+        font-size: 5.9px;
+        color: var(--ppt-chart-text-strong);
+        margin-bottom: 1px;
+    }
+    .city-metric {
+        display: block;
+        font-size: 7px;
+        font-weight: 800;
+        white-space: nowrap;
+    }
+    .city-sub {
+        display: block;
+        margin-top: 1px;
+        font-size: 5.9px;
+        color: var(--ppt-chart-text-muted);
+        white-space: nowrap;
+    }
+    .city-node.alert {
+        background: var(--ppt-bg-alert);
+        border-color: var(--ppt-border-alert);
+        color: var(--ppt-chart-alert);
+    }
+    .city-node.warn {
+        background: var(--ppt-bg-warn);
+        border-color: var(--ppt-border-warn);
+        color: var(--ppt-chart-warn);
+    }
+    .city-node.good {
+        background: var(--ppt-bg-good);
+        border-color: var(--ppt-border-good);
+        color: var(--ppt-chart-good);
+    }
+    .city-node.alert strong { color: var(--ppt-chart-alert); }
+    .city-node.warn strong { color: var(--ppt-chart-warn); }
+    .city-node.good strong { color: var(--ppt-chart-good); }
+    .legend-row {
+        position: absolute;
+        left: 10px;
+        bottom: 8px;
+        display: flex;
+        gap: 8px;
+        font-size: 7px;
+        color: var(--ppt-chart-text-muted);
+    }
+    .legend-item {
+        display: inline-flex;
+        align-items: center;
+        gap: 3px;
+        white-space: nowrap;
+    }
+    .legend-swatch {
+        width: 9px;
+        height: 6px;
+        border: 1px solid var(--ppt-border-default);
+    }
+    .sw-alert { background: var(--ppt-bg-alert); border-color: var(--ppt-border-alert); }
+    .sw-warn { background: var(--ppt-bg-warn); border-color: var(--ppt-border-warn); }
+    .sw-good { background: var(--ppt-bg-good); border-color: var(--ppt-border-good); }
+    .side-panel {
+        display: flex;
+        flex-direction: column;
+        padding: 8px 10px;
+    }
+    .city-rank-list {
+        min-height: 0;
+        display: grid;
+        grid-template-rows: repeat(8, 1fr);
+        gap: 4px;
+        flex: 1;
+    }
+    .side-panel > div {
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+    }
+    .rank-row {
+        display: grid;
+        grid-template-columns: 38px 1fr 48px;
+        align-items: center;
+        gap: 5px;
+        padding: 3px 6px;
+        border: 1px solid var(--ppt-border-default);
+        border-radius: 2px;
+        background: var(--ppt-bg-muted);
+    }
+    .rank-row.alert {
+        background: var(--ppt-bg-alert);
+        border-color: var(--ppt-border-alert);
+    }
+    .rank-row.warn {
+        background: var(--ppt-bg-warn);
+        border-color: var(--ppt-border-warn);
+    }
+    .rank-name {
+        font-size: 5.9px;
+        font-weight: 800;
+        color: var(--ppt-chart-text-strong);
+        white-space: nowrap;
+    }
+    .rank-track {
+        height: 7px;
+        background: var(--ppt-bg-track);
+        border-radius: 1px;
+        overflow: hidden;
+    }
+    .rank-fill {
+        height: 100%;
+        background: var(--ppt-chart-alert);
+    }
+    .rank-row.warn .rank-fill { background: var(--ppt-chart-warn); }
+    .rank-value {
+        font-size: 7.4px;
+        font-weight: 800;
+        text-align: right;
+        color: var(--ppt-chart-text-muted);
+        white-space: nowrap;
+    }
+    .focus-text {
+        font-size: 7.2px;
+        line-height: 1.45;
+        color: var(--ppt-chart-text-muted);
+    }
+    .focus-lines {
+        display: grid;
+        gap: 5px;
+    }
+    .focus-line {
+        padding: 5px 6px;
+        border: 1px solid var(--ppt-border-default);
+        border-radius: 2px;
+        background: var(--ppt-bg-muted);
+        font-size: 7px;
+        line-height: 1.35;
+        color: var(--ppt-chart-text-muted);
+    }
+    .focus-line strong { color: var(--ppt-chart-text-strong); }
+</style>
+</head>
+<body>
+<div class="slide-container">
+    <div class="ppt-header">
+        <span class="ppt-title">数据实时分析：省控自动站超标分布</span>
+        <span class="nav-page-num">P20E</span>
+    </div>
+
+    <div class="core-bar">▎ 2026年7月，全省17个市州共有73个省控自动站取得实测数据，其中22个站出现超标，共记录55次超标因子；3个站出现劣Ⅴ类。地图同时标出未超标和本月无实测数据的市州，本页不统计国控站。</div>
+
+    <div class="bd auto-overview-page">
+        <div class="kpi-row auto-kpi-row">
+            <div class="kpi-card status-neutral">
+                <div class="kpi-label">有实测数据的省控站</div>
+                <div class="kpi-value">73<span class="kpi-unit">个</span></div>
+                <div class="kpi-note-small">本页不统计国控自动站</div>
+            </div>
+            <div class="kpi-card status-alert">
+                <div class="kpi-label">超标站及记录</div>
+                <div class="kpi-dual-value">
+                    <div class="kpi-value">22<span class="kpi-unit">个</span></div>
+                    <div class="kpi-value">55<span class="kpi-unit">次</span></div>
+                </div>
+                <div class="kpi-note-small">站点数 / 超标因子记录数</div>
+            </div>
+            <div class="kpi-card status-alert">
+                <div class="kpi-label">劣Ⅴ类站及记录</div>
+                <div class="kpi-dual-value">
+                    <div class="kpi-value">3<span class="kpi-unit">个</span></div>
+                    <div class="kpi-value">5<span class="kpi-unit">次</span></div>
+                </div>
+                <div class="kpi-note-small">站点数 / 超标因子记录数</div>
+            </div>
+            <div class="kpi-card status-alert">
+                <div class="kpi-label">出现最多的超标因子</div>
+                <div class="kpi-value" style="font-size:15px!important;">溶解氧</div>
+                <div class="kpi-note-small">出现31次，占超标因子记录56.4%</div>
+            </div>
+        </div>
+
+        <div class="overview-main">
+            <div class="map-panel">
+                <div class="panel-headline">
+                    <div class="panel-title">全省省控自动站超标分布</div>
+                    <div class="panel-note">颜色越深，超标站占比越高；17个市州均显示</div>
+                </div>
+                <div class="hubei-map-board">
+                    <div class="hubei-shape"></div>
+                    <div class="city-node good" style="left:5%;top:58%;"><strong>恩施</strong><span class="city-metric">16.7%</span><span class="city-sub">2次·1/6站</span></div>
+                    <div class="city-node warn" style="left:14%;top:39%;"><strong>宜昌</strong><span class="city-metric">25.0%</span><span class="city-sub">3次·2/8站</span></div>
+                    <div class="city-node good" style="left:16%;top:8%;"><strong>神农架</strong><span class="city-metric">无实测</span><span class="city-sub">本月无实测数据</span></div>
+                    <div class="city-node good" style="left:27%;top:4%;"><strong>十堰</strong><span class="city-metric">0%</span><span class="city-sub">0次·0/1站</span></div>
+                    <div class="city-node warn" style="left:34%;top:21%;"><strong>襄阳</strong><span class="city-metric">25.0%</span><span class="city-sub">6次·2/8站</span></div>
+                    <div class="city-node good" style="left:31%;top:43%;"><strong>荆门</strong><span class="city-metric">0%</span><span class="city-sub">0次·0/1站</span></div>
+                    <div class="city-node alert" style="left:30%;top:70%;"><strong>荆州</strong><span class="city-metric">50.0%</span><span class="city-sub">10次·4/8站</span></div>
+                    <div class="city-node alert" style="left:43%;top:57%;"><strong>潜江</strong><span class="city-metric">66.7%</span><span class="city-sub">6次·2/3站</span></div>
+                    <div class="city-node alert" style="left:45%;top:40%;"><strong>天门</strong><span class="city-metric">50.0%</span><span class="city-sub">6次·2/4站</span></div>
+                    <div class="city-node good" style="left:45%;top:75%;"><strong>仙桃</strong><span class="city-metric">0%</span><span class="city-sub">0次·0/1站</span></div>
+                    <div class="city-node good" style="left:51%;top:7%;"><strong>随州</strong><span class="city-metric">0%</span><span class="city-sub">0次·0/1站</span></div>
+                    <div class="city-node alert" style="left:55%;top:24%;"><strong>孝感</strong><span class="city-metric">42.9%</span><span class="city-sub">8次·3/7站</span></div>
+                    <div class="city-node warn" style="left:58%;top:46%;"><strong>武汉</strong><span class="city-metric">33.3%</span><span class="city-sub">7次·3/9站</span></div>
+                    <div class="city-node good" style="left:61%;top:72%;"><strong>咸宁</strong><span class="city-metric">0%</span><span class="city-sub">0次·0/1站</span></div>
+                    <div class="city-node good" style="left:70%;top:54%;"><strong>鄂州</strong><span class="city-metric">0%</span><span class="city-sub">0次·0/1站</span></div>
+                    <div class="city-node" style="left:77%;top:70%;"><strong>黄石</strong><span class="city-metric">20.0%</span><span class="city-sub">2次·1/5站</span></div>
+                    <div class="city-node warn" style="left:79%;top:35%;"><strong>黄冈</strong><span class="city-metric">22.2%</span><span class="city-sub">5次·2/9站</span></div>                    <div class="legend-row">
+                        <span class="legend-item"><span class="legend-swatch sw-alert"></span>超标站率≥40%</span>
+                        <span class="legend-item"><span class="legend-swatch sw-warn"></span>20%-40%</span>
+                        <span class="legend-item"><span class="legend-swatch sw-good"></span>&lt;20%</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="side-panel">
+                <div style="flex:1;">
+                    <div class="panel-headline" style="padding-bottom:4px;margin-bottom:5px;">
+                        <div class="panel-title">超标站率Top8</div>
+                        <div class="panel-note">超标站数 ÷ 实测站数</div>
+                    </div>
+                    <div class="city-rank-list">
+                        <div class="rank-row alert"><div class="rank-name">潜江</div><div class="rank-track"><div class="rank-fill" style="width:100%;"></div></div><div class="rank-value">66.7%</div></div>
+                        <div class="rank-row alert"><div class="rank-name">天门</div><div class="rank-track"><div class="rank-fill" style="width:75%;"></div></div><div class="rank-value">50.0%</div></div>
+                        <div class="rank-row alert"><div class="rank-name">荆州</div><div class="rank-track"><div class="rank-fill" style="width:75%;"></div></div><div class="rank-value">50.0%</div></div>
+                        <div class="rank-row alert"><div class="rank-name">孝感</div><div class="rank-track"><div class="rank-fill" style="width:64%;"></div></div><div class="rank-value">42.9%</div></div>
+                        <div class="rank-row warn"><div class="rank-name">武汉</div><div class="rank-track"><div class="rank-fill" style="width:50%;"></div></div><div class="rank-value">33.3%</div></div>
+                        <div class="rank-row warn"><div class="rank-name">襄阳</div><div class="rank-track"><div class="rank-fill" style="width:37.5%;"></div></div><div class="rank-value">25.0%</div></div>
+                        <div class="rank-row warn"><div class="rank-name">宜昌</div><div class="rank-track"><div class="rank-fill" style="width:37.5%;"></div></div><div class="rank-value">25.0%</div></div>
+                        <div class="rank-row warn"><div class="rank-name">黄冈</div><div class="rank-track"><div class="rank-fill" style="width:33.3%;"></div></div><div class="rank-value">22.2%</div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="ft"><span>2026年7月生态环境月度专报</span><span>提示：仅供汇报使用</span></div>
+</div>
+</body>
+</html>
+
+
+
+
+
+
+
+

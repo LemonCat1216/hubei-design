@@ -9,21 +9,35 @@
 /* 目录项目区域 */
 .toc-body {
   flex: 1;
-  padding: 10px 36px;
+  padding: 18px 36px 20px;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  gap: 6px;
+  justify-content: space-evenly;
+  gap: 0;
   position: relative;
   z-index: 1;
 }
 
 /* 覆盖全局 .toc-item 样式 */
 .toc-item {
-  gap: 8px !important;
-  padding: 8px 20px !important;
+  gap: 10px !important;
+  padding: 11px 20px !important;
+  min-height: 44px;
 }
 
+.toc-item .idx {
+  width: 26px !important;
+  height: 26px !important;
+  font-size: 12px !important;
+}
+.toc-item .item-main {
+  font-size: 12.6px !important;
+  font-weight: 700 !important;
+}
+.toc-item .item-sub {
+  font-size: 10.2px !important;
+  opacity: .68;
+}
 /* 页码标 */
 .toc-page-num {
   margin-left: auto;
@@ -60,7 +74,7 @@
     </div>
     
 
-    <!-- 目录主体：5 个板块 -->
+    <!-- 目录主体：6 个板块 -->
     <div class="toc-body" id="toc-container"></div>
 
     <!-- 底部：简化落款 -->
@@ -74,14 +88,12 @@
 
 <script>
 var ITS = [
-    ["国控水环境质量形势", "国控断面全国排位 · 波动态势 · CWQI城市排名",               "P03-P04A"],
-    ["省控市州达标分析",   "省控断面市州达标（当前月 / 累计月）",                         "P05-P06"],
-    ["流域湖库分析",   "三大流域 · 重点湖库",                           "P11-P20A"],
-    ["风险断面攻坚",   "重点风险断面督办 · 污染因子根因分析 · 劣V类断面动态跟踪",        "P20B-P20D"],
-    ["排污口排查整治", "入河排污口排查 · 溯源整治 · 日常监管",                        "P21-P24, P26, P29"],
-    ["其他业务",   "资金项目调度 · 饮用水水源地管理 · 黑臭水体整治",                 "P25, P27-P28"],
-    ["问题聚焦与督办", "重点问题清单 · 线索跟踪处置",                                 "P30-P31"],
-    ["总结与展望",     "本月工作回顾 · 下月工作部署",                                 "P32"]
+    ["国控水环境质量形势", "国控断面全国排位 · 波动态势 · CWQI城市排名",                  "P03-P04A"],
+    ["省控市州达标分析",   "省控断面市州达标（当前月 / 累计月）",                          "P05-P06"],
+    ["流域湖库分析",       "一级流域概览 · 二级流域详情 · 重点湖库专项分析",                "P11-P20A"],
+    ["风险断面攻坚",       "重点风险断面督办 · 污染因子根因分析 · 劣V类断面动态跟踪",        "P20B-P20D"],
+    ["数据实时分析",       "省控自动站超标分布 · 超标因子分析 · 重点关注站点",              "P20E-P20H"],
+    ["排污口排查整治",     "入河排污口排查整治总览 · 各市州进展 · 重点河湖排口分布",        "P21-P23"]
 ];
 var c = document.getElementById("toc-container");
 var h = "";
@@ -100,3 +112,7 @@ c.innerHTML = h;
 
 </body>
 </html>
+
+
+
+

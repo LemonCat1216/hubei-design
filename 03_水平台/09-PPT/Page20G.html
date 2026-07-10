@@ -1,0 +1,278 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>数据实时分析：超标因子分析</title>
+<link rel="stylesheet" href="ppt-style.css">
+<script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+<style>
+    .factor-page {
+        flex-direction: column;
+        gap: 10px;
+        padding: 12px 22px;
+        overflow: hidden;
+    }
+    .factor-main {
+        flex: 1;
+        min-height: 0;
+        display: grid;
+        grid-template-columns: .78fr 1.22fr;
+        gap: 10px;
+    }
+    .factor-side {
+        display: grid;
+        grid-template-rows: 1fr .82fr;
+        gap: 10px;
+        min-height: 0;
+    }
+    .panel-card {
+        background: var(--ppt-bg-slide);
+        border: 1px solid var(--ppt-border-default);
+        border-radius: 3px;
+        padding: 8px 10px;
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+        overflow: hidden;
+    }
+    .panel-headline {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 8px;
+        flex-shrink: 0;
+        padding-bottom: 5px;
+        border-bottom: 1px solid var(--ppt-border-subtle);
+    }
+    .panel-title {
+        font-size: 10px;
+        font-weight: 800;
+        color: var(--ppt-chart-text-strong);
+    }
+    .panel-note {
+        font-size: 7px;
+        color: var(--ppt-text-note);
+        white-space: nowrap;
+    }
+    .chart-box {
+        flex: 1;
+        min-height: 0;
+        width: 100%;
+    }
+    .factor-kpis {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 6px;
+        padding-top: 6px;
+        flex: 1;
+        min-height: 0;
+    }
+    .factor-card {
+        border: 1px solid var(--ppt-border-default);
+        border-radius: 2px;
+        background: var(--ppt-bg-muted);
+        padding: 5px 5px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        min-width: 0;
+    }
+    .factor-card.alert {
+        background: var(--ppt-bg-alert);
+        border-color: var(--ppt-border-alert);
+    }
+    .factor-card.warn {
+        background: var(--ppt-bg-warn);
+        border-color: var(--ppt-border-warn);
+    }
+    .factor-name {
+        font-size: 7.2px;
+        font-weight: 800;
+        color: var(--ppt-chart-text-strong);
+        white-space: nowrap;
+    }
+    .factor-card.alert .factor-name,
+    .factor-card.alert .factor-num { color: var(--ppt-chart-alert); }
+    .factor-card.warn .factor-name,
+    .factor-card.warn .factor-num { color: var(--ppt-chart-warn); }
+    .factor-num {
+        margin-top: 3px;
+        font-size: 17px;
+        line-height: 1.05;
+        font-weight: 800;
+        color: var(--ppt-chart-text-strong);
+    }
+    .factor-note {
+        margin-top: 4px;
+        font-size: 7.2px;
+        line-height: 1.35;
+        color: var(--ppt-chart-text-muted);
+    }
+    .matrix-table-wrap {
+        flex: 1;
+        min-height: 0;
+        padding-top: 6px;
+    }
+    .table-box.factor-matrix th {
+        background: var(--ppt-table-header-solid) !important;
+    }
+    .factor-matrix table { table-layout: fixed; }
+    .factor-matrix th { font-size: 6.3px !important; padding: 1px 2px !important; }
+    .factor-matrix td { font-size: 6.2px !important; padding: 1px 2px !important; line-height: 1 !important; }
+    .factor-matrix th:first-child { width: 38px; }
+    .factor-matrix th:last-child { width: 128px; }    .heat-alert {
+        background: var(--ppt-bg-alert) !important;
+        color: var(--ppt-chart-alert) !important;
+        font-weight: 800;
+    }
+    .heat-warn {
+        background: var(--ppt-bg-warn) !important;
+        color: var(--ppt-chart-warn) !important;
+        font-weight: 800;
+    }
+    .heat-good {
+        background: var(--ppt-bg-good) !important;
+        color: var(--ppt-chart-good) !important;
+        font-weight: 800;
+    }
+    .station-grid {
+        flex: 1;
+        min-height: 0;
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 6px;
+        padding-top: 6px;
+    }
+    .station-card {
+        border: 1px solid var(--ppt-border-default);
+        border-radius: 2px;
+        background: var(--ppt-bg-muted);
+        padding: 6px 7px;
+        min-width: 0;
+    }
+    .station-card.bg-alert { background: var(--ppt-bg-alert) !important; border-color: var(--ppt-border-alert) !important; }
+    .station-card.bg-warn { background: var(--ppt-bg-warn) !important; border-color: var(--ppt-border-warn) !important; }
+    .station-title {
+        font-size: 7.4px;
+        font-weight: 800;
+        color: var(--ppt-chart-text-strong);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .station-desc {
+        margin-top: 3px;
+        font-size: 7.2px;
+        line-height: 1.35;
+        color: var(--ppt-chart-text-muted);
+    }
+</style>
+</head>
+<body>
+<div class="slide-container">
+    <div class="ppt-header">
+        <span class="ppt-title">数据实时分析：超标因子分析</span>
+        <span class="nav-page-num">P20G</span>
+    </div>
+
+    <div class="core-bar">▎ 2026年7月，超标记录中溶解氧31次、高锰酸盐指数11次、总磷10次、氨氮3次。溶解氧出现最多，检查站点时应同时查看水温、流速、湖库水体停留时间和支流汇入口情况。</div>
+
+    <div class="bd factor-page">
+        <div class="factor-main">
+            <div class="factor-side">
+                <div class="panel-card">
+                    <div class="panel-headline">
+                        <div class="panel-title">各超标因子记录次数</div>
+                        <div class="panel-note">按本月超标记录统计</div>
+                    </div>
+                    <div class="factor-kpis">
+                        <div class="factor-card alert"><div class="factor-name">溶解氧</div><div class="factor-num">31<span style="font-size:8px;font-weight:600;">次</span></div><div class="factor-note">出现范围最广，在连续不达标站点中较常见。</div></div>
+                        <div class="factor-card warn"><div class="factor-name">高锰酸盐指数</div><div class="factor-num">11<span style="font-size:8px;font-weight:600;">次</span></div><div class="factor-note">多与总磷、溶解氧共同出现。</div></div>
+                        <div class="factor-card warn"><div class="factor-name">总磷</div><div class="factor-num">10<span style="font-size:8px;font-weight:600;">次</span></div><div class="factor-note">主要出现在湖库和部分支流站点。</div></div>
+                        <div class="factor-card"><div class="factor-name">氨氮</div><div class="factor-num">3<span style="font-size:8px;font-weight:600;">次</span></div><div class="factor-note">少数站点同时出现Ⅴ类或劣Ⅴ类。</div></div>
+                    </div>
+                </div>
+
+                <div class="panel-card">
+                    <div class="panel-headline">
+                        <div class="panel-title">各因子所占比例</div>
+                        <div class="panel-note">共55次超标记录</div>
+                    </div>
+                    <div id="factorPie" class="chart-box"></div>
+                </div>
+            </div>
+
+            <div class="panel-card">
+                <div class="panel-headline">
+                    <div class="panel-title">因子-地市分布矩阵</div>
+                    <div class="panel-note">高、中、低表示各因子出现的相对多少；17个市州均列出</div>
+                </div>
+                <div class="matrix-table-wrap">
+                    <div class="table-box table-compact factor-matrix" style="height:100%;">
+                        <table style="height:100%;">
+                            <thead>
+                                <tr><th>地市</th><th>溶解氧</th><th>高锰酸盐指数</th><th>总磷</th><th>氨氮</th><th>典型站点</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr><td class="td-left">武汉</td><td class="heat-alert">高</td><td class="heat-warn">中</td><td class="heat-warn">中</td><td>低</td><td class="td-left">太平沙、朱家河口、挖沟泵站</td></tr>
+                                <tr><td class="td-left">黄石</td><td class="heat-warn">中</td><td class="heat-alert">高</td><td>低</td><td>低</td><td class="td-left">大冶湖闸</td></tr>
+                                <tr><td class="td-left">十堰</td><td>低</td><td>低</td><td>低</td><td>低</td><td class="td-left">本月未发现明显集中</td></tr>
+                                <tr><td class="td-left">宜昌</td><td class="heat-warn">中</td><td>低</td><td class="heat-warn">中</td><td>低</td><td class="td-left">铁路大桥、黄柏河大桥</td></tr>
+                                <tr><td class="td-left">襄阳</td><td class="heat-warn">中</td><td class="heat-warn">中</td><td class="heat-alert">高</td><td>低</td><td class="td-left">西排子河水库库心、琚湾、汤店</td></tr>
+                                <tr><td class="td-left">鄂州</td><td>低</td><td>低</td><td>低</td><td>低</td><td class="td-left">本月未发现明显集中</td></tr>
+                                <tr><td class="td-left">荆门</td><td>低</td><td>低</td><td>低</td><td>低</td><td class="td-left">本月未发现明显集中</td></tr>
+                                <tr><td class="td-left">孝感</td><td class="heat-alert">高</td><td class="heat-warn">中</td><td class="heat-warn">中</td><td>低</td><td class="td-left">汉川新堰、新沟闸、孝感河口大桥</td></tr>
+                                <tr><td class="td-left">荆州</td><td class="heat-alert">高</td><td class="heat-warn">中</td><td class="heat-alert">高</td><td class="heat-warn">中</td><td class="td-left">新河村、新滩、瞿家湾</td></tr>
+                                <tr><td class="td-left">黄冈</td><td class="heat-warn">中</td><td class="heat-warn">中</td><td class="heat-warn">中</td><td>低</td><td class="td-left">沐家泾、麻城许家湾、西河驿</td></tr>
+                                <tr><td class="td-left">咸宁</td><td>低</td><td>低</td><td>低</td><td>低</td><td class="td-left">本月未发现明显集中</td></tr>
+                                <tr><td class="td-left">随州</td><td>低</td><td>低</td><td>低</td><td>低</td><td class="td-left">本月未发现明显集中</td></tr>
+                                <tr><td class="td-left">恩施</td><td class="heat-warn">中</td><td>低</td><td>低</td><td>低</td><td class="td-left">有少量记录，需核实</td></tr>
+                                <tr><td class="td-left">仙桃</td><td>低</td><td>低</td><td>低</td><td>低</td><td class="td-left">本月未发现明显集中</td></tr>
+                                <tr><td class="td-left">潜江</td><td class="heat-warn">中</td><td>低</td><td>低</td><td>低</td><td class="td-left">运粮湖同心队</td></tr>
+                                <tr><td class="td-left">天门</td><td class="heat-warn">中</td><td class="heat-warn">中</td><td>低</td><td>低</td><td class="td-left">拖市</td></tr>
+                                <tr><td class="td-left">神农架</td><td>—</td><td>—</td><td>—</td><td>—</td><td class="td-left">本月无省控实测站</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel-card" style="flex:.28;">
+            <div class="panel-headline">
+                <div class="panel-title">典型因子关联站点</div>
+                <div class="panel-note">按主要超标因子分类</div>
+            </div>
+            <div class="station-grid">
+                <div class="station-card bg-alert"><div class="station-title">溶解氧：新沟闸、挖沟泵站</div><div class="station-desc">连续不达标期间多次因溶解氧被判为不达标，需同时检查水温和流速。</div></div>
+                <div class="station-card bg-warn"><div class="station-title">高锰酸盐指数：隔蒲桥、麻城许家湾</div><div class="station-desc">与有机污染负荷相关，建议联动上游支流和排口核查。</div></div>
+                <div class="station-card bg-warn"><div class="station-title">总磷：西排子河水库库心、西河驿</div><div class="station-desc">湖库及支流站点出现频次较高，需关注内源和面源输入。</div></div>
+                <div class="station-card"><div class="station-title">氨氮：姚集、马良龚家湾</div><div class="station-desc">少数站点同时出现Ⅴ类或劣Ⅴ类，需列入检查清单。</div></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="ft"><span>2026年7月生态环境月度专报</span><span>提示：仅供汇报使用</span></div>
+</div>
+<script>
+function cssVar(name){ return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
+var factorPie = echarts.init(document.getElementById('factorPie'));
+factorPie.setOption({
+    tooltip:{trigger:'item',formatter:'{b}: {c}次'},
+    series:[{type:'pie',radius:['42%','64%'],center:['50%','52%'],avoidLabelOverlap:true,data:[
+        {name:'溶解氧',value:31,itemStyle:{color:cssVar('--ppt-chart-alert')}},
+        {name:'高锰酸盐指数',value:11,itemStyle:{color:cssVar('--ppt-chart-warn')}},
+        {name:'总磷',value:10,itemStyle:{color:cssVar('--ppt-chart-series-5')}},
+        {name:'氨氮',value:3,itemStyle:{color:cssVar('--ppt-chart-series-6')}}
+    ],label:{fontSize:8,fontWeight:700,color:cssVar('--ppt-chart-text'),formatter:'{b}\n{c}次'},labelLine:{length:6,length2:4,lineStyle:{color:cssVar('--ppt-chart-axis')}}}],
+    backgroundColor:'transparent'
+});
+window.addEventListener('resize',function(){ factorPie.resize(); });
+</script>
+</body>
+</html>
+
+
+
+

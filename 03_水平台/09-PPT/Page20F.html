@@ -1,0 +1,129 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>数据实时分析：累计超标和连续不达标情况</title>
+<link rel="stylesheet" href="ppt-style.css">
+<script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+<style>
+    .city-status-page { flex-direction:column; gap:9px; padding:10px 20px; overflow:hidden; }
+    .rank-grid { flex:.82; min-height:0; display:grid; grid-template-columns:1fr 1fr 1fr; gap:9px; }
+    .ledger-panel { flex:1.18; min-height:0; }
+    .panel-card { background:var(--ppt-bg-slide); border:1px solid var(--ppt-border-default); border-radius:3px; padding:8px 10px; display:flex; flex-direction:column; min-height:0; overflow:hidden; }
+    .panel-headline { display:flex; justify-content:space-between; align-items:center; gap:8px; flex-shrink:0; padding-bottom:5px; border-bottom:1px solid var(--ppt-border-subtle); }
+    .panel-title { font-size:10px; font-weight:800; color:var(--ppt-chart-text-strong); }
+    .panel-note { font-size:7px; color:var(--ppt-text-note); white-space:nowrap; }
+    .chart-box { flex:1; min-height:0; width:100%; }
+    .ledger-wrap { flex:1; min-height:0; display:grid; grid-template-columns:1fr 1fr; gap:8px; padding-top:6px; }
+    .city-ledger { height:100%; }
+    .city-ledger table { height:100%; table-layout:fixed; }
+    .city-ledger th { background:var(--ppt-table-header-solid)!important; font-size:6.8px!important; padding:2px 3px!important; }
+    .city-ledger td { font-size:6.8px!important; padding:2px 3px!important; line-height:1.05!important; }
+    .city-ledger .city-name { font-weight:800; color:var(--ppt-chart-text-strong); text-align:left; }
+    .cell-alert { background:var(--ppt-bg-alert)!important; color:var(--ppt-chart-alert)!important; font-weight:800; }
+    .cell-warn { background:var(--ppt-bg-warn)!important; color:var(--ppt-chart-warn)!important; font-weight:800; }
+    .cell-good { background:var(--ppt-bg-good)!important; color:var(--ppt-chart-good)!important; font-weight:800; }
+    .scope-note { flex-shrink:0; padding-top:4px; font-size:6.8px; color:var(--ppt-text-note); text-align:right; }
+</style>
+</head>
+<body>
+<div class="slide-container">
+    <div class="ppt-header">
+        <span class="ppt-title">数据实时分析：累计超标和连续不达标情况</span>
+        <span class="nav-page-num">P20F</span>
+    </div>
+
+    <div class="core-bar">▎ 2026年7月，全省17个市州均纳入统计。本页重点看三项数据：近30日累计超标5天以上的站点数、各市州站点超标天数合计、连续3天以上不达标的站点数。上方列出前5名，下表列出全部市州。</div>
+
+    <div class="bd city-status-page">
+        <div class="rank-grid">
+            <div class="panel-card">
+                <div class="panel-headline"><div class="panel-title">累计超标5天以上站点数 Top 5</div><div class="panel-note">同值按超标天数合计排序</div></div>
+                <div id="stationChart" class="chart-box"></div>
+            </div>
+            <div class="panel-card">
+                <div class="panel-headline"><div class="panel-title">站点超标天数合计 Top 5</div><div class="panel-note">近30日，按市州汇总</div></div>
+                <div id="daysChart" class="chart-box"></div>
+            </div>
+            <div class="panel-card">
+                <div class="panel-headline"><div class="panel-title">连续3天以上不达标站点数 Top 5</div><div class="panel-note">按市州汇总</div></div>
+                <div id="continuousChart" class="chart-box"></div>
+            </div>
+        </div>
+
+        <div class="panel-card ledger-panel">
+            <div class="panel-headline">
+                <div class="panel-title">17市州统计明细</div>
+                <div class="panel-note">本页统计省控自动站，数值为0的市州也列出</div>
+            </div>
+            <div class="ledger-wrap">
+                <div class="table-box table-dense city-ledger">
+                    <table>
+                        <thead><tr><th>市州</th><th>实测站数</th><th>超标站数</th><th>超标天数合计</th><th>连续3天以上站点</th></tr></thead>
+                        <tbody>
+                            <tr><td class="city-name">武汉</td><td>9</td><td class="cell-alert">3</td><td class="cell-warn">12</td><td class="cell-alert">2</td></tr>
+                            <tr><td class="city-name">黄石</td><td>5</td><td class="cell-warn">1</td><td class="cell-warn">8</td><td class="cell-warn">1</td></tr>
+                            <tr><td class="city-name">十堰</td><td>1</td><td class="cell-good">0</td><td>0</td><td>0</td></tr>
+                            <tr><td class="city-name">宜昌</td><td>8</td><td class="cell-warn">2</td><td class="cell-warn">7</td><td>0</td></tr>
+                            <tr><td class="city-name">襄阳</td><td>8</td><td class="cell-warn">2</td><td class="cell-alert">20</td><td class="cell-warn">1</td></tr>
+                            <tr><td class="city-name">鄂州</td><td>1</td><td class="cell-good">0</td><td>0</td><td>0</td></tr>
+                            <tr><td class="city-name">荆门</td><td>1</td><td class="cell-good">0</td><td>0</td><td>0</td></tr>
+                            <tr><td class="city-name">孝感</td><td>7</td><td class="cell-alert">3</td><td class="cell-alert">28</td><td class="cell-alert">2</td></tr>
+                            <tr><td class="city-name">荆州</td><td>8</td><td class="cell-alert">4</td><td class="cell-alert">24</td><td class="cell-warn">1</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="table-box table-dense city-ledger">
+                    <table>
+                        <thead><tr><th>市州</th><th>实测站数</th><th>超标站数</th><th>超标天数合计</th><th>连续3天以上站点</th></tr></thead>
+                        <tbody>
+                            <tr><td class="city-name">黄冈</td><td>9</td><td class="cell-warn">2</td><td class="cell-warn">10</td><td class="cell-warn">1</td></tr>
+                            <tr><td class="city-name">咸宁</td><td>1</td><td class="cell-good">0</td><td>0</td><td>0</td></tr>
+                            <tr><td class="city-name">随州</td><td>1</td><td class="cell-good">0</td><td>0</td><td>0</td></tr>
+                            <tr><td class="city-name">恩施</td><td>6</td><td class="cell-warn">1</td><td class="cell-warn">5</td><td>0</td></tr>
+                            <tr><td class="city-name">仙桃</td><td>1</td><td class="cell-good">0</td><td>0</td><td>0</td></tr>
+                            <tr><td class="city-name">潜江</td><td>3</td><td class="cell-warn">2</td><td class="cell-alert">16</td><td>0</td></tr>
+                            <tr><td class="city-name">天门</td><td>4</td><td class="cell-warn">2</td><td class="cell-alert">16</td><td>0</td></tr>
+                            <tr><td class="city-name">神农架</td><td>0</td><td>—</td><td>—</td><td>—</td></tr>
+                            <tr><td class="city-name">全省</td><td class="cell-alert">73</td><td class="cell-alert">22</td><td>—</td><td class="cell-alert">7</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="scope-note">说明：超标天数合计，是一个市州内各站超标天数相加；连续3天以上站点，是连续不达标至少3天的站点数。</div>
+        </div>
+    </div>
+
+    <div class="ft"><span>2026年7月生态环境月度专报</span><span>提示：仅供汇报使用</span></div>
+</div>
+<script>
+function cssVar(name){ return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
+function baseAxis(data){ return {type:'category',inverse:true,data:data,axisLabel:{fontSize:7.5,fontWeight:700,color:cssVar('--ppt-chart-text-strong')},axisTick:{show:false},axisLine:{show:false}}; }
+var stationChart = echarts.init(document.getElementById('stationChart'));
+stationChart.setOption({
+    grid:{left:40,right:30,top:9,bottom:7},
+    xAxis:{type:'value',max:5,interval:1,axisLabel:{fontSize:7,color:cssVar('--ppt-chart-text-muted')},splitLine:{lineStyle:{color:cssVar('--ppt-chart-grid'),type:'dashed'}},axisLine:{lineStyle:{color:cssVar('--ppt-chart-axis')}}},
+    yAxis:baseAxis(['荆州','孝感','襄阳','天门','潜江']),
+    series:[{type:'bar',barWidth:10,data:[4,3,2,2,2],itemStyle:{color:cssVar('--ppt-chart-alert')},label:{show:true,position:'right',fontSize:7,fontWeight:700,formatter:'{c}个'}}],backgroundColor:'transparent'
+});
+var daysChart = echarts.init(document.getElementById('daysChart'));
+daysChart.setOption({
+    grid:{left:40,right:30,top:9,bottom:7},
+    xAxis:{type:'value',axisLabel:{fontSize:7,color:cssVar('--ppt-chart-text-muted')},splitLine:{lineStyle:{color:cssVar('--ppt-chart-grid'),type:'dashed'}},axisLine:{lineStyle:{color:cssVar('--ppt-chart-axis')}}},
+    yAxis:baseAxis(['孝感','荆州','襄阳','天门','潜江']),
+    series:[{type:'bar',barWidth:10,data:[28,24,20,16,16],itemStyle:{color:cssVar('--ppt-chart-alert')},label:{show:true,position:'right',fontSize:7,fontWeight:700,formatter:'{c}天'}}],backgroundColor:'transparent'
+});
+var continuousChart = echarts.init(document.getElementById('continuousChart'));
+continuousChart.setOption({
+    grid:{left:40,right:30,top:9,bottom:7},
+    xAxis:{type:'value',max:3,interval:1,axisLabel:{fontSize:7,color:cssVar('--ppt-chart-text-muted')},splitLine:{lineStyle:{color:cssVar('--ppt-chart-grid'),type:'dashed'}},axisLine:{lineStyle:{color:cssVar('--ppt-chart-axis')}}},
+    yAxis:baseAxis(['孝感','武汉','襄阳','黄石','黄冈']),
+    series:[{type:'bar',barWidth:10,data:[2,2,1,1,1],itemStyle:{color:cssVar('--ppt-chart-warn')},label:{show:true,position:'right',fontSize:7,fontWeight:700,formatter:'{c}个'}}],backgroundColor:'transparent'
+});
+window.addEventListener('resize',function(){ stationChart.resize(); daysChart.resize(); continuousChart.resize(); });
+</script>
+</body>
+</html>
+
+

@@ -1,0 +1,147 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>数据实时分析：需重点关注的站点</title>
+<link rel="stylesheet" href="ppt-style.css">
+<style>
+    .object-page { flex-direction:column; gap:8px; padding:10px 20px; overflow:hidden; }
+    .object-kpis { grid-template-columns:repeat(4,1fr); gap:8px; margin-bottom:0; flex-shrink:0; }
+    .object-kpis .kpi-card { padding:6px 8px!important; min-height:51px; }
+    .object-kpis .kpi-label { font-size:8px!important; }
+    .object-kpis .kpi-value { font-size:19px!important; line-height:1.05; }
+    .object-main { flex:1; min-height:0; display:grid; grid-template-rows:1.02fr .98fr; gap:8px; }
+    .object-bottom { min-height:0; display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+    .panel-card { background:var(--ppt-bg-slide); border:1px solid var(--ppt-border-default); border-radius:3px; padding:7px 9px; display:flex; flex-direction:column; min-height:0; overflow:hidden; }
+    .panel-headline { display:flex; justify-content:space-between; align-items:center; gap:8px; flex-shrink:0; padding-bottom:4px; border-bottom:1px solid var(--ppt-border-subtle); }
+    .panel-title { font-size:9.5px; font-weight:800; color:var(--ppt-chart-text-strong); }
+    .panel-note { font-size:6.8px; color:var(--ppt-text-note); white-space:nowrap; }
+    .risk-matrix-wrap, .object-table-wrap { flex:1; min-height:0; padding-top:5px; }
+    .matrix-pair { height:100%; display:grid; grid-template-columns:1fr 1fr; gap:7px; }
+    .risk-matrix table, .object-table table { height:100%; table-layout:fixed; }
+    .risk-matrix th { background:var(--ppt-table-header-solid)!important; font-size:6.2px!important; padding:1px 2px!important; }
+    .risk-matrix td { font-size:6.2px!important; padding:1px 2px!important; line-height:1!important; }
+    .risk-matrix th:first-child { width:44px; }
+    .risk-matrix th:last-child { width:118px; }
+    .object-table th { background:var(--ppt-table-header-solid)!important; font-size:6.4px!important; padding:2px 3px!important; }
+    .object-table td { font-size:6.4px!important; padding:2px 3px!important; line-height:1.05!important; }
+    .heat-alert { background:var(--ppt-bg-alert)!important; color:var(--ppt-chart-alert)!important; font-weight:800; }
+    .heat-warn { background:var(--ppt-bg-warn)!important; color:var(--ppt-chart-warn)!important; font-weight:800; }
+    .heat-good { background:var(--ppt-bg-good)!important; color:var(--ppt-chart-good)!important; font-weight:800; }
+    .td-city { font-weight:800; color:var(--ppt-chart-text-strong); text-align:left; }
+    .action-review { color:var(--ppt-chart-series-5); font-weight:800; }
+    .action-check { color:var(--ppt-chart-warn); font-weight:800; }
+    .action-trace { color:var(--ppt-chart-alert); font-weight:800; }
+</style>
+</head>
+<body>
+<div class="slide-container">
+    <div class="ppt-header">
+        <span class="ppt-title">数据实时分析：需重点关注的站点</span>
+        <span class="nav-page-num">P20H</span>
+    </div>
+
+    <div class="core-bar">▎ 2026年7月，荆州、孝感、武汉、襄阳同时存在累计超标、Ⅴ类或劣Ⅴ类、多因子、连续不达标等情况。下表列出各市州数量和重点站点，便于安排数据核实、增加监测频次、现场检查和污染来源排查。</div>
+
+    <div class="bd object-page">
+        <div class="kpi-row object-kpis">
+            <div class="kpi-card status-alert"><div class="kpi-label">累计超标最高</div><div class="kpi-value">16<span style="font-size:8px;font-weight:600;">天</span></div><div class="kpi-sub">5个站点并列</div></div>
+            <div class="kpi-card status-alert"><div class="kpi-label">连续3天以上站点</div><div class="kpi-value">7<span style="font-size:8px;font-weight:600;">个</span></div><div class="kpi-sub">连续不达标至少3天</div></div>
+            <div class="kpi-card status-alert"><div class="kpi-label">同时出现多类问题的市州</div><div class="kpi-value">4<span style="font-size:8px;font-weight:600;">个</span></div><div class="kpi-sub">荆州、孝感、武汉、襄阳</div></div>
+            <div class="kpi-card status-warn"><div class="kpi-label">连续不达标中最常见因子</div><div class="kpi-value" style="font-size:15px!important;">溶解氧</div><div class="kpi-sub">7个站点中出现较多</div></div>
+        </div>
+
+        <div class="object-main">
+            <div class="panel-card">
+                <div class="panel-headline">
+                    <div class="panel-title">17市州问题数量汇总</div>
+                    <div class="panel-note">数值为0和无实测数据的市州也列出</div>
+                </div>
+                <div class="risk-matrix-wrap">
+                    <div class="matrix-pair">
+                        <div class="table-box table-dense risk-matrix">
+                            <table>
+                                <thead><tr><th>市州</th><th>超标站数</th><th>Ⅴ/劣Ⅴ站数</th><th>累计5天以上</th><th>连续3天以上</th><th>多因子站数</th><th>建议</th></tr></thead>
+                                <tbody>
+                                    <tr><td class="td-city">武汉</td><td class="heat-alert">3</td><td class="heat-warn">2</td><td class="heat-warn">2</td><td class="heat-alert">2</td><td class="heat-warn">2</td><td class="td-left">优先检查连续超标站</td></tr>
+                                    <tr><td class="td-city">黄石</td><td class="heat-warn">1</td><td class="heat-warn">1</td><td class="heat-warn">1</td><td class="heat-warn">1</td><td>0</td><td class="td-left">核实连续超标记录</td></tr>
+                                    <tr><td class="td-city">十堰</td><td class="heat-good">0</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="td-left">保持监测</td></tr>
+                                    <tr><td class="td-city">宜昌</td><td class="heat-warn">2</td><td class="heat-warn">1</td><td class="heat-warn">1</td><td>0</td><td class="heat-warn">1</td><td class="td-left">关注累计超标站</td></tr>
+                                    <tr><td class="td-city">襄阳</td><td class="heat-warn">2</td><td class="heat-alert">2</td><td class="heat-alert">2</td><td class="heat-warn">1</td><td class="heat-warn">2</td><td class="td-left">湖库总磷排查</td></tr>
+                                    <tr><td class="td-city">鄂州</td><td class="heat-good">0</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="td-left">保持监测</td></tr>
+                                    <tr><td class="td-city">荆门</td><td class="heat-good">0</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="td-left">保持监测</td></tr>
+                                    <tr><td class="td-city">孝感</td><td class="heat-alert">3</td><td class="heat-alert">3</td><td class="heat-alert">3</td><td class="heat-alert">2</td><td class="heat-warn">1</td><td class="td-left">累计和连续问题并存</td></tr>
+                                    <tr><td class="td-city">荆州</td><td class="heat-alert">4</td><td class="heat-alert">4</td><td class="heat-alert">4</td><td class="heat-warn">1</td><td class="heat-alert">3</td><td class="td-left">优先排查污染来源</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="table-box table-dense risk-matrix">
+                            <table>
+                                <thead><tr><th>市州</th><th>超标站数</th><th>Ⅴ/劣Ⅴ站数</th><th>累计5天以上</th><th>连续3天以上</th><th>多因子站数</th><th>建议</th></tr></thead>
+                                <tbody>
+                                    <tr><td class="td-city">黄冈</td><td class="heat-warn">2</td><td class="heat-warn">1</td><td class="heat-warn">1</td><td class="heat-warn">1</td><td class="heat-warn">2</td><td class="td-left">核实多因子记录</td></tr>
+                                    <tr><td class="td-city">咸宁</td><td class="heat-good">0</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="td-left">保持监测</td></tr>
+                                    <tr><td class="td-city">随州</td><td class="heat-good">0</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="td-left">保持监测</td></tr>
+                                    <tr><td class="td-city">恩施</td><td class="heat-warn">1</td><td>0</td><td class="heat-warn">1</td><td>0</td><td>0</td><td class="td-left">核实累计超标记录</td></tr>
+                                    <tr><td class="td-city">仙桃</td><td class="heat-good">0</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="td-left">保持监测</td></tr>
+                                    <tr><td class="td-city">潜江</td><td class="heat-warn">2</td><td class="heat-warn">1</td><td class="heat-alert">2</td><td>0</td><td>0</td><td class="td-left">关注累计超标站</td></tr>
+                                    <tr><td class="td-city">天门</td><td class="heat-warn">2</td><td class="heat-warn">1</td><td class="heat-alert">2</td><td>0</td><td class="heat-warn">1</td><td class="td-left">关注累计超标站</td></tr>
+                                    <tr><td class="td-city">神农架</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td class="td-left">无省控实测站</td></tr>
+                                    <tr><td class="td-city">全省</td><td class="heat-alert">22</td><td class="heat-alert">3</td><td>—</td><td class="heat-alert">7</td><td>—</td><td class="td-left">按清单跟踪处理</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="object-bottom">
+                <div class="panel-card">
+                    <div class="panel-headline"><div class="panel-title">累计超标5天以上站点</div><div class="panel-note">近30日超标至少5天</div></div>
+                    <div class="object-table-wrap">
+                        <div class="table-box table-dense object-table">
+                            <table>
+                                <thead><tr><th>站点</th><th>地市</th><th>超标天数</th><th>主要因子</th><th>建议</th></tr></thead>
+                                <tbody>
+                                    <tr><td class="td-left">汉川新堰</td><td>孝感</td><td class="heat-alert">16天</td><td>溶解氧</td><td class="action-trace">排查污染来源</td></tr>
+                                    <tr><td class="td-left">汤店</td><td>襄阳</td><td class="heat-alert">16天</td><td>溶解氧</td><td class="action-check">现场检查</td></tr>
+                                    <tr><td class="td-left">藕池河中支入境</td><td>荆州</td><td class="heat-alert">16天</td><td>总磷</td><td class="action-trace">排查污染来源</td></tr>
+                                    <tr><td class="td-left">拖市</td><td>天门</td><td class="heat-alert">16天</td><td>高锰酸盐</td><td class="action-check">增加监测频次</td></tr>
+                                    <tr><td class="td-left">运粮湖同心队</td><td>潜江</td><td class="heat-alert">16天</td><td>溶解氧</td><td class="action-check">现场检查</td></tr>
+                                    <tr><td class="td-left">新沟闸</td><td>孝感</td><td class="heat-warn">8天</td><td>溶解氧</td><td class="action-review">核实数据</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel-card">
+                    <div class="panel-headline"><div class="panel-title">连续3天以上不达标站点</div><div class="panel-note">连续不达标至少3天</div></div>
+                    <div class="object-table-wrap">
+                        <div class="table-box table-dense object-table">
+                            <table>
+                                <thead><tr><th>站点</th><th>地市</th><th>连续天数</th><th>主要因子</th><th>建议</th></tr></thead>
+                                <tbody>
+                                    <tr><td class="td-left">滠口</td><td>武汉</td><td class="heat-alert">4天</td><td>溶解氧</td><td class="action-check">增加监测频次</td></tr>
+                                    <tr><td class="td-left">大冶湖闸</td><td>黄石</td><td class="heat-alert">4天</td><td>高锰酸盐</td><td class="action-check">现场检查</td></tr>
+                                    <tr><td class="td-left">西排子河水库库心</td><td>襄阳</td><td class="heat-alert">4天</td><td>总磷</td><td class="action-trace">排查污染来源</td></tr>
+                                    <tr><td class="td-left">孝感河口大桥</td><td>孝感</td><td class="heat-alert">4天</td><td>溶解氧</td><td class="action-check">增加监测频次</td></tr>
+                                    <tr><td class="td-left">新沟闸</td><td>孝感</td><td class="heat-alert">4天</td><td>溶解氧</td><td class="action-trace">排查污染来源</td></tr>
+                                    <tr><td class="td-left">挖沟泵站</td><td>武汉</td><td class="heat-alert">4天</td><td>溶解氧</td><td class="action-review">核实数据</td></tr>
+                                    <tr><td class="td-left">麻城许家湾</td><td>黄冈</td><td class="heat-alert">4天</td><td>多因子</td><td class="action-check">现场检查</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="ft"><span>2026年7月生态环境月度专报</span><span>提示：仅供汇报使用</span></div>
+</div>
+</body>
+</html>
+
+

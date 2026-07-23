@@ -100,10 +100,7 @@ body::before{content:"";position:fixed;top:0;left:0;right:0;bottom:0;background:
 .basin-list{flex:1;min-height:0;display:flex;flex-direction:column;gap:6px}
 .basin-card{flex:1;min-height:0;display:flex;align-items:center;gap:8px;padding:6px 8px;background:linear-gradient(180deg,rgba(8,44,104,.95),rgba(4,24,60,.98));border:1px solid rgba(86,191,255,.2);border-radius:4px;color:#dceeff;box-shadow:0 0 16px rgba(0,30,90,.12),inset 0 0 18px rgba(0,120,255,.05);overflow:hidden}
 .basin-map{width:72px;height:100%;min-height:42px;display:flex;align-items:center;justify-content:center;background:linear-gradient(180deg,rgba(0,34,84,.94),rgba(4,22,58,.98));border:1px solid rgba(85,196,255,.3);color:#62dbff;font-size:13px;font-weight:800;letter-spacing:1px;text-align:center;line-height:1.2;flex-shrink:0;box-shadow:inset 0 0 16px rgba(0,120,255,.08)}
-.basin-info{flex:1;min-width:0;height:100%;display:flex;flex-direction:column;justify-content:center}
-.basin-name{display:block;font-size:16px;font-weight:900;line-height:1;padding-bottom:3px;margin-bottom:3px;border-bottom:1px solid rgba(255,216,106,.16);color:#ffd86a;text-shadow:0 0 8px rgba(255,216,106,.12)}
-.basin-card:nth-child(2) .basin-name{color:#42e1ff}
-.basin-card:nth-child(3) .basin-name{color:#7ff3d0}
+.basin-info{flex:1;min-width:0;height:100%;display:flex;flex-direction:column;justify-content:center;gap:7px}
 .basin-row{display:flex;align-items:center;justify-content:space-between;gap:6px;min-height:15px;font-size:12px;font-weight:800;color:rgba(224,241,255,.82);line-height:1.05}
 .basin-value{display:flex;align-items:baseline;gap:4px;color:#fff}
 .basin-value strong{font-size:16px;font-weight:900;line-height:1}
@@ -228,7 +225,6 @@ body::before{content:"";position:fixed;top:0;left:0;right:0;bottom:0;background:
 <div class="basin-card" data-basin="长江流域">
 <div class="basin-map">长江流域</div>
 <div class="basin-info">
-<span class="basin-name">长江流域</span>
 <div class="basin-row"><span>国考断面数</span><span class="basin-value"><strong>89</strong><em>个</em></span></div>
 <div class="basin-row"><span>Ⅰ-Ⅲ类占比</span><span class="basin-value good"><strong>89.9%</strong></span></div>
 <div class="basin-row"><span>劣Ⅴ类占比</span><span class="basin-value warn"><strong>3</strong><em>个</em></span></div>
@@ -237,7 +233,6 @@ body::before{content:"";position:fixed;top:0;left:0;right:0;bottom:0;background:
 <div class="basin-card" data-basin="汉江流域">
 <div class="basin-map">汉江流域</div>
 <div class="basin-info">
-<span class="basin-name">汉江流域</span>
 <div class="basin-row"><span>国考断面数</span><span class="basin-value"><strong>52</strong><em>个</em></span></div>
 <div class="basin-row"><span>Ⅰ-Ⅲ类占比</span><span class="basin-value good"><strong>92.3%</strong></span></div>
 <div class="basin-row"><span>劣Ⅴ类占比</span><span class="basin-value warn"><strong>2</strong><em>个</em></span></div>
@@ -246,7 +241,6 @@ body::before{content:"";position:fixed;top:0;left:0;right:0;bottom:0;background:
 <div class="basin-card" data-basin="清江流域">
 <div class="basin-map">清江流域</div>
 <div class="basin-info">
-<span class="basin-name">清江流域</span>
 <div class="basin-row"><span>国考断面数</span><span class="basin-value"><strong>26</strong><em>个</em></span></div>
 <div class="basin-row"><span>Ⅰ-Ⅲ类占比</span><span class="basin-value good"><strong>92.3%</strong></span></div>
 <div class="basin-row"><span>劣Ⅴ类占比</span><span class="basin-value warn"><strong>0</strong><em>个</em></span></div>
@@ -268,13 +262,6 @@ body::before{content:"";position:fixed;top:0;left:0;right:0;bottom:0;background:
 <div class="sewage-row"><div class="inner-cell"><span class="sub-placeholder">排查</span></div><div class="inner-cell"><span class="sub-placeholder">监测</span></div><div class="inner-cell"><span class="sub-placeholder">溯源</span></div><div class="inner-cell"><span class="sub-placeholder">整治</span></div></div>
 <div class="sewage-row"><div class="inner-cell"><span class="sub-placeholder">水体管理级别</span></div><div class="inner-cell"><span class="sub-placeholder">四湖片区</span></div><div class="inner-cell"><span class="sub-placeholder">长江排口</span></div><div class="inner-cell"><span class="sub-placeholder">排口分类</span></div></div>
 </div></div>
-<div class="sub-block w-1"><div class="park-body">
-<div class="park-stat"><div class="card"><div class="lbl">全省园区总数</div><div class="num">116</div></div><div class="card"><div class="lbl">分园总数</div><div class="num">181</div></div></div>
-<div class="park-cats"><div class="cat"><div class="lbl">省级</div><div class="num">135</div></div><div class="cat"><div class="lbl">国家级</div><div class="num">28</div></div><div class="cat"><div class="lbl">地市级</div><div class="num">20</div></div><div class="cat"><div class="lbl">区县级</div><div class="num">9</div></div></div>
-</div></div>
-</div></div>
-<div class="left-block"><div class="bl-body row-layout">
-<div class="sub-block w-2"><div class="sub-body"><span class="sub-placeholder">饮用水</span></div></div>
 <div class="sub-block w-1"><div class="black-body">
 <div class="black-row">
 <div class="bc"><div class="lbl">全省黑臭</div><div class="num">313</div></div>
@@ -287,6 +274,13 @@ body::before{content:"";position:fixed;top:0;left:0;right:0;bottom:0;background:
 <div class="bar-group"><div class="bar-val">98.5%</div><div class="bar" style="height:94%"></div><div class="bar-lbl">县城消除</div></div>
 <div class="bar-group"><div class="bar-val">37.9%</div><div class="bar" style="height:36%"></div><div class="bar-lbl">县级消除</div></div>
 </div>
+</div></div>
+</div></div>
+<div class="left-block"><div class="bl-body row-layout">
+<div class="sub-block w-2"><div class="sub-body"><span class="sub-placeholder">饮用水</span></div></div>
+<div class="sub-block w-1"><div class="park-body">
+<div class="park-stat"><div class="card"><div class="lbl">全省园区总数</div><div class="num">116</div></div><div class="card"><div class="lbl">分园总数</div><div class="num">181</div></div></div>
+<div class="park-cats"><div class="cat"><div class="lbl">省级</div><div class="num">135</div></div><div class="cat"><div class="lbl">国家级</div><div class="num">28</div></div><div class="cat"><div class="lbl">地市级</div><div class="num">20</div></div><div class="cat"><div class="lbl">区县级</div><div class="num">9</div></div></div>
 </div></div>
 </div></div>
 </div></div>

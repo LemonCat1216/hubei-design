@@ -44,9 +44,13 @@ body::before{content:"";position:fixed;top:0;left:0;right:0;bottom:0;background:
 .map-select .label{font-size:16px;color:rgba(180,210,255,.6);letter-spacing:2px;text-shadow:0 0 10px rgba(59,130,246,.3)}
 
 .station-overlay{position:absolute;top:32px;right:32px;z-index:10;width:420px;height:calc(100% - 100px);background:rgba(0,18,55,.20);border:1px solid rgba(59,130,246,.25);border-radius:8px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);overflow:hidden;display:flex;flex-direction:column;box-shadow:0 0 40px rgba(0,50,150,.2),inset 0 0 30px rgba(59,130,246,.05)}
+.station-overlay.collapsed{height:36px}
 .station-overlay::before{content:"";position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,rgba(59,130,246,.5),transparent)}
 .station-overlay .so-title{height:34px;flex-shrink:0;display:flex;align-items:center;padding:0 14px;font-size:14px;font-weight:600;color:rgba(200,225,255,.85);letter-spacing:1px;background:linear-gradient(90deg,rgba(0,80,200,.15),transparent);border-bottom:1px solid rgba(59,130,246,.10)}
 .station-overlay .so-title .dot{width:6px;height:6px;border-radius:50%;background:#3b82f6;box-shadow:0 0 8px #3b82f6;margin-right:8px;flex-shrink:0}
+.station-overlay .so-title .collapse-mark{margin-left:auto;color:rgba(200,225,255,.7);font-size:16px;line-height:1}
+.station-overlay.collapsed .so-title .collapse-mark{transform:rotate(-90deg)}
+.station-overlay.collapsed .so-head,.station-overlay.collapsed .so-body{display:none}
 .station-overlay .so-head{height:28px;flex-shrink:0;display:flex;align-items:center;font-size:12px;color:rgba(160,190,230,.45);border-bottom:1px solid rgba(59,130,246,.06);padding:0 14px;background:rgba(0,30,70,.3)}
 .station-overlay .so-head span{flex:1;text-align:center}
 .station-overlay .so-body{flex:1;overflow:hidden;position:relative}
@@ -72,11 +76,49 @@ body::before{content:"";position:fixed;top:0;left:0;right:0;bottom:0;background:
 .left-block .corner-bl{position:absolute;bottom:-1px;left:-1px;width:18px;height:18px;border-bottom:2px solid rgba(59,130,246,.4);border-left:2px solid rgba(59,130,246,.4)}
 .left-block .corner-br{position:absolute;bottom:-1px;right:-1px;width:18px;height:18px;border-bottom:2px solid rgba(59,130,246,.4);border-right:2px solid rgba(59,130,246,.4)}
 .left-block .bl-body{flex:1;min-height:0;display:flex;flex-direction:column;position:relative;padding:8px}
-.water-body{flex:1;min-height:0;display:flex;flex-direction:column;position:relative;padding:8px}
-.water-grid{width:100%;height:100%;display:grid;grid-template-columns:1fr 1fr 1fr 1fr 1fr;grid-template-rows:1fr 1fr;gap:6px}
-.water-grid .cell{border:1px solid rgba(59,130,246,.10);background:rgba(0,25,70,.3);position:relative;display:flex;align-items:center;justify-content:center;transition:all .2s}
-.water-grid .cell:hover{border-color:rgba(59,130,246,.3);background:rgba(0,35,85,.4)}
-.water-grid .cell .label{font-size:17px;font-weight:600;letter-spacing:2px;color:rgba(200,225,255,.45);text-shadow:0 0 8px rgba(59,130,246,.2);pointer-events:none;user-select:none}
+.water-body{flex:1;min-height:0;display:flex;flex-direction:column;position:relative;padding:8px;gap:8px}
+.section-toolbar{height:34px;flex-shrink:0;display:flex;align-items:center;gap:8px;padding:0 10px;background:linear-gradient(90deg,rgba(0,48,120,.95),rgba(0,34,90,.72));border:1px solid rgba(59,130,246,.26);box-shadow:inset 0 0 16px rgba(59,130,246,.08),0 0 14px rgba(0,20,80,.18);overflow:hidden}
+.section-toolbar .toolbar-title{font-size:18px;font-weight:900;color:#f3d66b;letter-spacing:1px;text-shadow:0 0 10px rgba(243,214,107,.35);white-space:nowrap}
+.section-toolbar .toolbar-select{height:24px;min-width:76px;border:1px solid rgba(59,130,246,.45);background:rgba(0,28,78,.85);color:rgba(200,225,255,.86);font-size:12px;font-family:inherit;padding:0 22px 0 8px;outline:none}
+.section-toolbar .toolbar-toggle{height:24px;display:flex;border:1px solid rgba(59,130,246,.45);background:rgba(0,28,78,.7)}
+.section-toolbar .mode-btn{height:22px;min-width:44px;border:0;background:transparent;color:rgba(200,225,255,.72);font-size:12px;font-weight:700;font-family:inherit;cursor:pointer}
+.section-toolbar .mode-btn.active{background:#16a8e8;color:#fff;box-shadow:0 0 14px rgba(22,168,232,.45)}
+.toolbar-filter,.toolbar-auto{display:flex;align-items:center;gap:8px}
+.toolbar-filter.is-hidden{display:none}
+.toolbar-auto .auto-stat{font-size:12px;font-weight:700;color:rgba(200,225,255,.72);white-space:nowrap}
+.toolbar-auto .auto-stat span{margin-left:4px;color:#26d8ff;text-shadow:0 0 8px rgba(38,216,255,.35)}
+.basin-lake-layout{flex:1;min-height:0;display:grid;grid-template-columns:1.08fr .9fr 2fr;gap:8px}
+.province-overview{min-width:0;min-height:0;display:flex;flex-direction:column;padding:8px;background:rgba(246,250,255,.94);border:1px solid rgba(210,222,236,.75);border-radius:4px;color:#34495f;box-shadow:0 0 16px rgba(0,30,90,.12);overflow:hidden}
+.province-title{font-size:18px;font-weight:900;color:#0b3f72;line-height:1;border-bottom:1px solid #dce5ef;padding-bottom:6px;margin-bottom:6px}
+.province-chart{flex:1;min-height:92px;width:100%}
+.quality-counts{display:grid;grid-template-columns:1fr 1fr;gap:5px;flex-shrink:0}
+.quality-item{display:flex;align-items:center;justify-content:space-between;gap:6px;min-height:24px;padding:0 7px;background:#edf3f9;border:1px solid #dce5ef;color:#314961;font-size:12px;font-weight:800}
+.quality-item strong{font-size:17px;font-weight:900;color:#0b3f72}
+.basin-column{min-width:0;min-height:0;display:flex;flex-direction:column}
+.basin-list{flex:1;min-height:0;display:flex;flex-direction:column;gap:6px}
+.basin-card{flex:1;min-height:0;display:flex;align-items:center;gap:8px;padding:5px 7px;background:rgba(246,250,255,.94);border:1px solid rgba(210,222,236,.75);border-radius:4px;color:#34495f;box-shadow:0 0 16px rgba(0,30,90,.12);overflow:hidden}
+.basin-map{width:72px;height:100%;min-height:42px;display:flex;align-items:center;justify-content:center;background:#dfe6ef;border:2px dashed #9aaec6;color:#6c7d92;font-size:13px;font-weight:800;letter-spacing:1px;text-align:center;line-height:1.2;flex-shrink:0}
+.basin-info{flex:1;min-width:0;height:100%;display:flex;flex-direction:column;justify-content:center}
+.basin-name{display:block;font-size:16px;font-weight:900;line-height:1;padding-bottom:3px;margin-bottom:3px;border-bottom:1px solid #dce5ef;color:#0b3f72}
+.basin-card:nth-child(2) .basin-name{color:#008473}
+.basin-card:nth-child(3) .basin-name{color:#0083a6}
+.basin-row{display:flex;align-items:center;justify-content:space-between;gap:6px;min-height:15px;font-size:12px;font-weight:800;color:#314961;line-height:1.05}
+.basin-value{display:flex;align-items:baseline;gap:4px;color:#000}
+.basin-value strong{font-size:16px;font-weight:900;line-height:1}
+.basin-value em{font-size:10px;font-style:normal;color:#7590ae}
+.basin-value.good strong{color:#008473}
+.basin-value.warn strong{color:#9a1b15}
+.lake-columns{min-width:0;min-height:0}
+.lake-grid{height:100%;min-height:0;display:grid;grid-template-columns:repeat(2,1fr);grid-template-rows:repeat(3,1fr);gap:6px}
+.lake-card{min-width:0;min-height:0;display:flex;align-items:center;gap:8px;padding:6px;background:rgba(246,250,255,.92);border:1px solid rgba(210,222,236,.7);border-radius:4px;color:#34495f}
+.lake-map{width:70px;height:100%;display:flex;align-items:center;justify-content:center;background:#dfe6ef;border:2px dashed #9aaec6;color:#6c7d92;font-size:13px;font-weight:800;text-align:center;line-height:1.2;flex-shrink:0}
+.lake-info{flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center;gap:3px}
+.lake-name{font-size:17px;font-weight:900;color:#0b6f90;line-height:1;border-bottom:1px solid #dce5ef;padding-bottom:4px}
+.lake-row{display:flex;align-items:center;justify-content:space-between;gap:6px;font-size:12px;font-weight:800;color:#314961;line-height:1.15}
+.lake-row strong{font-size:16px;font-weight:900;color:#000}
+.lake-row em{font-size:10px;font-style:normal;color:#7590ae}
+.lake-row .good{color:#008473}
+.lake-row .warn{color:#9a1b15}
 
 .sub-block{flex:1;display:flex;flex-direction:column;position:relative}
 .sub-block+.sub-block{border-top:1px solid rgba(59,130,246,.10)}
@@ -144,18 +186,76 @@ body::before{content:"";position:fixed;top:0;left:0;right:0;bottom:0;background:
 <div class="header"><h1 class="header-title">智慧城市 · 综合数据看板</h1></div>
 <div class="body-row">
 <div class="section"><div class="left-inner">
-<div class="left-block"><div class="water-body"><div class="water-grid">
-<div class="cell" style="flex-direction:column;padding:6px 8px;justify-content:center"><div style="font-size:11px;color:rgba(160,190,230,.45);letter-spacing:1px;border-bottom:1px solid rgba(59,130,246,.08);padding-bottom:4px;margin-bottom:4px;text-align:center;width:100%">水质排名</div><div style="display:flex;align-items:baseline;justify-content:center;gap:4px;width:100%"><span style="font-size:11px;color:rgba(160,190,230,.4)">全国</span><span style="font-size:22px;font-weight:800;background:linear-gradient(180deg,#fff,#7ab8ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1.2">22</span><span style="font-size:10px;color:rgba(160,190,230,.3)">位</span></div><div style="width:100%;height:1px;background:rgba(59,130,246,.06);margin:3px 0"></div><div style="display:flex;gap:6px;justify-content:center;width:100%;flex-wrap:wrap"><div style="display:flex;align-items:center;gap:2px;background:rgba(0,60,150,.15);border-radius:3px;padding:2px 6px"><span style="font-size:10px;color:rgba(180,210,255,.5)">长江经济带</span><span style="font-size:14px;font-weight:700;color:#93c5fd">第7</span><span style="font-size:10px;color:rgba(160,190,230,.3)">位</span></div><div style="display:flex;align-items:center;gap:2px;background:rgba(0,60,150,.15);border-radius:3px;padding:2px 6px"><span style="font-size:10px;color:rgba(180,210,255,.5)">中部六省</span><span style="font-size:14px;font-weight:700;color:#93c5fd">第5</span><span style="font-size:10px;color:rgba(160,190,230,.3)">位</span></div></div></div>
-<div class="cell"><span class="label">长江流域</span></div>
-<div class="cell"><span class="label">清江流域</span></div>
-<div class="cell"><span class="label">汉江流域</span></div>
-<div class="cell"><span class="label">梁子湖</span></div>
-<div class="cell"><span class="label">东湖</span></div>
-<div class="cell"><span class="label">洪湖</span></div>
-<div class="cell"><span class="label">斧头湖</span></div>
-<div class="cell"><span class="label">长湖</span></div>
-<div class="cell"><span class="label">丹江口水库</span></div>
-</div></div></div>
+<div class="left-block"><div class="water-body">
+<div class="section-toolbar">
+<div class="toolbar-title">重点断面</div>
+<div class="toolbar-toggle">
+<button class="mode-btn active" type="button" data-mode="manual">手工</button>
+<button class="mode-btn" type="button" data-mode="auto">自动</button>
+</div>
+<div class="toolbar-filter" id="manualFilters">
+<select class="toolbar-select"><option>国控</option><option>省控</option></select>
+<select class="toolbar-select"><option>当前月</option><option>累计月</option></select>
+</div>
+<div class="toolbar-auto" id="autoStats">
+<div class="auto-stat">国控<span>XX个</span></div>
+<div class="auto-stat">省控<span>XX个</span></div>
+<div class="auto-stat">自动站<span>XX个</span></div>
+</div>
+</div>
+<div class="basin-lake-layout">
+<div class="province-overview">
+<div class="province-title">全省</div>
+<div id="chart-province-quality" class="province-chart"></div>
+<div class="quality-counts">
+<div class="quality-item"><span>Ⅰ类</span><strong>18</strong></div>
+<div class="quality-item"><span>Ⅱ类</span><strong>64</strong></div>
+<div class="quality-item"><span>Ⅲ类</span><strong>97</strong></div>
+<div class="quality-item"><span>Ⅳ类</span><strong>11</strong></div>
+<div class="quality-item"><span>Ⅴ类</span><strong>4</strong></div>
+<div class="quality-item"><span>劣Ⅴ类</span><strong>2</strong></div>
+</div>
+</div>
+<div class="basin-column">
+<div class="basin-list">
+<div class="basin-card" data-basin="长江流域">
+<div class="basin-map">长江流域</div>
+<div class="basin-info">
+<span class="basin-name">长江流域</span>
+<div class="basin-row"><span>国考断面数</span><span class="basin-value"><strong>89</strong><em>个</em></span></div>
+<div class="basin-row"><span>Ⅰ-Ⅲ类占比</span><span class="basin-value good"><strong>89.9%</strong></span></div>
+<div class="basin-row"><span>劣Ⅴ类占比</span><span class="basin-value warn"><strong>3</strong><em>个</em></span></div>
+</div>
+</div>
+<div class="basin-card" data-basin="汉江流域">
+<div class="basin-map">汉江流域</div>
+<div class="basin-info">
+<span class="basin-name">汉江流域</span>
+<div class="basin-row"><span>国考断面数</span><span class="basin-value"><strong>52</strong><em>个</em></span></div>
+<div class="basin-row"><span>Ⅰ-Ⅲ类占比</span><span class="basin-value good"><strong>92.3%</strong></span></div>
+<div class="basin-row"><span>劣Ⅴ类占比</span><span class="basin-value warn"><strong>2</strong><em>个</em></span></div>
+</div>
+</div>
+<div class="basin-card" data-basin="清江流域">
+<div class="basin-map">清江流域</div>
+<div class="basin-info">
+<span class="basin-name">清江流域</span>
+<div class="basin-row"><span>国考断面数</span><span class="basin-value"><strong>26</strong><em>个</em></span></div>
+<div class="basin-row"><span>Ⅰ-Ⅲ类占比</span><span class="basin-value good"><strong>92.3%</strong></span></div>
+<div class="basin-row"><span>劣Ⅴ类占比</span><span class="basin-value warn"><strong>0</strong><em>个</em></span></div>
+</div>
+</div>
+</div>
+</div>
+<div class="lake-columns">
+<div class="lake-grid">
+<div class="lake-card" data-lake="洪湖"><div class="lake-map">洪湖</div><div class="lake-info"><div class="lake-name">洪湖</div><div class="lake-row"><span>湖库断面数</span><span><strong>14</strong><em>个</em></span></div><div class="lake-row"><span>Ⅰ-Ⅲ类占比</span><strong class="good">85.7%</strong></div><div class="lake-row"><span>劣Ⅴ类占比</span><span><strong class="warn">1</strong><em>个</em></span></div></div></div>
+<div class="lake-card" data-lake="东湖"><div class="lake-map">东湖</div><div class="lake-info"><div class="lake-name">东湖</div><div class="lake-row"><span>湖库断面数</span><span><strong>8</strong><em>个</em></span></div><div class="lake-row"><span>Ⅰ-Ⅲ类占比</span><strong class="good">87.5%</strong></div><div class="lake-row"><span>劣Ⅴ类占比</span><span><strong class="warn">0</strong><em>个</em></span></div></div></div>
+<div class="lake-card" data-lake="梁子湖"><div class="lake-map">梁子湖</div><div class="lake-info"><div class="lake-name">梁子湖</div><div class="lake-row"><span>湖库断面数</span><span><strong>12</strong><em>个</em></span></div><div class="lake-row"><span>Ⅰ-Ⅲ类占比</span><strong class="good">91.7%</strong></div><div class="lake-row"><span>劣Ⅴ类占比</span><span><strong class="warn">0</strong><em>个</em></span></div></div></div>
+<div class="lake-card" data-lake="斧头湖"><div class="lake-map">斧头湖</div><div class="lake-info"><div class="lake-name">斧头湖</div><div class="lake-row"><span>湖库断面数</span><span><strong>9</strong><em>个</em></span></div><div class="lake-row"><span>Ⅰ-Ⅲ类占比</span><strong class="good">88.9%</strong></div><div class="lake-row"><span>劣Ⅴ类占比</span><span><strong class="warn">1</strong><em>个</em></span></div></div></div>
+<div class="lake-card" data-lake="长湖"><div class="lake-map">长湖</div><div class="lake-info"><div class="lake-name">长湖</div><div class="lake-row"><span>湖库断面数</span><span><strong>10</strong><em>个</em></span></div><div class="lake-row"><span>Ⅰ-Ⅲ类占比</span><strong class="good">80.0%</strong></div><div class="lake-row"><span>劣Ⅴ类占比</span><span><strong class="warn">2</strong><em>个</em></span></div></div></div>
+<div class="lake-card" data-lake="丹江口水库"><div class="lake-map">丹江口水库</div><div class="lake-info"><div class="lake-name">丹江口水库</div><div class="lake-row"><span>湖库断面数</span><span><strong>16</strong><em>个</em></span></div><div class="lake-row"><span>Ⅰ-Ⅲ类占比</span><strong class="good">100%</strong></div><div class="lake-row"><span>劣Ⅴ类占比</span><span><strong class="warn">0</strong><em>个</em></span></div></div></div>
+</div></div></div></div></div>
 <div class="left-block"><div class="bl-body row-layout">
 <div class="sub-block w-2"><div class="sub-body col">
 <div class="sewage-row"><div class="inner-cell"><span class="sub-placeholder">排查</span></div><div class="inner-cell"><span class="sub-placeholder">监测</span></div><div class="inner-cell"><span class="sub-placeholder">溯源</span></div><div class="inner-cell"><span class="sub-placeholder">整治</span></div></div>
@@ -197,11 +297,9 @@ body::before{content:"";position:fixed;top:0;left:0;right:0;bottom:0;background:
 <option value="恩施州">恩施州</option><option value="仙桃市">仙桃市</option><option value="潜江市">潜江市</option>
 <option value="天门市">天门市</option><option value="神农架">神农架</option>
 </select>
-<select id="controlType"><option value="国控">国控</option><option value="省控">省控</option></select>
-<select id="timeType"><option value="当前月">当前月</option><option value="累计月">累计月</option></select>
 </div>
-<div class="station-overlay">
-<div class="so-title"><span class="dot"></span>自动站实时监测</div>
+<div class="station-overlay collapsed" id="stationOverlay">
+<div class="so-title"><span class="dot"></span>省控自动站监测（2026-07-21）<span class="collapse-mark">▾</span></div>
 <div class="so-head"><span>自动站名称</span><span>地市</span><span>水质类别</span></div>
 <div class="so-body"><div class="scroll-wrap" id="stationScroll"></div></div>
 </div>
@@ -230,7 +328,9 @@ body::before{content:"";position:fixed;top:0;left:0;right:0;bottom:0;background:
 <div class="right-block"><div class="cb"></div><div class="cb2"></div><div class="rb-body"><div class="rb-cell" style="flex:2;display:flex;flex-direction:column;padding:4px"><div style="flex:1;min-height:0;display:flex;flex-direction:row;gap:4px"><div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:6px;background:rgba(0,40,100,.15);border:1px solid rgba(59,130,246,.06);gap:4px;padding:6px"><div style="font-size:13px;font-weight:700;color:rgba(200,225,255,.8);letter-spacing:2px">问题线索</div><div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap"><div style="text-align:center;min-width:45px"><div style="font-size:10px;color:rgba(160,190,230,.45)">发布</div><div style="font-size:26px;font-weight:800;background:linear-gradient(180deg,#fff,#93c5fd);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">156</div></div><div style="text-align:center;min-width:45px"><div style="font-size:10px;color:rgba(160,190,230,.45)">已反馈</div><div style="font-size:24px;font-weight:700;color:#93c5fd">98</div></div><div style="text-align:center;min-width:45px"><div style="font-size:10px;color:rgba(160,190,230,.45)">未反馈</div><div style="font-size:24px;font-weight:700;color:#f1c40f">58</div></div></div></div><div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:6px;background:rgba(0,40,100,.15);border:1px solid rgba(59,130,246,.06);gap:4px;padding:6px"><div style="font-size:13px;font-weight:700;color:rgba(200,225,255,.8);letter-spacing:2px">监管信息</div><div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap"><div style="text-align:center;min-width:45px"><div style="font-size:10px;color:rgba(160,190,230,.45)">责任主体</div><div style="font-size:24px;font-weight:700;color:#93c5fd">42</div></div><div style="text-align:center;min-width:45px"><div style="font-size:10px;color:rgba(160,190,230,.45)">监测企业</div><div style="font-size:24px;font-weight:700;color:#93c5fd">86</div></div><div style="text-align:center;min-width:45px"><div style="font-size:10px;color:rgba(160,190,230,.45)">超标报警</div><div style="font-size:24px;font-weight:700;color:#ef4444">23</div></div></div></div><div style="flex:2;display:flex;flex-direction:column;border-radius:6px;background:rgba(0,40,100,.12);border:1px solid rgba(59,130,246,.06)"><div style="height:28px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:rgba(200,225,255,.85);background:linear-gradient(90deg,rgba(0,80,200,.08),transparent);border-radius:6px 6px 0 0;letter-spacing:1px"><span style="width:5px;height:5px;border-radius:50%;background:#3b82f6;box-shadow:0 0 6px #3b82f6;margin-right:6px"></span>整治任务完成率</div><div id="chart-task-v" style="flex:1;min-height:0;width:100%"></div></div></div></div><div class="rb-cell" style="flex:1"><div class="rc-title"><span class="dot"></span>排查整治明细</div><div style="flex:1;min-height:0;position:relative;overflow:hidden"><div style="position:absolute;width:100%;height:100%;display:flex;flex-direction:column"><div style="display:flex;font-size:11px;color:rgba(160,190,230,.5);background:rgba(0,30,70,.35);padding:4px 6px;border-bottom:1px solid rgba(59,130,246,.08);flex-shrink:0"><span style="flex:0.8;text-align:center">地市</span><span style="flex:0.7;text-align:center">黑臭</span><span style="flex:0.7;text-align:center">完成</span><span style="flex:0.8;text-align:center">未完成</span><span style="flex:0.8;text-align:center">消除率</span></div><div style="flex:1;min-height:0;overflow:hidden;position:relative"><div class="scroll-anim" id="rectifyList" style="position:absolute;width:100%"></div></div></div></div></div></div></div><div class="right-block"><div class="cb"></div><div class="cb2"></div><div class="rb-body"><div class="rb-cell" style="flex:2"><div class="rc-title"><span class="dot"></span>饮用水</div></div><div class="rb-cell" style="flex:1"><div class="rc-title"><span class="dot"></span>工业园区</div></div></div></div>
 </div></div>
 </div></div>
-<script>setTimeout(function(){try{var c=[{n:"武汉",b:12,d:10},{n:"黄石",b:8,d:7},{n:"十堰",b:5,d:5},{n:"宜昌",b:6,d:5},{n:"襄阳",b:9,d:8},{n:"鄂州",b:4,d:3},{n:"荆门",b:7,d:6},{n:"孝感",b:10,d:8},{n:"荆州",b:11,d:9},{n:"黄冈",b:14,d:11},{n:"咸宁",b:6,d:5},{n:"随州",b:4,d:3},{n:"恩施",b:3,d:3},{n:"仙桃",b:5,d:4},{n:"潜江",b:3,d:2},{n:"天门",b:4,d:3},{n:"神农架",b:1,d:1}];var h="";for(var r=0;r<2;r++){for(var i=0;i<c.length;i++){var w=c[i].b-c[i].d;var rt=w>0?((c[i].d/c[i].b*100).toFixed(1)+"%"):"100%";var warn=w>0?(w>3?"#ef4444":"#f1c40f"):"#22c55e";h+="<div style=\"display:flex;font-size:11px;color:rgba(200,225,255,.65);padding:4px 6px;border-bottom:1px solid rgba(59,130,246,.04)\"><span style=\"flex:0.8;text-align:center;color:rgba(200,225,255,.8);font-weight:500\">"+c[i].n+"</span><span style=\"flex:0.7;text-align:center\">"+c[i].b+"</span><span style=\"flex:0.7;text-align:center\">"+c[i].d+"</span><span style=\"flex:0.8;text-align:center;color:"+warn+";font-weight:600\">"+(w>0?w:"0")+"</span><span style=\"flex:0.8;text-align:center;color:"+(parseFloat(rt)>=80?"#22c55e":"#f1c40f")+";font-weight:600\">"+rt+"</span></div>"}}document.getElementById("rectifyList").innerHTML=h}catch(e){}},300);setTimeout(function(){try{var d=document.getElementById("chart-task-v");if(!d)return;var c=echarts.init(d);c.setOption({tooltip:{trigger:"axis"},grid:{top:8,left:24,right:4,bottom:18},xAxis:{type:"category",data:["武汉","黄石","十堰","宜昌","襄阳","鄂州","荆门","孝感","荆州","黄冈","咸宁","随州","恩施","仙桃","潜江","天门","神农架"],axisLabel:{color:"rgba(180,210,255,0.6)",fontSize:7,interval:0,rotate:22},axisLine:{lineStyle:{color:"rgba(59,130,246,0.15)"}}},yAxis:{type:"value",max:100,splitLine:{lineStyle:{color:"rgba(59,130,246,0.06)",type:"dashed"}},axisLabel:{color:"rgba(180,210,255,0.5)",fontSize:7,formatter:"{value}%"}},series:[{type:"bar",data:[48,52,55,58,62,65,68,70,73,76,78,82,85,88,92,95,98],barWidth:"60%",itemStyle:{color:new echarts.graphic.LinearGradient(0,0,0,1,[{offset:0,color:"#3b82f6"},{offset:1,color:"rgba(59,130,246,0.2)"}]),borderRadius:[2,2,0,0]}}]});window.addEventListener("resize",function(){c.resize()})}catch(e){}},300);
+<script>(function(){function setSectionMode(mode){var buttons=document.querySelectorAll(".mode-btn");var stationOverlay=document.getElementById("stationOverlay");var manualFilters=document.getElementById("manualFilters");for(var i=0;i<buttons.length;i++){buttons[i].classList.toggle("active",buttons[i].getAttribute("data-mode")===mode)}if(manualFilters){manualFilters.classList.toggle("is-hidden",mode==="auto")}if(stationOverlay){stationOverlay.classList.toggle("collapsed",mode!=="auto")}}window.setSectionMode=setSectionMode;var modeButtons=document.querySelectorAll(".mode-btn");for(var i=0;i<modeButtons.length;i++){modeButtons[i].addEventListener("click",function(){setSectionMode(this.getAttribute("data-mode"))})}setSectionMode("manual")})();
+setTimeout(function(){try{var c=[{n:"武汉",b:12,d:10},{n:"黄石",b:8,d:7},{n:"十堰",b:5,d:5},{n:"宜昌",b:6,d:5},{n:"襄阳",b:9,d:8},{n:"鄂州",b:4,d:3},{n:"荆门",b:7,d:6},{n:"孝感",b:10,d:8},{n:"荆州",b:11,d:9},{n:"黄冈",b:14,d:11},{n:"咸宁",b:6,d:5},{n:"随州",b:4,d:3},{n:"恩施",b:3,d:3},{n:"仙桃",b:5,d:4},{n:"潜江",b:3,d:2},{n:"天门",b:4,d:3},{n:"神农架",b:1,d:1}];var h="";for(var r=0;r<2;r++){for(var i=0;i<c.length;i++){var w=c[i].b-c[i].d;var rt=w>0?((c[i].d/c[i].b*100).toFixed(1)+"%"):"100%";var warn=w>0?(w>3?"#ef4444":"#f1c40f"):"#22c55e";h+="<div style=\"display:flex;font-size:11px;color:rgba(200,225,255,.65);padding:4px 6px;border-bottom:1px solid rgba(59,130,246,.04)\"><span style=\"flex:0.8;text-align:center;color:rgba(200,225,255,.8);font-weight:500\">"+c[i].n+"</span><span style=\"flex:0.7;text-align:center\">"+c[i].b+"</span><span style=\"flex:0.7;text-align:center\">"+c[i].d+"</span><span style=\"flex:0.8;text-align:center;color:"+warn+";font-weight:600\">"+(w>0?w:"0")+"</span><span style=\"flex:0.8;text-align:center;color:"+(parseFloat(rt)>=80?"#22c55e":"#f1c40f")+";font-weight:600\">"+rt+"</span></div>"}}document.getElementById("rectifyList").innerHTML=h}catch(e){}},300);setTimeout(function(){try{var d=document.getElementById("chart-task-v");if(!d)return;var c=echarts.init(d);c.setOption({tooltip:{trigger:"axis"},grid:{top:8,left:24,right:4,bottom:18},xAxis:{type:"category",data:["武汉","黄石","十堰","宜昌","襄阳","鄂州","荆门","孝感","荆州","黄冈","咸宁","随州","恩施","仙桃","潜江","天门","神农架"],axisLabel:{color:"rgba(180,210,255,0.6)",fontSize:7,interval:0,rotate:22},axisLine:{lineStyle:{color:"rgba(59,130,246,0.15)"}}},yAxis:{type:"value",max:100,splitLine:{lineStyle:{color:"rgba(59,130,246,0.06)",type:"dashed"}},axisLabel:{color:"rgba(180,210,255,0.5)",fontSize:7,formatter:"{value}%"}},series:[{type:"bar",data:[48,52,55,58,62,65,68,70,73,76,78,82,85,88,92,95,98],barWidth:"60%",itemStyle:{color:new echarts.graphic.LinearGradient(0,0,0,1,[{offset:0,color:"#3b82f6"},{offset:1,color:"rgba(59,130,246,0.2)"}]),borderRadius:[2,2,0,0]}}]});window.addEventListener("resize",function(){c.resize()})}catch(e){}},300);
+try{(function(){var d=document.getElementById("chart-province-quality");if(!d)return;var c=echarts.init(d);c.setOption({color:["#1d4ed8","#0284c7","#059669","#facc15","#f97316","#ef4444"],tooltip:{trigger:"item"},series:[{type:"pie",radius:["48%","72%"],center:["50%","50%"],avoidLabelOverlap:true,label:{formatter:"{b}",fontSize:10,color:"#314961"},labelLine:{length:6,length2:4,lineStyle:{color:"#8aa0b8"}},data:[{name:"Ⅰ类",value:18},{name:"Ⅱ类",value:64},{name:"Ⅲ类",value:97},{name:"Ⅳ类",value:11},{name:"Ⅴ类",value:4},{name:"劣Ⅴ类",value:2}]}]});window.addEventListener("resize",function(){c.resize()})})()}catch(e){}
 (function(){var d=[{n:"宗关站",c:"武汉",q:"Ⅱ类",t:"q2"},{n:"沈家营站",c:"黄石",q:"Ⅲ类",t:"q3"},{n:"黄龙站",c:"十堰",q:"Ⅰ类",t:"q1"},{n:"三峡站",c:"宜昌",q:"Ⅰ类",t:"q1"},{n:"余家湖站",c:"襄阳",q:"Ⅳ类",t:"q4"},{n:"长江站",c:"荆州",q:"Ⅲ类",t:"q3"},{n:"遗爱湖站",c:"黄冈",q:"Ⅴ类",t:"q5"},{n:"淦水站",c:"咸宁",q:"Ⅱ类",t:"q2"},{n:"清江站",c:"恩施",q:"Ⅰ类",t:"q1"},{n:"仙桃站",c:"仙桃",q:"Ⅲ类",t:"q3"}];var h="";for(var r=0;r<2;r++){for(var i=0;i<d.length;i++){h+='<div class="so-row"><span class="name">'+d[i].n+'</span><span class="city">'+d[i].c+'</span><span class="quality '+d[i].t+'">'+d[i].q+"</span></div>"}}document.getElementById("stationScroll").innerHTML=h})();
 try{(function(){var d=document.getElementById("chart-map");if(!d)return;var c=echarts.init(d);c.setOption({xAxis:{show:false},yAxis:{show:false},grid:{left:0,top:0,right:0,bottom:0},series:[{type:"scatter",symbolSize:8,data:[[-.5,.2],[.3,-.1],[-.2,-.3],[.4,.3],[-.3,.4],[.1,-.2],[.5,0],[0,.5],[-.4,-.2],[.2,.1]],itemStyle:{color:"rgba(96,165,250,0.5)"}}]});window.addEventListener("resize",function(){c.resize()})})()}catch(e){}
 try{(function(){var d=document.getElementById("chart-rank");if(!d)return;var c=echarts.init(d);c.setOption({tooltip:{trigger:"axis"},grid:{top:12,left:30,right:8,bottom:28},xAxis:{type:"category",data:["武汉","黄石","十堰","宜昌","襄阳","鄂州","荆门","孝感","荆州","黄冈","咸宁","随州"],axisLabel:{color:"rgba(180,210,255,0.6)",fontSize:10,interval:0,rotate:35},axisLine:{lineStyle:{color:"rgba(59,130,246,0.15)"}}},yAxis:{type:"value",min:60,max:100,splitLine:{lineStyle:{color:"rgba(59,130,246,0.06)",type:"dashed"}},axisLabel:{color:"rgba(180,210,255,0.5)",fontSize:10}},series:[{type:"line",data:[92,78,85,88,76,82,80,74,79,71,83,77],smooth:true,symbol:"circle",symbolSize:5,lineStyle:{color:"#3b82f6",width:2},areaStyle:{color:"rgba(59,130,246,0.10)"},itemStyle:{color:"#60a5fa"}}]});window.addEventListener("resize",function(){c.resize()})})()}catch(e){}

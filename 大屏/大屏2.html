@@ -89,7 +89,7 @@ body::before{content:"";position:fixed;top:0;left:0;right:0;bottom:0;background:
 .toolbar-filter.is-hidden{display:none}
 .toolbar-auto .auto-stat{font-size:12px;font-weight:700;color:rgba(210,236,255,.76);white-space:nowrap;text-shadow:0 0 8px rgba(45,197,255,.15)}
 .toolbar-auto .auto-stat span{margin-left:4px;color:#43f0ff;text-shadow:0 0 8px rgba(67,240,255,.35)}
-.basin-lake-layout{flex:1;min-height:0;display:grid;grid-template-columns:1.08fr .9fr 2fr;gap:8px}
+.basin-lake-layout{flex:1;min-height:0;display:grid;grid-template-columns:1.06fr .98fr 1.96fr;gap:10px}
 .province-overview{min-width:0;min-height:0;display:grid;grid-template-columns:minmax(0,1.05fr) minmax(170px,.95fr);grid-template-rows:auto minmax(0,1fr);gap:8px 10px;padding:8px;background:linear-gradient(180deg,rgba(7,44,110,.95),rgba(4,24,64,.98));border:1px solid rgba(86,191,255,.24);border-radius:4px;color:#dbeeff;box-shadow:0 0 18px rgba(0,72,170,.18),inset 0 0 24px rgba(48,170,255,.05);overflow:hidden}
 .province-title{grid-column:1/-1;font-size:18px;font-weight:900;color:#ffd86a;line-height:1;border-bottom:1px solid rgba(255,216,106,.18);padding-bottom:6px;margin-bottom:0;text-shadow:0 0 10px rgba(255,216,106,.18)}
 .province-chart{grid-column:1;grid-row:2;min-height:0;width:100%;height:100%}
@@ -97,16 +97,17 @@ body::before{content:"";position:fixed;top:0;left:0;right:0;bottom:0;background:
 .quality-item{display:flex;align-items:center;justify-content:space-between;gap:6px;min-height:24px;padding:0 7px;background:linear-gradient(180deg,rgba(0,52,118,.84),rgba(0,34,86,.82));border:1px solid rgba(86,191,255,.16);color:rgba(232,247,255,.9);font-size:12px;font-weight:800;box-shadow:inset 0 0 12px rgba(0,120,255,.06)}
 .quality-item strong{font-size:17px;font-weight:900;color:#46e7ff;text-shadow:0 0 8px rgba(70,231,255,.18)}
 .basin-column{min-width:0;min-height:0;display:flex;flex-direction:column}
-.basin-list{flex:1;min-height:0;display:flex;flex-direction:column;gap:6px}
-.basin-card{flex:1;min-height:0;display:flex;align-items:center;gap:8px;padding:6px 8px;background:linear-gradient(180deg,rgba(8,44,104,.95),rgba(4,24,60,.98));border:1px solid rgba(86,191,255,.2);border-radius:4px;color:#dceeff;box-shadow:0 0 16px rgba(0,30,90,.12),inset 0 0 18px rgba(0,120,255,.05);overflow:hidden}
+.basin-list{flex:1;min-height:0;display:flex;flex-direction:column;gap:8px}
+.basin-card{flex:1;min-height:0;display:flex;align-items:center;gap:9px;padding:7px 8px;background:linear-gradient(180deg,rgba(8,44,104,.95),rgba(4,24,60,.98));border:1px solid rgba(86,191,255,.2);border-radius:4px;color:#dceeff;box-shadow:0 0 16px rgba(0,30,90,.12),inset 0 0 18px rgba(0,120,255,.05);overflow:hidden}
 .basin-map{width:72px;height:100%;min-height:42px;display:flex;align-items:center;justify-content:center;background:linear-gradient(180deg,rgba(0,34,84,.94),rgba(4,22,58,.98));border:1px solid rgba(85,196,255,.3);color:#62dbff;font-size:13px;font-weight:800;letter-spacing:1px;text-align:center;line-height:1.2;flex-shrink:0;box-shadow:inset 0 0 16px rgba(0,120,255,.08)}
-.basin-info{flex:1;min-width:0;height:100%;display:flex;flex-direction:column;justify-content:center;gap:7px}
-.basin-row{display:flex;align-items:center;justify-content:space-between;gap:6px;min-height:15px;font-size:12px;font-weight:800;color:rgba(224,241,255,.82);line-height:1.05}
-.basin-value{display:flex;align-items:baseline;gap:4px;color:#fff}
+.basin-info{flex:1;min-width:0;height:100%;display:flex;flex-direction:column;justify-content:center;gap:5px}
+.basin-row{display:flex;align-items:center;justify-content:space-between;gap:6px;min-height:16px;font-size:12px;font-weight:800;color:rgba(224,241,255,.82);line-height:1.05}
+.basin-value{display:flex;align-items:baseline;gap:6px;color:#fff;white-space:nowrap}
 .basin-value strong{font-size:16px;font-weight:900;line-height:1}
 .basin-value em{font-size:10px;font-style:normal;color:#7db7df}
 .basin-value.good strong{color:#31e7ff}
 .basin-value.warn strong{color:#ff5c5c}
+.basin-value .trend{font-size:10px;font-style:normal;color:#43f0ff;text-shadow:0 0 6px rgba(67,240,255,.2)}
 .lake-columns{min-width:0;min-height:0}
 .lake-grid{height:100%;min-height:0;display:grid;grid-template-columns:repeat(2,1fr);grid-template-rows:repeat(3,1fr);gap:6px}
 .lake-card{min-width:0;min-height:0;display:flex;align-items:center;gap:8px;padding:6px;background:linear-gradient(180deg,rgba(8,44,104,.95),rgba(4,24,60,.98));border:1px solid rgba(86,191,255,.2);border-radius:4px;color:#dceeff;box-shadow:0 0 14px rgba(0,30,90,.1),inset 0 0 18px rgba(0,120,255,.05)}
@@ -209,7 +210,7 @@ body::before{content:"";position:fixed;top:0;left:0;right:0;bottom:0;background:
 </div>
 <div class="basin-lake-layout">
 <div class="province-overview">
-<div class="province-title">全省</div>
+<div class="province-title">断面统计</div>
 <div id="chart-province-quality" class="province-chart"></div>
 <div class="quality-counts">
 <div class="quality-item"><span>Ⅰ类</span><strong>18</strong></div>
@@ -226,24 +227,24 @@ body::before{content:"";position:fixed;top:0;left:0;right:0;bottom:0;background:
 <div class="basin-map">长江流域</div>
 <div class="basin-info">
 <div class="basin-row"><span>国考断面数</span><span class="basin-value"><strong>89</strong><em>个</em></span></div>
-<div class="basin-row"><span>Ⅰ-Ⅲ类占比</span><span class="basin-value good"><strong>89.9%</strong></span></div>
-<div class="basin-row"><span>劣Ⅴ类占比</span><span class="basin-value warn"><strong>3</strong><em>个</em></span></div>
+<div class="basin-row"><span>Ⅰ-Ⅲ类占比</span><span class="basin-value good"><strong>89.9%</strong><em class="trend">同比+0.8%</em></span></div>
+<div class="basin-row"><span>劣Ⅴ类占比</span><span class="basin-value warn"><strong>89.9%</strong><em class="trend">同比+0.8%</em></span></div>
 </div>
 </div>
 <div class="basin-card" data-basin="汉江流域">
 <div class="basin-map">汉江流域</div>
 <div class="basin-info">
 <div class="basin-row"><span>国考断面数</span><span class="basin-value"><strong>52</strong><em>个</em></span></div>
-<div class="basin-row"><span>Ⅰ-Ⅲ类占比</span><span class="basin-value good"><strong>92.3%</strong></span></div>
-<div class="basin-row"><span>劣Ⅴ类占比</span><span class="basin-value warn"><strong>2</strong><em>个</em></span></div>
+<div class="basin-row"><span>Ⅰ-Ⅲ类占比</span><span class="basin-value good"><strong>92.3%</strong><em class="trend">同比+0.5%</em></span></div>
+<div class="basin-row"><span>劣Ⅴ类占比</span><span class="basin-value warn"><strong>89.9%</strong><em class="trend">同比+0.8%</em></span></div>
 </div>
 </div>
 <div class="basin-card" data-basin="清江流域">
 <div class="basin-map">清江流域</div>
 <div class="basin-info">
 <div class="basin-row"><span>国考断面数</span><span class="basin-value"><strong>26</strong><em>个</em></span></div>
-<div class="basin-row"><span>Ⅰ-Ⅲ类占比</span><span class="basin-value good"><strong>92.3%</strong></span></div>
-<div class="basin-row"><span>劣Ⅴ类占比</span><span class="basin-value warn"><strong>0</strong><em>个</em></span></div>
+<div class="basin-row"><span>Ⅰ-Ⅲ类占比</span><span class="basin-value good"><strong>92.3%</strong><em class="trend">同比+0.3%</em></span></div>
+<div class="basin-row"><span>劣Ⅴ类占比</span><span class="basin-value warn"><strong>89.9%</strong><em class="trend">同比+0.8%</em></span></div>
 </div>
 </div>
 </div>

@@ -119,6 +119,7 @@
         .lake-row em{font-size:10px;font-style:normal;color:#7db7df}
         .lake-row .good{color:#31e7ff}
         .lake-row .warn{color:#ff5c5c}
+        .lake-value.good strong{color:#31e7ff}
         .lake-value.warn strong{color:#ff5c5c}
         .lake-value .trend{font-size:10px;font-style:normal;color:#7db7df;text-shadow:0 0 6px rgba(125,183,223,.2)}
         .lake-value .trend.up{color:#ff7a7a}
@@ -134,19 +135,20 @@
         .sub-body.col .sewage-row .inner-cell{flex:1;position:relative}
         .sub-body.col .sewage-row .inner-cell+.inner-cell{border-left:1px solid rgba(86,191,255,.1)}
         .sub-body.col .sewage-row .inner-cell .sub-placeholder{position:absolute;top:10px;left:14px;font-size:17px;font-weight:500;letter-spacing:2px;color:rgba(173,227,255,.5);text-shadow:0 0 8px rgba(52,204,255,.12);pointer-events:none;user-select:none}
-        .outfall-layout{flex:1;min-height:0;display:grid;grid-template-columns:1.08fr repeat(3,1fr);grid-template-rows:minmax(0,.92fr) minmax(0,1.08fr);gap:8px;padding:8px;background:linear-gradient(180deg,rgba(7,38,96,.48),rgba(4,20,54,.82))}
+        .outfall-layout{flex:1;min-height:0;display:grid;grid-template-columns:1.08fr repeat(3,1fr);grid-template-rows:repeat(2,minmax(0,1fr));gap:8px;padding:8px;background:linear-gradient(180deg,rgba(7,38,96,.48),rgba(4,20,54,.82))}
         .outfall-summary,.outfall-stat,.outfall-lower-panel{min-width:0;min-height:0;border:1px solid rgba(86,191,255,.18);border-radius:6px;background:linear-gradient(180deg,rgba(7,50,116,.66),rgba(3,28,76,.9));box-shadow:inset 0 0 18px rgba(0,120,255,.06),0 0 14px rgba(0,44,120,.12);overflow:hidden}
         .outfall-summary{grid-column:1;grid-row:1/3;display:grid;grid-template-rows:repeat(2,minmax(0,1fr));gap:8px;padding:0;border-color:rgba(83,194,255,.32);background:transparent;box-shadow:none}
-        .outfall-card{display:flex;flex-direction:column;justify-content:space-between;min-width:0;min-height:0;padding:14px 16px;border:1px solid rgba(83,194,255,.26);border-radius:6px;background:linear-gradient(180deg,rgba(92,62,32,.58),rgba(50,30,42,.84));box-shadow:inset 0 0 18px rgba(0,120,255,.04),0 0 14px rgba(0,44,120,.1)}
-        .outfall-card .outfall-title,.outfall-stat .stat-title,.water-level-title{font-size:18px;font-weight:900;color:#e9f7ff;letter-spacing:1px;text-shadow:0 0 10px rgba(67,240,255,.18)}
+        .outfall-card{display:flex;flex-direction:column;justify-content:flex-start;gap:25px;min-width:0;min-height:0;padding:14px 16px;border:1px solid rgba(83,194,255,.26);border-radius:6px;background:linear-gradient(180deg,rgba(20,82,158,.62),rgba(10,44,104,.82));color:#dceeff;box-shadow:inset 0 0 18px rgba(0,120,255,.05),0 0 14px rgba(0,44,120,.1)}
+        .outfall-card .outfall-title,.outfall-stat .stat-title,.water-level-title{font-size:18px;font-weight:900;color:#ffd86a;letter-spacing:1px;text-shadow:0 0 10px rgba(255,216,106,.16)}
         .outfall-card .outfall-num{font-size:42px;font-weight:900;line-height:1;color:#45efff;text-shadow:0 0 18px rgba(69,239,255,.25)}
         .outfall-card .outfall-unit{font-size:18px;font-style:normal;color:#ffd86a;margin-left:2px}
         .outfall-stat{display:flex;flex-direction:column;justify-content:space-between;padding:12px 14px}
         .outfall-stat.check{border-color:rgba(120,185,255,.38);background:linear-gradient(180deg,rgba(18,72,132,.7),rgba(7,34,82,.92))}
         .outfall-stat.trace{border-color:rgba(76,218,144,.38);background:linear-gradient(180deg,rgba(18,72,132,.7),rgba(7,34,82,.92))}
-        .outfall-stat.fix{border-color:rgba(255,214,102,.52);background:linear-gradient(180deg,rgba(18,72,132,.7),rgba(7,34,82,.92))}
+        .outfall-stat.fix{border-color:rgba(76,218,144,.38);background:linear-gradient(180deg,rgba(18,72,132,.7),rgba(7,34,82,.92))}
         .outfall-stat.fix .stat-ring{box-shadow:0 0 14px rgba(255,198,63,.24)}
         .outfall-stat .stat-body{display:flex;align-items:center;justify-content:space-between;gap:10px}
+        .outfall-stat.check .stat-body{flex:1}
         .outfall-stat .stat-num{font-size:40px;font-weight:900;line-height:1;color:#4f8cff;text-shadow:0 0 16px rgba(79,140,255,.26)}
         .outfall-stat .stat-ring{width:80px;height:80px;border-radius:50%;position:relative;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:conic-gradient(var(--ring,#3b82f6) var(--p),rgba(226,235,250,.18) 0);box-shadow:0 0 14px color-mix(in srgb,var(--ring,#3b82f6) 35%,transparent)}
         .outfall-stat .stat-ring::before{content:"";position:absolute;inset:10px;border-radius:50%;background:rgba(5,32,78,.96)}
@@ -261,7 +263,7 @@
                                 <div class="basin-info">
                                     <div class="basin-row"><span>国考断面数</span><span class="basin-value"><strong>89</strong><em>个</em></span></div>
                                     <div class="basin-row"><span>Ⅰ-Ⅲ类占比</span><span class="basin-value good"><strong>89.9%</strong><em class="trend">同比+0.8%</em></span></div>
-                                    <div class="basin-row"><span>劣Ⅴ类占比</span><span class="basin-value warn"><strong>3</strong><em>个</em><em class="trend">同比-1个</em></span></div>
+                                    <div class="basin-row"><span>劣Ⅴ类占比</span><span class="basin-value warn"><strong>3.4%</strong><em class="trend">同比-1.1%</em></span></div>
                                 </div>
                             </div>
                             <div class="basin-card" data-basin="汉江流域">
@@ -269,7 +271,7 @@
                                 <div class="basin-info">
                                     <div class="basin-row"><span>国考断面数</span><span class="basin-value"><strong>52</strong><em>个</em></span></div>
                                     <div class="basin-row"><span>Ⅰ-Ⅲ类占比</span><span class="basin-value good"><strong>92.3%</strong><em class="trend">同比+0.5%</em></span></div>
-                                    <div class="basin-row"><span>劣Ⅴ类占比</span><span class="basin-value warn"><strong>2</strong><em>个</em><em class="trend">同比-1个</em></span></div>
+                                    <div class="basin-row"><span>劣Ⅴ类占比</span><span class="basin-value warn"><strong>3.8%</strong><em class="trend">同比-2.0%</em></span></div>
                                 </div>
                             </div>
                             <div class="basin-card" data-basin="清江流域">
@@ -277,19 +279,19 @@
                                 <div class="basin-info">
                                     <div class="basin-row"><span>国考断面数</span><span class="basin-value"><strong>26</strong><em>个</em></span></div>
                                     <div class="basin-row"><span>Ⅰ-Ⅲ类占比</span><span class="basin-value good"><strong>92.3%</strong><em class="trend">同比+0.3%</em></span></div>
-                                    <div class="basin-row"><span>劣Ⅴ类占比</span><span class="basin-value warn"><strong>0</strong><em>个</em><em class="trend">同比-1个</em></span></div>
+                                    <div class="basin-row"><span>劣Ⅴ类占比</span><span class="basin-value warn"><strong>0.0%</strong><em class="trend">同比-3.8%</em></span></div>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div class="lake-columns">
                         <div class="lake-grid">
-                            <div class="lake-card" data-lake="洪湖"><div class="lake-map">洪湖</div><div class="lake-info"><div class="lake-row"><span>湖库断面数</span><span><strong>14</strong><em>个</em></span></div><div class="lake-row"><span>Ⅰ-Ⅲ类占比</span><strong class="good">85.7%</strong></div><div class="lake-row"><span>劣Ⅴ类占比</span><span class="lake-value warn"><strong>7.1%</strong><em class="trend up">同比+0.4%</em></span></div></div></div>
-                            <div class="lake-card" data-lake="梁子湖"><div class="lake-map">梁子湖</div><div class="lake-info"><div class="lake-row"><span>湖库断面数</span><span><strong>12</strong><em>个</em></span></div><div class="lake-row"><span>Ⅰ-Ⅲ类占比</span><strong class="good">91.7%</strong></div><div class="lake-row"><span>劣Ⅴ类占比</span><span class="lake-value warn"><strong>0.0%</strong><em class="trend flat">同比0.0%</em></span></div></div></div>
-                            <div class="lake-card" data-lake="斧头湖"><div class="lake-map">斧头湖</div><div class="lake-info"><div class="lake-row"><span>湖库断面数</span><span><strong>9</strong><em>个</em></span></div><div class="lake-row"><span>Ⅰ-Ⅲ类占比</span><strong class="good">88.9%</strong></div><div class="lake-row"><span>劣Ⅴ类占比</span><span class="lake-value warn"><strong>11.1%</strong><em class="trend up">同比+0.8%</em></span></div></div></div>
-                            <div class="lake-card" data-lake="长湖"><div class="lake-map">长湖</div><div class="lake-info"><div class="lake-row"><span>湖库断面数</span><span><strong>10</strong><em>个</em></span></div><div class="lake-row"><span>Ⅰ-Ⅲ类占比</span><strong class="good">80.0%</strong></div><div class="lake-row"><span>劣Ⅴ类占比</span><span class="lake-value warn"><strong>20.0%</strong><em class="trend up">同比+1.2%</em></span></div></div></div>
-                            <div class="lake-card" data-lake="东湖"><div class="lake-map">东湖</div><div class="lake-info"><div class="lake-row"><span>湖库断面数</span><span><strong>8</strong><em>个</em></span></div><div class="lake-row"><span>Ⅰ-Ⅲ类占比</span><strong class="good">87.5%</strong></div><div class="lake-row"><span>劣Ⅴ类占比</span><span class="lake-value warn"><strong>0.0%</strong><em class="trend flat">同比0.0%</em></span></div></div></div>
-                            <div class="lake-card" data-lake="丹江口水库"><div class="lake-map">丹江口水库</div><div class="lake-info"><div class="lake-row"><span>湖库断面数</span><span><strong>16</strong><em>个</em></span></div><div class="lake-row"><span>Ⅰ-Ⅲ类占比</span><strong class="good">100%</strong></div><div class="lake-row"><span>劣Ⅴ类占比</span><span class="lake-value warn"><strong>0.0%</strong><em class="trend flat">同比0.0%</em></span></div></div></div>
+                            <div class="lake-card" data-lake="洪湖"><div class="lake-map">洪湖</div><div class="lake-info"><div class="lake-row"><span>湖库断面数</span><span><strong>14</strong><em>个</em></span></div><div class="lake-row"><span>Ⅰ-Ⅲ类占比</span><span class="lake-value good"><strong>85.7%</strong><em class="trend">同比+0.6%</em></span></div><div class="lake-row"><span>劣Ⅴ类占比</span><span class="lake-value warn"><strong>7.1%</strong><em class="trend up">同比+0.4%</em></span></div></div></div>
+                            <div class="lake-card" data-lake="梁子湖"><div class="lake-map">梁子湖</div><div class="lake-info"><div class="lake-row"><span>湖库断面数</span><span><strong>12</strong><em>个</em></span></div><div class="lake-row"><span>Ⅰ-Ⅲ类占比</span><span class="lake-value good"><strong>91.7%</strong><em class="trend">同比+0.2%</em></span></div><div class="lake-row"><span>劣Ⅴ类占比</span><span class="lake-value warn"><strong>0.0%</strong><em class="trend flat">同比0.0%</em></span></div></div></div>
+                            <div class="lake-card" data-lake="斧头湖"><div class="lake-map">斧头湖</div><div class="lake-info"><div class="lake-row"><span>湖库断面数</span><span><strong>9</strong><em>个</em></span></div><div class="lake-row"><span>Ⅰ-Ⅲ类占比</span><span class="lake-value good"><strong>88.9%</strong><em class="trend">同比+0.4%</em></span></div><div class="lake-row"><span>劣Ⅴ类占比</span><span class="lake-value warn"><strong>11.1%</strong><em class="trend up">同比+0.8%</em></span></div></div></div>
+                            <div class="lake-card" data-lake="长湖"><div class="lake-map">长湖</div><div class="lake-info"><div class="lake-row"><span>湖库断面数</span><span><strong>10</strong><em>个</em></span></div><div class="lake-row"><span>Ⅰ-Ⅲ类占比</span><span class="lake-value good"><strong>80.0%</strong><em class="trend">同比+1.0%</em></span></div><div class="lake-row"><span>劣Ⅴ类占比</span><span class="lake-value warn"><strong>20.0%</strong><em class="trend up">同比+1.2%</em></span></div></div></div>
+                            <div class="lake-card" data-lake="东湖"><div class="lake-map">东湖</div><div class="lake-info"><div class="lake-row"><span>湖库断面数</span><span><strong>8</strong><em>个</em></span></div><div class="lake-row"><span>Ⅰ-Ⅲ类占比</span><span class="lake-value good"><strong>87.5%</strong><em class="trend">同比0.0%</em></span></div><div class="lake-row"><span>劣Ⅴ类占比</span><span class="lake-value warn"><strong>0.0%</strong><em class="trend flat">同比0.0%</em></span></div></div></div>
+                            <div class="lake-card" data-lake="丹江口水库"><div class="lake-map">丹江口水库</div><div class="lake-info"><div class="lake-row"><span>湖库断面数</span><span><strong>16</strong><em>个</em></span></div><div class="lake-row"><span>Ⅰ-Ⅲ类占比</span><span class="lake-value good"><strong>100%</strong><em class="trend">同比0.0%</em></span></div><div class="lake-row"><span>劣Ⅴ类占比</span><span class="lake-value warn"><strong>0.0%</strong><em class="trend flat">同比0.0%</em></span></div></div></div>
                         </div></div></div></div></div>
             <div class="left-block"><div class="bl-body row-layout">
                 <div class="sub-block w-2">
@@ -301,7 +303,7 @@
                             </div>
                             <div class="outfall-card">
                                 <div class="outfall-title">四湖流域排口</div>
-                                <div class="outfall-num" style="font-size:28px;margin-top:2px">1200<em class="outfall-unit">个</em></div>
+                                <div class="outfall-num">12480</div>
                             </div>
                         </div>
                         <div class="outfall-stat check">

@@ -1,0 +1,1233 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>在线监测 - 湖北省排污口综合监管系统</title>
+    <link rel="icon" href="data:,">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <style>
+        :root {
+            --blue: #3479ec;
+            --blue-strong: #2e79ee;
+            --page-bg: #cfe0fa;
+            --line: #e9eef5;
+            --text: #202a3a;
+            --muted: #8d98a8;
+        }
+
+        * { box-sizing: border-box; }
+
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            overflow: hidden;
+            background: #eaf1fb;
+            color: var(--text);
+            font-family: "PingFang SC", "Microsoft YaHei", Arial, sans-serif;
+            letter-spacing: 0;
+        }
+
+        button,
+        input,
+        select { font: inherit; }
+
+        button { letter-spacing: 0; }
+
+        .viewport {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .app-shell {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 2048px;
+            height: 1088px;
+            padding: 4px;
+            border-radius: 12px;
+            overflow: hidden;
+            background: var(--page-bg);
+            transform-origin: top left;
+            box-shadow: 0 0 0 1px rgba(91, 144, 223, 0.16);
+        }
+
+        .topbar {
+            height: 69px;
+            padding: 0 18px;
+            display: grid;
+            grid-template-columns: 618px 990px 1fr;
+            gap: 14px;
+            align-items: stretch;
+            color: #fff;
+            background: linear-gradient(90deg, #3978eb 0%, #3479ed 58%, #3a7bed 100%);
+            border-radius: 9px 9px 0 0;
+            box-shadow: 0 2px 8px rgba(25, 85, 187, 0.18);
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            min-width: 0;
+            font-size: 31px;
+            line-height: 1;
+            font-weight: 800;
+            white-space: nowrap;
+        }
+
+        .brand-mark {
+            position: relative;
+            width: 48px;
+            height: 48px;
+            flex: 0 0 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding-bottom: 4px;
+            border: 2px solid rgba(255, 255, 255, 0.96);
+            border-radius: 50%;
+            color: #fff;
+            font-size: 20px;
+            font-weight: 800;
+        }
+
+        .brand-mark::before,
+        .brand-mark::after {
+            content: "";
+            position: absolute;
+            left: 8px;
+            right: 8px;
+            height: 4px;
+            border-top: 2px solid rgba(255, 255, 255, 0.95);
+            border-radius: 50%;
+        }
+
+        .brand-mark::before { bottom: 8px; transform: rotate(3deg); }
+        .brand-mark::after { bottom: 4px; transform: rotate(-3deg); }
+
+        .top-nav {
+            height: 100%;
+            display: grid;
+            grid-template-columns: repeat(6, 155px);
+            gap: 10px;
+            align-items: end;
+        }
+
+        .top-nav button {
+            width: 155px;
+            height: 54px;
+            padding: 0 12px;
+            border: 1px solid rgba(163, 214, 255, 0.70);
+            border-bottom: 0;
+            border-radius: 7px 7px 0 0;
+            background: rgba(20, 130, 238, 0.28);
+            color: rgba(255, 255, 255, 0.96);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            font-size: 18px;
+            font-weight: 700;
+            white-space: nowrap;
+            cursor: pointer;
+            box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+        }
+
+        .top-nav button i { width: 22px; font-size: 19px; }
+
+        .top-nav button.active {
+            color: var(--blue-strong);
+            background: #fff;
+            border-color: #fff;
+            box-shadow: 0 -1px 10px rgba(22, 75, 157, 0.12);
+        }
+
+        .user {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 5px;
+            font-size: 17px;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .workspace {
+            height: 1011px;
+            padding: 0 8px 8px;
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 10px;
+        }
+
+        .sidebar {
+            min-height: 0;
+            overflow: hidden;
+            background: #fff;
+            border-radius: 0 8px 8px 8px;
+            box-shadow: 0 1px 3px rgba(38, 79, 140, 0.06);
+        }
+
+        .side-item {
+            width: 100%;
+            height: 54px;
+            padding: 0 24px 0 29px;
+            border: 0;
+            background: transparent;
+            color: #4b5059;
+            display: grid;
+            grid-template-columns: 22px 1fr 18px;
+            align-items: center;
+            gap: 8px;
+            text-align: left;
+            font-size: 19px;
+            cursor: pointer;
+        }
+
+        .side-item .side-icon {
+            color: #9ca6b3;
+            font-size: 14px;
+            text-align: center;
+        }
+
+        .side-item .chevron {
+            color: #aeb7c4;
+            font-size: 11px;
+            transition: transform 0.2s ease;
+        }
+
+        .side-group.collapsed .chevron { transform: rotate(-90deg); }
+        .side-group.collapsed .side-children { display: none; }
+
+        .side-child {
+            height: 53px;
+            padding-left: 48px;
+            grid-template-columns: 22px 1fr;
+            font-size: 17px;
+        }
+
+        .side-child.active {
+            color: #fff;
+            background: #357fd6;
+            font-weight: 700;
+        }
+
+        .side-child.active .side-icon { color: #fff; }
+
+        .main-panel {
+            min-width: 0;
+            min-height: 0;
+            padding: 17px 20px 18px;
+            overflow: hidden;
+            background: #fff;
+            border-radius: 0 0 8px 8px;
+            box-shadow: 0 1px 3px rgba(38, 79, 140, 0.06);
+        }
+
+        .summary {
+            width: 1674px;
+            height: 132px;
+            display: grid;
+            grid-template-columns: 297px 297px 297px 297px 446px;
+            gap: 10px;
+        }
+
+        .summary > article {
+            box-shadow: 0 6px 18px rgba(45, 86, 139, 0.07);
+        }
+
+        .stat {
+            position: relative;
+            padding: 21px 22px 18px;
+            border: 1px solid #edf2f7;
+            border-radius: 8px;
+            overflow: hidden;
+            background: linear-gradient(135deg, #fff 0%, #fff 54%, #f4f9ff 100%);
+            --stat-accent: #3479ec;
+            --stat-icon-color: #7ca7f7;
+            --stat-icon-shadow: rgba(61, 148, 247, 0.26);
+        }
+
+        .stat.theme-blue { --stat-accent: #2179ed; --stat-icon-color: #3d94f7; --stat-icon-shadow: rgba(61, 148, 247, 0.26); }
+        .stat.theme-green { --stat-accent: #28a66a; --stat-icon-color: #42bd85; --stat-icon-shadow: rgba(66, 189, 133, 0.27); background: linear-gradient(135deg, #fff 0%, #fff 54%, #f2fcf7 100%); }
+        .stat.theme-teal { --stat-accent: #7c56e8; --stat-icon-color: #9a72ef; --stat-icon-shadow: rgba(154, 114, 239, 0.26); background: linear-gradient(135deg, #fff 0%, #fff 54%, #f7f3ff 100%); }
+        .stat.theme-indigo { --stat-accent: #13a8c8; --stat-icon-color: #35b8da; --stat-icon-shadow: rgba(53, 184, 218, 0.26); background: linear-gradient(135deg, #fff 0%, #fff 54%, #effbff 100%); }
+
+        .stat-icon {
+            position: absolute;
+            right: 12px;
+            top: 29px;
+            width: 110px;
+            height: 94px;
+        }
+
+        .stat-icon img {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        .stat-copy {
+            position: relative;
+            z-index: 1;
+            min-width: 0;
+            padding-top: 2px;
+        }
+
+        .stat-label {
+            color: var(--stat-accent);
+            font-size: 19px;
+            line-height: 1;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .stat-number-line {
+            margin-top: 13px;
+            display: flex;
+            align-items: flex-end;
+            gap: 9px;
+        }
+
+        .stat-number {
+            color: #162033;
+            font-family: Arial, "Microsoft YaHei", sans-serif;
+            font-size: 54px;
+            line-height: 0.86;
+            font-weight: 800;
+        }
+
+        .stat > .stat-copy .stat-number { font-size: 58px; }
+        .stat > .stat-copy .stat-number-line { margin-top: 28px; }
+
+        .stat-unit {
+            margin-bottom: 1px;
+            color: #8290a4;
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .alarm-stat {
+            display: grid;
+            grid-template-columns: 176px 1fr;
+            padding: 0;
+            border: 1px solid #edf2f7;
+            border-radius: 8px;
+            overflow: hidden;
+            background: linear-gradient(135deg, #fff 0%, #fff 60%, #fffaf8 100%);
+        }
+
+        .alarm-total {
+            position: relative;
+            padding: 21px 21px 18px;
+            border-right: 1px solid #edf2f7;
+        }
+
+        .alarm-total .stat-label { color: #263449; }
+
+        .alarm-total .stat-number-line { margin-top: 28px; }
+
+        .alarm-detail {
+            display: grid;
+            grid-template-columns: 104px 1fr;
+            gap: 12px;
+            align-items: center;
+            padding: 0 16px;
+        }
+
+        .donut {
+            position: relative;
+            width: 96px;
+            height: 96px;
+            border-radius: 50%;
+            background: conic-gradient(rgb(61, 198, 146) 0 56%, rgb(253, 128, 127) 56% 100%);
+        }
+
+        .donut::after {
+            content: "";
+            position: absolute;
+            inset: 12px;
+            border-radius: 50%;
+            background: #fffdfb;
+        }
+
+        .donut-label {
+            position: absolute;
+            inset: 0;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #333d4d;
+            font-family: Arial, "Microsoft YaHei", sans-serif;
+            font-size: 24px;
+            font-weight: 800;
+        }
+
+        .donut-label small {
+            margin-top: 2px;
+            color: #7d8796;
+            font-family: "Microsoft YaHei", sans-serif;
+            font-size: 12px;
+            font-weight: 400;
+        }
+
+        .alarm-legend {
+            display: grid;
+            gap: 14px;
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .legend-row {
+            display: grid;
+            grid-template-columns: 11px 1fr 26px;
+            align-items: center;
+            gap: 4px;
+            white-space: nowrap;
+        }
+
+        .legend-row::before {
+            content: "";
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+        }
+
+        .legend-row.red { color: rgb(253, 128, 127); }
+        .legend-row.green { color: rgb(61, 198, 146); }
+        .legend-row.red::before { background: rgb(253, 128, 127); }
+        .legend-row.green::before { background: rgb(61, 198, 146); }
+        .legend-count { text-align: right; font-size: 24px; }
+
+        .filters {
+            width: 1674px;
+            height: 38px;
+            margin-top: 14px;
+            display: grid;
+            grid-template-columns: 197px 180px 150px 260px 250px 260px 78px 80px 127px;
+            justify-content: space-between;
+            align-items: stretch;
+        }
+
+        .field {
+            position: relative;
+            min-width: 0;
+        }
+
+        .field input,
+        .field select {
+            width: 100%;
+            height: 38px;
+            padding: 0 13px;
+            border: 1px solid #dce4ee;
+            border-radius: 6px;
+            outline: 0;
+            background: #fff;
+            color: #556174;
+            font-size: 16px;
+            transition: border-color 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        .field input::placeholder { color: #c3cad3; }
+
+        .field input:focus,
+        .field select:focus {
+            border-color: #77a7fa;
+            box-shadow: 0 0 0 2px rgba(52, 121, 236, 0.10);
+        }
+
+        .field select {
+            appearance: none;
+            padding-right: 34px;
+        }
+
+        .field.select::after {
+            content: "\f107";
+            position: absolute;
+            top: 50%;
+            right: 13px;
+            transform: translateY(-50%);
+            color: #c2cad5;
+            font-family: "Font Awesome 6 Free";
+            font-size: 12px;
+            font-weight: 900;
+            pointer-events: none;
+        }
+
+        .filter-btn {
+            height: 38px;
+            padding: 0 8px;
+            border: 1px solid;
+            border-radius: 6px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            background: #fff;
+            font-size: 16px;
+            font-weight: 700;
+            white-space: nowrap;
+            cursor: pointer;
+            transition: background 0.15s ease, transform 0.15s ease;
+        }
+
+        .filter-btn:active { transform: translateY(1px); }
+        .filter-btn.search { color: #f16f27; border-color: #ffab7c; }
+        .filter-btn.search:hover { background: #fff7f2; }
+        .filter-btn.reset { color: #737b86; border-color: #cdd5df; }
+        .filter-btn.reset:hover { background: #f7f9fb; }
+        .filter-btn.export { color: #4f83ee; border-color: #8db1ff; font-weight: 500; }
+        .filter-btn.export:hover { background: #f4f8ff; }
+
+        .table-wrap {
+            width: 1674px;
+            margin-top: 12px;
+        }
+
+        table {
+            width: 1674px;
+            table-layout: fixed;
+            border-collapse: collapse;
+            color: #272d36;
+            font-size: 17px;
+        }
+
+        thead tr { height: 48px; }
+        tbody tr { height: 46px; }
+
+        th {
+            padding: 0 10px;
+            border-bottom: 1px solid #e7edf5;
+            background: #eef4ff;
+            color: #20252d;
+            font-size: 17px;
+            font-weight: 800;
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        td {
+            min-width: 0;
+            padding: 0 10px;
+            border-bottom: 1px solid #edf1f5;
+            background: #fff;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            text-align: left;
+        }
+
+        td.center { text-align: center; }
+        tbody tr:hover td { background: #f4f8ff; }
+
+        .outlet-link {
+            width: 100%;
+            max-width: 100%;
+            padding: 0;
+            border: 0;
+            background: transparent;
+            color: #2791ff;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            font-size: 17px;
+            text-align: left;
+            cursor: pointer;
+        }
+
+        td.coordinate {
+            padding-right: 8px;
+            padding-left: 8px;
+            font-family: Arial, "Microsoft YaHei", sans-serif;
+            font-size: 16px;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .level-tag {
+            display: inline-flex;
+            height: 28px;
+            min-width: 56px;
+            padding: 0 10px;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            font-size: 16px;
+            line-height: 1;
+            font-weight: 700;
+        }
+
+        .level-tag.province { color: #13ab94; background: #e5f8f4; }
+        .level-tag.city { color: #3d84ee; background: #e8f1ff; }
+        .level-tag.county { color: #39a663; background: #e8f7ec; }
+        .level-tag.national { color: #9a6a16; background: #fff4d8; }
+        .level-tag.unknown { color: #8f98a4; background: #eef1f4; }
+
+        .actions {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 21px;
+        }
+
+        .icon-btn {
+            width: 22px;
+            height: 28px;
+            padding: 0;
+            border: 0;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: transparent;
+            color: #5488f3;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .icon-btn:hover { color: #165ee2; }
+
+        .empty-row td {
+            height: 660px;
+            color: #9aa4b2;
+            text-align: center;
+        }
+
+        .pagination {
+            width: 1674px;
+            height: 40px;
+            margin-top: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 14px;
+            color: #808a98;
+            font-size: 15px;
+        }
+
+        .page-size,
+        .jump-input {
+            height: 34px;
+            border: 1px solid #dce4ee;
+            border-radius: 5px;
+            background: #fff;
+            color: #7b8797;
+            text-align: center;
+        }
+
+        .page-size { width: 110px; padding: 0 10px; }
+        .jump-input { width: 48px; }
+
+        .page-buttons { display: flex; align-items: center; gap: 8px; }
+
+        .page-btn {
+            width: 30px;
+            height: 30px;
+            border: 0;
+            border-radius: 4px;
+            background: transparent;
+            color: #555f6e;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .page-btn:hover { background: #f0f5fd; }
+        .page-btn.active { color: #3479ec; }
+        .page-btn:disabled { color: #c5ccd5; cursor: default; }
+
+        .modal-backdrop {
+            position: fixed;
+            inset: 0;
+            z-index: 20;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            background: rgba(13, 30, 57, 0.34);
+        }
+
+        .modal-backdrop.open { display: flex; }
+
+        .modal {
+            width: 760px;
+            overflow: hidden;
+            border-radius: 8px;
+            background: #fff;
+            box-shadow: 0 22px 60px rgba(19, 52, 102, 0.24);
+        }
+
+        .modal-header {
+            height: 58px;
+            padding: 0 20px 0 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid #edf1f5;
+            font-size: 19px;
+            font-weight: 700;
+        }
+
+        .modal-close {
+            width: 34px;
+            height: 34px;
+            border: 0;
+            border-radius: 4px;
+            background: transparent;
+            color: #8792a2;
+            font-size: 18px;
+            cursor: pointer;
+        }
+
+        .modal-close:hover { background: #f2f5f8; }
+
+        .modal-body { padding: 22px 24px 26px; }
+
+        .detail-grid {
+            display: grid;
+            grid-template-columns: 120px 1fr 100px 180px;
+            border-top: 1px solid #e7edf4;
+            border-left: 1px solid #e7edf4;
+        }
+
+        .detail-grid > div {
+            min-height: 48px;
+            padding: 13px 14px;
+            border-right: 1px solid #e7edf4;
+            border-bottom: 1px solid #e7edf4;
+            line-height: 1.5;
+        }
+
+        .detail-grid .label {
+            background: #f6f9fd;
+            color: #647084;
+            font-weight: 700;
+        }
+
+        .detail-grid .wide { grid-column: span 3; }
+
+        .chart-title {
+            margin-bottom: 14px;
+            color: #4c586b;
+            font-weight: 700;
+        }
+
+        #trendCanvas {
+            width: 712px;
+            height: 310px;
+            display: block;
+            border: 1px solid #edf1f6;
+            border-radius: 6px;
+            background: #fff;
+        }
+
+        .toast {
+            position: fixed;
+            left: 50%;
+            bottom: 38px;
+            z-index: 30;
+            padding: 11px 18px;
+            border-radius: 6px;
+            background: rgba(31, 42, 59, 0.92);
+            color: #fff;
+            font-size: 15px;
+            opacity: 0;
+            pointer-events: none;
+            transform: translate(-50%, 12px);
+            transition: opacity 0.2s ease, transform 0.2s ease;
+        }
+
+        .toast.show { opacity: 1; transform: translate(-50%, 0); }
+    </style>
+</head>
+<body>
+<div class="viewport">
+    <div class="app-shell" id="appShell">
+        <header class="topbar">
+            <div class="brand">
+                <span class="brand-mark" aria-hidden="true">鄂</span>
+                <span>湖北省排污口综合监管系统</span>
+            </div>
+            <nav class="top-nav" aria-label="主导航">
+                <button type="button" data-nav="首页"><i class="fa-solid fa-house"></i><span>首页</span></button>
+                <button type="button" data-nav="一张图"><i class="fa-regular fa-image"></i><span>一张图</span></button>
+                <button type="button" class="active" data-nav="业务管理"><i class="fa-regular fa-clipboard"></i><span>业务管理</span></button>
+                <button type="button" data-nav="一口一档"><i class="fa-regular fa-file-lines"></i><span>一口一档</span></button>
+                <button type="button" data-nav="水污染源"><i class="fa-solid fa-list-check"></i><span>水污染源</span></button>
+                <button type="button" data-nav="综合统计"><i class="fa-solid fa-gavel"></i><span>综合统计</span></button>
+            </nav>
+            <div class="user"><i class="fa-regular fa-user"></i><span>王羽鹏</span></div>
+        </header>
+
+        <div class="workspace">
+            <aside class="sidebar" aria-label="业务菜单">
+                <div class="side-group collapsed">
+                    <button type="button" class="side-item side-parent">
+                        <i class="fa-solid fa-sliders side-icon"></i><span>排污口管理</span><i class="fa-solid fa-chevron-up chevron"></i>
+                    </button>
+                    <div class="side-children"></div>
+                </div>
+                <div class="side-group">
+                    <button type="button" class="side-item side-parent">
+                        <i class="fa-solid fa-sliders side-icon"></i><span>排污口监管</span><i class="fa-solid fa-chevron-up chevron"></i>
+                    </button>
+                    <div class="side-children">
+                        <button type="button" class="side-item side-child"><i class="fa-regular fa-circle-dot side-icon"></i><span>日常监管</span></button>
+                        <button type="button" class="side-item side-child active"><i class="fa-regular fa-chart-bar side-icon"></i><span>在线监控</span></button>
+                        <button type="button" class="side-item side-child"><i class="fa-regular fa-flag side-icon"></i><span>盯办帮扶</span></button>
+                        <button type="button" class="side-item side-child"><i class="fa-regular fa-circle-info side-icon"></i><span>日常监管监测预警</span></button>
+                        <button type="button" class="side-item side-child"><i class="fa-regular fa-circle-pause side-icon"></i><span>问题线索</span></button>
+                        <button type="button" class="side-item side-child"><i class="fa-regular fa-bell side-icon"></i><span>水功能区纳污统计</span></button>
+                    </div>
+                </div>
+                <div class="side-group collapsed">
+                    <button type="button" class="side-item side-parent">
+                        <i class="fa-solid fa-sliders side-icon"></i><span>排污口设置审批</span><i class="fa-solid fa-chevron-up chevron"></i>
+                    </button>
+                    <div class="side-children"></div>
+                </div>
+            </aside>
+
+            <main class="main-panel">
+                <section class="summary" aria-label="在线监测概览">
+                    <article class="stat theme-blue">
+                        <span class="stat-icon"><img src="assets/online-monitoring-summary/outlet-count.png" alt=""></span>
+                        <div class="stat-copy">
+                            <div class="stat-label">排污口数量</div>
+                            <div class="stat-number-line"><span class="stat-number">49</span><span class="stat-unit">个</span></div>
+                        </div>
+                    </article>
+                    <article class="stat theme-green">
+                        <span class="stat-icon"><img src="assets/online-monitoring-summary/enterprise-count.png" alt=""></span>
+                        <div class="stat-copy">
+                            <div class="stat-label">企业数量</div>
+                            <div class="stat-number-line"><span class="stat-number">49</span><span class="stat-unit">个</span></div>
+                        </div>
+                    </article>
+                    <article class="stat theme-indigo">
+                        <span class="stat-icon"><img src="assets/online-monitoring-summary/park-count.png" alt=""></span>
+                        <div class="stat-copy">
+                            <div class="stat-label">园区数量</div>
+                            <div class="stat-number-line"><span class="stat-number">37</span><span class="stat-unit">个</span></div>
+                        </div>
+                    </article>
+                    <article class="stat theme-teal">
+                        <span class="stat-icon"><img src="assets/online-monitoring-summary/online-count.png" alt=""></span>
+                        <div class="stat-copy">
+                            <div class="stat-label">在线数量</div>
+                            <div class="stat-number-line"><span class="stat-number">42</span><span class="stat-unit">个</span></div>
+                        </div>
+                    </article>
+                    <article class="alarm-stat">
+                        <div class="alarm-total">
+                            <div class="stat-label">报警数量</div>
+                            <div class="stat-number-line"><span class="stat-number">9</span><span class="stat-unit">条</span></div>
+                        </div>
+                        <div class="alarm-detail">
+                            <div class="donut" role="img" aria-label="已处理百分比 56%">
+                                <div class="donut-label">56%<small>已处理</small></div>
+                            </div>
+                            <div class="alarm-legend">
+                                <div class="legend-row red"><span>未处理</span><span class="legend-count">4</span></div>
+                                <div class="legend-row green"><span>已处理</span><span class="legend-count">5</span></div>
+                            </div>
+                        </div>
+                    </article>
+                </section>
+
+                <form class="filters" id="filterForm">
+                    <label class="field select"><select id="yearFilter" aria-label="年份"><option>2026年</option><option>2025年</option><option>2024年</option></select></label>
+                    <label class="field select"><select id="regionFilter" aria-label="地区"><option value="">地区</option></select></label>
+                    <label class="field select"><select id="statusFilter" aria-label="监测状态"><option value="">全部</option><option value="在线">在线</option><option value="掉线">掉线</option></select></label>
+                    <label class="field"><input id="outletFilter" type="search" placeholder="请输入排污口名称" aria-label="排污口名称"></label>
+                    <label class="field"><input id="parkFilter" type="search" placeholder="请输入园区名称" aria-label="园区名称"></label>
+                    <label class="field"><input id="companyFilter" type="search" placeholder="请输入企业名称" aria-label="企业名称"></label>
+                    <button class="filter-btn search" type="submit"><i class="fa-solid fa-magnifying-glass"></i><span>搜索</span></button>
+                    <button class="filter-btn reset" id="resetBtn" type="button"><i class="fa-solid fa-rotate-left"></i><span>重置</span></button>
+                    <button class="filter-btn export" id="exportBtn" type="button"><i class="fa-regular fa-file-lines"></i><span>数据导出</span></button>
+                </form>
+
+                <div class="table-wrap">
+                    <table aria-label="在线监测排污口列表">
+                        <colgroup>
+                            <col style="width:70px"><col style="width:440px"><col style="width:80px"><col style="width:360px"><col style="width:96px"><col style="width:303px"><col style="width:95px"><col style="width:95px"><col style="width:135px">
+                        </colgroup>
+                        <thead>
+                        <tr>
+                            <th>序号</th><th>排污口名称</th><th>地区</th><th>园区/分园名称</th><th>园区级别</th><th>企业名称</th><th>经度</th><th>纬度</th><th>操作</th>
+                        </tr>
+                        </thead>
+                        <tbody id="tableBody"></tbody>
+                    </table>
+                    <div class="pagination" id="pagination"></div>
+                </div>
+            </main>
+        </div>
+
+        <div class="modal-backdrop" id="detailModal" role="dialog" aria-modal="true" aria-labelledby="detailTitle">
+            <section class="modal">
+                <header class="modal-header"><span id="detailTitle">排污口详情</span><button class="modal-close" type="button" data-close="detailModal" aria-label="关闭"><i class="fa-solid fa-xmark"></i></button></header>
+                <div class="modal-body"><div class="detail-grid" id="detailGrid"></div></div>
+            </section>
+        </div>
+
+        <div class="modal-backdrop" id="trendModal" role="dialog" aria-modal="true" aria-labelledby="trendTitle">
+            <section class="modal">
+                <header class="modal-header"><span id="trendTitle">在线监测趋势</span><button class="modal-close" type="button" data-close="trendModal" aria-label="关闭"><i class="fa-solid fa-xmark"></i></button></header>
+                <div class="modal-body"><div class="chart-title" id="trendOutlet"></div><canvas id="trendCanvas" width="1424" height="620"></canvas></div>
+            </section>
+        </div>
+
+        <div class="toast" id="toast" role="status"></div>
+    </div>
+</div>
+
+<script>
+    const rawData = [
+        { region: "武汉", park: "武汉化学工业区", subpark: "", level: "市级", enterprise: "武汉中法水务有限公司", outlet: "武汉市青山区化工区中法水务污水处理厂生产废水排污口", lng: 114.552236, lat: 30.623064 },
+        { region: "武汉", park: "武汉化学工业区", subpark: "", level: "未定级", enterprise: "武汉中韩石油化工有限公司", outlet: "武汉市青山区化工区临江大道和化工二路交叉口东侧武惠堤下北湖泵站东北侧160米中韩石油化工有限公司入河排污口（乙烯厂区）生产废水排污口", lng: 114.552215, lat: 30.623090 },
+        { region: "襄阳", park: "襄城经济开发区余家湖化工园", subpark: "", level: "省级", enterprise: "襄阳浦华汉清水务有限公司", outlet: "襄阳市襄城区桑德汉清公司城镇污水集中处理设施排污口", lng: 112.198131, lat: 31.889532 },
+        { region: "襄阳", park: "谷城化工园区", subpark: "", level: "省级", enterprise: "谷城化工园区污水处理厂", outlet: "谷城化工园区污水处理厂排污口", lng: 111.553566, lat: 32.280278 },
+        { region: "襄阳", park: "老河口市化工园区", subpark: "", level: "省级", enterprise: "老河口市陈埠污水处理厂", outlet: "襄阳市老河口市陈埠污水处理厂污水集中处理设施排污口", lng: 111.688597, lat: 32.301657 },
+        { region: "襄阳", park: "襄阳（宜城）精细化工产业园", subpark: "", level: "市级", enterprise: "大雁污水处理厂", outlet: "襄阳市宜城市大雁污水处理厂人工湿地废水排放口", lng: 112.231940, lat: 31.592697 },
+        { region: "襄阳", park: "枣阳市化工工业园区", subpark: "", level: "市级", enterprise: "枣阳市第二污水处理厂", outlet: "襄阳市枣阳市第二污水处理厂排污口", lng: 112.711161, lat: 32.087829 },
+        { region: "宜昌", park: "湖北宜都化工园", subpark: "", level: "省级", enterprise: "宜都市三板湖污水处理厂", outlet: "宜昌市宜都市枝城镇三板湖污水处理厂排污口", lng: 111.531599, lat: 30.260011 },
+        { region: "宜昌", park: "宜昌姚家港化工园", subpark: "", level: "省级", enterprise: "枝江市木渣湖污水处理有限责任公司", outlet: "宜昌市枝江市木渣湖污水处理厂排污口", lng: 111.653402, lat: 30.382186 },
+        { region: "宜昌", park: "当阳坝陵化工园", subpark: "", level: "省级", enterprise: "金桥污水处理厂", outlet: "宜昌市当阳市金桥工业及其他各类园区污水处理厂排污口", lng: 111.873957, lat: 30.764637 },
+        { region: "宜昌", park: "猇亭化工园", subpark: "", level: "市级", enterprise: "猇亭污水处理厂", outlet: "宜昌市猇亭区红溪港入江其他排口", lng: 111.427390, lat: 30.505461 },
+        { region: "宜昌", park: "兴山化工园", subpark: "", level: "县级", enterprise: "白沙河化工厂污水处理站", outlet: "宜昌市兴山县兴发白沙河化工厂1#工矿企业排污口", lng: 110.706462, lat: 31.265105 },
+        { region: "宜昌", park: "兴山化工园", subpark: "", level: "县级", enterprise: "刘草坡化工厂污水处理站", outlet: "宜昌市兴山县兴发刘草坡化工厂排污口", lng: 110.786111, lat: 31.147611 },
+        { region: "宜昌", park: "远安化工园", subpark: "航空航天化工园区", level: "省级", enterprise: "远安县工业污水处理厂", outlet: "宜昌市远安县工业污水处理厂排口", lng: 111.652169, lat: 31.041497 },
+        { region: "宜昌", park: "远安化工园", subpark: "嫘祖片区", level: "省级", enterprise: "远安嫘祖工业污水处理厂", outlet: "宜昌市远安县嫘祖工业污水处理厂排污口", lng: 111.428583, lat: 31.170255 },
+        { region: "黄石", park: "西塞山工业园区化工园", subpark: "", level: "省级", enterprise: "西塞山工业园区工业污水处理厂", outlet: "黄石市新港园区长江棋盘洲大桥下游750米污水处理厂排污口", lng: 115.269313, lat: 30.143619 },
+        { region: "黄石", park: "阳新经济开发区滨江工业园（医药化工园区）", subpark: "", level: "省级", enterprise: "黄石市富池水务有限公司", outlet: "黄石市阳新县富池水务公司3号工业污水处理厂排污口", lng: 115.450582, lat: 29.848732 },
+        { region: "荆州", park: "荆州经济技术开发区化工园区（含沙市化工园）", subpark: "荆州开发区", level: "省级", enterprise: "荆州申联环境科技有限公司", outlet: "荆州市开发区申联公司1号污水集中处理设施排污口", lng: 112.289122, lat: 30.241809 },
+        { region: "荆州", park: "荆州经济技术开发区化工园区（含沙市化工园）", subpark: "荆州开发区", level: "未定级", enterprise: "安道麦股份有限公司污水处理厂", outlet: "荆州市开发区安道麦股份有限公司1号混合废污水排污口", lng: 112.289803, lat: 30.256020 },
+        { region: "荆州", park: "公安县化工园区", subpark: "", level: "省级", enterprise: "湖北省青吉佳源水务有限公司", outlet: "荆州市公安县青吉佳源水务处理厂入江排污口", lng: 112.304163, lat: 30.048119 },
+        { region: "荆州", park: "武汉经济技术开发区洪湖新滩经济合作区化工园区", subpark: "", level: "市级", enterprise: "洪湖市碧水源环境科技有限公司集中式污水处理厂", outlet: "荆州市洪湖市新滩镇城镇污水处理厂排污口", lng: 113.844551, lat: 30.157500 },
+        { region: "荆州", park: "监利市医药化工园区", subpark: "", level: "省级", enterprise: "监利清源污水处理有限公司（监利县城东工业园区污水处理厂）", outlet: "监利市工业园新区污水处理厂（监利市医药化工园区污水处理厂）入河排污口", lng: 112.997222, lat: 29.851996 },
+        { region: "荆州", park: "江陵县化工园区", subpark: "", level: "省级", enterprise: "江陵县滨江污水处理厂", outlet: "荆州市江陵县熊河镇沿江产业园滨江污水处理厂废水排口", lng: 112.343207, lat: 30.072465 },
+        { region: "荆州", park: "松滋市化工园区", subpark: "", level: "省级", enterprise: "松滋市临港污水处理有限公司", outlet: "荆州市松滋市临港工业园污水处理厂入江排污口", lng: 111.575756, lat: 30.256158 },
+        { region: "荆州", park: "松滋市化工园区", subpark: "", level: "未定级", enterprise: "湖北丽源科技股份有限公司污水处理厂", outlet: "荆州市松滋市湖北丽源科技股份有限公司入江总排口", lng: 111.619488, lat: 30.301707 },
+        { region: "荆州", park: "石首市化工园", subpark: "金平化工园区", level: "省级", enterprise: "石首市梅思泰克水务发展有限公司污水处理厂", outlet: "荆州市石首市威德水务污水处理厂排污口", lng: 112.231640, lat: 29.403623 },
+        { region: "荆州", park: "石首市化工园", subpark: "张城垸工业园区", level: "省级", enterprise: "湖北华丽染料工业有限公司污水处理厂", outlet: "荆州市石首市湖北华丽染料工业有限公司污水处理厂工业排污口", lng: 112.442762, lat: 29.750454 },
+        { region: "荆州", park: "石首市化工园", subpark: "张城垸工业园区", level: "未定级", enterprise: "楚源高新科技集团股份有限公司污水处理厂", outlet: "荆州市石首市楚源高新科技集团股份有限公司污水处理厂厂外排污口", lng: 112.431068, lat: 29.762913 },
+        { region: "十堰", park: "丹江口市化工园区", subpark: "", level: "县级", enterprise: "丹江口市化工园区（白果树沟）污水处理厂", outlet: "十堰市丹江口市化工园区污水处理厂排污口", lng: 111.472460, lat: 32.502611 },
+        { region: "孝感", park: "湖北应城化工产业园区", subpark: "东城工业园", level: "省级", enterprise: "东城工业园黎么污水处理站", outlet: "孝感市应城市东城工业园污水处理厂排污口", lng: 113.684526, lat: 30.913286 },
+        { region: "孝感", park: "湖北应城化工产业园区", subpark: "东城工业园", level: "未定级", enterprise: "湖北双环科技股份有限公司污水处理站", outlet: "孝感市应城市府河湖北双环工业企业排污口", lng: 113.709660, lat: 30.939267 },
+        { region: "孝感", park: "湖北应城化工产业园区", subpark: "赛孚工业园", level: "县级", enterprise: "应城市长江埠赛孚工业园污水处理厂", outlet: "孝感市应城市长江埠工业污水处理厂排污口", lng: 113.734872, lat: 30.866230 },
+        { region: "孝感", park: "湖北应城化工产业园区", subpark: "盐化工业园", level: "县级", enterprise: "四里棚盐化工业园污水处理厂", outlet: "孝感市应城市四里棚街道刘杨社区西南819米盐化产业园污水处理厂排污口", lng: 113.582108, lat: 30.929334 },
+        { region: "孝感", park: "湖北应城化工产业园区", subpark: "", level: "未定级", enterprise: "开发区污水处理厂", outlet: "湖北应城经济开发区污水处理厂入河排污口", lng: 113.546729, lat: 30.904494 },
+        { region: "荆门", park: "荆门化工循环产业园", subpark: "", level: "市级", enterprise: "中节能(荆门)环科水务技术发展有限公司", outlet: "荆门市化工循环产业园污水处理厂排污口", lng: 112.265883, lat: 31.022843 },
+        { region: "荆门", park: "沙洋县化工集中区", subpark: "", level: "省级", enterprise: "沙洋县城市工业污水处理厂", outlet: "荆门市沙洋县城市工业污水处理厂排污口", lng: 112.545013, lat: 30.671958 },
+        { region: "荆门", park: "钟祥胡集经济开发区化工园区", subpark: "", level: "市级", enterprise: "钟祥市胡集镇工业园区污水处理厂", outlet: "钟祥市胡集镇工业污水处理厂混合污水入河排污口", lng: 112.306111, lat: 31.420000 },
+        { region: "荆门", park: "东宝化工循环产业园", subpark: "", level: "县级", enterprise: "东宝化工循环产业园工业污水处理厂", outlet: "东宝化工循环产业园区污水处理厂排口", lng: 112.220397, lat: 30.253442 },
+        { region: "黄冈", park: "湖北黄州火车站经济开发区黄冈化工产业园", subpark: "", level: "省级", enterprise: "黄冈市保青污水处理厂", outlet: "黄冈市保青污水处理厂生产废水排污口", lng: 114.999168, lat: 30.427569 },
+        { region: "黄冈", park: "武穴市马口化工产业园", subpark: "", level: "省级", enterprise: "武穴市田家镇污水处理厂", outlet: "黄冈市武穴市污水处理厂城镇污水集中处理设施排污口", lng: 115.60511256008, lat: 29.8507570294335 },
+        { region: "咸宁", park: "嘉鱼县武汉新港潘湾工业园化工园区", subpark: "", level: "省级", enterprise: "咸宁市嘉鱼县潘家湾畈湖污水处理厂", outlet: "咸宁市嘉鱼县潘湾畈湖污水处理厂入江排污口", lng: 114.024985, lat: 30.228041 },
+        { region: "随州", park: "随州市青春化工工业园", subpark: "", level: "市级", enterprise: "淅河片区工业污水处理厂", outlet: "随州市曾都区淅河镇光化村复旦水务（随州）城南污水处理有限公司城镇污水处理厂城镇污水处理厂排污口", lng: 113.881279, lat: 31.579961 },
+        { region: "随州", park: "广水市化工园区", subpark: "", level: "未定级", enterprise: "广水市化工园区污水处理厂", outlet: "随州市广水市十里街道马都司工业及其他各类园区污水处理厂排污口", lng: 113.879101, lat: 31.579236 },
+        { region: "恩施", park: "恩施市白杨坪产业园（化工区）", subpark: "", level: "县级", enterprise: "恩施市白杨坪产业园（化工区）污水处理项目", outlet: "恩施州恩施市白杨坪镇产业园工业污水排污口", lng: 109.654015, lat: 30.525283 },
+        { region: "仙桃", park: "仙桃市化工园", subpark: "新材料产业园", level: "市级", enterprise: "仙桃市仙下河污水处理厂", outlet: "仙桃市仙下河污水处理厂入河排污口", lng: 113.581211, lat: 30.357403 },
+        { region: "仙桃", park: "仙桃市化工园", subpark: "仙桃钛产业园区", level: "市级", enterprise: "钛工业园工业污水处理厂", outlet: "仙桃市高新技术产业开发区钛工业园工业污水处理厂入河排污口", lng: 113.666111, lat: 30.165000 },
+        { region: "潜江", park: "潜江经济开发区", subpark: "", level: "国家级", enterprise: "潜江经济开发区工业污水处理厂", outlet: "潜江市工业污水处理厂东南150m废水排口", lng: 112.874241931222, lat: 30.4748890446462 },
+        { region: "潜江", park: "江汉盐化工业园", subpark: "", level: "市级", enterprise: "盐化工业园污水处理厂", outlet: "潜江市江汉盐化工业园污水处理厂总排污口", lng: 112.729722, lat: 30.500007 },
+        { region: "天门", park: "岳口工业园", subpark: "", level: "省级", enterprise: "岳口潭湖污水处理有限公司", outlet: "天门市岳口潭湖污水处理有限公司排污口", lng: 113.106111, lat: 30.569444 }
+    ].map((item, index) => ({ ...item, id: index + 1, monitorStatus: index < 42 ? "在线" : "掉线" }));
+
+    const state = { filtered: rawData.slice(), page: 1, pageSize: 15 };
+    const tableBody = document.getElementById("tableBody");
+    const pagination = document.getElementById("pagination");
+    const regionFilter = document.getElementById("regionFilter");
+    const statusFilter = document.getElementById("statusFilter");
+
+    [...new Set(rawData.map(item => item.region))].forEach(region => {
+        const option = document.createElement("option");
+        option.value = region;
+        option.textContent = region;
+        regionFilter.appendChild(option);
+    });
+
+    function escapeHtml(value) {
+        return String(value).replace(/[&<>"]/g, char => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;" }[char]));
+    }
+
+    function displayPark(item) {
+        return item.subpark ? `${item.park} / ${item.subpark}` : item.park;
+    }
+
+    function levelClass(level) {
+        return ({ "省级": "province", "市级": "city", "县级": "county", "国家级": "national", "未定级": "unknown" })[level] || "unknown";
+    }
+
+    function renderTable() {
+        const start = (state.page - 1) * state.pageSize;
+        const pageRows = state.filtered.slice(start, start + state.pageSize);
+
+        if (!pageRows.length) {
+            tableBody.innerHTML = '<tr class="empty-row"><td colspan="9"><i class="fa-regular fa-folder-open"></i>&nbsp;&nbsp;暂无匹配数据</td></tr>';
+        } else {
+            tableBody.innerHTML = pageRows.map((item, index) => `
+                <tr>
+                    <td class="center">${start + index + 1}</td>
+                    <td><button type="button" class="outlet-link" data-detail="${item.id}" title="${escapeHtml(item.outlet)}">${escapeHtml(item.outlet)}</button></td>
+                    <td>${escapeHtml(item.region)}</td>
+                    <td title="${escapeHtml(displayPark(item))}">${escapeHtml(displayPark(item))}</td>
+                    <td class="center"><span class="level-tag ${levelClass(item.level)}">${escapeHtml(item.level)}</span></td>
+                    <td title="${escapeHtml(item.enterprise)}">${escapeHtml(item.enterprise)}</td>
+                    <td class="center coordinate" title="${item.lng.toFixed(6)}">${item.lng.toFixed(4)}</td>
+                    <td class="center coordinate" title="${item.lat.toFixed(6)}">${item.lat.toFixed(4)}</td>
+                    <td><div class="actions">
+                        <button type="button" class="icon-btn" data-archive="${item.id}" title="进入一口一档" aria-label="进入一口一档"><i class="fa-solid fa-magnifying-glass"></i></button>
+                        <button type="button" class="icon-btn" data-trend="${item.id}" title="查看监测趋势" aria-label="查看监测趋势"><i class="fa-regular fa-chart-bar"></i></button>
+                    </div></td>
+                </tr>`).join("");
+        }
+        renderPagination();
+    }
+
+    function renderPagination() {
+        const pages = Math.max(1, Math.ceil(state.filtered.length / state.pageSize));
+        const pageButtons = Array.from({ length: pages }, (_, index) => {
+            const page = index + 1;
+            return `<button type="button" class="page-btn ${page === state.page ? "active" : ""}" data-page="${page}">${page}</button>`;
+        }).join("");
+
+        pagination.innerHTML = `
+            <select class="page-size" id="pageSize" aria-label="每页条数"><option value="15" selected>15条/页</option><option value="10">10条/页</option><option value="20">20条/页</option></select>
+            <span>共 ${state.filtered.length} 条</span>
+            <div class="page-buttons">
+                <button type="button" class="page-btn" data-step="-1" ${state.page === 1 ? "disabled" : ""} aria-label="上一页"><i class="fa-solid fa-chevron-left"></i></button>
+                ${pageButtons}
+                <button type="button" class="page-btn" data-step="1" ${state.page === pages ? "disabled" : ""} aria-label="下一页"><i class="fa-solid fa-chevron-right"></i></button>
+            </div>
+            <span>前往</span><input class="jump-input" id="jumpInput" type="number" min="1" max="${pages}" value="${state.page}" aria-label="跳转页码"><span>页</span>`;
+    }
+
+    function applyFilters() {
+        const outlet = document.getElementById("outletFilter").value.trim().toLowerCase();
+        const region = regionFilter.value;
+        const status = statusFilter.value;
+        const park = document.getElementById("parkFilter").value.trim().toLowerCase();
+        const company = document.getElementById("companyFilter").value.trim().toLowerCase();
+
+        state.filtered = rawData.filter(item =>
+            (!outlet || item.outlet.toLowerCase().includes(outlet)) &&
+            (!region || item.region === region) &&
+            (!status || item.monitorStatus === status) &&
+            (!park || displayPark(item).toLowerCase().includes(park)) &&
+            (!company || item.enterprise.toLowerCase().includes(company))
+        );
+        state.page = 1;
+        renderTable();
+    }
+
+    function openDetail(id) {
+        const item = rawData.find(row => row.id === Number(id));
+        if (!item) return;
+        document.getElementById("detailGrid").innerHTML = `
+            <div class="label">排污口名称</div><div class="wide">${escapeHtml(item.outlet)}</div>
+            <div class="label">地区</div><div>${escapeHtml(item.region)}</div><div class="label">园区级别</div><div><span class="level-tag ${levelClass(item.level)}">${escapeHtml(item.level)}</span></div>
+            <div class="label">园区/分园</div><div class="wide">${escapeHtml(displayPark(item))}</div>
+            <div class="label">企业名称</div><div class="wide">${escapeHtml(item.enterprise)}</div>
+            <div class="label">经度</div><div>${item.lng.toFixed(6)}</div><div class="label">纬度</div><div>${item.lat.toFixed(6)}</div>`;
+        document.getElementById("detailModal").classList.add("open");
+    }
+
+    function openArchive(id) {
+        const item = rawData.find(row => row.id === Number(id));
+        if (!item) return;
+        document.querySelectorAll(".top-nav button").forEach(button => button.classList.remove("active"));
+        document.querySelector('[data-nav="一口一档"]').classList.add("active");
+        showToast(`已进入一口一档：${item.outlet}`);
+    }
+
+    function openTrend(id) {
+        const item = rawData.find(row => row.id === Number(id));
+        if (!item) return;
+        document.getElementById("trendOutlet").textContent = item.enterprise;
+        document.getElementById("trendModal").classList.add("open");
+        requestAnimationFrame(() => drawTrend(item.id));
+    }
+
+    function drawTrend(seed) {
+        const canvas = document.getElementById("trendCanvas");
+        const ctx = canvas.getContext("2d");
+        const width = canvas.width;
+        const height = canvas.height;
+        const pad = { left: 92, right: 46, top: 42, bottom: 68 };
+        const labels = ["07-18", "07-19", "07-20", "07-21", "07-22", "07-23"];
+        const values = labels.map((_, index) => 32 + ((seed * 7 + index * 13) % 22) + Math.sin(seed + index) * 4);
+        const min = 20;
+        const max = 65;
+
+        ctx.clearRect(0, 0, width, height);
+        ctx.font = '24px "Microsoft YaHei"';
+        ctx.fillStyle = "#8692a3";
+        ctx.strokeStyle = "#e8edf4";
+        ctx.lineWidth = 2;
+
+        for (let i = 0; i <= 5; i += 1) {
+            const y = pad.top + ((height - pad.top - pad.bottom) * i / 5);
+            const value = max - ((max - min) * i / 5);
+            ctx.beginPath();
+            ctx.moveTo(pad.left, y);
+            ctx.lineTo(width - pad.right, y);
+            ctx.stroke();
+            ctx.textAlign = "right";
+            ctx.textBaseline = "middle";
+            ctx.fillText(value.toFixed(0), pad.left - 18, y);
+        }
+
+        labels.forEach((label, index) => {
+            const x = pad.left + ((width - pad.left - pad.right) * index / (labels.length - 1));
+            ctx.textAlign = "center";
+            ctx.textBaseline = "top";
+            ctx.fillText(label, x, height - pad.bottom + 18);
+        });
+
+        ctx.beginPath();
+        values.forEach((value, index) => {
+            const x = pad.left + ((width - pad.left - pad.right) * index / (values.length - 1));
+            const y = pad.top + (max - value) / (max - min) * (height - pad.top - pad.bottom);
+            if (index === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+        });
+        ctx.strokeStyle = "#3d82ef";
+        ctx.lineWidth = 6;
+        ctx.lineJoin = "round";
+        ctx.lineCap = "round";
+        ctx.stroke();
+
+        values.forEach((value, index) => {
+            const x = pad.left + ((width - pad.left - pad.right) * index / (values.length - 1));
+            const y = pad.top + (max - value) / (max - min) * (height - pad.top - pad.bottom);
+            ctx.beginPath();
+            ctx.arc(x, y, 8, 0, Math.PI * 2);
+            ctx.fillStyle = "#fff";
+            ctx.fill();
+            ctx.strokeStyle = "#3d82ef";
+            ctx.lineWidth = 5;
+            ctx.stroke();
+        });
+    }
+
+    function exportCsv() {
+        const headers = ["序号", "排污口名称", "地区", "园区/分园名称", "园区级别", "企业名称", "经度", "纬度"];
+        const rows = state.filtered.map((item, index) => [index + 1, item.outlet, item.region, displayPark(item), item.level, item.enterprise, item.lng, item.lat]);
+        const csv = [headers, ...rows].map(row => row.map(value => `"${String(value).replace(/"/g, '""')}"`).join(",")).join("\r\n");
+        const blob = new Blob(["\ufeff", csv], { type: "text/csv;charset=utf-8" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = "在线监测排污口数据.csv";
+        link.click();
+        URL.revokeObjectURL(url);
+        showToast(`已导出 ${state.filtered.length} 条数据`);
+    }
+
+    let toastTimer;
+    function showToast(message) {
+        const toast = document.getElementById("toast");
+        toast.textContent = message;
+        toast.classList.add("show");
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => toast.classList.remove("show"), 1600);
+    }
+
+    document.getElementById("filterForm").addEventListener("submit", event => {
+        event.preventDefault();
+        applyFilters();
+    });
+
+    document.getElementById("resetBtn").addEventListener("click", () => {
+        document.getElementById("filterForm").reset();
+        state.filtered = rawData.slice();
+        state.page = 1;
+        state.pageSize = 15;
+        renderTable();
+    });
+
+    document.getElementById("exportBtn").addEventListener("click", exportCsv);
+
+    tableBody.addEventListener("click", event => {
+        const detailTarget = event.target.closest("[data-detail]");
+        const archiveTarget = event.target.closest("[data-archive]");
+        const trendTarget = event.target.closest("[data-trend]");
+        if (detailTarget) openDetail(detailTarget.dataset.detail);
+        if (archiveTarget) openArchive(archiveTarget.dataset.archive);
+        if (trendTarget) openTrend(trendTarget.dataset.trend);
+    });
+
+    pagination.addEventListener("click", event => {
+        const pageButton = event.target.closest("[data-page]");
+        const stepButton = event.target.closest("[data-step]");
+        const pages = Math.max(1, Math.ceil(state.filtered.length / state.pageSize));
+        if (pageButton) state.page = Number(pageButton.dataset.page);
+        if (stepButton) state.page = Math.min(pages, Math.max(1, state.page + Number(stepButton.dataset.step)));
+        if (pageButton || stepButton) renderTable();
+    });
+
+    pagination.addEventListener("change", event => {
+        if (event.target.id === "pageSize") {
+            state.pageSize = Number(event.target.value);
+            state.page = 1;
+            renderTable();
+        }
+        if (event.target.id === "jumpInput") {
+            const pages = Math.max(1, Math.ceil(state.filtered.length / state.pageSize));
+            state.page = Math.min(pages, Math.max(1, Number(event.target.value) || 1));
+            renderTable();
+        }
+    });
+
+    document.querySelectorAll(".side-parent").forEach(button => {
+        button.addEventListener("click", () => button.closest(".side-group").classList.toggle("collapsed"));
+    });
+
+    document.querySelectorAll(".side-child").forEach(button => {
+        button.addEventListener("click", () => {
+            document.querySelectorAll(".side-child").forEach(item => item.classList.remove("active"));
+            button.classList.add("active");
+        });
+    });
+
+    document.querySelectorAll(".top-nav button").forEach(button => {
+        button.addEventListener("click", () => {
+            document.querySelectorAll(".top-nav button").forEach(item => item.classList.remove("active"));
+            button.classList.add("active");
+            if (button.dataset.nav !== "业务管理") showToast(`${button.dataset.nav}模块`);
+        });
+    });
+
+    document.querySelectorAll("[data-close]").forEach(button => {
+        button.addEventListener("click", () => document.getElementById(button.dataset.close).classList.remove("open"));
+    });
+
+    document.querySelectorAll(".modal-backdrop").forEach(backdrop => {
+        backdrop.addEventListener("click", event => {
+            if (event.target === backdrop) backdrop.classList.remove("open");
+        });
+    });
+
+    document.addEventListener("keydown", event => {
+        if (event.key === "Escape") document.querySelectorAll(".modal-backdrop.open").forEach(modal => modal.classList.remove("open"));
+    });
+
+    function fitApp() {
+        const scale = Math.min(window.innerWidth / 2048, window.innerHeight / 1088);
+        const shell = document.getElementById("appShell");
+        const left = Math.max(0, (window.innerWidth - 2048 * scale) / 2);
+        shell.style.left = `${left}px`;
+        shell.style.transform = `scale(${scale})`;
+    }
+
+    window.addEventListener("resize", fitApp);
+    fitApp();
+    renderTable();
+</script>
+</body>
+</html>

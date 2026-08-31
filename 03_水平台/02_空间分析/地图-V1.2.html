@@ -117,6 +117,99 @@
             height: 100%;
         }
 
+        /* ================= 正常点样式 (监控污水处理厂非报警) ================= */
+        .single-point-normal {
+            background: #3b82f6;
+            border: 2px solid #fff;
+            border-radius: 50%;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            height: 100%;
+        }
+
+        /* ================= 异常报警点样式 (监控污水处理厂) ================= */
+        /* 报警点：圆点蓝色(与其他点位一致)，波纹按四种类型用蓝→橙黄渐变区分 */
+        .alarm-pin {
+            position: relative;
+            width: 14px;
+            height: 14px;
+        }
+
+        .alarm-pin .alarm-dot {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: #3b82f6;
+            border: 2px solid #fff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2;
+        }
+
+        .alarm-pin .alarm-dot span {
+            color: #fff;
+            font-size: 9px;
+            font-weight: 900;
+            line-height: 1;
+            text-shadow: 0 1px 1px rgba(0, 0, 0, 0.4);
+        }
+
+        .alarm-pin .ripple {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: var(--ripple-grad);
+            -webkit-mask: radial-gradient(circle, transparent 50%, #000 60%);
+            mask: radial-gradient(circle, transparent 50%, #000 60%);
+            transform: translate(-50%, -50%);
+            animation: alarm-ripple 2.2s ease-out infinite;
+            pointer-events: none;
+        }
+
+        .alarm-pin .ripple.r2 {
+            animation-delay: 0.7s;
+        }
+
+        .alarm-pin .ripple.r3 {
+            animation-delay: 1.4s;
+        }
+
+        /* 四种异常类型的波纹渐变色：按重要性 红 → 红橙 → 橙 → 黄 (深色更明显) */
+        .alarm-pin.alarm-red {
+            --ripple-grad: radial-gradient(circle, #dc2626, #f87171);
+        }
+
+        .alarm-pin.alarm-redorange {
+            --ripple-grad: radial-gradient(circle, #e11d48, #fb7185);
+        }
+
+        .alarm-pin.alarm-orange {
+            --ripple-grad: radial-gradient(circle, #ea580c, #fb923c);
+        }
+
+        .alarm-pin.alarm-yellow {
+            --ripple-grad: radial-gradient(circle, #d97706, #fbbf24);
+        }
+
+        @keyframes alarm-ripple {
+            0% {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(-50%, -50%) scale(3.4);
+                opacity: 0;
+            }
+        }
+
         /* ================= 断面地图特有图标样式 (来自文件2) ================= */
         .icon-outlet {
             background: white;
@@ -290,6 +383,24 @@
     <div class="flex-1 relative overflow-hidden">
         <div id="map"></div>
 
+        <!-- 监控污水处理厂筛选栏 (地图上方居中) -->
+        <div class="absolute top-3 left-1/2 -translate-x-1/2 z-[450] flex items-center gap-2 bg-white/95 backdrop-blur-sm rounded-lg shadow-lg border border-gray-200 px-4 py-2">
+            <span class="text-xs font-bold text-gray-600 whitespace-nowrap"><i
+                    class="fas fa-filter text-blue-500 mr-1"></i>监控污水处理厂</span>
+            <select v-model="plantYear"
+                    class="text-xs border border-gray-300 rounded px-2 py-1 bg-white outline-none focus:border-blue-500 cursor-pointer">
+                <option v-for="y in years" :key="y" :value="y">{{ y }}年</option>
+            </select>
+            <select v-model="plantMonth"
+                    class="text-xs border border-gray-300 rounded px-2 py-1 bg-white outline-none focus:border-blue-500 cursor-pointer">
+                <option v-for="m in months" :key="m" :value="m">{{ m }}月</option>
+            </select>
+            <select v-model="plantAlarmType" @change="applyPlantFilter"
+                    class="text-xs border border-gray-300 rounded px-2 py-1 bg-white outline-none focus:border-blue-500 cursor-pointer">
+                <option v-for="t in plantAlarmTypes" :key="t.value" :value="t.value">{{ t.label }}</option>
+            </select>
+        </div>
+
         <div class="absolute left-0 top-4 bottom-4 w-14 bg-white shadow-md z-[400] flex flex-col items-center py-4 space-y-6 text-gray-500 rounded-r-lg border-r border-gray-200">
             <div class="flex flex-col items-center space-y-1 cursor-pointer text-blue-600 relative group">
                 <div class="p-2 bg-blue-50 rounded-lg shadow-sm"><i class="fas fa-layer-group text-lg"></i></div>
@@ -332,6 +443,14 @@
                                 <div class="ml-2">
                                     <span class="text-sm text-gray-700 font-medium group-hover:text-blue-600">自动检测企业</span>
                                     <div class="text-[10px] text-green-600 mt-0.5">直接展示点位</div>
+                                </div>
+                            </label>
+                            <label class="flex items-start p-1.5 hover:bg-gray-50 rounded cursor-pointer group transition bg-blue-50/50 border border-blue-100/50">
+                                <input type="checkbox" v-model="layers.sewagePlant" @change="toggleLayer('sewagePlant')"
+                                       class="mt-1 w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 cursor-pointer">
+                                <div class="ml-2">
+                                    <span class="text-sm text-gray-700 font-medium group-hover:text-blue-600">监控污水处理厂</span>
+                                    <div class="text-[10px] text-blue-600 mt-0.5">直接展示点位（155家）</div>
                                 </div>
                             </label>
                         </div>
@@ -756,9 +875,32 @@
             const map = ref(null);
             const clusterLayerGroup = ref(null);
             const autoMonitorLayerGroup = ref(null);
-            const layers = ref({selfMonitor: true, autoMonitor: false});
+            const sewagePlantLayerGroup = ref(null);
+            const layers = ref({selfMonitor: true, autoMonitor: false, sewagePlant: false});
             const displayStatNumber = ref(108951);
             const displayStatTitle = ref('自行监测企业总数');
+
+            // ==================== 监控污水处理厂筛选 ====================
+            const years = ref([2022, 2023, 2024, 2025, 2026]);
+            const months = ref(Array.from({length: 12}, (_, i) => i + 1));
+            const plantYear = ref(2026);
+            const plantMonth = ref(5);
+            const plantAlarmType = ref('all');
+            const plantAlarmTypes = [
+                {value: 'all', label: '全部'},
+                {value: 'constant', label: '超标后持续恒定'},
+                {value: 'spike', label: '超标后故障上升陡降'},
+                {value: 'constant24', label: '24小时恒值'},
+                {value: 'fault9', label: '24小时累计故障9小时'}
+            ];
+            const plantMarkers = [];
+            const plantTypeCounts = {constant: 0, spike: 0, constant24: 0, fault9: 0};
+            const plantColorClass = {
+                constant: 'alarm-red',
+                constant24: 'alarm-redorange',
+                fault9: 'alarm-orange',
+                spike: 'alarm-yellow'
+            };
 
             // ==================== 弹窗与数据相关状态 ====================
             const selectedFeature = ref(null);
@@ -791,6 +933,30 @@
                 {name: '十堰', lat: 32.6475, lng: 110.7993},
                 {name: '荆州', lat: 30.3342, lng: 112.2393}
             ];
+
+            // 湖北 17 市州坐标（用于监控污水处理厂点位分布）
+            const hubeiCities = [
+                {name: '武汉', lat: 30.5928, lng: 114.3055},
+                {name: '黄石', lat: 30.1996, lng: 115.0397},
+                {name: '十堰', lat: 32.6475, lng: 110.7993},
+                {name: '宜昌', lat: 30.6919, lng: 111.2864},
+                {name: '襄阳', lat: 32.0082, lng: 112.1225},
+                {name: '鄂州', lat: 30.3916, lng: 114.8944},
+                {name: '荆门', lat: 31.0354, lng: 112.1994},
+                {name: '孝感', lat: 30.9248, lng: 113.9171},
+                {name: '荆州', lat: 30.3342, lng: 112.2393},
+                {name: '黄冈', lat: 30.4537, lng: 114.8726},
+                {name: '咸宁', lat: 29.8412, lng: 114.3224},
+                {name: '随州', lat: 31.6901, lng: 113.3826},
+                {name: '恩施', lat: 30.2722, lng: 109.4881},
+                {name: '仙桃', lat: 30.3629, lng: 113.4542},
+                {name: '潜江', lat: 30.4019, lng: 112.8993},
+                {name: '天门', lat: 30.6635, lng: 113.1663},
+                {name: '神农架', lat: 31.7444, lng: 110.6767}
+            ];
+
+            // 污水处理厂命名用中文数字
+            const cnNums = ['一', '二', '三', '四', '五', '六', '七', '八', '九', '十', '十一', '十二'];
 
             // ==================== 数据生成逻辑 (完全保留 File 1) ====================
             const fullMonitorData = Array.from({length: 45}).map((_, i) => ({
@@ -1067,6 +1233,79 @@
                         autoMonitorLayerGroup.value.addLayer(marker);
                     });
                 });
+
+                // 监控污水处理厂 (共155家, 约1/5为异常报警点)
+                sewagePlantLayerGroup.value = L.layerGroup();
+                const totalPlants = 155;
+                const basePerCity = Math.floor(totalPlants / hubeiCities.length);
+                const extraCities = totalPlants % hubeiCities.length;
+                const plantAlarmTypePool = ['constant', 'spike', 'constant24', 'fault9'];
+
+                // 先收集全部点位
+                const plantPointList = [];
+                hubeiCities.forEach((city, cityIdx) => {
+                    const count = basePerCity + (cityIdx < extraCities ? 1 : 0);
+                    const points = generatePoints(city, count, 1.0);
+                    points.forEach(p => plantPointList.push({city: city, lat: p.lat, lng: p.lng}));
+                });
+
+                // 随机选出约 1/5 作为异常报警点
+                const alarmCount = Math.round(plantPointList.length / 5);
+                const idxArr = plantPointList.map((_, idx) => idx);
+                for (let i = idxArr.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [idxArr[i], idxArr[j]] = [idxArr[j], idxArr[i]];
+                }
+                const alarmIndexes = new Set(idxArr.slice(0, alarmCount));
+
+                plantPointList.forEach((pt, i) => {
+                    const isAlarm = alarmIndexes.has(i);
+                    const alarmType = isAlarm
+                        ? plantAlarmTypePool[Math.floor(Math.random() * plantAlarmTypePool.length)]
+                        : null;
+                    if (alarmType) plantTypeCounts[alarmType]++;
+
+                    const iconHtml = alarmType
+                        ? `<div class="alarm-pin ${plantColorClass[alarmType]}"><span class="ripple"></span><span class="ripple r2"></span><span class="ripple r3"></span><div class="alarm-dot"><span>!</span></div></div>`
+                        : `<div class="single-point-normal"></div>`;
+
+                    const marker = L.marker([pt.lat, pt.lng], {
+                        icon: L.divIcon({
+                            className: 'custom-dot',
+                            html: iconHtml,
+                            iconSize: alarmType ? [14, 14] : [12, 12]
+                        })
+                    });
+                    marker._alarmType = alarmType || 'normal';
+                    plantMarkers.push(marker);
+
+                    marker.on('click', () => {
+                        selectedFeature.value = {
+                            type: '监控污水处理厂',
+                            name: `${pt.city.name}市${cnNums[i % cnNums.length]}污水处理厂`,
+                            cityName: pt.city.name,
+                            lat: pt.lat, lng: pt.lng
+                        };
+                        currentTab.value = 'basic';
+                        generateOutletList(pt.city.name, pt.lat, pt.lng);
+
+                        sectionData.value = {
+                            name: `${pt.city.name}市排水断面`,
+                            province: '湖北省',
+                            city: pt.city.name,
+                            quality: 'IV类',
+                            basin: '长江流域',
+                            river: '城市内河',
+                            crossBorder: '否',
+                            factors: '氨氮、总磷、化学需氧量',
+                            station: `${pt.city.name}市排水监测站`,
+                            controlUnit: `${pt.city.name}市城区排水控制单元`,
+                            function: '评价、考核',
+                            target: 'III类'
+                        };
+                    });
+                    sewagePlantLayerGroup.value.addLayer(marker);
+                });
             };
 
             const renderLayers = () => {
@@ -1076,23 +1315,40 @@
                 if (layers.value.autoMonitor) map.value.addLayer(autoMonitorLayerGroup.value);
                 else map.value.removeLayer(autoMonitorLayerGroup.value);
 
+                if (layers.value.sewagePlant) map.value.addLayer(sewagePlantLayerGroup.value);
+                else map.value.removeLayer(sewagePlantLayerGroup.value);
+
+                const activeLayers = [];
+                if (layers.value.selfMonitor) activeLayers.push({name: '自行监测企业', total: 108951});
+                if (layers.value.autoMonitor) activeLayers.push({name: '自动检测站点', total: 1240});
+                if (layers.value.sewagePlant) {
+                    const cnt = plantAlarmType.value === 'all' ? 155 : (plantTypeCounts[plantAlarmType.value] || 0);
+                    activeLayers.push({name: '监控污水处理厂', total: cnt});
+                }
+
                 let total = 0;
-                let title = "数据统计";
-                if (layers.value.selfMonitor && layers.value.autoMonitor) {
-                    title = "监测企业总数 (混合)";
-                    total = 108951 + 1240;
-                } else if (layers.value.selfMonitor) {
-                    title = "自行监测企业总数";
-                    total = 108951;
-                } else if (layers.value.autoMonitor) {
-                    title = "自动检测站点数";
-                    total = 1240;
-                } else {
-                    title = "未选择图层";
-                    total = 0;
+                let title = "未选择图层";
+                if (activeLayers.length === 1) {
+                    const l = activeLayers[0];
+                    title = l.name === '自动检测站点' ? '自动检测站点数' : (l.name + '总数');
+                    total = l.total;
+                } else if (activeLayers.length > 1) {
+                    title = activeLayers.map(l => l.name).join(' + ') + ' (混合)';
+                    total = activeLayers.reduce((s, l) => s + l.total, 0);
                 }
                 displayStatTitle.value = title;
                 displayStatNumber.value = total;
+            };
+
+            const applyPlantFilter = () => {
+                if (!sewagePlantLayerGroup.value) return;
+                plantMarkers.forEach(marker => {
+                    const show = plantAlarmType.value === 'all' || marker._alarmType === plantAlarmType.value;
+                    const has = sewagePlantLayerGroup.value.hasLayer(marker);
+                    if (show && !has) sewagePlantLayerGroup.value.addLayer(marker);
+                    if (!show && has) sewagePlantLayerGroup.value.removeLayer(marker);
+                });
+                renderLayers();
             };
 
             const generateOutletList = (cityName, lat, lng) => {
@@ -1227,7 +1483,8 @@
                 paginatedMonitorData, totalMonitorData,
                 paginatedAlarmData, totalAlarmData,
                 outletList,
-                sectionData
+                sectionData,
+                years, months, plantYear, plantMonth, plantAlarmType, plantAlarmTypes, applyPlantFilter
             };
         }
     }).mount('#app');

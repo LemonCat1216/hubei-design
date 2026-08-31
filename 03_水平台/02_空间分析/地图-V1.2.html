@@ -383,20 +383,18 @@
     <div class="flex-1 relative overflow-hidden">
         <div id="map"></div>
 
-        <!-- 监控污水处理厂筛选栏 (地图上方居中) -->
-        <div class="absolute top-3 left-1/2 -translate-x-1/2 z-[450] flex items-center gap-2 bg-white/95 backdrop-blur-sm rounded-lg shadow-lg border border-gray-200 px-4 py-2">
-            <span class="text-xs font-bold text-gray-600 whitespace-nowrap"><i
-                    class="fas fa-filter text-blue-500 mr-1"></i>监控污水处理厂</span>
+        <!-- 污水处理厂筛选栏 (地图上方居中, 仅三个下拉框) -->
+        <div class="absolute top-3 left-1/2 -translate-x-1/2 z-[450] flex items-center gap-2">
             <select v-model="plantYear"
-                    class="text-xs border border-gray-300 rounded px-2 py-1 bg-white outline-none focus:border-blue-500 cursor-pointer">
+                    class="text-xs border border-gray-300 rounded px-2 py-1 bg-white shadow-md outline-none focus:border-blue-500 cursor-pointer">
                 <option v-for="y in years" :key="y" :value="y">{{ y }}年</option>
             </select>
             <select v-model="plantMonth"
-                    class="text-xs border border-gray-300 rounded px-2 py-1 bg-white outline-none focus:border-blue-500 cursor-pointer">
+                    class="text-xs border border-gray-300 rounded px-2 py-1 bg-white shadow-md outline-none focus:border-blue-500 cursor-pointer">
                 <option v-for="m in months" :key="m" :value="m">{{ m }}月</option>
             </select>
             <select v-model="plantAlarmType" @change="applyPlantFilter"
-                    class="text-xs border border-gray-300 rounded px-2 py-1 bg-white outline-none focus:border-blue-500 cursor-pointer">
+                    class="text-xs border border-gray-300 rounded px-2 py-1 bg-white shadow-md outline-none focus:border-blue-500 cursor-pointer">
                 <option v-for="t in plantAlarmTypes" :key="t.value" :value="t.value">{{ t.label }}</option>
             </select>
         </div>
@@ -492,12 +490,13 @@
                     </div>
 
                     <div class="flex border-b border-gray-200 bg-gray-50 shrink-0">
-                        <button v-for="tab in tabs" :key="tab.key"
-                                @click="currentTab = tab.key"
-                                :class="['px-6 py-3 text-sm font-medium transition-colors border-b-2 outline-none',
-                                currentTab === tab.key ? 'border-blue-600 text-blue-600 bg-white' : 'border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-100']">
-                            <i :class="[tab.icon, 'mr-2']"></i> {{ tab.label }}
-                        </button>
+                        <template v-for="tab in visibleTabs" :key="tab.key">
+                            <button @click="currentTab = tab.key"
+                                    :class="['px-6 py-3 text-sm font-medium transition-colors border-b-2 outline-none',
+                                    currentTab === tab.key ? 'border-blue-600 text-blue-600 bg-white' : 'border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-100']">
+                                <i :class="[tab.icon, 'mr-2']"></i> {{ tab.label }}
+                            </button>
+                        </template>
                     </div>
 
                     <div class="flex-1 overflow-hidden bg-white p-6 custom-scroll overflow-y-auto relative">
@@ -775,7 +774,7 @@
 
                         <div v-show="currentTab === 'section'"
                              class="flex h-full border border-gray-200 rounded-lg overflow-hidden">
-                            <div class="w-1/3 bg-white border-r border-gray-200 flex flex-col overflow-y-auto custom-scroll">
+                            <div class="w-[210px] shrink-0 bg-white border-r border-gray-200 flex flex-col overflow-y-auto custom-scroll">
                                 <div class="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50 shrink-0">
                                     <h3 class="font-bold text-lg text-gray-800">{{
                                             sectionData.name || '未关联断面'
@@ -832,7 +831,7 @@
                                 </div>
                             </div>
 
-                            <div class="w-2/3 bg-gray-50 relative">
+                            <div class="flex-1 bg-gray-50 relative min-w-0">
                                 <div id="section-map" class="w-full h-full"></div>
 
                                 <div class="absolute bottom-4 right-4 z-[400] bg-white/90 p-2 rounded shadow border border-gray-200 text-xs flex flex-col space-y-1">
@@ -856,6 +855,299 @@
                                             sectionData.name
                                         }}汇水管控区</span>
                                 </div>
+                            </div>
+
+                            <!-- 异常问题：关联断面右侧 -->
+                            <div class="w-[400px] shrink-0 bg-white border-l border-gray-200 flex flex-col min-w-0">
+                                <div v-if="selectedFeature.alarmType" class="flex flex-col h-full min-h-0">
+                                    <div class="px-3 py-2 border-b border-gray-200 bg-red-50/50 flex items-center justify-between shrink-0">
+                                        <span class="text-xs font-bold text-gray-700 flex items-center gap-1.5">
+                                            <span class="w-1.5 h-3 bg-red-500 rounded-sm"></span>异常问题
+                                        </span>
+                                        <span class="text-[11px] bg-red-100 text-red-600 px-1.5 py-0.5 rounded font-medium">{{ totalAlarmRecords }} 条</span>
+                                    </div>
+
+                                    <div class="border-b border-gray-200 shrink-0">
+                                        <div class="overflow-y-auto custom-scroll max-h-36">
+                                            <table class="min-w-full text-xs text-center">
+                                                <thead class="bg-red-50 text-gray-600 sticky top-0 border-b border-red-100">
+                                                <tr>
+                                                    <th class="py-2 px-1">录入时间</th>
+                                                    <th class="py-2 px-1">排口名称</th>
+                                                    <th class="py-2 px-1">异常类型</th>
+                                                    <th class="py-2 px-1">下发</th>
+                                                    <th class="py-2 px-1">反馈</th>
+                                                    <th class="py-2 px-1">销号</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody class="divide-y divide-gray-100">
+                                                <tr v-for="(rec, idx) in paginatedAlarmRecords" :key="rec.time + idx"
+                                                    @click="alarmSelectedRecord = rec; alarmDetailTab = 'analysis'"
+                                                    :class="alarmSelectedRecord === rec ? 'bg-blue-50' : 'hover:bg-red-50/10'"
+                                                    class="cursor-pointer">
+                                                    <td class="py-1.5 text-[11px] text-gray-500 font-mono whitespace-nowrap">{{ rec.time.slice(5) }}</td>
+                                                    <td class="py-1.5 text-gray-700">{{ rec.outlet }}</td>
+                                                    <td class="py-1.5"><span :style="{color: plantTypeColor[rec.type]}" class="text-[11px] font-semibold whitespace-nowrap">{{ plantAlarmInfo[rec.type].label }}</span></td>
+                                                    <td class="py-1.5 text-gray-700">{{ rec.sent }}</td>
+                                                    <td class="py-1.5 text-gray-700">{{ rec.feedback }}</td>
+                                                    <td class="py-1.5 text-gray-700">{{ rec.canceled }}</td>
+                                                </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        <div class="h-8 bg-gray-50 border-t border-gray-200 flex items-center justify-between px-2">
+                                            <span class="text-[11px] text-gray-500">共 {{ totalAlarmRecords }} 条</span>
+                                            <div class="flex items-center space-x-1">
+                                                <button @click="prevAlarmRecordPage" :disabled="alarmRecordPage === 1"
+                                                        class="px-1.5 py-0.5 bg-white border border-gray-300 rounded text-[11px] hover:bg-gray-50 disabled:opacity-50 text-gray-600">
+                                                    上一页
+                                                </button>
+                                                <span class="text-[11px] font-medium text-gray-700 w-5 text-center">{{ alarmRecordPage }}</span>
+                                                <button @click="nextAlarmRecordPage"
+                                                        :disabled="alarmRecordPage * alarmRecordPageSize >= totalAlarmRecords"
+                                                        class="px-1.5 py-0.5 bg-white border border-gray-300 rounded text-[11px] hover:bg-gray-50 disabled:opacity-50 text-gray-600">
+                                                    下一页
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="flex-1 flex flex-col min-h-0">
+                                        <div class="flex border-b border-gray-200 bg-gray-50 shrink-0">
+                                            <button @click="alarmDetailTab = 'analysis'"
+                                                    :class="['px-3 py-2 text-xs transition-colors flex-1 flex items-center justify-center gap-1 border-b-2',
+                                                    alarmDetailTab === 'analysis' ? 'bg-white text-red-600 border-red-500 font-bold' : 'border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-100']">
+                                                <i class="fas fa-search"></i>分析情况
+                                            </button>
+                                            <button @click="alarmDetailTab = 'feedback'"
+                                                    :class="['px-3 py-2 text-xs transition-colors flex-1 flex items-center justify-center gap-1 border-b-2',
+                                                    alarmDetailTab === 'feedback' ? 'bg-white text-red-600 border-red-500 font-bold' : 'border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-100']">
+                                                <i class="fas fa-comments"></i>反馈情况
+                                            </button>
+                                            <button @click="alarmDetailTab = 'disposal'"
+                                                    :class="['px-3 py-2 text-xs transition-colors flex-1 flex items-center justify-center gap-1 border-b-2',
+                                                    alarmDetailTab === 'disposal' ? 'bg-white text-red-600 border-red-500 font-bold' : 'border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-100']">
+                                                <i class="fas fa-hourglass-half"></i>处置情况
+                                            </button>
+                                        </div>
+                                        <div class="flex-1 overflow-y-auto custom-scroll p-3">
+
+                                            <div v-if="alarmDetailTab === 'analysis'" class="text-xs leading-relaxed text-gray-600">
+                                                {{ alarmSelectedRecord ? alarmSelectedRecord.analysis : '—' }}
+                                            </div>
+
+                                            <div v-else-if="alarmDetailTab === 'feedback'" class="space-y-3">
+                                                <div class="flex items-center gap-2">
+                                                    <span class="text-xs text-gray-500 w-14 shrink-0">反馈人</span>
+                                                    <span class="text-xs font-medium text-gray-800">{{ alarmSelectedRecord ? alarmSelectedRecord.feedbackPerson : '—' }}</span>
+                                                </div>
+                                                <div>
+                                                    <div class="text-xs text-gray-500 mb-1">反馈内容</div>
+                                                    <div class="text-xs leading-relaxed text-gray-600 bg-gray-50 border border-gray-100 rounded p-2">{{ alarmSelectedRecord ? alarmSelectedRecord.feedbackContent : '—' }}</div>
+                                                </div>
+                                                <div>
+                                                    <div class="text-xs text-gray-500 mb-1">反馈图片</div>
+                                                    <div class="grid grid-cols-3 gap-1.5">
+                                                        <div v-for="p in [1, 2, 3]" :key="p"
+                                                             class="aspect-square bg-gray-100 border border-gray-200 rounded flex flex-col items-center justify-center text-gray-400 overflow-hidden">
+                                                            <i class="fas fa-image text-lg mb-1"></i>
+                                                            <span class="text-[10px]">反馈图片{{ p }}</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div>
+                                                    <div class="text-xs text-gray-500 mb-1">文字材料</div>
+                                                    <div v-if="alarmSelectedRecord && alarmSelectedRecord.materials && alarmSelectedRecord.materials.length">
+                                                        <div v-for="m in alarmSelectedRecord.materials" :key="m"
+                                                             class="flex items-center gap-1.5 text-xs text-blue-600 py-0.5 cursor-pointer hover:underline">
+                                                            <i class="fas fa-file-alt text-[10px]"></i>{{ m }}
+                                                        </div>
+                                                    </div>
+                                                    <div v-else class="text-xs text-gray-400">—</div>
+                                                </div>
+                                            </div>
+
+                                            <div v-else class="relative">
+                                                <div class="absolute left-[7px] top-2 bottom-2 w-0.5 bg-gray-200"></div>
+                                                <div class="space-y-4">
+                                                    <div class="flex items-start gap-2.5">
+                                                        <div class="w-3.5 h-3.5 rounded-full bg-red-500 ring-4 ring-red-100 shrink-0 mt-0.5"></div>
+                                                        <div>
+                                                            <div class="text-xs text-gray-500">问题发生时间</div>
+                                                            <div class="text-sm font-mono font-medium text-gray-800">{{ alarmSelectedRecord ? alarmSelectedRecord.occurTime : '—' }}</div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="flex items-start gap-2.5">
+                                                        <div class="w-3.5 h-3.5 rounded-full bg-amber-500 ring-4 ring-amber-100 shrink-0 mt-0.5"></div>
+                                                        <div>
+                                                            <div class="text-xs text-gray-500">下发处室时间</div>
+                                                            <div class="text-sm font-mono font-medium text-gray-800">{{ alarmSelectedRecord ? alarmSelectedRecord.dispatchTime : '—' }}</div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="flex items-start gap-2.5">
+                                                        <div class="w-3.5 h-3.5 rounded-full bg-green-500 ring-4 ring-green-100 shrink-0 mt-0.5"></div>
+                                                        <div>
+                                                            <div class="text-xs text-gray-500">销号时间</div>
+                                                            <div class="text-sm font-mono font-medium text-gray-800">{{ alarmSelectedRecord ? alarmSelectedRecord.cancelTime : '—' }}</div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                                <div v-else class="flex items-center gap-2 px-4 py-3 h-full">
+                                    <span class="w-2 h-2 rounded-full bg-green-500"></span>
+                                    <span class="text-sm font-bold text-green-600">异常问题</span>
+                                    <span class="text-xs bg-green-50 text-green-600 border border-green-200 px-2 py-0.5 rounded">无异常</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 异常问题：表格 + 右侧三个横向tab详情（独立 Tab） -->
+                        <div v-if="currentTab === 'alarmRecord'" class="h-full flex flex-col">
+                            <div v-if="selectedFeature.alarmType" class="flex gap-3 flex-1 min-h-0">
+                                <!-- 左侧表格（风格同报警清单） -->
+                                <div class="border border-gray-200 rounded overflow-hidden flex-1 flex flex-col">
+                                    <div class="overflow-y-auto custom-scroll flex-1">
+                                        <table class="min-w-full text-sm text-center">
+                                            <thead class="bg-red-50 text-gray-700 sticky top-0 border-b border-red-100">
+                                            <tr>
+                                                <th class="py-3 px-2">录入时间</th>
+                                                <th class="py-3 px-2">排口名称</th>
+                                                <th class="py-3 px-2">异常类型</th>
+                                                <th class="py-3 px-2">是否下发</th>
+                                                <th class="py-3 px-2">是否反馈</th>
+                                                <th class="py-3 px-2">是否销号</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody class="divide-y divide-gray-100">
+                                            <tr v-for="(rec, idx) in paginatedAlarmRecords" :key="rec.time + idx"
+                                                @click="alarmSelectedRecord = rec; alarmDetailTab = 'analysis'"
+                                                :class="alarmSelectedRecord === rec ? 'bg-blue-50' : 'hover:bg-red-50/10'"
+                                                class="cursor-pointer">
+                                                <td class="py-2.5 text-xs text-gray-500 font-mono">{{ rec.time }}</td>
+                                                <td class="py-2.5 text-gray-700">{{ rec.outlet }}</td>
+                                                <td class="py-2.5"><span :style="{color: plantTypeColor[rec.type]}" class="text-xs font-semibold">{{
+                                                        plantAlarmInfo[rec.type].label
+                                                    }}</span></td>
+                                                <td class="py-2.5 text-gray-700">{{ rec.sent }}</td>
+                                                <td class="py-2.5 text-gray-700">{{ rec.feedback }}</td>
+                                                <td class="py-2.5 text-gray-700">{{ rec.canceled }}</td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div class="h-9 bg-gray-50 border-t border-gray-200 flex items-center justify-end px-4 space-x-3 shrink-0">
+                                        <span class="text-xs text-gray-500">共 {{ totalAlarmRecords }} 条</span>
+                                        <div class="flex items-center space-x-1">
+                                            <button @click="prevAlarmRecordPage" :disabled="alarmRecordPage === 1"
+                                                    class="px-2 py-0.5 bg-white border border-gray-300 rounded text-xs hover:bg-gray-50 disabled:opacity-50 text-gray-600">
+                                                上一页
+                                            </button>
+                                            <span class="text-xs font-medium text-gray-700 w-6 text-center">{{
+                                                    alarmRecordPage
+                                                }}</span>
+                                            <button @click="nextAlarmRecordPage"
+                                                    :disabled="alarmRecordPage * alarmRecordPageSize >= totalAlarmRecords"
+                                                    class="px-2 py-0.5 bg-white border border-gray-300 rounded text-xs hover:bg-gray-50 disabled:opacity-50 text-gray-600">
+                                                下一页
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- 右侧详情：三个横向tab -->
+                                <div class="w-[360px] shrink-0 border border-gray-200 rounded overflow-hidden bg-white flex flex-col">
+                                    <div class="flex border-b border-gray-200 bg-gray-50 shrink-0">
+                                        <button @click="alarmDetailTab = 'analysis'"
+                                                :class="['px-3 py-2 text-xs transition-colors flex-1 flex items-center justify-center gap-1 border-b-2',
+                                                alarmDetailTab === 'analysis' ? 'bg-white text-red-600 border-red-500 font-bold' : 'border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-100']">
+                                            <i class="fas fa-search"></i>分析情况
+                                        </button>
+                                        <button @click="alarmDetailTab = 'feedback'"
+                                                :class="['px-3 py-2 text-xs transition-colors flex-1 flex items-center justify-center gap-1 border-b-2',
+                                                alarmDetailTab === 'feedback' ? 'bg-white text-red-600 border-red-500 font-bold' : 'border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-100']">
+                                            <i class="fas fa-comments"></i>反馈情况
+                                        </button>
+                                        <button @click="alarmDetailTab = 'disposal'"
+                                                :class="['px-3 py-2 text-xs transition-colors flex-1 flex items-center justify-center gap-1 border-b-2',
+                                                alarmDetailTab === 'disposal' ? 'bg-white text-red-600 border-red-500 font-bold' : 'border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-100']">
+                                            <i class="fas fa-hourglass-half"></i>处置情况
+                                        </button>
+                                    </div>
+                                    <div class="flex-1 overflow-y-auto custom-scroll p-3">
+
+                                        <div v-if="alarmDetailTab === 'analysis'" class="text-xs leading-relaxed text-gray-600">
+                                            {{ alarmSelectedRecord ? alarmSelectedRecord.analysis : '—' }}
+                                        </div>
+
+                                        <div v-else-if="alarmDetailTab === 'feedback'" class="space-y-3">
+                                            <div class="flex items-center gap-2">
+                                                <span class="text-xs text-gray-500 w-14 shrink-0">反馈人</span>
+                                                <span class="text-xs font-medium text-gray-800">{{ alarmSelectedRecord ? alarmSelectedRecord.feedbackPerson : '—' }}</span>
+                                            </div>
+                                            <div>
+                                                <div class="text-xs text-gray-500 mb-1">反馈内容</div>
+                                                <div class="text-xs leading-relaxed text-gray-600 bg-gray-50 border border-gray-100 rounded p-2">{{ alarmSelectedRecord ? alarmSelectedRecord.feedbackContent : '—' }}</div>
+                                            </div>
+                                            <div>
+                                                <div class="text-xs text-gray-500 mb-1">反馈图片</div>
+                                                <div class="grid grid-cols-3 gap-1.5">
+                                                    <div v-for="p in [1, 2, 3]" :key="p"
+                                                         class="aspect-square bg-gray-100 border border-gray-200 rounded flex flex-col items-center justify-center text-gray-400 overflow-hidden">
+                                                        <i class="fas fa-image text-lg mb-1"></i>
+                                                        <span class="text-[10px]">反馈图片{{ p }}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <div class="text-xs text-gray-500 mb-1">文字材料</div>
+                                                <div v-if="alarmSelectedRecord && alarmSelectedRecord.materials && alarmSelectedRecord.materials.length">
+                                                    <div v-for="m in alarmSelectedRecord.materials" :key="m"
+                                                         class="flex items-center gap-1.5 text-xs text-blue-600 py-0.5 cursor-pointer hover:underline">
+                                                        <i class="fas fa-file-alt text-[10px]"></i>{{ m }}
+                                                    </div>
+                                                </div>
+                                                <div v-else class="text-xs text-gray-400">—</div>
+                                            </div>
+                                        </div>
+
+                                        <div v-else class="relative">
+                                            <div class="absolute left-[7px] top-2 bottom-2 w-0.5 bg-gray-200"></div>
+                                            <div class="space-y-4">
+                                                <div class="flex items-start gap-2.5">
+                                                    <div class="w-3.5 h-3.5 rounded-full bg-red-500 ring-4 ring-red-100 shrink-0 mt-0.5"></div>
+                                                    <div>
+                                                        <div class="text-xs text-gray-500">问题发生时间</div>
+                                                        <div class="text-sm font-mono font-medium text-gray-800">{{ alarmSelectedRecord ? alarmSelectedRecord.occurTime : '—' }}</div>
+                                                    </div>
+                                                </div>
+                                                <div class="flex items-start gap-2.5">
+                                                    <div class="w-3.5 h-3.5 rounded-full bg-amber-500 ring-4 ring-amber-100 shrink-0 mt-0.5"></div>
+                                                    <div>
+                                                        <div class="text-xs text-gray-500">下发处室时间</div>
+                                                        <div class="text-sm font-mono font-medium text-gray-800">{{ alarmSelectedRecord ? alarmSelectedRecord.dispatchTime : '—' }}</div>
+                                                    </div>
+                                                </div>
+                                                <div class="flex items-start gap-2.5">
+                                                    <div class="w-3.5 h-3.5 rounded-full bg-green-500 ring-4 ring-green-100 shrink-0 mt-0.5"></div>
+                                                    <div>
+                                                        <div class="text-xs text-gray-500">销号时间</div>
+                                                        <div class="text-sm font-mono font-medium text-gray-800">{{ alarmSelectedRecord ? alarmSelectedRecord.cancelTime : '—' }}</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div v-else class="flex items-center gap-2 px-4 py-3 h-full border border-gray-200 rounded-lg">
+                                <span class="w-2 h-2 rounded-full bg-green-500"></span>
+                                <span class="text-sm font-bold text-green-600">异常问题</span>
+                                <span class="text-xs bg-green-50 text-green-600 border border-green-200 px-2 py-0.5 rounded">无异常</span>
                             </div>
                         </div>
                     </div>
@@ -901,6 +1193,77 @@
                 fault9: 'alarm-orange',
                 spike: 'alarm-yellow'
             };
+            // 异常类型字体颜色（与四类水波纹渐变的起始色一致）
+            const plantTypeColor = {
+                constant: '#dc2626',
+                constant24: '#e11d48',
+                fault9: '#ea580c',
+                spike: '#d97706'
+            };
+            const plantAlarmInfo = {
+                constant: {label: '超标后持续恒定', desc: '数据超标后持续恒定不动，疑似设备故障或数据异常，需最高优先级核实处理。'},
+                constant24: {label: '24小时恒值', desc: '24小时内数据完全恒定不变，直接影响监测数据真实性。'},
+                fault9: {label: '24小时累计故障9小时', desc: '24小时内累计故障停机9小时，长时间中断影响连续监测。'},
+                spike: {label: '超标后故障上升陡降', desc: '超标后数据出现上升陡降异常波动，疑为偶发数据异常。'}
+            };
+
+            // ==================== 异常问题表格 (关联断面页) ====================
+            const alarmRecordList = ref([]);
+            const alarmRecordPage = ref(1);
+            const alarmRecordPageSize = 3;
+            const alarmSelectedRecord = ref(null);
+            const alarmDetailTab = ref('analysis'); // 'analysis' | 'feedback' | 'disposal'
+
+            const paginatedAlarmRecords = computed(() => {
+                const start = (alarmRecordPage.value - 1) * alarmRecordPageSize;
+                return alarmRecordList.value.slice(start, start + alarmRecordPageSize);
+            });
+            const totalAlarmRecords = computed(() => alarmRecordList.value.length);
+
+            const generateAlarmRecords = (alarmType) => {
+                if (!alarmType) {
+                    alarmRecordList.value = [];
+                    alarmSelectedRecord.value = null;
+                    return;
+                }
+                const typeLabel = plantAlarmInfo[alarmType].label;
+                const list = [];
+                const outlets = ['废水总排放口', '雨水排放口-北', '生活污水排放口'];
+                const pad = (n) => String(n).padStart(2, '0');
+                for (let i = 0; i < 5; i++) {
+                    const day = 17 - i;
+                    const vals = [];
+                    for (let h = 0; h < 6; h++) {
+                        vals.push(`08月${pad(day)}日${pad(18 + h)}点（${(9.8 + Math.random() * 0.8).toFixed(3)}）`);
+                    }
+                    const analysis = `总氮指标存在${typeLabel}。08月${pad(day)}日17点 总氮指标超标（11196077），之后${vals[0]}—${vals[vals.length - 1]}存在${typeLabel}，具体情况如下：${vals.join('、')}。（08月${pad(day + 1)}日00点 振幅超2%结束）`;
+                    list.push({
+                        time: `2026-08-${pad(day)} ${pad(18)}:00`,
+                        outlet: outlets[i % outlets.length],
+                        type: alarmType,
+                        sent: i % 3 === 0 ? '是' : '否',
+                        feedback: i % 2 === 0 ? '是' : '否',
+                        canceled: i % 2 === 1 ? '是' : '否',
+                        analysis: analysis,
+                        feedbackPerson: i % 2 === 0 ? `张${String.fromCharCode(64 + i + 1)}` : '—',
+                        feedbackContent: i % 2 === 0 ? '已核实为进水水质波动导致，已加强运行调度并落实整改。现场核查及监测数据见附件材料。' : '—',
+                        occurTime: `2026-08-${pad(day)} 14:32`,
+                        dispatchTime: `2026-08-${pad(day + 1)} 09:15`,
+                        cancelTime: i % 2 === 1 ? `2026-08-${pad(day + 2)} 16:00` : '—',
+                        materials: i % 2 === 0 ? ['现场核查记录表.pdf', '水质监测报告.pdf', '整改佐证材料.docx'] : []
+                    });
+                }
+                alarmRecordList.value = list;
+                alarmRecordPage.value = 1;
+                alarmSelectedRecord.value = list[0];
+            };
+
+            const prevAlarmRecordPage = () => {
+                if (alarmRecordPage.value > 1) alarmRecordPage.value--;
+            };
+            const nextAlarmRecordPage = () => {
+                if (alarmRecordPage.value * alarmRecordPageSize < totalAlarmRecords.value) alarmRecordPage.value++;
+            };
 
             // ==================== 弹窗与数据相关状态 ====================
             const selectedFeature = ref(null);
@@ -923,8 +1286,10 @@
                 {key: 'monitor', label: '监测信息', icon: 'fas fa-chart-line'},
                 {key: 'alarm', label: '报警清单', icon: 'fas fa-exclamation-triangle'},
                 {key: 'outlet', label: '排污口清单', icon: 'fas fa-list'},
-                {key: 'section', label: '关联断面', icon: 'fas fa-stream'}
+                {key: 'section', label: '关联断面', icon: 'fas fa-stream'},
+                {key: 'alarmRecord', label: '异常问题', icon: 'fas fa-exclamation-circle'}
             ];
+            const visibleTabs = computed(() => tabs.filter(t => t.key !== 'alarmRecord' || (selectedFeature.value && selectedFeature.value.alarmType)));
 
             const cities = [
                 {name: '武汉', lat: 30.5928, lng: 114.3055},
@@ -1280,12 +1645,17 @@
                     plantMarkers.push(marker);
 
                     marker.on('click', () => {
+                        const alarmInfo = plantAlarmInfo[alarmType];
                         selectedFeature.value = {
                             type: '监控污水处理厂',
                             name: `${pt.city.name}市${cnNums[i % cnNums.length]}污水处理厂`,
                             cityName: pt.city.name,
-                            lat: pt.lat, lng: pt.lng
+                            lat: pt.lat, lng: pt.lng,
+                            alarmType: alarmType || null,
+                            alarmLabel: alarmInfo ? alarmInfo.label : null,
+                            alarmDesc: alarmInfo ? alarmInfo.desc : null
                         };
+                        generateAlarmRecords(alarmType);
                         currentTab.value = 'basic';
                         generateOutletList(pt.city.name, pt.lat, pt.lng);
 
@@ -1478,12 +1848,16 @@
                 layers, toggleLayer,
                 displayStatNumber, displayStatTitle,
                 selectedFeature, closeModal,
-                tabs, currentTab, monitorSubTab, chartRef,
+                tabs, visibleTabs, currentTab, monitorSubTab, chartRef,
                 monitorPage, alarmPage, pageSize, nextPage, prevPage,
                 paginatedMonitorData, totalMonitorData,
                 paginatedAlarmData, totalAlarmData,
                 outletList,
                 sectionData,
+                plantAlarmInfo, plantTypeColor,
+                alarmRecordList, alarmRecordPage, alarmSelectedRecord, alarmDetailTab,
+                paginatedAlarmRecords, totalAlarmRecords,
+                prevAlarmRecordPage, nextAlarmRecordPage,
                 years, months, plantYear, plantMonth, plantAlarmType, plantAlarmTypes, applyPlantFilter
             };
         }

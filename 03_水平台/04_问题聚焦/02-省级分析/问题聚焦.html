@@ -1,0 +1,1172 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>全国水生态环境综合管理平台 - 问题聚焦</title>
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+    <link rel="stylesheet" href="tailwind-build/tailwind.css"/>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+
+    <style>
+        body { font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif; }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+        .section-title-bar {
+            width: 4px;
+            height: 16px;
+            background: linear-gradient(to bottom, #93c5fd, #3b82f6);
+            border-radius: 4px;
+            margin-right: 8px;
+        }
+
+        #sidebar { transition: width 0.3s ease; }
+        .sidebar-text { transition: opacity 0.2s ease; white-space: nowrap; }
+        .hide-text .sidebar-text { display: none; opacity: 0; }
+        .collapsed-sidebar .nav-item { justify-content: center; padding-left: 0; padding-right: 0; }
+        .collapsed-sidebar .nav-item span.material-symbols-outlined { margin-right: 0; }
+
+        /* 优化后的柔和阴影 */
+        .card-shadow { box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -2px rgba(0,0,0,0.05); }
+        .popover-shadow { box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1); }
+
+        /* 来源分段按钮 */
+        .source-btn {
+            padding: 0.25rem 0.5rem; font-size: 12px; transition: all 0.2s; font-weight: 500;
+            color: #64748b; cursor: pointer; white-space: nowrap;
+        }
+        .source-btn:hover { color: #2563eb; }
+        .source-btn.active { color: #2563eb; font-weight: 700; }
+
+        /* 月份翻页箭头 */
+        .month-nav-btn {
+            flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+            color: #94a3b8; transition: color 0.2s; font-size: 22px; padding: 2px;
+        }
+        .month-nav-btn:hover:not(:disabled) { color: #2563eb; }
+        .month-nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+        /* 清单状态选项卡 */
+        .status-tab {
+            padding: 0.5rem 1.25rem; font-size: 13px; font-weight: 500; border-radius: 0;
+            color: #64748b; transition: all 0.2s; cursor: pointer; white-space: nowrap;
+        }
+        .status-tab:hover { color: #2563eb; background-color: #f8fafc; }
+        .status-tab.active { background-color: #3b82f6; color: #ffffff; box-shadow: 0 -1px 4px rgba(0,0,0,0.08); font-weight: 700; }
+        .status-tab .tab-count { font-weight: 500; opacity: 0.85; font-size: 12px; margin-left: 3px; }
+
+        /* 复杂表格专业样式 */
+        .data-table { border-spacing: 0; width: 100%; }
+        .data-table th, .data-table td { background-clip: padding-box; }
+        .data-table th {
+            color: #475569; font-weight: 700; padding: 0.875rem 1rem; text-align: center; font-size: 14px;
+            border-bottom: 1px solid #e2e8f0; position: sticky; top: 0; z-index: 10;
+            background-color: rgba(248, 250, 252, 0.9); backdrop-filter: blur(4px);
+        }
+        .data-table td { padding: 0.875rem 1rem; text-align: center; font-size: 13px; color: #475569; border-bottom: 1px solid #f1f5f9; }
+        .data-table tbody tr:hover { background-color: rgba(239, 246, 255, 0.5); transition: background-color 0.15s; }
+
+        /* 标签样式 */
+        .type-tag { display: inline-flex; align-items: center; font-size: 13px; font-weight: 500; }
+        .reject-reason {
+            display: block; max-width: 80px; margin: 0 auto;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+            color: #dc2626; font-size: 12px; font-weight: 500;
+        }
+        .type-water { color: #ef4444; }
+        .type-task { color: #2563eb; }
+        .type-media { color: #9333ea; }
+
+        .status-tag { display: inline-flex; align-items: center; font-size: 13px; font-weight: 500; }
+        .status-pending { color: #d97706; }
+        .status-inprogress { color: #2563eb; }
+        .status-done { color: #10b981; }
+        .status-closed { color: #64748b; }
+        .status-na { color: #94a3b8; }
+        .status-reject { color: #dc2626; font-weight: 600; }
+
+        .closed-tag { display: inline-flex; align-items: center; font-size: 13px; font-weight: 500; }
+        .closed-yes { color: #10b981; }
+        .closed-no { color: #94a3b8; }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-800 dark:text-slate-100 h-screen overflow-hidden flex flex-col">
+
+<header class="bg-primary h-14 flex items-center justify-between px-4 text-white shrink-0 shadow-md z-50">
+    <div class="flex items-center space-x-3">
+        <div class="w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-sm">
+            <span class="material-symbols-outlined text-primary text-xl">water_drop</span>
+        </div>
+        <h1 class="text-xl font-bold tracking-tight">全国水生态环境综合管理平台</h1>
+    </div>
+    <div class="flex items-center space-x-4">
+        <button class="flex items-center space-x-1.5 bg-white/20 hover:bg-white/30 px-4 py-1.5 rounded-full transition-colors text-sm font-medium">
+            <i class="ri-function-line"></i>
+            <span>功能模块</span>
+        </button>
+        <button class="flex items-center space-x-1.5 bg-white/20 hover:bg-white/30 px-4 py-1.5 rounded-full transition-colors text-sm font-medium">
+            <i class="ri-global-line"></i>
+            <span>业务域</span>
+        </button>
+        <div class="flex items-center space-x-2 text-sm pl-4 border-l border-white/20">
+            <span class="material-symbols-outlined text-[18px]">account_circle</span>
+            <span>wangyunpeng</span>
+        </div>
+    </div>
+</header>
+
+<div class="flex flex-1 overflow-hidden">
+    <aside id="sidebar" class="w-[270px] bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 flex flex-col shrink-0 z-40">
+        <div class="flex-1 py-4 overflow-y-auto custom-scrollbar flex flex-col gap-1">
+            <div class="mb-2 px-2">
+                <button class="nav-item w-full flex items-center justify-between px-4 py-3 text-[16px] font-medium text-slate-700 dark:text-slate-300 rounded-lg group transition-colors hover:bg-slate-50 dark:hover:bg-slate-800/50" onclick="toggleGroup('group-ministerial')">
+                    <div class="flex items-center">
+                        <span class="material-symbols-outlined mr-3 text-slate-500">domain</span>
+                        <span class="sidebar-text font-bold text-slate-800 dark:text-white">部级分析</span>
+                    </div>
+                    <span class="material-symbols-outlined text-sm text-slate-400 group-hover:text-blue-500 sidebar-chevron transition-transform duration-200">expand_more</span>
+                </button>
+                <div id="group-ministerial" class="mt-1 space-y-1 overflow-hidden transition-all duration-300" style="max-height: 0px;">
+                    <div class="ml-4 px-3 rounded-lg">
+                        <button class="nav-item w-full flex items-center justify-between px-3 py-2.5 text-[14px] font-medium text-slate-600 dark:text-slate-400 rounded-lg transition-colors hover:text-blue-600" onclick="toggleSubmenu('submenu-feedback')">
+                            <div class="flex items-center">
+                                <span class="material-symbols-outlined mr-2.5 text-[18px]">forum</span>
+                                <span class="sidebar-text">问题线索及反馈</span>
+                            </div>
+                            <span class="material-symbols-outlined text-sm text-slate-400 submenu-chevron transition-transform duration-200">expand_more</span>
+                        </button>
+                        <div id="submenu-feedback" class="mt-1 space-y-1 overflow-hidden transition-all duration-300" style="max-height: 0px;">
+                            <a class="flex items-center pl-9 pr-2 py-2 text-[13px] text-slate-500 dark:text-slate-400 hover:text-blue-600 hover:bg-blue-50/50 dark:hover:bg-blue-900/20 transition-all rounded-lg group" href="#">
+                                <span class="w-1.5 h-1.5 bg-slate-300 dark:bg-slate-600 group-hover:bg-blue-600 rounded-full mr-2.5 shrink-0 transition-colors"></span>
+                                <span class="sidebar-text">未反馈</span>
+                            </a>
+                            <a class="flex items-center pl-9 pr-2 py-2 text-[13px] text-slate-500 dark:text-slate-400 hover:text-blue-600 hover:bg-blue-50/50 dark:hover:bg-blue-900/20 transition-all rounded-lg group" href="#">
+                                <span class="w-1.5 h-1.5 bg-slate-300 dark:bg-slate-600 group-hover:bg-blue-600 rounded-full mr-2.5 shrink-0 transition-colors"></span>
+                                <span class="sidebar-text">反馈中</span>
+                            </a>
+                            <a class="flex items-center pl-9 pr-2 py-2 text-[13px] text-slate-500 dark:text-slate-400 hover:text-blue-600 hover:bg-blue-50/50 dark:hover:bg-blue-900/20 transition-all rounded-lg group" href="#">
+                                <span class="w-1.5 h-1.5 bg-slate-300 dark:bg-slate-600 group-hover:bg-blue-600 rounded-full mr-2.5 shrink-0 transition-colors"></span>
+                                <span class="sidebar-text">已反馈</span>
+                            </a>
+                            <a class="flex items-center pl-9 pr-2 py-2 text-[13px] text-slate-500 dark:text-slate-400 hover:text-blue-600 hover:bg-blue-50/50 dark:hover:bg-blue-900/20 transition-all rounded-lg group" href="#">
+                                <span class="w-1.5 h-1.5 bg-slate-300 dark:bg-slate-600 group-hover:bg-blue-600 rounded-full mr-2.5 shrink-0 transition-colors"></span>
+                                <span class="sidebar-text">销号情况</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-2 px-2">
+                <button class="nav-item w-full flex items-center justify-between px-4 py-3 text-[16px] font-medium text-blue-700 bg-blue-50/50 dark:bg-blue-900/10 rounded-lg group transition-colors" onclick="toggleGroup('group-provincial')">
+                    <div class="flex items-center">
+                        <span class="material-symbols-outlined mr-3 text-blue-600">location_city</span>
+                        <span class="sidebar-text font-bold text-slate-800 dark:text-white">省级分析</span>
+                    </div>
+                    <span class="material-symbols-outlined text-sm text-blue-600 sidebar-chevron transition-transform duration-200" style="transform: rotate(180deg);">expand_more</span>
+                </button>
+                <div id="group-provincial" class="mt-1 space-y-1 overflow-hidden transition-all duration-300">
+                    <a class="flex items-center px-12 py-2.5 text-[14px] text-slate-600 dark:text-slate-400 hover:text-blue-600 hover:bg-blue-50/50 dark:hover:bg-blue-900/20 transition-all rounded-lg group" href="#">
+                        <span class="w-1.5 h-1.5 bg-slate-300 dark:bg-slate-600 group-hover:bg-blue-600 rounded-full mr-3 shrink-0 transition-colors"></span>
+                        <span class="sidebar-text">环保舆情</span>
+                    </a>
+                    <a class="flex items-center px-12 py-2.5 text-[14px] text-blue-700 bg-blue-50 dark:bg-blue-900/30 rounded-lg group transition-all font-bold relative" href="#">
+                        <span class="w-1.5 h-1.5 bg-blue-600 rounded-full mr-3 shrink-0"></span>
+                        <span class="sidebar-text">问题聚焦</span>
+                        <div class="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-5 bg-blue-600 rounded-r-full"></div>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <button id="toggleSidebarBtn" class="h-12 border-t border-slate-200 dark:border-slate-800 flex items-center justify-center space-x-2 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all text-slate-500 hover:text-primary group">
+            <span id="toggleIcon" class="material-symbols-outlined text-xl transition-transform duration-300">chevron_left</span>
+            <span class="sidebar-text text-sm font-medium tracking-wide">收起侧栏</span>
+        </button>
+    </aside>
+
+    <main class="flex-1 overflow-y-auto custom-scrollbar p-6">
+
+        <!-- 页面标题栏 + 筛选控件（保持原版完全一致） -->
+        <div class="min-h-16 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-6 py-3 flex flex-wrap items-center justify-between gap-4 shrink-0 card-shadow mb-6 z-[60] relative">
+            <div class="flex items-center gap-3">
+                <span class="relative flex h-3 w-3 ml-1 shrink-0">
+                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-3 w-3 bg-indigo-500"></span>
+                </span>
+                <h2 class="text-[18px] font-bold text-slate-800 dark:text-white tracking-tight">问题聚焦</h2>
+            </div>
+
+            <div class="flex items-center space-x-2.5 flex-wrap gap-y-2 justify-end">
+                <div class="relative">
+                    <select id="filter-level" class="appearance-none bg-white border border-slate-200 dark:bg-slate-800 dark:border-slate-700 rounded pl-3 pr-8 py-1.5 text-[13px] text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-all cursor-pointer hover:border-blue-400 w-32 shadow-sm">
+                        <option value="暂不发送">暂不发送</option>
+                        <option value="仅发送">仅发送</option>
+                        <option value="需审核">需审核</option>
+                    </select>
+                </div>
+
+                <div class="relative" id="custom-cascader">
+                    <button type="button" id="cascader-trigger" class="appearance-none bg-white border border-slate-200 dark:bg-slate-800 dark:border-slate-700 rounded pl-3 pr-8 py-1.5 text-[13px] text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-all cursor-pointer hover:border-blue-400 w-44 shadow-sm flex items-center justify-between group">
+                        <span id="cascader-text" class="truncate text-slate-500">请选择类别</span>
+                        <i id="cascader-clear" class="ri-close-line hidden text-slate-400 hover:text-red-500 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-full px-0.5 cursor-pointer flex-none text-[13px]" title="清除类别"></i>
+                        <i id="cascader-icon" class="ri-arrow-up-s-line text-slate-300 group-hover:text-slate-400 transition-transform rotate-180 flex-none"></i>
+                    </button>
+                    <div id="cascader-popover" class="hidden absolute top-full right-0 mt-1 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-lg shadow-xl popover-shadow z-50 flex overflow-hidden w-[700px]">
+                        <div class="w-[180px] shrink-0 border-r border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/80 py-1" id="cascader-categories"></div>
+                        <div class="w-[200px] shrink-0 border-r border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/80 py-1" id="cascader-subs"></div>
+                        <div class="flex-1 bg-white dark:bg-slate-800 py-1 max-h-[340px] overflow-y-auto custom-scrollbar" id="cascader-options"></div>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-2">
+                    <!-- 保持原版下拉逻辑，用于选择单月 -->
+                    <div class="relative" id="custom-datepicker">
+                        <button type="button" id="datepicker-trigger" class="appearance-none bg-white border border-slate-200 rounded pl-8 pr-2 py-1.5 text-[12px] text-slate-700 focus:outline-none transition-all cursor-pointer hover:border-blue-400 w-[140px] flex items-center group shadow-sm">
+                            <i class="ri-calendar-line text-slate-400 group-hover:text-blue-500 absolute left-2.5 transition-colors"></i>
+                            <span id="datepicker-text" class="text-slate-500 truncate">选择年月</span>
+                        </button>
+                        <div id="datepicker-popover" class="hidden absolute top-full right-0 mt-1 bg-white border border-slate-100 rounded-lg shadow-xl popover-shadow z-50 p-4 w-[300px]">
+                            <div id="dp-container"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="relative hidden">
+                    <select id="filter-survey" class="appearance-none bg-white border border-slate-200 dark:bg-slate-800 dark:border-slate-700 rounded pl-3 pr-8 py-1.5 text-[13px] text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-all cursor-pointer hover:border-blue-400 w-36 shadow-sm">
+                        <option value="全部">是否调查反馈</option>
+                        <option value="是">是</option>
+                        <option value="否">否</option>
+                    </select>
+                </div>
+
+                <div class="relative hidden">
+                    <select id="filter-reject" class="appearance-none bg-white border border-slate-200 dark:bg-slate-800 dark:border-slate-700 rounded pl-3 pr-8 py-1.5 text-[13px] text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-all cursor-pointer hover:border-blue-400 w-36 shadow-sm">
+                        <option value="全部">是否驳回</option>
+                        <option value="是">是</option>
+                        <option value="否">否</option>
+                    </select>
+                </div>
+
+                <div class="relative hidden">
+                    <select id="filter-closed" class="appearance-none bg-white border border-slate-200 dark:bg-slate-800 dark:border-slate-700 rounded pl-3 pr-8 py-1.5 text-[13px] text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-all cursor-pointer hover:border-blue-400 w-36 shadow-sm">
+                        <option value="全部">是否销号</option>
+                        <option value="是">是</option>
+                        <option value="否">否</option>
+                    </select>
+                </div>
+
+                <div class="relative">
+                    <select id="filter-lake" class="appearance-none bg-white border border-slate-200 dark:bg-slate-800 dark:border-slate-700 rounded pl-3 pr-8 py-1.5 text-[13px] text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-all cursor-pointer hover:border-blue-400 w-36 shadow-sm">
+                        <option value="全部">请选择湖库</option>
+                        <option value="梁子湖">梁子湖</option>
+                        <option value="洪湖">洪湖</option>
+                        <option value="丹江口水库">丹江口水库</option>
+                    </select>
+                </div>
+
+                <div class="relative">
+                    <select id="filter-basin1" class="appearance-none bg-white border border-slate-200 dark:bg-slate-800 dark:border-slate-700 rounded pl-3 pr-8 py-1.5 text-[13px] text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-all cursor-pointer hover:border-blue-400 w-36 shadow-sm">
+                        <option value="全部">选择一级流域</option>
+                        <option value="长江干流流域">长江干流流域</option>
+                        <option value="汉江流域">汉江流域</option>
+                        <option value="清江流域">清江流域</option>
+                    </select>
+                </div>
+
+                <div class="relative">
+                    <select id="filter-basin2" class="appearance-none bg-white border border-slate-200 dark:bg-slate-800 dark:border-slate-700 rounded pl-3 pr-8 py-1.5 text-[13px] text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-all cursor-pointer hover:border-blue-400 w-36 shadow-sm">
+                        <option value="全部">选择二级流域</option>
+                        <option value="富水片区">富水片区</option>
+                        <option value="鄂东南片区">鄂东南片区</option>
+                        <option value="四湖片区">四湖片区</option>
+                    </select>
+                </div>
+
+                <button onclick="applyFilter()" class="bg-[#3b82f6] hover:bg-blue-600 text-white px-4 py-1.5 rounded text-[13px] transition-colors shadow-sm font-medium flex items-center space-x-1">
+                    <i class="ri-search-line"></i><span>搜索</span>
+                </button>
+                <button onclick="resetFilter()" class="bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 px-3 py-1.5 rounded text-[13px] transition-colors font-medium">
+                    重置
+                </button>
+            </div>
+        </div>
+
+        <!-- 问题聚焦清单 (保持原版的 4 个 Tab 和表格结构) -->
+        <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 card-shadow flex flex-col overflow-hidden mb-6 z-10 relative">
+            <div class="pl-0 pt-0 pb-0 flex flex-wrap items-end gap-3 justify-between shrink-0 bg-slate-50/50 dark:bg-slate-800/30">
+                <div class="flex items-end gap-3">
+                    <div id="status-tabs" class="flex items-end gap-1">
+                        <div id="status-tab-all" class="status-tab active">全部<span class="tab-count"></span></div>
+                        <div data-tab="未反馈" class="status-tab">未反馈<span class="tab-count"></span></div>
+                        <div data-tab="已反馈" class="status-tab">已反馈<span class="tab-count"></span></div>
+                        <div data-tab="已驳回" class="status-tab">已驳回<span class="tab-count"></span></div>
+                        <div data-tab="已销号" class="status-tab">已销号<span class="tab-count"></span></div>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2 pr-5 self-center">
+                    <div id="source-segmented" class="flex items-center gap-1">
+                        <div data-source="全部" class="source-btn active">全部</div>
+                        <div data-source="手工录入" class="source-btn">手工录入</div>
+                        <div data-source="系统识别" class="source-btn">系统识别</div>
+                        <div data-source="外部系统调度" class="source-btn">外部系统调度</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="overflow-x-auto custom-scrollbar">
+                <table class="data-table">
+                    <thead>
+                    <tr>
+                        <th class="w-64 text-left pl-6">问题名称</th>
+                        <th class="w-28">数据来源</th>
+                        <th class="w-36">问题类别</th>
+                        <th class="w-28">流域</th>
+                        <th class="w-32">问题时间</th>
+                        <th class="w-28">地市</th>
+                        <th class="w-28">问题状态</th>
+                        <th class="w-28">是否销号</th>
+                    </tr>
+                    </thead>
+                    <tbody id="focus-table-body">
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="flex justify-between items-center px-6 py-3 border-t border-slate-100 dark:border-slate-800">
+                <div class="text-[13px] text-slate-500 dark:text-slate-400">
+                    共 <span id="focus-total" class="font-bold text-slate-700 dark:text-slate-200 mx-1">0</span> 条记录
+                </div>
+                <div class="flex items-center space-x-1" id="focus-pagination"></div>
+            </div>
+        </div>
+
+        <footer class="mt-2 pt-4 border-t border-slate-200 dark:border-slate-800 text-center text-xs text-slate-400 pb-2">
+            <p>&copy; 2026 湖北省生态环境厅 · 版权所有</p>
+        </footer>
+    </main>
+</div>
+
+<script>
+    // ========== 侧边栏交互逻辑 ==========
+    const sidebar = document.getElementById('sidebar');
+    const toggleBtn = document.getElementById('toggleSidebarBtn');
+    const toggleIcon = document.getElementById('toggleIcon');
+    let isCollapsed = false;
+
+    toggleBtn.addEventListener('click', () => {
+        isCollapsed = !isCollapsed;
+        if (isCollapsed) {
+            sidebar.classList.remove('w-[270px]');
+            sidebar.classList.add('w-[80px]', 'hide-text', 'collapsed-sidebar');
+            toggleIcon.style.transform = 'rotate(180deg)';
+        } else {
+            sidebar.classList.remove('w-[80px]', 'hide-text', 'collapsed-sidebar');
+            sidebar.classList.add('w-[270px]');
+            toggleIcon.style.transform = 'rotate(0deg)';
+        }
+        setTimeout(() => { if (monthlyChartInstance) monthlyChartInstance.resize(); }, 300);
+    });
+
+    function toggleGroup(id) {
+        if (isCollapsed) return;
+        const group = document.getElementById(id);
+        const chevron = group.previousElementSibling.querySelector('.sidebar-chevron');
+        if (group.style.maxHeight && group.style.maxHeight !== '0px') {
+            group.style.maxHeight = '0px';
+            chevron.style.transform = 'rotate(0deg)';
+        } else {
+            group.style.maxHeight = group.scrollHeight + "px";
+            chevron.style.transform = 'rotate(180deg)';
+        }
+    }
+
+    function toggleSubmenu(id) {
+        if (isCollapsed) return;
+        const submenu = document.getElementById(id);
+        const btn = submenu.previousElementSibling;
+        const chevron = btn.querySelector('.submenu-chevron');
+        if (submenu.style.maxHeight && submenu.style.maxHeight !== '0px') {
+            submenu.style.maxHeight = '0px';
+            chevron.style.transform = 'rotate(0deg)';
+        } else {
+            submenu.style.maxHeight = submenu.scrollHeight + "px";
+            chevron.style.transform = 'rotate(180deg)';
+        }
+    }
+
+    // ========== 原版 Mock 数据（一字不改） ==========
+    const focusData = [
+        { name: "后官湖总磷超标问题",       category: "断面水质明显恶化", basin: "长江流域",   date: "2026-06-15", city: "武汉市",    status: "done",      closed: "否", survey: "是", reject: "否", level: "需审核", lake: "梁子湖",     basin1: "长江干流流域", basin2: "鄂东南片区", source: "手工录入" },
+        { name: "大冶湖氨氮超标问题",       category: "断面水质明显恶化", basin: "长江流域",   date: "2026-06-20", city: "黄石市",    status: "pending",   closed: "否", survey: "否", reject: "否", level: "仅发送", lake: "梁子湖",     basin1: "长江干流流域", basin2: "鄂东南片区", source: "系统识别" },
+        { name: "丹江口入河排污口整治问题", category: "断面水质明显恶化", basin: "汉江流域",   date: "2026-06-18", city: "十堰市",    status: "inprogress", closed: "否", survey: "是", reject: "否", level: "需审核", lake: "丹江口水库", basin1: "汉江流域",    basin2: "三峡库区", source: "手工录入" },
+        { name: "卷桥河化学需氧量超标问题", category: "断面水质明显恶化", basin: "长江流域",   date: "2026-06-22", city: "宜昌市",    status: "done",      closed: "是", survey: "是", reject: "否", level: "仅发送", lake: "隔河岩水库", basin1: "长江干流流域", basin2: "黄柏河片区", source: "系统识别" },
+        { name: "汉江老河口段偷排问题",     category: "断面水质明显恶化", basin: "汉江流域",   date: "2026-06-25", city: "襄阳市",    status: "pending",   closed: "否", survey: "否", reject: "否", level: "暂不发送", lake: "龙感湖",     basin1: "汉江流域",    basin2: "府澴河片区", source: "手工录入" },
+        { name: "梁子湖水质恶化问题",       category: "断面水质明显恶化", basin: "长江流域",   date: "2026-06-28", city: "鄂州市",    status: "done",      closed: "否", survey: "是", reject: "否", level: "暂不发送", lake: "梁子湖",     basin1: "长江干流流域", basin2: "鄂东南片区", source: "系统识别" },
+        { name: "漳河水库水华风险问题",     category: "断面水质明显恶化", basin: "长江流域",   date: "2026-07-02", city: "荆门市",    status: "inprogress", closed: "否", survey: "是", reject: "否", level: "暂不发送", lake: "漳河水库",   basin1: "长江干流流域", basin2: "沮漳河片区", source: "手工录入" },
+        { name: "汈汊湖总磷持续超标问题",   category: "断面水质明显恶化", basin: "汉江流域",   date: "2026-07-05", city: "孝感市",    status: "pending",   closed: "否", survey: "否", reject: "否", level: "暂不发送", lake: "洪湖",       basin1: "汉江流域",    basin2: "府澴河片区", source: "系统识别" },
+        { name: "长江石首段污水收集整治",   category: "断面水质明显恶化", basin: "长江流域",   date: "2026-07-08", city: "荆州市",    status: "done",      closed: "是", survey: "是", reject: "否", level: "仅发送", lake: "长湖",       basin1: "长江干流流域", basin2: "荆南四河片区", source: "手工录入" },
+        { name: "巴河氨氮超标问题",         category: "断面水质明显恶化", basin: "长江流域",   date: "2026-07-10", city: "黄冈市",    status: "pending",   closed: "否", survey: "否", reject: "否", level: "仅发送", lake: "白莲河水库", basin1: "长江干流流域", basin2: "鄂东五河片区", source: "系统识别" },
+        { name: "斧头湖水华预警问题",       category: "断面水质明显恶化", basin: "长江流域",   date: "2026-07-12", city: "咸宁市",    status: "inprogress", closed: "否", survey: "是", reject: "是", reason: "监测数据未达判定标准，退回补充材料", level: "需审核", lake: "斧头湖",     basin1: "长江干流流域", basin2: "富水片区", source: "手工录入" },
+        { name: "府河汛期污染问题",         category: "断面水质明显恶化", basin: "府河流域",   date: "2026-07-15", city: "随州市",    status: "pending",   closed: "否", survey: "否", reject: "否", level: "暂不发送", lake: "丹江口水库", basin1: "汉江流域",    basin2: "府澴河片区", source: "系统识别" },
+        { name: "清江景区水生态破坏问题",   category: "断面水质明显恶化", basin: "清江流域",   date: "2026-07-18", city: "恩施州",    status: "done",      closed: "是", survey: "是", reject: "否", level: "仅发送", lake: "隔河岩水库", basin1: "清江流域",    basin2: "三峡库区", source: "手工录入" },
+        { name: "通顺河生活污水直排问题",   category: "断面水质明显恶化", basin: "通顺河流域", date: "2026-07-20", city: "仙桃市",    status: "inprogress", closed: "否", survey: "是", reject: "否", level: "需审核", lake: "长湖",       basin1: "长江干流流域", basin2: "四湖片区", source: "系统识别" },
+        { name: "田关河养殖尾水治理问题",   category: "断面水质明显恶化", basin: "汉江流域",   date: "2026-07-22", city: "潜江市",    status: "pending",   closed: "否", survey: "否", reject: "否", level: "暂不发送", lake: "长湖",       basin1: "汉江流域",    basin2: "四湖片区", source: "手工录入" },
+        { name: "汉北河底泥淤积问题",       category: "断面水质明显恶化", basin: "汉江流域",   date: "2026-07-25", city: "天门市",    status: "pending",   closed: "否", survey: "否", reject: "否", level: "仅发送", lake: "黄盖湖",     basin1: "汉江流域",    basin2: "四湖片区", source: "系统识别" },
+        { name: "当阳河非法捕捞整治问题",   category: "断面水质明显恶化", basin: "长江流域",   date: "2026-07-28", city: "神农架林区", status: "done",      closed: "是", survey: "是", reject: "否", level: "暂不发送", lake: "漳河水库",   basin1: "长江干流流域", basin2: "三峡库区", source: "手工录入" },
+        { name: "汤逊湖汛期污染问题",       category: "断面水质明显恶化", basin: "长江流域",   date: "2025-08-12", city: "武汉市",    status: "closed",    closed: "是", survey: "是", reject: "否", level: "仅发送", lake: "斧头湖",     basin1: "长江干流流域", basin2: "鄂东南片区", source: "系统识别" },
+        { name: "富河总磷超标问题",         category: "断面水质明显恶化", basin: "富水流域",   date: "2025-09-03", city: "黄石市",    status: "closed",    closed: "是", survey: "是", reject: "否", level: "需审核", lake: "富水水库",   basin1: "长江干流流域", basin2: "富水片区", source: "手工录入" },
+        { name: "堵河水源地违建拆除问题",   category: "断面水质明显恶化", basin: "汉江流域",   date: "2025-09-20", city: "十堰市",    status: "done",      closed: "是", survey: "是", reject: "否", level: "暂不发送", lake: "黄龙滩水库", basin1: "汉江流域",    basin2: "三峡库区", source: "系统识别" },
+        { name: "洪湖围网养殖问题",         category: "断面水质明显恶化", basin: "长江流域",   date: "2025-10-25", city: "荆州市",    status: "done",      closed: "是", survey: "是", reject: "否", level: "暂不发送", lake: "洪湖",       basin1: "长江干流流域", basin2: "四湖片区", source: "系统识别" },
+        { name: "自动站超标问题", category: "断面水质明显恶化", basin: "长江流域",   date: "2026-08-02", city: "武汉市",    status: "pending",   closed: "否", survey: "否", reject: "否", level: "需审核", lake: "梁子湖",     basin1: "长江干流流域", basin2: "鄂东南片区", source: "外部系统调度" },
+        { name: "自动站超标问题", category: "断面水质明显恶化", basin: "汉江流域",   date: "2026-08-08", city: "十堰市",    status: "inprogress", closed: "否", survey: "是", reject: "否", level: "需审核", lake: "丹江口水库", basin1: "汉江流域",    basin2: "三峡库区", source: "外部系统调度" },
+        { name: "自动站超标问题",     category: "断面水质明显恶化", basin: "汉江流域",   date: "2026-08-15", city: "襄阳市",    status: "done",      closed: "否", survey: "是", reject: "否", level: "暂不发送", lake: "龙感湖",     basin1: "汉江流域",    basin2: "府澴河片区", source: "外部系统调度" }
+    ];
+
+    const categoryStyles = { "断面水质明显恶化": "type-water" };
+    const statusMap = {
+        pending:    { label: "待反馈", cls: "status-pending" },
+        inprogress: { label: "反馈中", cls: "status-inprogress" },
+        done:       { label: "已反馈", cls: "status-done" },
+        closed:     { label: "已销号", cls: "status-closed" }
+    };
+
+    // ========== 三级级联选择器（大类 → 小类 → 识别规则） ==========
+    const cascaderData = [
+        {
+            category: "水生态环境质量方面",
+            children: [
+                {
+                    category: "断面水质明显恶化",
+                    items: [
+                        { name: "国控断面水质超标", send: "暂不发送", time: "年月" },
+                        { name: "省控断面水质超标", send: "暂不发送", time: "年月" },
+                        { name: "自动站水质超标（天）", send: "需审核", time: "日" },
+                        { name: "自动站水质超标（小时）", send: "暂不发送", time: "日" },
+                        { name: "长江流域国控断面某一指标连续两个月超过Ⅱ类指标的90%", send: "暂不发送", time: "年月" },
+                        { name: "省控断面某一指标连续两个月超过Ⅱ类指标的90%", send: "暂不发送", time: "年月" },
+                        { name: "国控断面相关某一指标连续三个月及以上超过水质目标要求10%以上", send: "暂不发送", time: "年月" },
+                        { name: "省控断面相关某一指标连续三个月及以上超过水质目标要求10%以上", send: "暂不发送", time: "年月" },
+                        { name: "国控断面水质类别同比或环比恶化2个类别及以上的", send: "暂不发送", time: "年月" },
+                        { name: "省控断面水质类别同比或环比恶化2个类别及以上的", send: "暂不发送", time: "年月" },
+                        { name: "斧头湖水环境质量问题", send: "仅发送", time: "年月" },
+                        { name: "当月国控断面某一指标达到劣V类的指标的90%", send: "暂不发送", time: "年月" },
+                        { name: "当月省控断面某一指标达到劣V类的指标的90%", send: "暂不发送", time: "年月" }
+                    ]
+                },
+                {
+                    category: "断面水质存在有毒有害物质超标",
+                    items: [
+                        { name: "当月国控断面有毒有害物质且某一指标超过Ⅲ类指标的90%", send: "暂不发送", time: "年月" },
+                        { name: "当月省控断面有毒有害物质且某一指标超过Ⅲ类指标的90%", send: "暂不发送", time: "年月" }
+                    ]
+                },
+                {
+                    category: "南水北调调水水质超标",
+                    items: [
+                        { name: "对于任意时段的南水北调工程中线断面，当月水质超过Ⅱ类的即会进行预警", send: "暂不发送", time: "年月" }
+                    ]
+                },
+                {
+                    category: "四不两直专项检查",
+                    items: [
+                        { name: "手动录入", send: "仅发送", time: "年" }
+                    ]
+                },
+                {
+                    category: "重点攻坚断面整治",
+                    items: [
+                        { name: "手动录入", send: "仅发送", time: "年" }
+                    ]
+                }
+            ]
+        },
+        {
+            category: "重点任务",
+            children: [
+                {
+                    category: "饮用水水源地问题",
+                    items: [
+                        { name: "年度饮用水水环境问题", send: "仅发送", time: "年" },
+                        { name: "回头看问题", send: "仅发送", time: "年" },
+                        { name: "周期性巡查问题", send: "需审核", time: "季度" }
+                    ]
+                },
+                {
+                    category: "工业园区水污染问题",
+                    items: [
+                        { name: "2026年饮用水水环境问题", send: "仅发送", time: "年" }
+                    ]
+                },
+                {
+                    category: "黑臭水体问题",
+                    items: [
+                        { name: "2026年黑臭水体新增问题", send: "仅发送", time: "年" },
+                        { name: "'长江流域局'问题", send: "仅发送", time: "年" },
+                        { name: "2025年（污染防治攻坚统筹强化监督）", send: "仅发送", time: "年" }
+                    ]
+                }
+            ]
+        },
+        {
+            category: "水质预测",
+            children: [
+                {
+                    category: "断面预警",
+                    items: [
+                        { name: "未来三天国控断面数据存在超过V类", send: "暂不发送", time: "年月" },
+                        { name: "未来三天省控断面数据存在超过V类", send: "暂不发送", time: "年月" }
+                    ]
+                },
+                {
+                    category: "湖库预警",
+                    items: [
+                        { name: "未来三天湖库健康指数为'差'时对整个湖库进行问题预警", send: "暂不发送", time: "年月" }
+                    ]
+                },
+                {
+                    category: "河流预警",
+                    items: [
+                        { name: "未来三天某天某一河流上超标断面个数大于总体断面个数的30%时，对整个河流进行问题预警", send: "暂不发送", time: "年月" }
+                    ]
+                }
+            ]
+        },
+        {
+            category: "其他类型",
+            children: [
+                {
+                    category: "舆情问题",
+                    items: [
+                        { name: "舆情接口采集问题", send: "暂不发送", time: "年月" },
+                        { name: "宣教处系统问题", send: "暂不发送", time: "年月" }
+                    ]
+                },
+                {
+                    category: "信访举报问题",
+                    items: [
+                        { name: "省内信访举报问题", send: "暂不发送", time: "年月" }
+                    ]
+                }
+            ]
+        }
+    ];
+
+    let selectedCategory = '';
+    let selectedCategorySub = '';
+    let activeCategoryIndex = 0;
+    let activeSubIndex = 0;
+
+    const cascaderTrigger = document.getElementById('cascader-trigger');
+    const cascaderIcon = document.getElementById('cascader-icon');
+    const cascaderPopover = document.getElementById('cascader-popover');
+    const cascaderCategories = document.getElementById('cascader-categories');
+    const cascaderSubs = document.getElementById('cascader-subs');
+    const cascaderOptions = document.getElementById('cascader-options');
+    const cascaderText = document.getElementById('cascader-text');
+    const cascaderClear = document.getElementById('cascader-clear');
+
+    function renderCategories() {
+        const level = document.getElementById('filter-level').value;
+        let html = '';
+        cascaderData.forEach((cat, index) => {
+            const hasVisible = cat.children.some(sub => sub.items.some(it => (it.send || '暂不发送') === level));
+            if (!hasVisible) return;
+            const isActive = index === activeCategoryIndex;
+            const textClass = isActive ? 'text-blue-600 font-bold bg-white' : 'text-slate-600 hover:text-blue-500 hover:bg-slate-100';
+            html += `<div class="px-4 py-2.5 cursor-pointer flex justify-between items-center text-[13px] transition-colors ${textClass}" onmouseenter="setActiveCategory(${index})" onclick="setActiveCategory(${index})"><span>${cat.category}</span><i class="ri-arrow-right-s-line text-slate-400"></i></div>`;
+        });
+        if (!html) html = '<div class="px-4 py-3 text-[12px] text-slate-400">无匹配类别</div>';
+        cascaderCategories.innerHTML = html;
+        renderSubs();
+        renderOptions();
+    }
+
+    window.setActiveCategory = function(index) {
+        if (activeCategoryIndex === index) return;
+        activeCategoryIndex = index;
+        activeSubIndex = 0;
+        renderCategories();
+    };
+
+    function renderSubs() {
+        const level = document.getElementById('filter-level').value;
+        const cat = cascaderData[activeCategoryIndex];
+        if (!cat) { cascaderSubs.innerHTML = ''; return; }
+        let html = '';
+        cat.children.forEach((sub, index) => {
+            const hasVisible = sub.items.some(it => (it.send || '暂不发送') === level);
+            if (!hasVisible) return;
+            const isActive = index === activeSubIndex;
+            const textClass = isActive ? 'text-blue-600 font-bold bg-white' : 'text-slate-600 hover:text-blue-500 hover:bg-slate-100';
+            html += `<div class="px-4 py-2 cursor-pointer text-[13px] transition-colors ${textClass}" onmouseenter="setActiveSub(${index})" onclick="setActiveSub(${index})">${sub.category}</div>`;
+        });
+        if (!html) html = '<div class="px-4 py-3 text-[12px] text-slate-400">无匹配小类</div>';
+        cascaderSubs.innerHTML = html;
+    }
+
+    window.setActiveSub = function(index) {
+        if (activeSubIndex === index) return;
+        activeSubIndex = index;
+        renderSubs();
+        renderOptions();
+    };
+
+    function renderOptions() {
+        const level = document.getElementById('filter-level').value;
+        const cat = cascaderData[activeCategoryIndex];
+        const sub = cat ? cat.children[activeSubIndex] : null;
+        if (!sub) { cascaderOptions.innerHTML = ''; return; }
+        let html = '';
+        let visibleCount = 0;
+        sub.items.forEach((item, index) => {
+            if ((item.send || '暂不发送') !== level) return;
+            visibleCount++;
+            html += `<div class="px-4 py-2 cursor-pointer text-[12px] leading-snug text-slate-600 hover:text-blue-600 hover:bg-blue-50 transition-colors" onclick="selectCascaderOption(${index})">${item.name}</div>`;
+        });
+        if (!visibleCount) html = '<div class="px-4 py-3 text-[12px] text-slate-400">无匹配规则</div>';
+        cascaderOptions.innerHTML = html;
+    }
+
+    window.selectCascaderOption = function(index) {
+        const opt = cascaderData[activeCategoryIndex].children[activeSubIndex].items[index];
+        selectedCategory = opt.name;
+        selectedCategorySub = cascaderData[activeCategoryIndex].children[activeSubIndex].category;
+        cascaderText.innerText = selectedCategory;
+        cascaderText.classList.replace('text-slate-500', 'text-slate-800');
+        if (cascaderClear) cascaderClear.classList.remove('hidden');
+        setDpForm(opt.time || '年月');
+        // 联动“问题流程”下拉：同步该识别规则的 send 状态
+        if (opt.send) {
+            document.getElementById('filter-level').value = opt.send;
+            updateStatusTabsVisibility();
+        }
+        closeCascader();
+        applyFilter();
+    };
+
+    window.clearCascader = function() {
+        selectedCategory = '';
+        selectedCategorySub = '';
+        cascaderText.innerText = '请选择类别';
+        cascaderText.classList.replace('text-slate-800', 'text-slate-500');
+        if (cascaderClear) cascaderClear.classList.add('hidden');
+        setDpForm('年月');
+        applyFilter();
+    };
+
+    if (cascaderClear) cascaderClear.addEventListener('click', (e) => { e.stopPropagation(); clearCascader(); });
+
+    function toggleCascader() {
+        if (cascaderPopover.classList.contains('hidden')) {
+            closeDatepicker();
+            cascaderPopover.classList.remove('hidden');
+            cascaderIcon.classList.add('rotate-180');
+            cascaderTrigger.classList.add('border-blue-500');
+            renderCategories();
+        } else {
+            closeCascader();
+        }
+    }
+
+    function closeCascader() {
+        cascaderPopover.classList.add('hidden');
+        cascaderIcon.classList.remove('rotate-180');
+        cascaderTrigger.classList.remove('border-blue-500');
+    }
+    if (cascaderTrigger) cascaderTrigger.addEventListener('click', toggleCascader);
+
+    // ========== 原版日期选择器（支持 年月 / 日 / 季度 / 年 四种形式） ==========
+    const dpTrigger = document.getElementById('datepicker-trigger');
+    const dpPopover = document.getElementById('datepicker-popover');
+    const dpContainer = document.getElementById('dp-container');
+    const dpText = document.getElementById('datepicker-text');
+    let dpForm = '年月';          // 年月 | 日 | 季度 | 年
+    let selectedYearMonth = '';
+    let dpCurrentYear = 2026;
+    let dpCurrentMonth = 6;
+
+    function dpPlaceholder() {
+        if (dpForm === '日') return '选择日期';
+        if (dpForm === '季度') return '选择季度';
+        if (dpForm === '年') return '选择年份';
+        return '选择年月';
+    }
+
+    function renderDatepicker() {
+        let html = '';
+        // 顶部年份导航
+        html += `<div class="flex justify-between items-center mb-3 border-b border-slate-100 pb-2">`;
+        html += `<button type="button" data-dpnav="prev-year" class="text-slate-400 hover:text-blue-500 transition-colors px-1"><i class="ri-arrow-left-double-line text-lg"></i></button>`;
+        html += `<span class="font-medium text-[15px] text-slate-700">${dpCurrentYear} 年</span>`;
+        html += `<button type="button" data-dpnav="next-year" class="text-slate-400 hover:text-blue-500 transition-colors px-1"><i class="ri-arrow-right-double-line text-lg"></i></button>`;
+        html += `</div>`;
+
+        if (dpForm === '年月') {
+            html += `<div class="grid grid-cols-4 gap-y-4 gap-x-2 text-center">`;
+            for(let i=1; i<=12; i++){
+                const mv = String(i).padStart(2, '0');
+                const val = dpCurrentYear + '-' + mv;
+                const isActive = selectedYearMonth === val;
+                html += `<button type="button" data-dpval="${val}" class="py-2 text-[13px] rounded-lg transition-colors border ${isActive ? 'bg-blue-50 border-blue-500 text-blue-600 font-bold' : 'border-transparent text-slate-600 hover:text-blue-600 hover:bg-blue-50'}">${i}月</button>`;
+            }
+            html += `</div>`;
+        } else if (dpForm === '日') {
+            html += `<div class="flex justify-between items-center mb-2">`;
+            html += `<button type="button" data-dpnav="prev-month" class="text-slate-400 hover:text-blue-500 transition-colors px-1"><i class="ri-arrow-left-s-line text-lg"></i></button>`;
+            html += `<span class="text-[13px] font-medium text-slate-700">${dpCurrentYear} 年 ${dpCurrentMonth} 月</span>`;
+            html += `<button type="button" data-dpnav="next-month" class="text-slate-400 hover:text-blue-500 transition-colors px-1"><i class="ri-arrow-right-s-line text-lg"></i></button>`;
+            html += `</div>`;
+            const weekdays = ['日','一','二','三','四','五','六'];
+            html += `<div class="grid grid-cols-7 gap-1 text-center text-[11px] text-slate-400 mb-1">`;
+            weekdays.forEach(w => html += `<span>${w}</span>`);
+            html += `</div>`;
+            const firstDay = new Date(dpCurrentYear, dpCurrentMonth-1, 1).getDay();
+            const daysInMonth = new Date(dpCurrentYear, dpCurrentMonth, 0).getDate();
+            html += `<div class="grid grid-cols-7 gap-1 text-center">`;
+            for (let i=0;i<firstDay;i++) html += `<span></span>`;
+            for (let d=1; d<=daysInMonth; d++){
+                const val = dpCurrentYear + '-' + String(dpCurrentMonth).padStart(2, '0') + '-' + String(d).padStart(2, '0');
+                const isActive = selectedYearMonth === val;
+                html += `<button type="button" data-dpval="${val}" class="py-1.5 text-[12px] rounded-lg transition-colors ${isActive ? 'bg-blue-500 text-white font-bold' : 'text-slate-600 hover:bg-blue-50 hover:text-blue-600'}">${d}</button>`;
+            }
+            html += `</div>`;
+        } else if (dpForm === '季度') {
+            html += `<div class="grid grid-cols-2 gap-3 text-center">`;
+            for (let q=1; q<=4; q++){
+                const val = dpCurrentYear + '-Q' + q;
+                const isActive = selectedYearMonth === val;
+                html += `<button type="button" data-dpval="${val}" class="py-3 text-[13px] rounded-lg transition-colors border ${isActive ? 'bg-blue-50 border-blue-500 text-blue-600 font-bold' : 'border-transparent text-slate-600 hover:text-blue-600 hover:bg-blue-50'}">${q}季度</button>`;
+            }
+            html += `</div>`;
+        } else if (dpForm === '年') {
+            html += `<div class="grid grid-cols-3 gap-3 text-center">`;
+            const startY = dpCurrentYear - 4;
+            for (let i=0; i<12; i++){
+                const y = startY + i;
+                const val = String(y);
+                const isActive = selectedYearMonth === val;
+                html += `<button type="button" data-dpval="${val}" class="py-2 text-[13px] rounded-lg transition-colors border ${isActive ? 'bg-blue-50 border-blue-500 text-blue-600 font-bold' : 'border-transparent text-slate-600 hover:text-blue-600 hover:bg-blue-50'}">${y}年</button>`;
+            }
+            html += `</div>`;
+        }
+        dpContainer.innerHTML = html;
+    }
+
+    function toggleDatepicker() {
+        if (dpPopover.classList.contains('hidden')) {
+            closeCascader();
+            dpPopover.classList.remove('hidden');
+            dpTrigger.classList.add('border-blue-500');
+            renderDatepicker();
+        } else {
+            closeDatepicker();
+        }
+    }
+
+    function closeDatepicker() {
+        dpPopover.classList.add('hidden');
+        dpTrigger.classList.remove('border-blue-500');
+    }
+
+    function selectYearMonth(val) {
+        selectedYearMonth = val;
+        if (val) {
+            if (dpForm === '季度') {
+                const [yy, q] = val.split('-Q');
+                dpCurrentYear = Number(yy);
+                dpText.innerText = yy + ' 年 ' + q + ' 季度';
+            } else if (dpForm === '年') {
+                dpCurrentYear = Number(val);
+                dpText.innerText = val + ' 年';
+            } else if (dpForm === '日') {
+                const [yy, mm, dd] = val.split('-');
+                dpCurrentYear = Number(yy);
+                dpCurrentMonth = Number(mm);
+                dpText.innerText = yy + ' 年 ' + Number(mm) + ' 月 ' + Number(dd) + ' 日';
+            } else {
+                const [yy, mm] = val.split('-');
+                dpCurrentYear = Number(yy);
+                dpText.innerText = yy + ' 年 ' + Number(mm) + ' 月';
+            }
+            dpText.classList.replace('text-slate-500', 'text-slate-800');
+        } else {
+            dpText.innerText = dpPlaceholder();
+            dpText.classList.replace('text-slate-800', 'text-slate-500');
+        }
+        applyFilter();
+    }
+
+    function setDpForm(form) {
+        const nextForm = (form === '日' || form === '季度' || form === '年') ? form : '年月';
+        if (nextForm === dpForm && dpText.classList.contains('text-slate-800')) return; // 形式未变且已有选中，保留
+        dpForm = nextForm;
+        selectedYearMonth = '';
+        dpText.innerText = dpPlaceholder();
+        dpText.classList.replace('text-slate-800', 'text-slate-500');
+        renderDatepicker();
+    }
+
+    function matchTimeValue(dateStr) {
+        if (!selectedYearMonth) return true;
+        if (dpForm === '季度') {
+            const [yy, q] = selectedYearMonth.split('-Q');
+            const m = Number(dateStr.slice(5, 7));
+            const quarter = Math.ceil(m / 3);
+            return dateStr.slice(0, 4) === yy && quarter === Number(q);
+        }
+        return dateStr.startsWith(selectedYearMonth);
+    }
+
+    if (dpTrigger) dpTrigger.addEventListener('click', (e) => { e.stopPropagation(); toggleDatepicker(); });
+
+    dpPopover.addEventListener('click', (e) => {
+        const navBtn = e.target.closest('button[data-dpnav]');
+        if (navBtn) {
+            const action = navBtn.getAttribute('data-dpnav');
+            if (action === 'prev-year') dpCurrentYear--;
+            else if (action === 'next-year') dpCurrentYear++;
+            else if (action === 'prev-month') { dpCurrentMonth--; if (dpCurrentMonth < 1) { dpCurrentMonth = 12; dpCurrentYear--; } }
+            else if (action === 'next-month') { dpCurrentMonth++; if (dpCurrentMonth > 12) { dpCurrentMonth = 1; dpCurrentYear++; } }
+            renderDatepicker();
+            return;
+        }
+        const valBtn = e.target.closest('button[data-dpval]');
+        if (valBtn) {
+            const val = valBtn.getAttribute('data-dpval');
+            closeDatepicker();
+            selectYearMonth(selectedYearMonth === val ? '' : val);
+        }
+    });
+
+    document.addEventListener('click', (e) => {
+        if (!document.getElementById('custom-cascader').contains(e.target)) closeCascader();
+        if (!document.getElementById('custom-datepicker').contains(e.target)) closeDatepicker();
+    });
+
+    // ========== 数据与逻辑联动 ==========
+    let selectedSource = '全部';
+    document.querySelectorAll('.source-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            selectedSource = btn.dataset.source;
+            document.querySelectorAll('.source-btn').forEach(b => b.classList.toggle('active', b.dataset.source === selectedSource));
+            applyFilter();
+        });
+    });
+
+    let selectedStatusTab = '';
+    const statusTabAll = document.getElementById('status-tab-all');
+
+    function renderStatusTabsActive() {
+        statusTabAll.classList.toggle('active', selectedStatusTab === '');
+        document.querySelectorAll('#status-tabs .status-tab[data-tab]').forEach(b => {
+            b.classList.toggle('active', b.dataset.tab === selectedStatusTab);
+        });
+    }
+
+    function updateStatusTabsVisibility() {
+        const levelVal = document.getElementById('filter-level').value;
+        const isSendMode = (levelVal === '暂不发送' || levelVal === '仅发送');
+        document.querySelectorAll('#status-tabs .status-tab[data-tab]').forEach(b => {
+            b.classList.toggle('hidden', isSendMode);
+        });
+        // “全部”始终显示
+        statusTabAll.classList.remove('hidden');
+        // 切换问题流程时，默认选中“全部”（蓝色底）
+        selectedStatusTab = '';
+        renderStatusTabsActive();
+    }
+
+    function renderStatusTabCounts() {
+        const data = chartData;
+        const setCount = (selector, n) => {
+            const el = document.querySelector(`#status-tabs .status-tab${selector} .tab-count`);
+            if (el) el.textContent = `(${n})`;
+        };
+        setCount('#status-tab-all', data.length);
+        setCount('[data-tab="未反馈"]', data.filter(i => (i.status === 'pending' || i.status === 'inprogress') && i.reject !== '是').length);
+        setCount('[data-tab="已反馈"]', data.filter(i => i.status === 'done' && i.reject !== '是').length);
+        setCount('[data-tab="已驳回"]', data.filter(i => i.reject === '是').length);
+        setCount('[data-tab="已销号"]', data.filter(i => i.status === 'closed' && i.reject !== '是').length);
+    }
+
+    document.querySelectorAll('#status-tabs .status-tab[data-tab]').forEach(btn => {
+        btn.addEventListener('click', () => {
+            selectedStatusTab = (selectedStatusTab === btn.dataset.tab) ? '' : btn.dataset.tab;
+            renderStatusTabsActive();
+            applyFilter();
+        });
+    });
+    if (statusTabAll) {
+        statusTabAll.addEventListener('click', () => {
+            selectedStatusTab = '';
+            renderStatusTabsActive();
+            applyFilter();
+        });
+    }
+
+    function matchStatusTab(item, tab) {
+        if (!tab) return true;
+        if (tab === '未反馈') return (item.status === 'pending' || item.status === 'inprogress') && item.reject !== '是';
+        if (tab === '已反馈') return item.status === 'done' && item.reject !== '是';
+        if (tab === '已驳回') return item.reject === '是';
+        if (tab === '已销号') return item.status === 'closed' && item.reject !== '是';
+        return true;
+    }
+
+    function updateConditionalFilterVisibility() {
+        // 是否调查反馈/驳回/销号 筛选已隐藏，始终保持“全部”
+        ['filter-survey', 'filter-reject', 'filter-closed'].forEach(id => {
+            document.getElementById(id).value = '全部';
+        });
+        // 问题流程切换后，级联里的识别规则按 send 联动过滤，重置到第一项
+        activeCategoryIndex = 0;
+        activeSubIndex = 0;
+        if (!cascaderPopover.classList.contains('hidden')) {
+            renderCategories();
+        }
+        updateStatusTabsVisibility();
+        applyFilter();
+    }
+    document.getElementById('filter-level').addEventListener('change', updateConditionalFilterVisibility);
+
+    let filteredData = [];
+    let chartData = [];
+    const rowsPerPage = 10;
+    let currentPage = 1;
+
+    function applyFilter() {
+        const f = {
+            survey: document.getElementById('filter-survey').value,
+            reject: document.getElementById('filter-reject').value,
+            closed: document.getElementById('filter-closed').value,
+            level: document.getElementById('filter-level').value,
+            lake: document.getElementById('filter-lake').value,
+            basin1: document.getElementById('filter-basin1').value,
+            basin2: document.getElementById('filter-basin2').value,
+            category: selectedCategorySub,
+            source: selectedSource
+        };
+
+        chartData = focusData.filter(item => {
+            if (f.survey !== '全部' && item.survey !== f.survey) return false;
+            if (f.reject !== '全部' && item.reject !== f.reject) return false;
+            if (f.closed !== '全部' && item.closed !== f.closed) return false;
+            if (f.level !== '全部' && item.level !== f.level) return false;
+            if (f.lake !== '全部' && item.lake !== f.lake) return false;
+            if (f.basin1 !== '全部' && item.basin1 !== f.basin1) return false;
+            if (f.basin2 !== '全部' && item.basin2 !== f.basin2) return false;
+            if (f.category && item.category !== f.category) return false;
+            if (f.source !== '全部' && item.source !== f.source) return false;
+            return true;
+        });
+
+        renderStatusTabCounts();
+
+        filteredData = selectedYearMonth ? chartData.filter(i => matchTimeValue(i.date)) : chartData;
+        filteredData = filteredData.filter(item => matchStatusTab(item, selectedStatusTab));
+
+        currentPage = 1;
+        renderTable();
+        renderMonthlyStats();
+    }
+
+    function resetFilter() {
+        document.getElementById('filter-level').value = '暂不发送';
+        document.getElementById('filter-survey').value = '全部';
+        document.getElementById('filter-reject').value = '全部';
+        document.getElementById('filter-closed').value = '全部';
+        document.getElementById('filter-lake').value = '全部';
+        document.getElementById('filter-basin1').value = '全部';
+        document.getElementById('filter-basin2').value = '全部';
+        clearCascader();
+        selectYearMonth('');
+        selectedSource = '全部';
+        document.querySelectorAll('.source-btn').forEach((b, i) => b.classList.toggle('active', i === 0));
+        selectedStatusTab = '';
+        renderStatusTabsActive();
+        updateConditionalFilterVisibility();
+    }
+
+    // 渲染表格 (保持原版逻辑与字段，不乱动)
+    function renderTable() {
+        const tbody = document.getElementById('focus-table-body');
+        const total = filteredData.length;
+        document.getElementById('focus-total').innerText = total;
+
+        const totalPages = Math.ceil(total / rowsPerPage) || 1;
+        if (currentPage > totalPages) currentPage = totalPages;
+
+        const start = (currentPage - 1) * rowsPerPage;
+        const end = Math.min(start + rowsPerPage, total);
+
+        let html = '';
+        for (let i = start; i < end; i++) {
+            const item = filteredData[i];
+            const noProcess = (item.level === '暂不发送' || item.level === '仅发送');
+            let statusCell, closedCell, sourceCell;
+
+            if (item.reject === '是') {
+                // 已驳回：问题状态显示“已驳回”
+                statusCell = '<span class="status-tag status-reject">已驳回</span>';
+                closedCell = item.closed === "是" ? '<span class="closed-tag closed-yes">是</span>' : '<span class="closed-tag closed-no">否</span>';
+            } else if (noProcess) {
+                statusCell = `<span class="status-tag status-na">${item.level === '仅发送' ? '已发送' : item.level}</span>`;
+                closedCell = '<span class="text-slate-400">—</span>';
+            } else {
+                const s = statusMap[item.status];
+                statusCell = `<span class="status-tag ${s.cls}">${s.label}</span>`;
+                closedCell = item.closed === "是" ? '<span class="closed-tag closed-yes">是</span>' : '<span class="closed-tag closed-no">否</span>';
+            }
+            // 已驳回：第二列用红色字标识驳回原因，过长时省略号截断并悬浮显示完整内容
+            sourceCell = (item.reject === '是')
+                ? `<span class="reject-reason" title="${item.reason || '已驳回'}">${item.reason || '已驳回'}</span>`
+                : item.source;
+
+            html += `
+                <tr>
+                    <td class="text-left pl-6 font-medium text-blue-600">${item.name}</td>
+                    <td>${sourceCell}</td>
+                    <td><span class="type-tag ${categoryStyles[item.category] || 'text-slate-600'}">${item.category}</span></td>
+                    <td>${item.basin}</td>
+                    <td>${item.date}</td>
+                    <td class="font-medium text-slate-800">${item.city}</td>
+                    <td>${statusCell}</td>
+                    <td>${closedCell}</td>
+                </tr>`;
+        }
+        tbody.innerHTML = html || '<tr><td colspan="8" class="py-10 text-slate-400"><i class="ri-inbox-2-line text-2xl mb-1 block"></i>暂无符合条件的记录</td></tr>';
+
+        // 翻页器
+        let pageHtml = `<button onclick="goPage(${currentPage - 1})" ${currentPage===1?'disabled':''} class="px-2 py-1 text-xs border border-slate-200 rounded text-slate-600 hover:bg-slate-50 disabled:opacity-30">上一页</button>`;
+        for (let p=1; p<=totalPages; p++) {
+            pageHtml += `<button onclick="goPage(${p})" class="px-2.5 py-1 text-xs rounded font-medium ${p===currentPage ? 'bg-blue-600 text-white' : 'border border-slate-200 text-slate-600 hover:bg-slate-50'}">${p}</button>`;
+        }
+        pageHtml += `<button onclick="goPage(${currentPage + 1})" ${currentPage===totalPages?'disabled':''} class="px-2 py-1 text-xs border border-slate-200 rounded text-slate-600 hover:bg-slate-50 disabled:opacity-30">下一页</button>`;
+        document.getElementById('focus-pagination').innerHTML = pageHtml;
+    }
+
+    window.goPage = function(p) { currentPage = p; renderTable(); };
+
+    // ========== ECharts 图表，原生 DataZoom 滑块 (彻底解决生硬拖拽) ==========
+    let monthlyChartInstance = null;
+
+    function renderMonthlyStats() {
+        const wrap = document.getElementById('monthly-chart');
+        if (!wrap) return;
+
+        // 提取并排序所有产生数据的月份
+        const dates = focusData.map(i => i.date.slice(0, 7)).sort();
+        let earliest = dates[0] || '2025-08';
+        let latest = '2026-09';
+
+        const allMonths = [];
+        let [y, m] = earliest.split('-').map(Number);
+        const [ey, em] = latest.split('-').map(Number);
+        while (y < ey || (y === ey && m <= em)) {
+            allMonths.push(`${y}-${String(m).padStart(2, '0')}`);
+            m++;
+            if (m > 12) { y++; m = 1; }
+        }
+
+        const cats = [], totalArr = [], unfedArr = [], doneArr = [], closedArr = [], rejectedArr = [];
+        const simple = (document.getElementById('filter-level').value === '仅发送' || document.getElementById('filter-level').value === '暂不发送');
+
+        allMonths.forEach(mk => {
+            const rows = chartData.filter(i => i.date.startsWith(mk));
+            cats.push(`${mk.slice(0,4)}年${parseInt(mk.slice(5))}月`);
+            totalArr.push(rows.length);
+
+            if (!simple) {
+                rejectedArr.push(rows.filter(i => i.reject === '是').length);
+                unfedArr.push(rows.filter(i => (i.status === 'pending' || i.status === 'inprogress') && i.reject !== '是').length);
+                doneArr.push(rows.filter(i => i.status === 'done' && i.reject !== '是').length);
+                closedArr.push(rows.filter(i => i.status === 'closed' && i.reject !== '是').length);
+            }
+        });
+
+        document.getElementById('chart-total').textContent = '共 ' + totalArr.reduce((a,b)=>a+b, 0) + ' 条';
+
+        if (!monthlyChartInstance) monthlyChartInstance = echarts.init(wrap);
+
+        // 选中月份高亮样式：增加柔和阴影，去掉丑陋的粗红框
+        const markSelected = (arr) => arr.map((v, i) => ({
+            value: v,
+            itemStyle: allMonths[i] === selectedYearMonth ? { borderColor: '#3b82f6', borderWidth: 2, shadowBlur: 8, shadowColor: 'rgba(59, 130, 246, 0.4)' } : undefined
+        }));
+
+        // 原生 DataZoom，默认显示最后12个月
+        const startIdx = Math.max(0, allMonths.length - 12);
+        const endIdx = allMonths.length - 1;
+
+        const baseOpt = {
+            animation: false,
+            grid: { left: 4, right: 4, top: 20, bottom: 25, containLabel: true },
+            dataZoom: [
+                { type: 'inside', startValue: startIdx, endValue: endIdx },
+                {
+                    type: 'slider', show: true, bottom: 0, height: 10,
+                    borderColor: 'transparent', backgroundColor: '#f1f5f9', fillerColor: '#93c5fd',
+                    handleSize: '100%', handleStyle: { color: '#3b82f6' }, showDetail: false,
+                    startValue: startIdx, endValue: endIdx
+                }
+            ],
+            xAxis: {
+                type: 'category', data: cats, axisTick: { show: false },
+                axisLine: { lineStyle: { color: '#cbd5e1' } },
+                axisLabel: { interval: 0, fontSize: 11, color: (v, i) => allMonths[i] === selectedYearMonth ? '#2563eb' : '#64748b' }
+            },
+            yAxis: { type: 'value', minInterval: 1, axisLabel: { fontSize: 10, color: '#94a3b8' }, splitLine: { lineStyle: { type: 'dashed', color: '#e2e8f0' } } }
+        };
+
+        if (simple) {
+            monthlyChartInstance.setOption({
+                ...baseOpt,
+                tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+                legend: { data: ['问题总数'], top: 0, right: 4, itemWidth: 10, itemHeight: 10, textStyle: { fontSize: 11, color: '#64748b' } },
+                series: [{
+                    name: '问题总数', type: 'bar', barWidth: 20, data: markSelected(totalArr),
+                    itemStyle: { color: '#94a3b8', borderRadius: [3, 3, 0, 0] },
+                    label: { show: true, position: 'top', formatter: p => p.value > 0 ? p.value : '', color: '#334155', fontSize: 11, fontWeight: 'bold' }
+                }]
+            }, true);
+        } else {
+            monthlyChartInstance.setOption({
+                ...baseOpt,
+                tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+                legend: { data: ['未反馈', '已驳回', '已反馈', '已销号'], top: 0, right: 4, itemWidth: 10, itemHeight: 10, textStyle: { fontSize: 11, color: '#64748b' } },
+                series: [
+                    { name: '未反馈', type: 'bar', stack: 'total', barWidth: 20, data: markSelected(unfedArr), itemStyle: { color: '#f59e0b' } },
+                    { name: '已驳回', type: 'bar', stack: 'total', data: markSelected(rejectedArr), itemStyle: { color: '#ef4444' } },
+                    { name: '已反馈', type: 'bar', stack: 'total', data: markSelected(doneArr), itemStyle: { color: '#3b82f6' } },
+                    { name: '已销号', type: 'bar', stack: 'total', data: markSelected(closedArr), itemStyle: { color: '#14b8a6', borderRadius: [3, 3, 0, 0] },
+                        label: { show: true, position: 'top', formatter: p => totalArr[p.dataIndex] > 0 ? totalArr[p.dataIndex] : '', color: '#334155', fontSize: 11, fontWeight: 'bold' }
+                    }
+                ]
+            }, true);
+        }
+
+        monthlyChartInstance.off('click');
+        monthlyChartInstance.on('click', params => {
+            if (params.dataIndex == null) return;
+            if (dpForm !== '年月') return; // 图表为月度维度，仅在年月形式下联动
+            const mk = allMonths[params.dataIndex];
+            selectYearMonth(selectedYearMonth === mk ? '' : mk);
+        });
+    }
+
+    // 初始化
+    window.addEventListener('load', () => {
+        const provGroup = document.getElementById('group-provincial');
+        if (provGroup) provGroup.style.maxHeight = provGroup.scrollHeight + "px";
+        updateConditionalFilterVisibility();
+    });
+</script>
+
+</body>
+</html>

@@ -8,7 +8,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
     <link rel="stylesheet" href="tailwind-build/tailwind.css"/>
-    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
 
     <style>
         body { font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif; }
@@ -224,6 +223,13 @@
                     </div>
                 </div>
 
+                <div class="relative">
+                    <input type="text" id="filter-keyword" placeholder="搜索问题名称" autocomplete="off"
+                           class="appearance-none bg-white border border-slate-200 dark:bg-slate-800 dark:border-slate-700 rounded pl-8 pr-3 py-1.5 text-[13px] text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-all w-36 shadow-sm"
+                           onkeydown="if(event.key==='Enter')applyFilter()">
+                    <i class="ri-search-line absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                </div>
+
                 <div class="flex items-center gap-2">
                     <!-- 保持原版下拉逻辑，用于选择单月 -->
                     <div class="relative" id="custom-datepicker">
@@ -370,7 +376,6 @@
             sidebar.classList.add('w-[270px]');
             toggleIcon.style.transform = 'rotate(0deg)';
         }
-        setTimeout(() => { if (monthlyChartInstance) monthlyChartInstance.resize(); }, 300);
     });
 
     function toggleGroup(id) {
@@ -950,7 +955,8 @@
             basin1: document.getElementById('filter-basin1').value,
             basin2: document.getElementById('filter-basin2').value,
             category: selectedCategorySub,
-            source: selectedSource
+            source: selectedSource,
+            keyword: (document.getElementById('filter-keyword').value || '').trim()
         };
 
         chartData = focusData.filter(item => {
@@ -963,6 +969,7 @@
             if (f.basin2 !== '全部' && item.basin2 !== f.basin2) return false;
             if (f.category && item.category !== f.category) return false;
             if (f.source !== '全部' && item.source !== f.source) return false;
+            if (f.keyword && !item.name.includes(f.keyword)) return false;
             return true;
         });
 
@@ -973,7 +980,6 @@
 
         currentPage = 1;
         renderTable();
-        renderMonthlyStats();
     }
 
     function resetFilter() {
@@ -984,6 +990,7 @@
         document.getElementById('filter-lake').value = '全部';
         document.getElementById('filter-basin1').value = '全部';
         document.getElementById('filter-basin2').value = '全部';
+        document.getElementById('filter-keyword').value = '';
         clearCascader();
         selectYearMonth('');
         selectedSource = '全部';
@@ -1052,113 +1059,6 @@
     }
 
     window.goPage = function(p) { currentPage = p; renderTable(); };
-
-    // ========== ECharts 图表，原生 DataZoom 滑块 (彻底解决生硬拖拽) ==========
-    let monthlyChartInstance = null;
-
-    function renderMonthlyStats() {
-        const wrap = document.getElementById('monthly-chart');
-        if (!wrap) return;
-
-        // 提取并排序所有产生数据的月份
-        const dates = focusData.map(i => i.date.slice(0, 7)).sort();
-        let earliest = dates[0] || '2025-08';
-        let latest = '2026-09';
-
-        const allMonths = [];
-        let [y, m] = earliest.split('-').map(Number);
-        const [ey, em] = latest.split('-').map(Number);
-        while (y < ey || (y === ey && m <= em)) {
-            allMonths.push(`${y}-${String(m).padStart(2, '0')}`);
-            m++;
-            if (m > 12) { y++; m = 1; }
-        }
-
-        const cats = [], totalArr = [], unfedArr = [], doneArr = [], closedArr = [], rejectedArr = [];
-        const simple = (document.getElementById('filter-level').value === '仅发送' || document.getElementById('filter-level').value === '暂不发送');
-
-        allMonths.forEach(mk => {
-            const rows = chartData.filter(i => i.date.startsWith(mk));
-            cats.push(`${mk.slice(0,4)}年${parseInt(mk.slice(5))}月`);
-            totalArr.push(rows.length);
-
-            if (!simple) {
-                rejectedArr.push(rows.filter(i => i.reject === '是').length);
-                unfedArr.push(rows.filter(i => (i.status === 'pending' || i.status === 'inprogress') && i.reject !== '是').length);
-                doneArr.push(rows.filter(i => i.status === 'done' && i.reject !== '是').length);
-                closedArr.push(rows.filter(i => i.status === 'closed' && i.reject !== '是').length);
-            }
-        });
-
-        document.getElementById('chart-total').textContent = '共 ' + totalArr.reduce((a,b)=>a+b, 0) + ' 条';
-
-        if (!monthlyChartInstance) monthlyChartInstance = echarts.init(wrap);
-
-        // 选中月份高亮样式：增加柔和阴影，去掉丑陋的粗红框
-        const markSelected = (arr) => arr.map((v, i) => ({
-            value: v,
-            itemStyle: allMonths[i] === selectedYearMonth ? { borderColor: '#3b82f6', borderWidth: 2, shadowBlur: 8, shadowColor: 'rgba(59, 130, 246, 0.4)' } : undefined
-        }));
-
-        // 原生 DataZoom，默认显示最后12个月
-        const startIdx = Math.max(0, allMonths.length - 12);
-        const endIdx = allMonths.length - 1;
-
-        const baseOpt = {
-            animation: false,
-            grid: { left: 4, right: 4, top: 20, bottom: 25, containLabel: true },
-            dataZoom: [
-                { type: 'inside', startValue: startIdx, endValue: endIdx },
-                {
-                    type: 'slider', show: true, bottom: 0, height: 10,
-                    borderColor: 'transparent', backgroundColor: '#f1f5f9', fillerColor: '#93c5fd',
-                    handleSize: '100%', handleStyle: { color: '#3b82f6' }, showDetail: false,
-                    startValue: startIdx, endValue: endIdx
-                }
-            ],
-            xAxis: {
-                type: 'category', data: cats, axisTick: { show: false },
-                axisLine: { lineStyle: { color: '#cbd5e1' } },
-                axisLabel: { interval: 0, fontSize: 11, color: (v, i) => allMonths[i] === selectedYearMonth ? '#2563eb' : '#64748b' }
-            },
-            yAxis: { type: 'value', minInterval: 1, axisLabel: { fontSize: 10, color: '#94a3b8' }, splitLine: { lineStyle: { type: 'dashed', color: '#e2e8f0' } } }
-        };
-
-        if (simple) {
-            monthlyChartInstance.setOption({
-                ...baseOpt,
-                tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
-                legend: { data: ['问题总数'], top: 0, right: 4, itemWidth: 10, itemHeight: 10, textStyle: { fontSize: 11, color: '#64748b' } },
-                series: [{
-                    name: '问题总数', type: 'bar', barWidth: 20, data: markSelected(totalArr),
-                    itemStyle: { color: '#94a3b8', borderRadius: [3, 3, 0, 0] },
-                    label: { show: true, position: 'top', formatter: p => p.value > 0 ? p.value : '', color: '#334155', fontSize: 11, fontWeight: 'bold' }
-                }]
-            }, true);
-        } else {
-            monthlyChartInstance.setOption({
-                ...baseOpt,
-                tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
-                legend: { data: ['未反馈', '已驳回', '已反馈', '已销号'], top: 0, right: 4, itemWidth: 10, itemHeight: 10, textStyle: { fontSize: 11, color: '#64748b' } },
-                series: [
-                    { name: '未反馈', type: 'bar', stack: 'total', barWidth: 20, data: markSelected(unfedArr), itemStyle: { color: '#f59e0b' } },
-                    { name: '已驳回', type: 'bar', stack: 'total', data: markSelected(rejectedArr), itemStyle: { color: '#ef4444' } },
-                    { name: '已反馈', type: 'bar', stack: 'total', data: markSelected(doneArr), itemStyle: { color: '#3b82f6' } },
-                    { name: '已销号', type: 'bar', stack: 'total', data: markSelected(closedArr), itemStyle: { color: '#14b8a6', borderRadius: [3, 3, 0, 0] },
-                        label: { show: true, position: 'top', formatter: p => totalArr[p.dataIndex] > 0 ? totalArr[p.dataIndex] : '', color: '#334155', fontSize: 11, fontWeight: 'bold' }
-                    }
-                ]
-            }, true);
-        }
-
-        monthlyChartInstance.off('click');
-        monthlyChartInstance.on('click', params => {
-            if (params.dataIndex == null) return;
-            if (dpForm !== '年月') return; // 图表为月度维度，仅在年月形式下联动
-            const mk = allMonths[params.dataIndex];
-            selectYearMonth(selectedYearMonth === mk ? '' : mk);
-        });
-    }
 
     // 初始化
     window.addEventListener('load', () => {

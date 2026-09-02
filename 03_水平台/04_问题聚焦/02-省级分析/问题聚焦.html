@@ -16,6 +16,10 @@
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
         .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
 
+        .role-switch-btn { color: rgba(255,255,255,0.85); }
+        .role-switch-btn:hover { color: #fff; }
+        .role-switch-btn.active { background: #fff; color: #1d4ed8; box-shadow: 0 1px 3px rgba(0,0,0,0.15); }
+
         .section-title-bar {
             width: 4px;
             height: 16px;
@@ -92,6 +96,28 @@
         .closed-tag { display: inline-flex; align-items: center; font-size: 13px; font-weight: 500; }
         .closed-yes { color: #10b981; }
         .closed-no { color: #94a3b8; }
+
+        /* 操作列按钮（参照平台浅色底+彩色边框标签风格，不同角色操作用不同颜色区分） */
+        .op-btn {
+            display: inline-flex; align-items: center; gap: 4px;
+            font-size: 12px; padding: 4px 10px; white-space: nowrap; line-height: 1.2;
+            border: 1px solid; border-radius: 6px; cursor: pointer;
+            transition: color .15s, border-color .15s, background-color .15s;
+        }
+        .op-btn i { font-size: 13px; }
+        .op-btn + .op-btn { margin-left: 10px; }
+        .op-reject { color: #dc2626; border-color: #fecaca; background: #fef2f2; }
+        .op-reject:hover { color: #b91c1c; border-color: #f87171; background: #fee2e2; }
+        .op-close { color: #059669; border-color: #a7f3d0; background: #ecfdf5; }
+        .op-close:hover { color: #047857; border-color: #34d399; background: #d1fae5; }
+        .op-feedback { color: #2563eb; border-color: #bfdbfe; background: #eff6ff; }
+        .op-feedback:hover { color: #1d4ed8; border-color: #60a5fa; background: #dbeafe; }
+        .op-refeedback { color: #d97706; border-color: #fcd34d; background: #fffbeb; }
+        .op-refeedback:hover { color: #b45309; border-color: #fbbf24; background: #fef3c7; }
+
+        /* 非“需审核”流程时隐藏操作列 */
+        table.no-op-col #th-operation,
+        table.no-op-col td.op-cell { display: none; }
     </style>
 </head>
 <body class="bg-background-light dark:bg-background-dark text-slate-800 dark:text-slate-100 h-screen overflow-hidden flex flex-col">
@@ -112,6 +138,10 @@
             <i class="ri-global-line"></i>
             <span>业务域</span>
         </button>
+        <div class="flex items-center bg-white/15 rounded-full p-0.5 text-sm">
+            <button class="role-switch-btn active px-3 py-1 rounded-full font-medium transition-colors" data-role="省级" onclick="switchRole(this)">省级</button>
+            <button class="role-switch-btn px-3 py-1 rounded-full font-medium transition-colors" data-role="市级" onclick="switchRole(this)">市级</button>
+        </div>
         <div class="flex items-center space-x-2 text-sm pl-4 border-l border-white/20">
             <span class="material-symbols-outlined text-[18px]">account_circle</span>
             <span>wangyunpeng</span>
@@ -326,17 +356,17 @@
             </div>
 
             <div class="overflow-x-auto custom-scrollbar">
-                <table class="data-table">
+                <table id="focus-table" class="data-table">
                     <thead>
                     <tr>
                         <th class="w-64 text-left pl-6">问题名称</th>
                         <th class="w-28">数据来源</th>
                         <th class="w-36">问题类别</th>
-                        <th class="w-28">流域</th>
                         <th class="w-32">问题时间</th>
-                        <th class="w-28">地市</th>
+                        <th class="w-28">市州</th>
                         <th class="w-28">问题状态</th>
                         <th class="w-28">是否销号</th>
+                        <th class="w-44" id="th-operation">操作</th>
                     </tr>
                     </thead>
                     <tbody id="focus-table-body">
@@ -945,6 +975,16 @@
     const rowsPerPage = 10;
     let currentPage = 1;
 
+    let currentRole = '省级';
+
+    function switchRole(btn) {
+        currentRole = btn.getAttribute('data-role');
+        document.querySelectorAll('.role-switch-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        // 操作列按钮随角色切换而变化
+        if (typeof renderTable === 'function') renderTable();
+    }
+
     function applyFilter() {
         const f = {
             survey: document.getElementById('filter-survey').value,
@@ -1006,6 +1046,10 @@
         const total = filteredData.length;
         document.getElementById('focus-total').innerText = total;
 
+        // 仅“需审核”流程显示操作列
+        const isReviewMode = document.getElementById('filter-level').value === '需审核';
+        document.getElementById('focus-table').classList.toggle('no-op-col', !isReviewMode);
+
         const totalPages = Math.ceil(total / rowsPerPage) || 1;
         if (currentPage > totalPages) currentPage = totalPages;
 
@@ -1035,16 +1079,42 @@
                 ? `<span class="reject-reason" title="${item.reason || '已驳回'}">${item.reason || '已驳回'}</span>`
                 : item.source;
 
+            // 操作列：仅“需审核”流程显示，按钮随角色+问题状态联动
+            // 业务流程：省级识别/录入 → 地市反馈 → 省级驳回或销号
+            let actionCell = '';
+            if (isReviewMode) {
+                if (currentRole === '省级') {
+                    // 只有地市已反馈后才能驳回/销号；未反馈、已驳回、已销号均无可操作项
+                    if (item.status === 'done' && item.reject !== '是') {
+                        actionCell = `<div class="flex items-center justify-center">
+                            <button class="op-btn op-reject" onclick="handleReject(${i})"><i class="ri-close-circle-line"></i>驳回</button>
+                            <button class="op-btn op-close" onclick="handleClose(${i})"><i class="ri-checkbox-circle-line"></i>销号</button>
+                        </div>`;
+                    }
+                } else {
+                    // 未反馈 → 反馈问题；已驳回 → 重新反馈；已反馈/已销号无可操作项
+                    if (item.reject === '是') {
+                        actionCell = `<div class="flex items-center justify-center">
+                            <button class="op-btn op-refeedback" onclick="handleFeedback(${i})"><i class="ri-refresh-line"></i>重新反馈</button>
+                        </div>`;
+                    } else if (item.status === 'pending' || item.status === 'inprogress') {
+                        actionCell = `<div class="flex items-center justify-center">
+                            <button class="op-btn op-feedback" onclick="handleFeedback(${i})"><i class="ri-chat-1-line"></i>反馈问题</button>
+                        </div>`;
+                    }
+                }
+            }
+
             html += `
                 <tr>
                     <td class="text-left pl-6 font-medium text-blue-600">${item.name}</td>
                     <td>${sourceCell}</td>
                     <td><span class="type-tag ${categoryStyles[item.category] || 'text-slate-600'}">${item.category}</span></td>
-                    <td>${item.basin}</td>
                     <td>${item.date}</td>
                     <td class="font-medium text-slate-800">${item.city}</td>
                     <td>${statusCell}</td>
                     <td>${closedCell}</td>
+                    <td class="op-cell">${actionCell || '<span class="text-slate-300">—</span>'}</td>
                 </tr>`;
         }
         tbody.innerHTML = html || '<tr><td colspan="8" class="py-10 text-slate-400"><i class="ri-inbox-2-line text-2xl mb-1 block"></i>暂无符合条件的记录</td></tr>';
@@ -1059,6 +1129,33 @@
     }
 
     window.goPage = function(p) { currentPage = p; renderTable(); };
+
+    // 操作列交互（mock 数据演示，直接修改内存数据后重绘）
+    window.handleReject = function(idx) {
+        const item = filteredData[idx];
+        if (!item || item.reject === '是') return;
+        item.reject = '是';
+        item.reason = '反馈不满足要求，退回地市补充核实';
+        renderStatusTabCounts();
+        renderTable();
+    };
+    window.handleClose = function(idx) {
+        const item = filteredData[idx];
+        if (!item || item.closed === '是') return;
+        item.closed = '是';
+        item.status = 'closed';
+        renderStatusTabCounts();
+        renderTable();
+    };
+    window.handleFeedback = function(idx) {
+        const item = filteredData[idx];
+        if (!item) return;
+        // 已驳回 → 重新反馈，清除驳回标记
+        if (item.reject === '是') { item.reject = '否'; item.reason = ''; }
+        item.status = 'done';
+        renderStatusTabCounts();
+        renderTable();
+    };
 
     // 初始化
     window.addEventListener('load', () => {

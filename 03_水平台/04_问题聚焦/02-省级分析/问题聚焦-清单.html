@@ -1,0 +1,3050 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>全国水生态环境综合管理平台 - 问题聚焦</title>
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+    <link rel="stylesheet" href="tailwind-build/tailwind.css"/>
+
+    <style>
+        body { font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif; }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+        .role-switch-btn { color: rgba(255,255,255,0.85); }
+        .role-switch-btn:hover { color: #fff; }
+        .role-switch-btn.active { background: #fff; color: #1d4ed8; box-shadow: 0 1px 3px rgba(0,0,0,0.15); }
+
+        .section-title-bar {
+            width: 4px;
+            height: 16px;
+            background: linear-gradient(to bottom, #93c5fd, #3b82f6);
+            border-radius: 4px;
+            margin-right: 8px;
+        }
+
+        #sidebar { transition: width 0.3s ease; }
+        .sidebar-text { transition: opacity 0.2s ease; white-space: nowrap; }
+        .hide-text .sidebar-text { display: none; opacity: 0; }
+        .collapsed-sidebar .nav-item { justify-content: center; padding-left: 0; padding-right: 0; }
+        .collapsed-sidebar .nav-item span.material-symbols-outlined { margin-right: 0; }
+
+        /* 优化后的柔和阴影 */
+        .card-shadow { box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -2px rgba(0,0,0,0.05); }
+        .popover-shadow { box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1); }
+
+        /* 来源分段按钮 */
+        .source-btn {
+            padding: 0.25rem 0.5rem; font-size: 12px; transition: all 0.2s; font-weight: 500;
+            color: #64748b; cursor: pointer; white-space: nowrap;
+        }
+        .source-btn:hover { color: #2563eb; }
+        .source-btn.active { color: #2563eb; font-weight: 700; }
+
+        /* 月份翻页箭头 */
+        .month-nav-btn {
+            flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+            color: #94a3b8; transition: color 0.2s; font-size: 22px; padding: 2px;
+        }
+        .month-nav-btn:hover:not(:disabled) { color: #2563eb; }
+        .month-nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+        /* 清单状态选项卡（下划线样式，无背景） */
+        .status-tab {
+            padding: 0.5rem 1.25rem; font-size: 13px; font-weight: 500; border-radius: 0;
+            color: #64748b; transition: color 0.2s; cursor: pointer; white-space: nowrap;
+            border-bottom: 2px solid transparent;
+        }
+        .status-tab:hover { color: #2563eb; }
+        .status-tab.active { color: #2563eb; border-bottom: 2px solid #2563eb; font-weight: 700; }
+        .status-tab .tab-count { font-weight: 500; opacity: 0.85; font-size: 12px; margin-left: 3px; }
+
+        /* 复杂表格专业样式 */
+        .data-table { border-spacing: 0; width: 100%; }
+        .data-table th, .data-table td { background-clip: padding-box; }
+        .data-table th {
+            color: #475569; font-weight: 700; padding: 0.875rem 1rem; text-align: center; font-size: 14px;
+            border-bottom: 1px solid #e2e8f0; position: sticky; top: 0; z-index: 10;
+            background-color: rgba(248, 250, 252, 0.9); backdrop-filter: blur(4px);
+        }
+        .data-table td { padding: 0.875rem 1rem; text-align: center; font-size: 13px; color: #475569; border-bottom: 1px solid #f1f5f9; }
+        .data-table tbody tr:hover { background-color: rgba(239, 246, 255, 0.5); transition: background-color 0.15s; }
+
+        /* 标签样式（问题类别为信息内容，统一灰色） */
+        .type-tag { display: inline-flex; align-items: center; font-size: 13px; color: #64748b; }
+        /* 驳回原因（已驳回记录专用；红色文字，完整换行展示，悬浮提示全文） */
+        .reject-reason {
+            display: block; text-align: left; line-height: 1.6;
+            color: #dc2626; font-size: 12px; word-break: break-word;
+        }
+
+        .status-tag { display: inline-flex; align-items: center; font-size: 13px; }
+        .status-pending { color: #d97706; }
+        .status-done { color: #10b981; }
+        .status-closed { color: #64748b; }
+        .status-na { color: #94a3b8; }
+        .status-reject { color: #dc2626; }
+
+        .closed-tag { display: inline-flex; align-items: center; font-size: 13px; }
+        .closed-yes { color: #10b981; }
+        .closed-no { color: #94a3b8; }
+
+        /* 预警级别标识（仅 水质类别变化报警 / 浓度变化预警 记录带级别；纯文字标识，不带圆角/背景） */
+        .level-tag { display: inline-flex; align-items: center; font-size: 12px; line-height: 1; vertical-align: middle; }
+        .level-lv1 { color: #dc2626; }
+        .level-lv2 { color: #d97706; }
+        .level-lv3 { color: #2563eb; }
+
+        /* 时间筛选框激活态（主框选日期或三角频率下拉展开时） */
+        .dp-open { border-color: #3b82f6 !important; box-shadow: 0 0 0 1px #3b82f6; }
+        #dp-freq-trigger:hover #dp-freq-label, #dp-freq-trigger:hover #dp-freq-caret { color: #3b82f6; }
+
+        /* 操作列按钮（参照平台浅色底+彩色边框标签风格，不同角色操作用不同颜色区分） */
+        .op-btn {
+            display: inline-flex; align-items: center; gap: 4px;
+            font-size: 12px; padding: 4px 10px; white-space: nowrap; line-height: 1.2;
+            border: 1px solid; border-radius: 6px; cursor: pointer;
+            transition: color .15s, border-color .15s, background-color .15s;
+        }
+        .op-btn i { font-size: 13px; }
+        .op-btn + .op-btn { margin-left: 10px; }
+        .op-reject { color: #dc2626; border-color: #fecaca; background: #fef2f2; }
+        .op-reject:hover { color: #b91c1c; border-color: #f87171; background: #fee2e2; }
+        .op-close { color: #059669; border-color: #a7f3d0; background: #ecfdf5; }
+        .op-close:hover { color: #047857; border-color: #34d399; background: #d1fae5; }
+        .op-feedback { color: #2563eb; border-color: #bfdbfe; background: #eff6ff; }
+        .op-feedback:hover { color: #1d4ed8; border-color: #60a5fa; background: #dbeafe; }
+        .op-refeedback { color: #d97706; border-color: #fcd34d; background: #fffbeb; }
+        .op-refeedback:hover { color: #b45309; border-color: #fbbf24; background: #fef3c7; }
+
+        /* 上传框（现场照片 / 现场视频 / 辅助材料：可多选，仅记录文件名） */
+        .upload-field {
+            display: flex; align-items: center; gap: 8px; cursor: pointer;
+            border: 1px dashed #cbd5e1; background: #fff; border-radius: 2px;
+            padding: 7px 10px; font-size: 12px; color: #64748b; transition: border-color .15s, color .15s;
+        }
+        .upload-field:hover { border-color: #3b82f6; color: #2563eb; }
+        .upload-field.has-file { border-style: solid; border-color: #bfdbfe; color: #1d4ed8; background: #eff6ff; }
+        .upload-field i { font-size: 16px; color: #94a3b8; }
+        .upload-field.has-file i { color: #2563eb; }
+        .upload-field input { display: none; }
+        .fb-file-list { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+        .fb-chip {
+            display: inline-flex; align-items: center; gap: 4px; max-width: 100%;
+            font-size: 12px; color: #1e293b; line-height: 1;
+            border: 1px solid #e2e8f0; background: #f8fafc; border-radius: 2px; padding: 3px 4px 3px 8px;
+        }
+        .fb-chip .fb-chip-ic { color: #2563eb; font-size: 13px; flex: none; }
+        .fb-chip .fb-chip-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .fb-chip-rm { cursor: pointer; color: #94a3b8; font-size: 14px; padding: 1px 2px; flex: none; border-radius: 2px; }
+        .fb-chip-rm:hover { color: #dc2626; background: #fef2f2; }
+
+        /* 地市反馈弹框：左=问题详情（基础信息/问题描述/流程状态），右=审核调度情况 + 问题反馈两页签；
+           问题反馈页内为“列表视图 ↔ 编辑视图”单区切换（新增/修改/删除反馈），处理完成才“提交反馈·送省厅” */
+        /* 弹框主体为“列表视图 ↔ 编辑视图”单区切换：默认展示反馈记录，点“新增反馈/修改”才切出编辑表单 */
+        .fb-stage { flex: 1; min-height: 0; display: flex; flex-direction: column; }
+        .fb-viewv { display: none; flex-direction: column; min-height: 0; flex: 1; }
+        .fb-viewv.on { display: flex; }
+        .fb-listv { background: #fbfcfe; padding: 14px 16px 12px; }
+        .fb-editv { background: #fff; }
+        .fb-edit-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex: none; padding: 14px 20px 0; }
+        .fb-edit-scroll { flex: 1; min-height: 0; overflow-y: auto; padding: 16px 20px 14px; }
+        .fb-sec-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+        .fb-sec-count { font-size: 12px; color: #94a3b8; }
+        .fb-form-title { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; color: #1e293b; }
+        .fb-form-title i { font-size: 14px; color: #2563eb; }
+        .fb-link-btn { display: inline-flex; align-items: center; gap: 3px; font-size: 12px; color: #2563eb; border: 1px solid #bfdbfe; background: #eff6ff; padding: 2px 9px; border-radius: 2px; cursor: pointer; }
+        .fb-link-btn:hover { color: #1d4ed8; border-color: #60a5fa; background: #dbeafe; }
+        .fb-hist-scroll { flex: 1; min-height: 0; overflow-y: auto; margin-top: 10px; padding: 2px 6px 6px 2px; }
+        /* 反馈记录分组标题：历史（已提交省级，只读）与本次（可增删改）拆开展示 */
+        .fb-grp-l { display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; color: #94a3b8; letter-spacing: 0.03em; margin: 16px 0 2px; }
+        .fb-grp-l i { font-size: 13px; }
+        .fb-grp-l.fb-grp-cur { color: #2563eb; }
+        .fb-grp-l.fb-grp-empty-tip { margin-top: 8px; }
+        /* 历史反馈行的“仅查看”徽标（占操作按钮位） */
+        .fbrow-lock { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; color: #94a3b8; background: #f1f5f9; border: 1px solid #e2e8f0; padding: 2px 8px; border-radius: 2px; white-space: nowrap; }
+        .fbrow-lock i { font-size: 12px; }
+        /* 历史反馈组的省级驳回原因提示：浅红轻底 + 左侧细色条，作为组标题下的“提示条”，比满框红块更贴整体留白风格 */
+        .fb-grp-reject {
+            display: flex; align-items: flex-start; gap: 6px;
+            margin: 8px 0 12px; padding: 7px 10px;
+            font-size: 12px; line-height: 1.7; color: #9f1239;
+            background: #fff5f5; border: 1px solid #fecaca; border-left: 3px solid #f87171;
+            border-radius: 6px;
+        }
+        .fb-grp-reject i { font-size: 14px; line-height: 1.7; flex: none; margin-top: 1px; color: #ef4444; }
+        .fb-grp-reject b { font-weight: 600; color: #b91c1c; }
+        /* 可点击载入右侧编辑的时间轴条目（左栏历史反馈；选中/悬停高亮） */
+        .tl-item.act { cursor: pointer; }
+        .tl-item.act .tl-body { padding-bottom: 16px; border-radius: 4px; transition: background .12s; }
+        .tl-item.act:hover .tl-body { background: #f1f5f9; }
+        .tl-item.act.sel .tl-body { background: #eff6ff; }
+        .tl-item.act.sel .tl-dot { box-shadow: 0 0 0 4px #bfdbfe; }
+        .tl-item.act .tl-edit { color: #2563eb; font-weight: 500; white-space: nowrap; }
+        .tl-item.act .tl-edit i { font-size: 13px; }
+
+        /* 反馈/查看弹框只读内容样式 */
+        .view-field { padding: 6px 10px; background: #f8fafc; border: 1px solid #f1f5f9; border-radius: 2px; font-size: 13px; color: #1e293b; line-height: 1.6; min-height: 32px; }
+        .attach-chip {
+            display: inline-flex; align-items: center; gap: 5px; max-width: 100%;
+            font-size: 12px; line-height: 1; padding: 3px 8px;
+            border: 1px solid #e2e8f0; background: #f8fafc; color: #334155; border-radius: 2px;
+        }
+        .attach-chip i { color: #64748b; font-size: 13px; }
+        /* ===== 附件缩略预览：新上传的真实照片/视频（带 blob 源）显示小图/播放封面；历史 mock 无源则保持文件名条 ===== */
+        .fb-thumb { position: relative; width: 46px; height: 46px; flex: none; border: 1px solid #e2e8f0; border-radius: 4px; overflow: hidden; background: #eff6ff; }
+        .fb-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; cursor: zoom-in; }
+        .fb-thumb .fb-chip-rm { position: absolute; top: 1px; right: 1px; z-index: 2; background: rgba(255,255,255,.92); border-radius: 50%; padding: 1px; font-size: 12px; line-height: 1; box-shadow: 0 0 0 1px #e2e8f0; }
+        .fb-thumb .fb-chip-rm:hover { background: #fff; }
+        .fb-vthumb { position: relative; width: 78px; height: 46px; flex: none; border: 1px solid #dbeafe; border-radius: 4px; overflow: hidden; background: linear-gradient(135deg, #e0e7ff, #c7d2fe); cursor: pointer; }
+        .fb-vthumb:hover { border-color: #3b82f6; }
+        .fb-vthumb .tv-play { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: #fff; text-shadow: 0 1px 3px rgba(15,23,42,.5); }
+        .fb-vthumb .tv-play i { font-size: 20px; }
+        .fb-vthumb .fb-chip-rm { position: absolute; top: 1px; right: 1px; z-index: 2; background: rgba(255,255,255,.92); border-radius: 50%; padding: 1px; font-size: 12px; line-height: 1; box-shadow: 0 0 0 1px #e2e8f0; }
+        .fb-vthumb .fb-chip-rm:hover { background: #fff; }
+        .tl-img { width: 54px; height: 44px; object-fit: cover; border-radius: 4px; border: 1px solid #e2e8f0; cursor: zoom-in; display: inline-block; background: #f1f5f9; vertical-align: middle; }
+        .tl-img:hover { border-color: #3b82f6; }
+        .tl-video { position: relative; width: 100px; height: 56px; border-radius: 4px; border: 1px solid #dbeafe; background: linear-gradient(135deg, #e0e7ff, #c7d2fe); cursor: pointer; overflow: hidden; display: inline-flex; align-items: center; justify-content: center; vertical-align: middle; }
+        .tl-video:hover { border-color: #3b82f6; box-shadow: 0 1px 3px rgba(59,130,246,.3); }
+        .tl-video .tv-play { display: flex; align-items: center; justify-content: center; width: 26px; height: 26px; border-radius: 50%; background: rgba(15,23,42,.55); border: 1px solid rgba(255,255,255,.45); color: #fff; }
+        .tl-video .tv-play i { font-size: 14px; margin-left: 2px; }
+        .tl-vname { position: absolute; left: 3px; right: 3px; bottom: 2px; font-size: 10px; color: #fff; background: linear-gradient(transparent, rgba(15,23,42,.7)); padding-top: 8px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: left; }
+        /* ===== 媒体查看层（照片大图 / 视频播放） ===== */
+        .media-mask { position: fixed; inset: 0; background: rgba(15,23,42,.75); z-index: 400; display: none; align-items: center; justify-content: center; padding: 30px; }
+        .media-mask.open { display: flex; }
+        .media-box { position: relative; max-width: min(1000px, 92vw); }
+        .media-box .media-main { display: flex; align-items: center; justify-content: center; min-width: 200px; min-height: 120px; }
+        .media-box img, .media-box video { max-width: min(1000px, 92vw); max-height: 82vh; border-radius: 6px; box-shadow: 0 20px 50px rgba(0,0,0,.4); background: #000; }
+        .media-x { position: absolute; right: -20px; top: -20px; font-size: 32px; line-height: 1; color: #cbd5e1; cursor: pointer; z-index: 2; transition: color .12s; }
+        .media-x:hover { color: #fff; }
+        .media-name { margin-top: 10px; color: #cbd5e1; font-size: 12px; text-align: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: min(1000px, 92vw); }
+        .field-invalid { border-color: #f87171 !important; background: #fef2f2 !important; }
+
+        /* 反馈时间轴（按调查时间倒序；每条=左侧竖线圆点，右侧内容：日期与反馈人/调查人同行，日期在左、人员置右，其下为反馈内容、附件） */
+        .tl-list { position: relative; }
+        .tl-item { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 0 12px; }
+        .tl-rail { position: relative; display: flex; justify-content: center; }
+        .tl-dot {
+            position: relative; z-index: 1; width: 12px; height: 12px; border-radius: 9999px; margin-top: 3px; flex: none;
+            background: linear-gradient(135deg, #60a5fa, #2563eb); box-shadow: 0 0 0 4px #eff6ff, 0 1px 2px rgba(37, 99, 235, 0.4);
+        }
+        .tl-rail::after { content: ''; position: absolute; left: 50%; top: 19px; bottom: -2px; width: 2px; transform: translateX(-50%); background: linear-gradient(#bfdbfe, #e2e8f0); border-radius: 2px; }
+        .tl-item:last-child .tl-rail::after { display: none; }
+        .tl-body { min-width: 0; padding-bottom: 22px; }
+        .tl-head { display: flex; align-items: baseline; justify-content: space-between; gap: 6px 16px; flex-wrap: wrap; }
+        .tl-date { font-size: 13px; font-weight: 700; color: #1e293b; font-variant-numeric: tabular-nums; line-height: 1.45; }
+        .tl-meta { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; min-width: 0; }
+        .tl-people { display: flex; align-items: center; gap: 10px 16px; font-size: 12px; flex: none; }
+        .tl-person { display: inline-flex; align-items: baseline; gap: 5px; white-space: nowrap; }
+        .tl-pk { color: #94a3b8; letter-spacing: 0.02em; }
+        .tl-pv { font-weight: 600; }
+        .tl-pv.rep { color: #2563eb; }
+        .tl-pv.inv { color: #0f766e; }
+        .tl-label { font-size: 12px; color: #94a3b8; margin-bottom: 3px; }
+        .tl-text { margin-top: 8px; }
+        .tl-text p { margin: 0; font-size: 13px; color: #1e293b; line-height: 1.7; white-space: pre-line; }
+        .tl-files { display: flex; flex-direction: column; gap: 6px; margin-top: 10px; }
+        .tl-fgroup { display: flex; align-items: flex-start; gap: 8px; font-size: 12px; }
+        .tl-fkey { color: #94a3b8; flex: none; width: 62px; line-height: 22px; }
+        .tl-fval { display: flex; flex-wrap: wrap; gap: 6px; min-width: 0; }
+        .tl-none { color: #cbd5e1; line-height: 22px; }
+        .tl-empty { display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 13px; color: #94a3b8; background: #f8fafc; border: 1px dashed #e2e8f0; border-radius: 2px; padding: 16px; }
+
+        /* ===== 反馈记录列表卡片（每条可 修改 / 删除） ===== */
+        .fb-crud-hint { font-size: 11px; color: #94a3b8; font-weight: 400; }
+        .tl-item.fbrow { cursor: default; }
+        .tl-item.fbrow .tl-body { border-radius: 4px; }
+        .fbrow-actions { display: flex; align-items: center; justify-content: flex-end; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+        .fbrow-confirm { font-size: 12px; color: #dc2626; font-weight: 600; line-height: 1; }
+        .fbrow-act {
+            display: inline-flex; align-items: center; gap: 4px; font-size: 12px; line-height: 1.6;
+            padding: 1px 0; border: 0; background: none; border-radius: 0; cursor: pointer;
+            transition: color .12s;
+        }
+        .fbrow-act i { font-size: 13px; }
+        .fbrow-edit { color: #2563eb; }
+        .fbrow-edit:hover { color: #1d4ed8; text-decoration: underline; text-underline-offset: 2px; }
+        .fbrow-del { color: #dc2626; }
+        .fbrow-del:hover { color: #b91c1c; text-decoration: underline; text-underline-offset: 2px; }
+        .fbrow-ok { color: #fff; border-radius: 3px; padding: 2px 10px; background: #dc2626; }
+        .fbrow-ok:hover { color: #fff; background: #b91c1c; }
+        .fbrow-no { color: #64748b; }
+        .fbrow-no:hover { color: #1e293b; }
+
+        /* 新增问题按钮（主按钮蓝统一 #3b82f6，同搜索钮 / 形式分析规范） */
+        .add-btn {
+            display: inline-flex; align-items: center; gap: 4px;
+            background: #3b82f6; color: #fff; border: none;
+            padding: 5px 14px; border-radius: 6px; font-size: 13px; font-weight: 500;
+            cursor: pointer; transition: background .15s; box-shadow: 0 1px 2px rgba(0,0,0,0.08);
+        }
+        .add-btn:hover { background: #2563eb; }
+
+        /* 新增问题弹框 */
+        .modal-mask {
+            position: fixed; inset: 0; background: rgba(15, 23, 42, 0.55);
+            z-index: 300; display: none; align-items: center; justify-content: center; padding: 24px;
+        }
+        .modal-mask.open { display: flex; }
+        .modal-card {
+            width: 640px; max-width: 100%; max-height: 90vh; overflow-y: auto;
+            background: #fff; border-radius: 6px; box-shadow: 0 20px 50px rgba(15, 23, 42, 0.35);
+        }
+        .modal-label { display: block; font-size: 13px; font-weight: 500; color: #475569; margin-bottom: 6px; }
+        .modal-field {
+            width: 100%; appearance: none; background: #fff; border: 1px solid #e2e8f0; border-radius: 2px;
+            padding: 6px 10px; font-size: 13px; color: #1e293b; outline: none; transition: border-color .15s, box-shadow .15s;
+        }
+        .modal-field:focus { border-color: #3b82f6; box-shadow: 0 0 0 2px rgba(59,130,246,0.2); }
+        select.modal-field { cursor: pointer; }
+        textarea.reject-error-border { border-color: #ef4444 !important; }
+
+        /* ── 新增问题弹框：问题类别单框级联悬浮面板（不占位、不撑开弹框高度，参照筛选区三级级联） ── */
+        #add-cat-panel {
+            display: none; position: absolute; z-index: 350; left: 0; top: 0; width: 590px;
+            background: #fff; border: 1px solid #e2e8f0; border-radius: 6px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        #add-cat-panel.open { display: flex; }
+        #add-cat-panel .ac-col { display: flex; flex-direction: column; min-height: 0; }
+        #add-cat-panel .ac-col1 { width: 160px; flex: none; border-right: 1px solid #e2e8f0; background: #f8fafc; }
+        #add-cat-panel .ac-col2 { width: 195px; flex: none; border-right: 1px solid #e2e8f0; background: #f8fafc; }
+        #add-cat-panel .ac-col3 { flex: 1; min-width: 0; background: #fff; }
+        #add-cat-panel .ac-head { flex: none; padding: 5px 12px; font-size: 11px; font-weight: 600; color: #94a3b8; background: #f1f5f9; border-bottom: 1px solid #e2e8f0; letter-spacing: 0.05em; }
+        #add-cat-panel .ac-list { height: 258px; overflow-y: auto; padding: 4px 0; }
+        #add-cat-panel .ac-item { padding: 7px 12px; cursor: pointer; line-height: 1.45; color: #475569; transition: color .12s, background-color .12s; word-break: break-word; }
+        #add-cat-panel .ac-col1 .ac-item, #add-cat-panel .ac-col2 .ac-item { font-size: 13px; }
+        #add-cat-panel .ac-col3 .ac-item { font-size: 12px; }
+        #add-cat-panel .ac-item:hover { background: #f1f5f9; color: #2563eb; }
+        #add-cat-panel .ac-col3 .ac-item:hover { background: #eff6ff; }
+        #add-cat-panel .ac-item.active { color: #2563eb; font-weight: 600; background: #fff; }
+        #add-cat-panel .ac-col1 .ac-item.active, #add-cat-panel .ac-col2 .ac-item.active { background: #fff; }
+        #add-cat-panel .ac-empty { padding: 12px; font-size: 12px; color: #cbd5e1; }
+
+        /* ── 弹窗统一：纯蓝横幅头 #3b82f6（新增问题 / 驳回原因 / 地市反馈处理 / 问题详情 共用，同页面主蓝规范） ── */
+        .modal-card, .modal-card-xl { border: 1px solid #c9d6e6; border-radius: 4px; }
+        .modal-head {
+            flex: none; display: flex; align-items: center; justify-content: space-between;
+            padding: 11px 20px;
+            background: #3b82f6;
+            border-radius: 4px 4px 0 0;
+            border-bottom: 1px solid #e2edfa;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18);
+        }
+        .modal-head h3 { display: flex; align-items: center; gap: 8px; margin: 0; color: #fff; font-size: 15px; font-weight: 700; letter-spacing: 0.6px; line-height: 1.4; }
+        .modal-head h3 i { color: #fff; font-size: 17px; }
+        .modal-head .modal-close {
+            color: rgba(255, 255, 255, 0.92);
+            border: 1px solid rgba(255, 255, 255, 0.35);
+            border-radius: 3px;
+            background: rgba(255, 255, 255, 0.06);
+        }
+        .modal-head .modal-close:hover { color: #fff; background: rgba(255, 255, 255, 0.22); border-color: rgba(255, 255, 255, 0.55); }
+
+        /* 问题详情弹框（清单：左=问题详情/底单，右=反馈时间轴 + 审核调度情况） */
+        .name-link { color: #2563eb; cursor: pointer; }
+        .name-link:hover { color: #1d4ed8; text-decoration: underline; }
+        .modal-card-xl {
+            width: 1160px; max-width: 100%; max-height: 92vh;
+            display: flex; flex-direction: column; overflow: hidden;
+            background: #fff; border-radius: 6px; box-shadow: 0 20px 50px rgba(15, 23, 42, 0.35);
+        }
+        .dt-body { flex: 1; min-height: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .dt-left { min-height: 0; overflow-y: auto; border-right: 1px solid #e2e8f0; background: #fbfcfe; padding: 18px 20px 22px; }
+        .dt-right { min-width: 0; min-height: 0; display: flex; flex-direction: column; }
+        /* 右侧“反馈情况 / 审核调度情况”页签（无背景下划线，与页面状态页签同风格） */
+        .dt-tabs { flex: none; display: flex; align-items: flex-end; gap: 26px; padding: 0 18px; border-bottom: 1px solid #e2e8f0; }
+        .dt-tab {
+            display: inline-flex; align-items: center; gap: 6px; padding: 13px 0 11px;
+            font-size: 14px; font-weight: 600; color: #64748b; cursor: pointer; white-space: nowrap;
+            border-bottom: 2px solid transparent; background: none;
+        }
+        .dt-tab:hover { color: #2563eb; }
+        .dt-tab.active { color: #2563eb; border-bottom-color: #2563eb; }
+        .dt-pane { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; padding: 14px 18px 6px; }
+        .dt-pane-head { flex: none; display: flex; align-items: center; gap: 7px; font-size: 12px; font-weight: 500; color: #94a3b8; padding-bottom: 8px; }
+        .dt-scroll { flex: 1; min-height: 0; overflow-y: auto; padding: 0 3px 10px 0; }
+
+        /* 左侧问题详情 / 底单 字段 */
+        .dt-name { font-size: 15px; font-weight: 700; color: #0f172a; line-height: 1.45; }
+        .dt-name-tag { display: inline-flex; margin-left: 6px; vertical-align: 2px; }
+        /* 问题描述（通栏段落，位于“基础信息”末尾，非键值行） */
+        .dl-desc-label { margin-top: 12px; font-size: 12px; font-weight: 600; color: #94a3b8; letter-spacing: 0.04em; }
+        .dl-desc { margin-top: 5px; font-size: 13px; line-height: 1.75; color: #475569; word-break: break-word; }
+        .dl-g { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #94a3b8; font-weight: 600; letter-spacing: 0.04em; margin: 18px 0 2px; }
+        .dl-g::after { content: ''; flex: 1; height: 1px; background: #eef2f7; }
+        .dl-row { display: flex; align-items: baseline; justify-content: space-between; gap: 14px; padding: 6px 0; border-bottom: 1px dashed #eef2f7; font-size: 13px; }
+        .dl-row:last-child { border-bottom: none; }
+        .dl-k { flex: none; color: #94a3b8; }
+        .dl-v { text-align: right; color: #334155; font-weight: 500; min-width: 0; word-break: break-all; }
+        .dl-v.yes { color: #059669; }
+        .dl-v.no { color: #94a3b8; }
+        .dl-note { margin-top: 6px; font-size: 12px; color: #b91c1c; line-height: 1.6; background: #fef2f2; border: 1px solid #fee2e2; border-radius: 2px; padding: 6px 8px; }
+
+        /* 右侧“审核调度情况” 流程步点 */
+        .au-item { display: grid; grid-template-columns: 20px minmax(0, 1fr) auto; gap: 10px; }
+        .au-rail { position: relative; display: flex; justify-content: center; }
+        .au-dot { position: relative; z-index: 1; width: 10px; height: 10px; border-radius: 9999px; margin-top: 5px; flex: none; }
+        .au-rail::after { content: ''; position: absolute; left: 50%; top: 19px; bottom: -3px; width: 1.5px; transform: translateX(-50%); background: #e2e8f0; }
+        .au-item:last-child .au-rail::after { display: none; }
+        .au-blue { background: #2563eb; box-shadow: 0 0 0 3px #eff6ff; }
+        .au-slate { background: #94a3b8; box-shadow: 0 0 0 3px #f1f5f9; }
+        .au-green { background: #10b981; box-shadow: 0 0 0 3px #ecfdf5; }
+        .au-red { background: #dc2626; box-shadow: 0 0 0 3px #fef2f2; }
+        .au-amber { background: #f59e0b; box-shadow: 0 0 0 3px #fffbeb; }
+        .au-main { min-width: 0; padding: 1px 0 16px; }
+        .au-title { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; color: #1e293b; }
+        .au-cur { flex: none; font-size: 11px; line-height: 1; padding: 2px 6px; color: #b45309; border: 1px solid #fcd34d; border-radius: 2px; }
+        .au-cur.fin { color: #047857; border-color: #6ee7b7; }
+        .au-cur.rej { color: #b91c1c; border-color: #fca5a5; }
+        .au-desc { margin-top: 3px; font-size: 12px; color: #64748b; line-height: 1.6; }
+        .au-time { padding-top: 2px; font-size: 12px; color: #94a3b8; font-variant-numeric: tabular-nums; white-space: nowrap; }
+        /* 审核调度各环节经办人：标题行右侧人像+姓名（省级蓝色、地市反馈绿色；缺省灰色“—”占位） */
+        .au-title .au-user { margin-left: auto; display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 500; color: #1d4ed8; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 999px; padding: 1px 8px 1px 5px; white-space: nowrap; }
+        .au-title .au-user i { font-size: 12px; color: #2563eb; }
+        .au-title .au-user.city { color: #065f46; background: #ecfdf5; border-color: #a7f3d0; }
+        .au-title .au-user.city i { color: #059669; }
+        .au-title .au-user.empty { color: #cbd5e1; background: #f8fafc; border-color: #eef2f7; }
+        .au-title .au-user.empty i { color: #d1d5db; }
+
+        /* 详情弹窗底部“省级审核操作条”（地市已反馈 → 省级驳回/销号；默认隐藏） */
+        #dt-actions {
+            flex: none; display: none; align-items: center; justify-content: space-between; gap: 14px;
+            padding: 12px 24px; border-top: 1px solid #f1f5f9; background: #f8fafc;
+        }
+        #dt-actions .dt-actions-tip { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: #64748b; }
+        #dt-actions .dt-actions-tip i { color: #2563eb; font-size: 14px; }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-800 dark:text-slate-100 h-screen overflow-hidden flex flex-col">
+
+<header class="bg-primary h-14 flex items-center justify-between px-4 text-white shrink-0 shadow-md z-50">
+    <div class="flex items-center space-x-3">
+        <div class="w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-sm">
+            <span class="material-symbols-outlined text-primary text-xl">water_drop</span>
+        </div>
+        <h1 class="text-xl font-bold tracking-tight">全国水生态环境综合管理平台</h1>
+    </div>
+    <div class="flex items-center space-x-4">
+        <button class="flex items-center space-x-1.5 bg-white/20 hover:bg-white/30 px-4 py-1.5 rounded-full transition-colors text-sm font-medium">
+            <i class="ri-function-line"></i>
+            <span>功能模块</span>
+        </button>
+        <button class="flex items-center space-x-1.5 bg-white/20 hover:bg-white/30 px-4 py-1.5 rounded-full transition-colors text-sm font-medium">
+            <i class="ri-global-line"></i>
+            <span>业务域</span>
+        </button>
+        <div class="flex items-center bg-white/15 rounded-full p-0.5 text-sm">
+            <button class="role-switch-btn active px-3 py-1 rounded-full font-medium transition-colors" data-role="省级" onclick="switchRole(this)">省级</button>
+            <button class="role-switch-btn px-3 py-1 rounded-full font-medium transition-colors" data-role="市级" onclick="switchRole(this)">市级</button>
+        </div>
+        <div class="flex items-center space-x-2 text-sm pl-4 border-l border-white/20">
+            <span class="material-symbols-outlined text-[18px]">account_circle</span>
+            <span>wangyunpeng</span>
+        </div>
+    </div>
+</header>
+
+<div class="flex flex-1 overflow-hidden">
+    <aside id="sidebar" class="w-[270px] bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 flex flex-col shrink-0 z-40">
+        <div class="flex-1 py-4 overflow-y-auto custom-scrollbar flex flex-col gap-1">
+            <div class="mb-2 px-2">
+                <button class="nav-item w-full flex items-center justify-between px-4 py-3 text-[16px] font-medium text-slate-700 dark:text-slate-300 rounded-lg group transition-colors hover:bg-slate-50 dark:hover:bg-slate-800/50" onclick="toggleGroup('group-ministerial')">
+                    <div class="flex items-center">
+                        <span class="material-symbols-outlined mr-3 text-slate-500">domain</span>
+                        <span class="sidebar-text font-bold text-slate-800 dark:text-white">部级分析</span>
+                    </div>
+                    <span class="material-symbols-outlined text-sm text-slate-400 group-hover:text-blue-500 sidebar-chevron transition-transform duration-200">expand_more</span>
+                </button>
+                <div id="group-ministerial" class="mt-1 space-y-1 overflow-hidden transition-all duration-300" style="max-height: 0px;">
+                    <div class="ml-4 px-3 rounded-lg">
+                        <button class="nav-item w-full flex items-center justify-between px-3 py-2.5 text-[14px] font-medium text-slate-600 dark:text-slate-400 rounded-lg transition-colors hover:text-blue-600" onclick="toggleSubmenu('submenu-feedback')">
+                            <div class="flex items-center">
+                                <span class="material-symbols-outlined mr-2.5 text-[18px]">forum</span>
+                                <span class="sidebar-text">问题线索及反馈</span>
+                            </div>
+                            <span class="material-symbols-outlined text-sm text-slate-400 submenu-chevron transition-transform duration-200">expand_more</span>
+                        </button>
+                        <div id="submenu-feedback" class="mt-1 space-y-1 overflow-hidden transition-all duration-300" style="max-height: 0px;">
+                            <a class="flex items-center pl-9 pr-2 py-2 text-[13px] text-slate-500 dark:text-slate-400 hover:text-blue-600 hover:bg-blue-50/50 dark:hover:bg-blue-900/20 transition-all rounded-lg group" href="#">
+                                <span class="w-1.5 h-1.5 bg-slate-300 dark:bg-slate-600 group-hover:bg-blue-600 rounded-full mr-2.5 shrink-0 transition-colors"></span>
+                                <span class="sidebar-text">未反馈</span>
+                            </a>
+                            <a class="flex items-center pl-9 pr-2 py-2 text-[13px] text-slate-500 dark:text-slate-400 hover:text-blue-600 hover:bg-blue-50/50 dark:hover:bg-blue-900/20 transition-all rounded-lg group" href="#">
+                                <span class="w-1.5 h-1.5 bg-slate-300 dark:bg-slate-600 group-hover:bg-blue-600 rounded-full mr-2.5 shrink-0 transition-colors"></span>
+                                <span class="sidebar-text">反馈中</span>
+                            </a>
+                            <a class="flex items-center pl-9 pr-2 py-2 text-[13px] text-slate-500 dark:text-slate-400 hover:text-blue-600 hover:bg-blue-50/50 dark:hover:bg-blue-900/20 transition-all rounded-lg group" href="#">
+                                <span class="w-1.5 h-1.5 bg-slate-300 dark:bg-slate-600 group-hover:bg-blue-600 rounded-full mr-2.5 shrink-0 transition-colors"></span>
+                                <span class="sidebar-text">已反馈</span>
+                            </a>
+                            <a class="flex items-center pl-9 pr-2 py-2 text-[13px] text-slate-500 dark:text-slate-400 hover:text-blue-600 hover:bg-blue-50/50 dark:hover:bg-blue-900/20 transition-all rounded-lg group" href="#">
+                                <span class="w-1.5 h-1.5 bg-slate-300 dark:bg-slate-600 group-hover:bg-blue-600 rounded-full mr-2.5 shrink-0 transition-colors"></span>
+                                <span class="sidebar-text">销号情况</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-2 px-2">
+                <button class="nav-item w-full flex items-center justify-between px-4 py-3 text-[16px] font-medium text-blue-700 bg-blue-50/50 dark:bg-blue-900/10 rounded-lg group transition-colors" onclick="toggleGroup('group-provincial')">
+                    <div class="flex items-center">
+                        <span class="material-symbols-outlined mr-3 text-blue-600">location_city</span>
+                        <span class="sidebar-text font-bold text-slate-800 dark:text-white">省级分析</span>
+                    </div>
+                    <span class="material-symbols-outlined text-sm text-blue-600 sidebar-chevron transition-transform duration-200" style="transform: rotate(180deg);">expand_more</span>
+                </button>
+                <div id="group-provincial" class="mt-1 space-y-1 overflow-hidden transition-all duration-300">
+                    <a class="flex items-center px-12 py-2.5 text-[14px] text-slate-600 dark:text-slate-400 hover:text-blue-600 hover:bg-blue-50/50 dark:hover:bg-blue-900/20 transition-all rounded-lg group" href="#">
+                        <span class="w-1.5 h-1.5 bg-slate-300 dark:bg-slate-600 group-hover:bg-blue-600 rounded-full mr-3 shrink-0 transition-colors"></span>
+                        <span class="sidebar-text">环保舆情</span>
+                    </a>
+                    <a class="flex items-center px-12 py-2.5 text-[14px] text-blue-700 bg-blue-50 dark:bg-blue-900/30 rounded-lg group transition-all font-bold relative" href="问题聚焦-清单.html">
+                        <span class="w-1.5 h-1.5 bg-blue-600 rounded-full mr-3 shrink-0"></span>
+                        <span class="sidebar-text">问题清单</span>
+                        <div class="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-5 bg-blue-600 rounded-r-full"></div>
+                    </a>
+                    <a class="flex items-center px-12 py-2.5 text-[14px] text-slate-600 dark:text-slate-400 hover:text-blue-600 hover:bg-blue-50/50 dark:hover:bg-blue-900/20 transition-all rounded-lg group" href="问题聚焦-底单.html">
+                        <span class="w-1.5 h-1.5 bg-slate-300 dark:bg-slate-600 group-hover:bg-blue-600 rounded-full mr-3 shrink-0 transition-colors"></span>
+                        <span class="sidebar-text">问题底单</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <button id="toggleSidebarBtn" class="h-12 border-t border-slate-200 dark:border-slate-800 flex items-center justify-center space-x-2 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all text-slate-500 hover:text-primary group">
+            <span id="toggleIcon" class="material-symbols-outlined text-xl transition-transform duration-300">chevron_left</span>
+            <span class="sidebar-text text-sm font-medium tracking-wide">收起侧栏</span>
+        </button>
+    </aside>
+
+    <main class="flex-1 overflow-y-auto custom-scrollbar p-6">
+
+        <!-- 页面标题栏 + 筛选控件（保持原版完全一致） -->
+        <div class="min-h-16 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-6 py-3 flex flex-wrap items-center justify-between gap-4 shrink-0 card-shadow mb-6 z-[60] relative">
+            <div class="flex items-center gap-3">
+                <span class="relative flex h-3 w-3 ml-1 shrink-0">
+                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-3 w-3 bg-indigo-500"></span>
+                </span>
+                <h2 class="text-[18px] font-bold text-slate-800 dark:text-white tracking-tight">问题聚焦</h2>
+            </div>
+
+            <div class="flex items-center space-x-2.5 flex-wrap gap-y-2 justify-end">
+                <!-- 市级角色：市州范围下拉（仅“市级”显示），清单只展示所选市州归属的问题 -->
+                <div class="relative hidden" id="city-scope-wrap" title="当前登录市州：清单仅显示本市的问题">
+                    <i class="ri-map-pin-2-line absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-[13px]"></i>
+                    <select id="city-scope-sel" class="appearance-none bg-white border border-slate-200 dark:bg-slate-800 dark:border-slate-700 rounded pl-8 pr-8 py-1.5 text-[13px] text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-all cursor-pointer hover:border-blue-400 w-40 shadow-sm"></select>
+                </div>
+                <div class="relative" id="custom-cascader">
+                    <button type="button" id="cascader-trigger" class="appearance-none bg-white border border-slate-200 dark:bg-slate-800 dark:border-slate-700 rounded pl-3 pr-8 py-1.5 text-[13px] text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-all cursor-pointer hover:border-blue-400 w-44 shadow-sm flex items-center justify-between group">
+                        <span id="cascader-text" class="truncate text-slate-500">请选择类别</span>
+                        <i id="cascader-clear" class="ri-close-line hidden text-slate-400 hover:text-red-500 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-full px-0.5 cursor-pointer flex-none text-[13px]" title="清除类别"></i>
+                        <i id="cascader-icon" class="ri-arrow-up-s-line text-slate-300 group-hover:text-slate-400 transition-transform rotate-180 flex-none"></i>
+                    </button>
+                    <div id="cascader-popover" class="hidden absolute top-full right-0 mt-1 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-lg shadow-xl popover-shadow z-50 flex overflow-hidden w-[700px]">
+                        <div class="w-[180px] shrink-0 border-r border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/80 py-1" id="cascader-categories"></div>
+                        <div class="w-[200px] shrink-0 border-r border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/80 py-1" id="cascader-subs"></div>
+                        <div class="flex-1 bg-white dark:bg-slate-800 py-1 max-h-[340px] overflow-y-auto custom-scrollbar" id="cascader-options"></div>
+                    </div>
+                </div>
+
+                <div class="relative hidden" id="filter-level-wrap">
+                    <select id="filter-level" onchange="applyFilter()" class="appearance-none bg-white border border-slate-200 dark:bg-slate-800 dark:border-slate-700 rounded pl-3 pr-8 py-1.5 text-[13px] text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-all cursor-pointer hover:border-blue-400 w-32 shadow-sm" title="预警级别（水质类别变化报警 / 浓度变化预警 记录）">
+                        <option value="全部">问题级别</option>
+                        <option value="一级">一级</option>
+                        <option value="二级">二级</option>
+                        <option value="三级">三级</option>
+                    </select>
+                </div>
+
+                <div class="relative">
+                    <input type="text" id="filter-keyword" placeholder="搜索问题名称" autocomplete="off"
+                           class="appearance-none bg-white border border-slate-200 dark:bg-slate-800 dark:border-slate-700 rounded pl-8 pr-3 py-1.5 text-[13px] text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-all w-36 shadow-sm"
+                           onkeydown="if(event.key==='Enter')applyFilter()">
+                    <i class="ri-search-line absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                </div>
+
+                <div class="flex items-center gap-2">
+                    <!-- 时间筛选：一个带三角的框 = 左侧三角(年/月/日频率下拉) + 右侧主框(点选日期)，两区域各自展开 -->
+                    <div class="relative" id="custom-datepicker">
+                        <div id="dp-box" class="flex items-stretch bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded shadow-sm group transition-all hover:border-blue-400 w-[214px]">
+                            <button type="button" id="dp-freq-trigger" class="flex-none flex items-center px-2 py-1.5 gap-0.5 border-r border-slate-200 dark:border-slate-700 text-slate-400 hover:text-blue-500 cursor-pointer transition-colors" title="切换 年/月/日 频率">
+                                <span id="dp-freq-label" class="text-[12px] leading-none text-slate-500 transition-colors">月</span>
+                                <i id="dp-freq-caret" class="ri-arrow-down-s-line text-[14px] transition-transform"></i>
+                            </button>
+                            <button type="button" id="datepicker-trigger" class="flex-1 min-w-0 flex items-center gap-1.5 pl-2.5 py-1.5 text-[12px] text-slate-700 dark:text-slate-200 cursor-pointer transition-colors text-left" title="点击按当前频率选择日期">
+                                <i class="ri-calendar-line text-slate-400 group-hover:text-blue-500 text-[15px] flex-none transition-colors"></i>
+                                <span id="datepicker-text" class="text-slate-500 truncate flex-1 text-left">选择月份</span>
+                            </button>
+                        </div>
+                        <div id="datepicker-popover" class="hidden absolute top-full right-0 mt-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg shadow-xl popover-shadow z-50 p-4 w-[320px]">
+                            <div id="dp-container"></div>
+                        </div>
+                        <div id="dp-freq-menu" class="hidden absolute top-full left-0 mt-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg shadow-xl popover-shadow z-50 py-1 w-24"></div>
+                    </div>
+                </div>
+
+                <div class="relative hidden">
+                    <select id="filter-survey" class="appearance-none bg-white border border-slate-200 dark:bg-slate-800 dark:border-slate-700 rounded pl-3 pr-8 py-1.5 text-[13px] text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-all cursor-pointer hover:border-blue-400 w-36 shadow-sm">
+                        <option value="全部">是否调查反馈</option>
+                        <option value="是">是</option>
+                        <option value="否">否</option>
+                    </select>
+                </div>
+
+                <div class="relative hidden">
+                    <select id="filter-reject" class="appearance-none bg-white border border-slate-200 dark:bg-slate-800 dark:border-slate-700 rounded pl-3 pr-8 py-1.5 text-[13px] text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-all cursor-pointer hover:border-blue-400 w-36 shadow-sm">
+                        <option value="全部">是否驳回</option>
+                        <option value="是">是</option>
+                        <option value="否">否</option>
+                    </select>
+                </div>
+
+                <div class="relative hidden">
+                    <select id="filter-closed" class="appearance-none bg-white border border-slate-200 dark:bg-slate-800 dark:border-slate-700 rounded pl-3 pr-8 py-1.5 text-[13px] text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-all cursor-pointer hover:border-blue-400 w-36 shadow-sm">
+                        <option value="全部">是否销号</option>
+                        <option value="是">是</option>
+                        <option value="否">否</option>
+                    </select>
+                </div>
+
+                <div class="relative">
+                    <select id="filter-lake" class="appearance-none bg-white border border-slate-200 dark:bg-slate-800 dark:border-slate-700 rounded pl-3 pr-8 py-1.5 text-[13px] text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-all cursor-pointer hover:border-blue-400 w-36 shadow-sm">
+                        <option value="全部">请选择湖库</option>
+                        <option value="梁子湖">梁子湖</option>
+                        <option value="洪湖">洪湖</option>
+                        <option value="丹江口水库">丹江口水库</option>
+                    </select>
+                </div>
+
+                <div class="relative">
+                    <select id="filter-basin1" class="appearance-none bg-white border border-slate-200 dark:bg-slate-800 dark:border-slate-700 rounded pl-3 pr-8 py-1.5 text-[13px] text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-all cursor-pointer hover:border-blue-400 w-36 shadow-sm">
+                        <option value="全部">选择一级流域</option>
+                        <option value="长江干流流域">长江干流流域</option>
+                        <option value="汉江流域">汉江流域</option>
+                        <option value="清江流域">清江流域</option>
+                    </select>
+                </div>
+
+                <div class="relative">
+                    <select id="filter-basin2" class="appearance-none bg-white border border-slate-200 dark:bg-slate-800 dark:border-slate-700 rounded pl-3 pr-8 py-1.5 text-[13px] text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-all cursor-pointer hover:border-blue-400 w-36 shadow-sm">
+                        <option value="全部">选择二级流域</option>
+                        <option value="富水片区">富水片区</option>
+                        <option value="鄂东南片区">鄂东南片区</option>
+                        <option value="四湖片区">四湖片区</option>
+                    </select>
+                </div>
+
+                <button onclick="applyFilter()" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-1.5 rounded text-[13px] transition-colors shadow-sm font-medium flex items-center space-x-1">
+                    <i class="ri-search-line"></i><span>搜索</span>
+                </button>
+                <button onclick="resetFilter()" class="bg-white hover:bg-slate-50 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 px-3 py-1.5 rounded text-[13px] transition-colors font-medium">
+                    重置
+                </button>
+                <button id="toolbar-add-btn" onclick="openAddModal()" class="add-btn">
+                    <i class="ri-add-circle-line"></i><span>新增</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- 问题聚焦清单 (保持原版的 4 个 Tab 和表格结构) -->
+        <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 card-shadow flex flex-col overflow-hidden mb-6 z-10 relative">
+            <div class="pl-0 pt-0 pb-0 flex flex-wrap items-end gap-3 justify-between shrink-0 bg-slate-50/50 dark:bg-slate-800/30">
+                <div class="flex items-end gap-3">
+                    <div id="status-tabs" class="flex items-end gap-1">
+                        <div id="status-tab-all" class="status-tab active">全部<span class="tab-count"></span></div>
+                        <div data-tab="待反馈" class="status-tab">待反馈<span class="tab-count"></span></div>
+                        <div data-tab="已反馈" class="status-tab">已反馈<span class="tab-count"></span></div>
+                        <div data-tab="已驳回" class="status-tab">已驳回<span class="tab-count"></span></div>
+                        <div data-tab="已销号" class="status-tab">已销号<span class="tab-count"></span></div>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2 pr-5 self-center">
+                    <div id="source-segmented" class="flex items-center gap-1">
+                        <div data-source="全部" class="source-btn active">全部</div>
+                        <div data-source="手工录入" class="source-btn">手工录入</div>
+                        <div data-source="系统识别" class="source-btn">系统识别</div>
+                        <div data-source="外部系统调度" class="source-btn">外部系统调度</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="overflow-x-auto custom-scrollbar">
+                <table id="focus-table" class="data-table">
+                    <thead>
+                    <tr>
+                        <th class="w-64 text-left pl-6">问题名称</th>
+                        <th class="w-28">数据来源</th>
+                        <th class="w-36">问题类别</th>
+                        <th class="w-20">问题级别</th>
+                        <th class="w-32">问题时间</th>
+                        <th class="w-28">市州</th>
+                        <th id="th-reject" class="w-48 hidden">驳回原因</th>
+                        <th class="w-28">是否销号</th>
+                        <th class="w-64" id="th-operation">操作</th>
+                    </tr>
+                    </thead>
+                    <tbody id="focus-table-body">
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="flex justify-between items-center px-6 py-3 border-t border-slate-100 dark:border-slate-800">
+                <div class="text-[13px] text-slate-500 dark:text-slate-400">
+                    共 <span id="focus-total" class="font-bold text-slate-700 dark:text-slate-200 mx-1">0</span> 条记录
+                </div>
+                <div class="flex items-center space-x-1" id="focus-pagination"></div>
+            </div>
+        </div>
+
+        <footer class="mt-2 pt-4 border-t border-slate-200 dark:border-slate-800 text-center text-xs text-slate-400 pb-2">
+            <p>&copy; 2026 湖北省生态环境厅 · 版权所有</p>
+        </footer>
+    </main>
+</div>
+
+<script>
+    // ========== 侧边栏交互逻辑 ==========
+    const sidebar = document.getElementById('sidebar');
+    const toggleBtn = document.getElementById('toggleSidebarBtn');
+    const toggleIcon = document.getElementById('toggleIcon');
+    let isCollapsed = false;
+
+    toggleBtn.addEventListener('click', () => {
+        isCollapsed = !isCollapsed;
+        if (isCollapsed) {
+            sidebar.classList.remove('w-[270px]');
+            sidebar.classList.add('w-[80px]', 'hide-text', 'collapsed-sidebar');
+            toggleIcon.style.transform = 'rotate(180deg)';
+        } else {
+            sidebar.classList.remove('w-[80px]', 'hide-text', 'collapsed-sidebar');
+            sidebar.classList.add('w-[270px]');
+            toggleIcon.style.transform = 'rotate(0deg)';
+        }
+    });
+
+    function toggleGroup(id) {
+        if (isCollapsed) return;
+        const group = document.getElementById(id);
+        const chevron = group.previousElementSibling.querySelector('.sidebar-chevron');
+        if (group.style.maxHeight && group.style.maxHeight !== '0px') {
+            group.style.maxHeight = '0px';
+            chevron.style.transform = 'rotate(0deg)';
+        } else {
+            group.style.maxHeight = group.scrollHeight + "px";
+            chevron.style.transform = 'rotate(180deg)';
+        }
+    }
+
+    function toggleSubmenu(id) {
+        if (isCollapsed) return;
+        const submenu = document.getElementById(id);
+        const btn = submenu.previousElementSibling;
+        const chevron = btn.querySelector('.submenu-chevron');
+        if (submenu.style.maxHeight && submenu.style.maxHeight !== '0px') {
+            submenu.style.maxHeight = '0px';
+            chevron.style.transform = 'rotate(0deg)';
+        } else {
+            submenu.style.maxHeight = submenu.scrollHeight + "px";
+            chevron.style.transform = 'rotate(180deg)';
+        }
+    }
+
+    // ========== 原版 Mock 数据（一字不改） ==========
+    const focusData = [
+        { name: "后官湖总磷超标问题",       category: "断面水质明显恶化", basin: "长江流域",   date: "2026-06-15", city: "武汉市",    status: "done",      closed: "否", survey: "是", reject: "否", inList: "是", lake: "梁子湖",     basin1: "长江干流流域", basin2: "鄂东南片区", fbs: [ { reporter: "张伟", surveyor: "李强", basic: "现场核查发现断面汇水区内有1处生活污水直排口，晴天持续直排，已现场采样并同步移交执法部门处理。", invTime: "2026-06-18", photo: ["后官湖现场核查照片1.jpg", "后官湖现场核查照片2.jpg"], video: ["后官湖现场核查.mp4"], aux: ["现场采样记录单.pdf", "直排口定位记录.xlsx"] }, { reporter: "张伟", surveyor: "周俊", basic: "整改复核：直排口已封堵，生活污水接入市政管网并移交执法部门，断面复测数据已回落，继续跟踪观察。", invTime: "2026-07-02", photo: ["后官湖整改后复测记录.jpg", "后官湖整改后复测记录2.jpg"], video: [], aux: ["复测监测报告.pdf"] } ], regUser: "刘建军", inUser: "陈敏", disUser: "孙国栋", okUser: "吴雪梅", source: "手工录入" },
+        { name: "大冶湖氨氮超标问题",       category: "断面水质明显恶化", basin: "长江流域",   date: "2026-06-20", city: "黄石市",    status: "pending",   closed: "否", survey: "否", reject: "否", inList: "否", lake: "梁子湖",     basin1: "长江干流流域", basin2: "鄂东南片区", source: "系统识别" },
+        { name: "丹江口入河排污口整治问题", category: "断面水质明显恶化", basin: "汉江流域",   date: "2026-06-18", city: "十堰市",    status: "pending", closed: "否", survey: "是", reject: "否", inList: "是", lake: "丹江口水库", basin1: "汉江流域",    basin2: "三峡库区", regUser: "刘建军", inUser: "陈敏", disUser: "孙国栋", source: "手工录入" },
+        { name: "卷桥河化学需氧量超标问题", category: "断面水质明显恶化", basin: "长江流域",   date: "2026-06-22", city: "宜昌市",    status: "done",      closed: "是", survey: "是", reject: "否", inList: "否", lake: "隔河岩水库", basin1: "长江干流流域", basin2: "黄柏河片区", source: "系统识别" },
+        { name: "汉江老河口段偷排问题",     category: "断面水质明显恶化", basin: "汉江流域",   date: "2026-06-25", city: "襄阳市",    status: "pending",   closed: "否", survey: "否", reject: "否", inList: "否", lake: "龙感湖",     basin1: "汉江流域",    basin2: "府澴河片区", source: "手工录入" },
+        { name: "梁子湖水质恶化问题",       category: "断面水质明显恶化", basin: "长江流域",   date: "2026-06-28", city: "鄂州市",    status: "done",      closed: "否", survey: "是", reject: "否", inList: "否", lake: "梁子湖",     basin1: "长江干流流域", basin2: "鄂东南片区", source: "系统识别" },
+        { name: "漳河水库水华风险问题",     category: "断面水质明显恶化", basin: "长江流域",   date: "2026-07-02", city: "荆门市",    status: "pending", closed: "否", survey: "是", reject: "否", inList: "否", lake: "漳河水库",   basin1: "长江干流流域", basin2: "沮漳河片区", source: "手工录入" },
+        { name: "汈汊湖总磷持续超标问题",   category: "断面水质明显恶化", basin: "汉江流域",   date: "2026-07-05", city: "孝感市",    status: "pending",   closed: "否", survey: "否", reject: "否", inList: "否", lake: "洪湖",       basin1: "汉江流域",    basin2: "府澴河片区", source: "系统识别" },
+        { name: "长江石首段污水收集整治",   category: "断面水质明显恶化", basin: "长江流域",   date: "2026-07-08", city: "荆州市",    status: "done",      closed: "是", survey: "是", reject: "否", inList: "否", lake: "长湖",       basin1: "长江干流流域", basin2: "荆南四河片区", source: "手工录入" },
+        { name: "巴河氨氮超标问题",         category: "断面水质明显恶化", basin: "长江流域",   date: "2026-07-10", city: "黄冈市",    status: "pending",   closed: "否", survey: "否", reject: "否", inList: "否", lake: "白莲河水库", basin1: "长江干流流域", basin2: "鄂东五河片区", source: "系统识别" },
+        { name: "斧头湖水华预警问题",       category: "断面水质明显恶化", basin: "长江流域",   date: "2026-07-12", city: "咸宁市",    status: "done",      closed: "否", survey: "是", reject: "是", reason: "监测数据未达判定标准，退回补充材料", inList: "是", lake: "斧头湖",     basin1: "长江干流流域", basin2: "富水片区", fbs: [ { reporter: "王芳", surveyor: "刘洋", basic: "湖面局部呈浅绿色并伴有异味，采集水样3组，叶绿素a偏高，已建议加密监测并排查入湖污染源。", invTime: "2026-07-14", photo: ["斧头湖水华现场照片.jpg", "斧头湖水华卫星影像.png"], video: ["斧头湖水华巡查视频.mp4"], aux: ["水华藻类监测记录.xlsx", "巡查轨迹图.pdf"] } ], regUser: "刘建军", inUser: "陈敏", disUser: "孙国栋", okUser: "吴雪梅", source: "手工录入" },
+        { name: "府河汛期污染问题",         category: "断面水质明显恶化", basin: "府河流域",   date: "2026-07-15", city: "随州市",    status: "pending",   closed: "否", survey: "否", reject: "否", inList: "否", lake: "丹江口水库", basin1: "汉江流域",    basin2: "府澴河片区", source: "系统识别" },
+        { name: "清江景区水生态破坏问题",   category: "断面水质明显恶化", basin: "清江流域",   date: "2026-07-18", city: "恩施州",    status: "done",      closed: "是", survey: "是", reject: "否", inList: "否", lake: "隔河岩水库", basin1: "清江流域",    basin2: "三峡库区", source: "手工录入" },
+        { name: "通顺河生活污水直排问题",   category: "断面水质明显恶化", basin: "通顺河流域", date: "2026-07-20", city: "仙桃市",    status: "pending", closed: "否", survey: "是", reject: "否", inList: "是", lake: "长湖",       basin1: "长江干流流域", basin2: "四湖片区", source: "系统识别" },
+        { name: "田关河养殖尾水治理问题",   category: "断面水质明显恶化", basin: "汉江流域",   date: "2026-07-22", city: "潜江市",    status: "pending",   closed: "否", survey: "否", reject: "否", inList: "否", lake: "长湖",       basin1: "汉江流域",    basin2: "四湖片区", source: "手工录入" },
+        { name: "汉北河底泥淤积问题",       category: "断面水质明显恶化", basin: "汉江流域",   date: "2026-07-25", city: "天门市",    status: "pending",   closed: "否", survey: "否", reject: "否", inList: "否", lake: "黄盖湖",     basin1: "汉江流域",    basin2: "四湖片区", source: "系统识别" },
+        { name: "当阳河非法捕捞整治问题",   category: "断面水质明显恶化", basin: "长江流域",   date: "2026-07-28", city: "神农架林区", status: "done",      closed: "是", survey: "是", reject: "否", inList: "否", lake: "漳河水库",   basin1: "长江干流流域", basin2: "三峡库区", source: "手工录入" },
+        { name: "汤逊湖汛期污染问题",       category: "断面水质明显恶化", basin: "长江流域",   date: "2025-08-12", city: "武汉市",    status: "closed",    closed: "是", survey: "是", reject: "否", inList: "否", lake: "斧头湖",     basin1: "长江干流流域", basin2: "鄂东南片区", source: "系统识别" },
+        { name: "富河总磷超标问题",         category: "断面水质明显恶化", basin: "富水流域",   date: "2025-09-03", city: "黄石市",    status: "closed",    closed: "是", survey: "是", reject: "否", inList: "是", lake: "富水水库",   basin1: "长江干流流域", basin2: "富水片区", source: "手工录入" },
+        { name: "堵河水源地违建拆除问题",   category: "断面水质明显恶化", basin: "汉江流域",   date: "2025-09-20", city: "十堰市",    status: "done",      closed: "是", survey: "是", reject: "否", inList: "否", lake: "黄龙滩水库", basin1: "汉江流域",    basin2: "三峡库区", source: "系统识别" },
+        { name: "洪湖围网养殖问题",         category: "断面水质明显恶化", basin: "长江流域",   date: "2025-10-25", city: "荆州市",    status: "done",      closed: "是", survey: "是", reject: "否", inList: "否", lake: "洪湖",       basin1: "长江干流流域", basin2: "四湖片区", source: "系统识别" },
+        { name: "自动站超标问题", category: "自动站水质超标（天）", basin: "长江流域",   date: "2026-08-02", city: "武汉市",    status: "pending",   closed: "否", survey: "否", reject: "否", inList: "是", lake: "梁子湖",     basin1: "长江干流流域", basin2: "鄂东南片区", source: "外部系统调度" },
+        { name: "自动站超标问题", category: "自动站水质超标（小时）", basin: "汉江流域",   date: "2026-08-08", city: "十堰市",    status: "pending", closed: "否", survey: "是", reject: "否", inList: "是", lake: "丹江口水库", basin1: "汉江流域",    basin2: "三峡库区", source: "外部系统调度" },
+        { name: "自动站超标问题",     category: "自动站水质超标（小时）", basin: "汉江流域",   date: "2026-08-15", city: "襄阳市",    status: "done",      closed: "否", survey: "是", reject: "否", inList: "否", lake: "龙感湖",     basin1: "汉江流域",    basin2: "府澴河片区", source: "外部系统调度" },
+        { name: "自动站超标问题",     category: "水质类别变化报警", level: "一级", basin: "长江流域",   date: "2026-08-03", city: "武汉市",    status: "pending",   closed: "否", survey: "否", reject: "否", inList: "是", lake: "梁子湖",     basin1: "长江干流流域", basin2: "鄂东南片区", source: "外部系统调度" },
+        { name: "自动站超标问题",     category: "水质类别变化报警", level: "二级", basin: "长江流域",   date: "2026-08-06", city: "宜昌市",    status: "pending", closed: "否", survey: "是", reject: "否", inList: "是", lake: "隔河岩水库", basin1: "长江干流流域", basin2: "黄柏河片区", source: "外部系统调度" },
+        { name: "自动站超标问题",     category: "水质类别变化报警", level: "三级", basin: "长江流域",   date: "2026-08-10", city: "荆州市",    status: "pending",   closed: "否", survey: "否", reject: "否", inList: "否", lake: "长湖",       basin1: "长江干流流域", basin2: "荆南四河片区", source: "外部系统调度" },
+        { name: "自动站超标问题",     category: "水质类别变化报警", level: "二级", basin: "长江流域",   date: "2026-08-12", city: "咸宁市",    status: "pending", closed: "否", survey: "是", reject: "否", inList: "否", lake: "斧头湖",     basin1: "长江干流流域", basin2: "富水片区", source: "外部系统调度" },
+        { name: "自动站超标问题",     category: "浓度变化预警", level: "一级", basin: "汉江流域",   date: "2026-08-04", city: "十堰市",    status: "pending",   closed: "否", survey: "否", reject: "否", inList: "是", lake: "丹江口水库", basin1: "汉江流域",    basin2: "三峡库区", source: "外部系统调度" },
+        { name: "自动站超标问题",     category: "浓度变化预警", level: "二级", basin: "汉江流域",   date: "2026-08-07", city: "襄阳市",    status: "done",      closed: "否", survey: "是", reject: "否", inList: "是", lake: "龙感湖",     basin1: "汉江流域",    basin2: "府澴河片区", fbs: [ { reporter: "陈静", surveyor: "赵磊", basic: "经比对历史数据与在线质控记录，判定为站点运维校准引起的短时数据异常，非实际超标，恢复正常后已解除预警。", invTime: "2026-08-09", photo: ["自动站运维校准记录.png"], video: [], aux: ["在线质控记录截图.png", "运维工单.pdf"] } ], source: "外部系统调度" },
+        { name: "自动站超标问题",     category: "浓度变化预警", level: "三级", basin: "清江流域",   date: "2026-08-11", city: "恩施州",    status: "pending",   closed: "否", survey: "否", reject: "否", inList: "否", lake: "隔河岩水库", basin1: "清江流域",    basin2: "三峡库区", source: "外部系统调度" },
+        { name: "自动站超标问题",     category: "浓度变化预警", level: "一级", basin: "通顺河流域", date: "2026-08-14", city: "仙桃市",    status: "pending", closed: "否", survey: "否", reject: "否", inList: "否", lake: "长湖",       basin1: "长江干流流域", basin2: "四湖片区", source: "外部系统调度" }
+    ];
+
+    // 反馈只读标记：已提交过省级的反馈（提交后被驳回/已审核的记录）一律锁定（fb.sub=true），
+    // 地市只能查看不可删改；驳回后新补的反馈不带标记，支持增删改，直到下一次“提交反馈”再整体锁定
+    focusData.forEach(it => {
+        if (Array.isArray(it.fbs) && (it.reject === '是' || it.status === 'done' || it.status === 'closed')) {
+            it.fbs.forEach(fb => { fb.sub = true; });
+        }
+    });
+
+    const statusMap = {
+        pending: { label: "待反馈", cls: "status-pending" },
+        done:    { label: "已反馈", cls: "status-done" },
+        closed:  { label: "已销号", cls: "status-closed" }
+    };
+
+    // ========== 三级级联选择器（大类 → 小类 → 识别规则） ==========
+    const cascaderData = [
+        {
+            category: "自动站超标问题",
+            desc: "自动站监测数据超标预警（依据日均值与四小时均值判定）",
+            children: [
+                {
+                    category: "自动站水质超标（天）",
+                    desc: "自动站日超标分类：按日评价的自动站水质超标问题（日均值判定），具体识别规则见同级的“水质类别变化报警”。",
+                    items: [
+                        { name: "自动站水质超标（天）", time: "日", tip: "按日评价的自动站水质超标问题（日超标，日均值判定），具体识别规则详见同级“水质类别变化报警”。" }
+                    ]
+                },
+                {
+                    category: "自动站水质超标（小时）",
+                    desc: "自动站小时超标分类：按小时评价的自动站水质超标问题（四小时均值判定），具体识别规则见同级的“浓度变化预警”。",
+                    items: [
+                        { name: "自动站水质超标（小时）", time: "日", tip: "按小时评价的自动站水质超标问题（小时超标，四小时均值判定），具体识别规则详见同级“浓度变化预警”。" }
+                    ]
+                },
+                {
+                    category: "水质类别变化报警",
+                    desc: "依据日均值判断，参与指标为 pH、溶解氧、高锰酸盐指数、总磷、氨氮（剔除停运/无效数据）。",
+                    items: [
+                        { name: "昨日水质劣于前日提醒", time: "年月", tip: "昨日水质劣于前日水质即进行提醒，并列出引起水质类别变差的指标（剔除停运/无效数据）。Ⅰ类与Ⅱ类的变化不提醒。" },
+                        { name: "重要站点超Ⅱ类预警", time: "年月", tip: "长江干流、丹江口水库站点因单个因子日均值超过Ⅱ类进行预警提醒（一级：水质Ⅲ类；二级：水质Ⅳ类；三级：水质Ⅴ类、劣Ⅴ类）。" },
+                        { name: "单因子日均超Ⅲ类预警", time: "年月", tip: "站点水质因单个因子日均值超过Ⅲ类进行预警提醒。预警等级：一级水质Ⅳ类，二级水质Ⅴ类，三级水质劣Ⅴ类。" }
+                    ]
+                },
+                {
+                    category: "浓度变化预警",
+                    desc: "按四小时均值判定（如0-3点后下一轮4-7点），含 pH、溶解氧、氨氮·总磷·总氮、高锰酸盐指数及锑等特殊因子。",
+                    items: [
+                        { name: "pH超标预警", time: "年月", tip: "pH 采用氢离子浓度均值折算：一级：四小时均值连续3次低于5.5或高于10.5；二级：四小时均值连续3次低于6或高于9。" },
+                        { name: "溶解氧骤降预警", time: "年月", tip: "一级：四小时均值连续3次低于前三天均值的25%，且低于地表水Ⅴ类标准浓度限值或比前三天均值水质类别下降两个级别；二级：阈值50%。" },
+                        { name: "氨氮总磷总氮突升预警", time: "年月", tip: "氨氮、总磷、总氮三项指标中任意一项连续3次监测数据超过之前三天均值：一级400%且水质类别恶化两个级别；二级300%；三级200%（二级起须超Ⅴ类限值或水质类别下降两个级别）。" },
+                        { name: "高锰酸盐指数突升预警", time: "年月", tip: "一级：连续3次监测数据为之前三天均值的300%及以上；二级：超200%及以上；三级：为150%及以上（均须超Ⅴ类标准浓度限值或较前三天水质类别下降两个级别）。" },
+                        { name: "锑因子超标预警", time: "年月", tip: "锑因子超过限制（平台设置标准0.005）进行实时预警。" }
+                    ]
+                }
+            ]
+        },
+
+
+        {
+            category: "断面水质问题",
+            children: [
+                {
+                    category: "断面水质明显恶化",
+                    items: [
+                        { name: "国控断面水质超标", time: "年月" },
+                        { name: "省控断面水质超标", time: "年月" },
+                        { name: "长江流域国控断面某一指标连续两个月超过Ⅱ类指标的90%", time: "年月" },
+                        { name: "省控断面某一指标连续两个月超过Ⅱ类指标的90%", time: "年月" },
+                        { name: "国控断面相关某一指标连续三个月及以上超过水质目标要求10%以上", time: "年月" },
+                        { name: "省控断面相关某一指标连续三个月及以上超过水质目标要求10%以上", time: "年月" },
+                        { name: "国控断面水质类别同比或环比恶化2个类别及以上的", time: "年月" },
+                        { name: "省控断面水质类别同比或环比恶化2个类别及以上的", time: "年月" },
+                        { name: "斧头湖水环境质量问题", time: "年月" },
+                        { name: "当月国控断面某一指标达到劣V类的指标的90%", time: "年月" },
+                        { name: "当月省控断面某一指标达到劣V类的指标的90%", time: "年月" }
+                    ]
+                },
+                {
+                    category: "断面水质存在有毒有害物质超标",
+                    items: [
+                        { name: "当月国控断面有毒有害物质且某一指标超过Ⅲ类指标的90%", time: "年月" },
+                        { name: "当月省控断面有毒有害物质且某一指标超过Ⅲ类指标的90%", time: "年月" }
+                    ]
+                },
+                {
+                    category: "南水北调调水水质超标",
+                    items: [
+                        { name: "对于任意时段的南水北调工程中线断面，当月水质超过Ⅱ类的即会进行预警", time: "年月" }
+                    ]
+                },
+                {
+                    category: "四不两直专项检查",
+                    items: [
+                        { name: "手动录入", time: "年" }
+                    ]
+                },
+                {
+                    category: "重点攻坚断面整治",
+                    items: [
+                        { name: "手动录入", time: "年" }
+                    ]
+                }
+            ]
+        },
+        {
+            category: "重点任务",
+            children: [
+                {
+                    category: "工业园区水污染问题",
+                    items: [
+                        { name: "排除整改问题", time: "年" }
+                    ]
+                },
+                {
+                    category: "饮用水水源地问题",
+                    items: [
+                        { name: "年度饮用水水环境问题", time: "年" },
+                        { name: "回头看问题", time: "年" },
+                        { name: "周期性巡查问题", time: "年" }
+                    ]
+                },
+
+                {
+                    category: "黑臭水体问题",
+                    items: [
+                        { name: "2026年黑臭水体新增问题", time: "年" },
+                        { name: "'长江流域局'问题", time: "年" },
+                        { name: "2025年（污染防治攻坚统筹强化监督）", time: "年" }
+                    ]
+                },
+                {
+                    category: "污水处理厂问题",
+                    desc: "污水处理厂小时数据指标异常识别：依据《8月指标异常识别》规则说明，含超标后持续恒定、超标后故障上升陡降、24小时恒值、累计故障9小时四类识别规则。",
+                    items: [
+                        { name: "超标后持续恒定", time: "日", tip: "某小时指标值超排放限值（如 COD>75 mg/L，即超标），其后连续6小时数值保持稳定、上下波动≤2%，判定为异常；超标时刻仅作起点不计入恒定区间，后续某小时波动超2%时异常结束。" },
+                        { name: "超标后故障上升陡降", time: "日", tip: "超标后设备或仪表出现故障标记，数值继续逐渐上升（上升段不超过峰值前12小时），随后紧接着的下一小时较峰值大幅回落（降幅超过60%），判定为异常。" },
+                        { name: "24小时恒值", time: "日", tip: "连续24小时均为正常数据（无断档、无异常数据），且数值保持恒定、上下波动≤2%，判定为“连续24小时恒值”异常。" },
+                        { name: "累计故障9小时", time: "日", tip: "在滚动24小时内，设备处于故障状态的小时累计达到9小时，判定为“设备累计故障”异常。" }
+                    ]
+                }
+            ]
+        },
+        {
+            category: "水质预测",
+            children: [
+                {
+                    category: "断面预警",
+                    items: [
+                        { name: "未来三天国控断面数据存在超过V类", time: "年月" },
+                        { name: "未来三天省控断面数据存在超过V类", time: "年月" }
+                    ]
+                },
+                {
+                    category: "湖库预警",
+                    items: [
+                        { name: "未来三天湖库健康指数为'差'时对整个湖库进行问题预警", time: "年月" }
+                    ]
+                },
+                {
+                    category: "河流预警",
+                    items: [
+                        { name: "未来三天某天某一河流上超标断面个数大于总体断面个数的30%时，对整个河流进行问题预警", time: "年月" }
+                    ]
+                }
+            ]
+        },
+        {
+            category: "其他类型",
+            children: [
+                {
+                    category: "舆情问题",
+                    items: [
+                        { name: "舆情接口采集问题", time: "年月" },
+                        { name: "宣教处系统问题", time: "年月" }
+                    ]
+                },
+                {
+                    category: "信访举报问题",
+                    items: [
+                        { name: "省内信访举报问题", time: "年月" }
+                    ]
+                }
+            ]
+        }
+    ];
+
+    let selectedCategory = '';
+    let selectedCategorySub = '';
+    let activeCategoryIndex = 0;
+    let activeSubIndex = 0;
+
+    const cascaderTrigger = document.getElementById('cascader-trigger');
+    const cascaderIcon = document.getElementById('cascader-icon');
+    const cascaderPopover = document.getElementById('cascader-popover');
+    const cascaderCategories = document.getElementById('cascader-categories');
+    const cascaderSubs = document.getElementById('cascader-subs');
+    const cascaderOptions = document.getElementById('cascader-options');
+    const cascaderText = document.getElementById('cascader-text');
+    const cascaderClear = document.getElementById('cascader-clear');
+
+    function escAttr(s) {
+        return String(s || '').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+    // 悬浮提示：分类有 desc / 规则有 tip 时显示识别说明
+    function tipAttr(t) { return t ? ` title="${escAttr(t)}"` : ''; }
+
+    // 仅“水质类别变化报警 / 浓度变化预警”两个小类才带预警级别，可进一步按级别筛选
+    const LEVEL_CATEGORIES = ['水质类别变化报警', '浓度变化预警'];
+    const filterLevelWrap = document.getElementById('filter-level-wrap');
+    const filterLevelSel = document.getElementById('filter-level');
+    function updateLevelFilterVisibility() {
+        const show = LEVEL_CATEGORIES.indexOf(selectedCategorySub) >= 0;
+        if (filterLevelWrap) filterLevelWrap.classList.toggle('hidden', !show);
+        if (filterLevelSel && !show) filterLevelSel.value = '全部';
+    }
+
+    function renderCategories() {
+        let html = '';
+        cascaderData.forEach((cat, index) => {
+            const isActive = index === activeCategoryIndex;
+            const textClass = isActive ? 'text-blue-600 font-bold bg-white' : 'text-slate-600 hover:text-blue-500 hover:bg-slate-100';
+            html += `<div class="px-4 py-2.5 cursor-pointer flex justify-between items-center text-[13px] transition-colors ${textClass}"${tipAttr(cat.desc)} onmouseenter="setActiveCategory(${index})" onclick="setActiveCategory(${index})"><span>${cat.category}</span><i class="ri-arrow-right-s-line text-slate-400"></i></div>`;
+        });
+        if (!html) html = '<div class="px-4 py-3 text-[12px] text-slate-400">无匹配类别</div>';
+        cascaderCategories.innerHTML = html;
+        renderSubs();
+        renderOptions();
+    }
+
+    window.setActiveCategory = function(index) {
+        if (activeCategoryIndex === index) return;
+        activeCategoryIndex = index;
+        activeSubIndex = 0;
+        renderCategories();
+    };
+
+    function renderSubs() {
+        const cat = cascaderData[activeCategoryIndex];
+        if (!cat) { cascaderSubs.innerHTML = ''; return; }
+        let html = '';
+        cat.children.forEach((sub, index) => {
+            const isActive = index === activeSubIndex;
+            const textClass = isActive ? 'text-blue-600 font-bold bg-white' : 'text-slate-600 hover:text-blue-500 hover:bg-slate-100';
+            html += `<div class="px-4 py-2 cursor-pointer text-[13px] transition-colors ${textClass}"${tipAttr(sub.desc)} onmouseenter="setActiveSub(${index})" onclick="setActiveSub(${index})">${sub.category}</div>`;
+        });
+        if (!html) html = '<div class="px-4 py-3 text-[12px] text-slate-400">无匹配小类</div>';
+        cascaderSubs.innerHTML = html;
+    }
+
+    window.setActiveSub = function(index) {
+        if (activeSubIndex === index) return;
+        activeSubIndex = index;
+        renderSubs();
+        renderOptions();
+    };
+
+    function renderOptions() {
+        const cat = cascaderData[activeCategoryIndex];
+        const sub = cat ? cat.children[activeSubIndex] : null;
+        if (!sub) { cascaderOptions.innerHTML = ''; return; }
+        let html = '';
+        sub.items.forEach((item, index) => {
+            html += `<div class="px-4 py-2 cursor-pointer text-[12px] leading-snug text-slate-600 hover:text-blue-600 hover:bg-blue-50 transition-colors"${tipAttr(item.tip)} onclick="selectCascaderOption(${index})">${item.name}</div>`;
+        });
+        if (!html) html = '<div class="px-4 py-3 text-[12px] text-slate-400">无匹配规则</div>';
+        cascaderOptions.innerHTML = html;
+    }
+
+    window.selectCascaderOption = function(index) {
+        const opt = cascaderData[activeCategoryIndex].children[activeSubIndex].items[index];
+        selectedCategory = opt.name;
+        selectedCategorySub = cascaderData[activeCategoryIndex].children[activeSubIndex].category;
+        cascaderText.innerText = selectedCategory;
+        cascaderText.classList.replace('text-slate-500', 'text-slate-800');
+        if (cascaderClear) cascaderClear.classList.remove('hidden');
+        updateLevelFilterVisibility();
+        refreshTimeGranularity(opt.time || '');
+        closeCascader();
+        applyFilter();
+    };
+
+    window.clearCascader = function() {
+        selectedCategory = '';
+        selectedCategorySub = '';
+        cascaderText.innerText = '请选择类别';
+        cascaderText.classList.replace('text-slate-800', 'text-slate-500');
+        if (cascaderClear) cascaderClear.classList.add('hidden');
+        updateLevelFilterVisibility();
+        refreshTimeGranularity('');
+        applyFilter();
+    };
+
+    if (cascaderClear) cascaderClear.addEventListener('click', (e) => { e.stopPropagation(); clearCascader(); });
+
+    function toggleCascader() {
+        if (cascaderPopover.classList.contains('hidden')) {
+            closeDatepicker();
+            cascaderPopover.classList.remove('hidden');
+            cascaderIcon.classList.add('rotate-180');
+            cascaderTrigger.classList.add('border-blue-500');
+            renderCategories();
+        } else {
+            closeCascader();
+        }
+    }
+
+    function closeCascader() {
+        cascaderPopover.classList.add('hidden');
+        cascaderIcon.classList.remove('rotate-180');
+        cascaderTrigger.classList.remove('border-blue-500');
+    }
+    if (cascaderTrigger) cascaderTrigger.addEventListener('click', toggleCascader);
+
+    // ========== 时间筛选控件（单框：主框点选日期 + 右侧三角切 年/月/日 频率） ==========
+    const dpTrigger = document.getElementById('datepicker-trigger');
+    const dpFreqBtn = document.getElementById('dp-freq-trigger');
+    const dpPopover = document.getElementById('datepicker-popover');
+    const dpFreqMenu = document.getElementById('dp-freq-menu');
+    const dpContainer = document.getElementById('dp-container');
+    const dpText = document.getElementById('datepicker-text');
+    const dpBox = document.getElementById('dp-box');
+    const dpFreqCaret = document.getElementById('dp-freq-caret');
+    const dpFreqLabel = document.getElementById('dp-freq-label');
+
+    // 频率可选范围由当前识别规则的“时间粒度”决定：日 → 年/月/日；年月 → 年/月；年 → 仅年；未选 → 年/月/日
+    const TIME_FREQS = { '日': ['年', '月', '日'], '年月': ['年', '月'], '年': ['年'] };
+    let dataTime = '';            // 当前识别规则时间粒度：日 | 年月 | 年 | ''(未选)
+    let dpFreq = '月';            // 频率：年 | 月 | 日
+    let dpForm = '年月';          // 面板形态：年月(月) | 日 | 年
+    let selectedYearMonth = '';
+    let dpCurrentYear = 2026;
+    let dpCurrentMonth = 6;
+
+    function freqForm(f) { return f === '月' ? '年月' : f; }
+
+    function dpPlaceholder() {
+        if (dpFreq === '日') return '选择日期';
+        if (dpFreq === '年') return '选择年份';
+        return '选择月份';
+    }
+
+    function allowedFreqs() {
+        return dataTime ? (TIME_FREQS[dataTime] || ['年', '月', '日']) : ['年', '月', '日'];
+    }
+
+    // 若当前频率不在该粒度允许范围内，回退到允许的最后一项（日粒度默认日 / 月粒度默认月 / 年粒度默认年）
+    function ensureFreqAllowed() {
+        const allowed = allowedFreqs();
+        if (allowed.indexOf(dpFreq) >= 0) return false;
+        dpFreq = allowed[allowed.length - 1];
+        return true;
+    }
+
+    // 框体高亮跟随 日期面板 / 频率下拉 任一展开
+    function syncDpBox() {
+        if (!dpBox) return;
+        const active = !dpPopover.classList.contains('hidden') || !dpFreqMenu.classList.contains('hidden');
+        dpBox.classList.toggle('dp-open', active);
+    }
+
+    // 同步三角左侧的频率文字（年/月/日）
+    function syncFreqLabel() {
+        if (dpFreqLabel) dpFreqLabel.innerText = dpFreq;
+    }
+
+    function closeDatepicker() {
+        dpPopover.classList.add('hidden');
+        syncDpBox();
+    }
+
+    // 渲染右侧三角的频率下拉（年/月/日，仅列当前时间粒度允许的项，当前项打勾）
+    function renderFreqMenu() {
+        if (!dpFreqMenu) return;
+        const allowed = allowedFreqs();
+        dpFreqMenu.innerHTML = allowed.map(f => `
+            <button type="button" data-dpfreq="${f}"
+                class="w-full flex items-center justify-between px-3 py-1.5 text-[12px] transition-colors ${dpFreq === f ? 'text-blue-600 font-bold bg-blue-50' : 'text-slate-600 hover:bg-slate-100 hover:text-blue-600'}">
+                <span>${f}</span>${dpFreq === f ? '<i class="ri-check-line text-[13px] flex-none"></i>' : ''}
+            </button>`).join('');
+    }
+
+    function openFreqMenu() {
+        closeCascader();
+        closeDatepicker();                 // 先收起日期面板，再展开频率下拉
+        renderFreqMenu();
+        dpFreqMenu.classList.remove('hidden');
+        if (dpFreqCaret) dpFreqCaret.classList.add('rotate-180');
+        syncDpBox();
+    }
+    function closeFreqMenu() {
+        if (dpFreqMenu) dpFreqMenu.classList.add('hidden');
+        if (dpFreqCaret) dpFreqCaret.classList.remove('rotate-180');
+        syncDpBox();
+    }
+    function toggleFreqMenu() {
+        if (dpFreqMenu.classList.contains('hidden')) openFreqMenu();
+        else closeFreqMenu();
+    }
+
+    // 在频率下拉里切换 年/月/日：清空已选时间并刷新主框占位（下次打开日期面板按新频率展示）
+    function chooseFreq(f) {
+        if (allowedFreqs().indexOf(f) < 0) return;
+        dpFreq = f;
+        syncFreqLabel();
+        dpForm = freqForm(f);
+        selectedYearMonth = '';
+        dpText.innerText = dpPlaceholder();
+        dpText.classList.replace('text-slate-800', 'text-slate-500');
+        closeFreqMenu();
+        applyFilter();
+    }
+
+    function renderDatepicker() {
+        let html = '';
+        // 顶部年份导航：仅“年月/季度/年”形态需要；日粒度直接用下方月导航单行做标准日历头，避免年/月两层标题重复
+        if (dpForm !== '日') {
+            html += `<div class="flex justify-between items-center mb-3 border-b border-slate-100 pb-2">`;
+            html += `<button type="button" data-dpnav="prev-year" class="text-slate-400 hover:text-blue-500 transition-colors px-1"><i class="ri-arrow-left-double-line text-lg"></i></button>`;
+            html += `<span class="font-medium text-[15px] text-slate-700">${dpCurrentYear} 年</span>`;
+            html += `<button type="button" data-dpnav="next-year" class="text-slate-400 hover:text-blue-500 transition-colors px-1"><i class="ri-arrow-right-double-line text-lg"></i></button>`;
+            html += `</div>`;
+        }
+
+        if (dpForm === '年月') {
+            html += `<div class="grid grid-cols-4 gap-y-4 gap-x-2 text-center">`;
+            for(let i=1; i<=12; i++){
+                const mv = String(i).padStart(2, '0');
+                const val = dpCurrentYear + '-' + mv;
+                const isActive = selectedYearMonth === val;
+                html += `<button type="button" data-dpval="${val}" class="py-2 text-[13px] rounded-lg transition-colors border ${isActive ? 'bg-blue-50 border-blue-500 text-blue-600 font-bold' : 'border-transparent text-slate-600 hover:text-blue-600 hover:bg-blue-50'}">${i}月</button>`;
+            }
+            html += `</div>`;
+        } else if (dpForm === '日') {
+            html += `<div class="flex justify-between items-center mb-2">`;
+            html += `<button type="button" data-dpnav="prev-month" class="text-slate-400 hover:text-blue-500 transition-colors px-1"><i class="ri-arrow-left-s-line text-lg"></i></button>`;
+            html += `<span class="text-[13px] font-medium text-slate-700">${dpCurrentYear} 年 ${dpCurrentMonth} 月</span>`;
+            html += `<button type="button" data-dpnav="next-month" class="text-slate-400 hover:text-blue-500 transition-colors px-1"><i class="ri-arrow-right-s-line text-lg"></i></button>`;
+            html += `</div>`;
+            const weekdays = ['日','一','二','三','四','五','六'];
+            html += `<div class="grid grid-cols-7 gap-1 text-center text-[11px] text-slate-400 mb-1">`;
+            weekdays.forEach(w => html += `<span>${w}</span>`);
+            html += `</div>`;
+            const firstDay = new Date(dpCurrentYear, dpCurrentMonth-1, 1).getDay();
+            const daysInMonth = new Date(dpCurrentYear, dpCurrentMonth, 0).getDate();
+            html += `<div class="grid grid-cols-7 gap-1 text-center">`;
+            for (let i=0;i<firstDay;i++) html += `<span></span>`;
+            for (let d=1; d<=daysInMonth; d++){
+                const val = dpCurrentYear + '-' + String(dpCurrentMonth).padStart(2, '0') + '-' + String(d).padStart(2, '0');
+                const isActive = selectedYearMonth === val;
+                html += `<button type="button" data-dpval="${val}" class="py-1.5 text-[12px] rounded-lg transition-colors ${isActive ? 'bg-blue-500 text-white font-bold' : 'text-slate-600 hover:bg-blue-50 hover:text-blue-600'}">${d}</button>`;
+            }
+            html += `</div>`;
+        } else if (dpForm === '季度') {
+            html += `<div class="grid grid-cols-2 gap-3 text-center">`;
+            for (let q=1; q<=4; q++){
+                const val = dpCurrentYear + '-Q' + q;
+                const isActive = selectedYearMonth === val;
+                html += `<button type="button" data-dpval="${val}" class="py-3 text-[13px] rounded-lg transition-colors border ${isActive ? 'bg-blue-50 border-blue-500 text-blue-600 font-bold' : 'border-transparent text-slate-600 hover:text-blue-600 hover:bg-blue-50'}">${q}季度</button>`;
+            }
+            html += `</div>`;
+        } else if (dpForm === '年') {
+            html += `<div class="grid grid-cols-3 gap-3 text-center">`;
+            const startY = dpCurrentYear - 4;
+            for (let i=0; i<12; i++){
+                const y = startY + i;
+                const val = String(y);
+                const isActive = selectedYearMonth === val;
+                html += `<button type="button" data-dpval="${val}" class="py-2 text-[13px] rounded-lg transition-colors border ${isActive ? 'bg-blue-50 border-blue-500 text-blue-600 font-bold' : 'border-transparent text-slate-600 hover:text-blue-600 hover:bg-blue-50'}">${y}年</button>`;
+            }
+            html += `</div>`;
+        }
+        dpContainer.innerHTML = html;
+    }
+
+    function openDatepicker() {
+        closeCascader();
+        closeFreqMenu();                   // 先收起频率下拉
+        // 打开前按当前时间粒度校验频率；若已不可用回退到代表频率并清空已选时间
+        if (ensureFreqAllowed()) {
+            dpForm = freqForm(dpFreq);
+            syncFreqLabel();
+            selectedYearMonth = '';
+            dpText.innerText = dpPlaceholder();
+            dpText.classList.replace('text-slate-800', 'text-slate-500');
+        }
+        dpPopover.classList.remove('hidden');
+        syncDpBox();
+        renderDatepicker();
+    }
+
+    function toggleDatepicker() {
+        if (dpPopover.classList.contains('hidden')) openDatepicker();
+        else closeDatepicker();
+    }
+
+    function selectYearMonth(val) {
+        selectedYearMonth = val;
+        if (val) {
+            if (dpForm === '季度') {
+                const [yy, q] = val.split('-Q');
+                dpCurrentYear = Number(yy);
+                dpText.innerText = yy + ' 年 ' + q + ' 季度';
+            } else if (dpForm === '年') {
+                dpCurrentYear = Number(val);
+                dpText.innerText = val + ' 年';
+            } else if (dpForm === '日') {
+                const [yy, mm, dd] = val.split('-');
+                dpCurrentYear = Number(yy);
+                dpCurrentMonth = Number(mm);
+                dpText.innerText = yy + ' 年 ' + Number(mm) + ' 月 ' + Number(dd) + ' 日';
+            } else {
+                const [yy, mm] = val.split('-');
+                dpCurrentYear = Number(yy);
+                dpCurrentMonth = Number(mm);
+                dpText.innerText = yy + ' 年 ' + Number(mm) + ' 月';
+            }
+            dpText.classList.replace('text-slate-500', 'text-slate-800');
+        } else {
+            dpText.innerText = dpPlaceholder();
+            dpText.classList.replace('text-slate-800', 'text-slate-500');
+        }
+        applyFilter();
+    }
+
+    // 依据识别规则的时间粒度刷新频率可选范围：
+    //   - 日   规则 → 可查 年/月/日（全放开）
+    //   - 年月 规则 → 可查 年/月（去掉日）
+    //   - 年   规则 → 仅可查 年
+    //   - 未选规则 → 全部放开，默认月
+    // 若当前频率在新粒度下不再允许（如月切到仅年的规则），则回退到该规则的默认频率并清空已选时间；
+    // 若当前频率仍被允许（如选了日规则但此刻仍是月），则保留用户已有选择，便于在同类问题间继续向下钻取。
+    function refreshTimeGranularity(t) {
+        const hasT = (t === '日' || t === '年月' || t === '年');
+        dataTime = hasT ? t : '';
+        let changed = false;
+        if (!hasT) {
+            // 未选 / 清除规则：回到“月”默认
+            if (dpFreq !== '月' || selectedYearMonth) { dpFreq = '月'; changed = true; }
+        } else if (allowedFreqs().indexOf(dpFreq) < 0) {
+            // 新规则粒度不允许当前频率 → 切到该粒度代表默认并清空已选时间
+            dpFreq = allowedFreqs()[allowedFreqs().length - 1];
+            changed = true;
+        }
+        if (changed) {
+            dpForm = freqForm(dpFreq);
+            syncFreqLabel();
+            selectedYearMonth = '';
+            dpText.innerText = dpPlaceholder();
+            dpText.classList.replace('text-slate-800', 'text-slate-500');
+        }
+        if (!dpPopover.classList.contains('hidden')) renderDatepicker();
+    }
+
+    function matchTimeValue(dateStr) {
+        if (!selectedYearMonth) return true;
+        if (dpForm === '季度') {
+            const [yy, q] = selectedYearMonth.split('-Q');
+            const m = Number(dateStr.slice(5, 7));
+            const quarter = Math.ceil(m / 3);
+            return dateStr.slice(0, 4) === yy && quarter === Number(q);
+        }
+        return dateStr.startsWith(selectedYearMonth);
+    }
+
+    if (dpTrigger) dpTrigger.addEventListener('click', (e) => { e.stopPropagation(); toggleDatepicker(); });
+    if (dpFreqBtn) dpFreqBtn.addEventListener('click', (e) => { e.stopPropagation(); toggleFreqMenu(); });
+
+    if (dpFreqMenu) dpFreqMenu.addEventListener('click', (e) => {
+        const btn = e.target.closest('button[data-dpfreq]');
+        if (btn) chooseFreq(btn.getAttribute('data-dpfreq'));
+    });
+
+    dpPopover.addEventListener('click', (e) => {
+        const navBtn = e.target.closest('button[data-dpnav]');
+        if (navBtn) {
+            const action = navBtn.getAttribute('data-dpnav');
+            if (action === 'prev-year') dpCurrentYear--;
+            else if (action === 'next-year') dpCurrentYear++;
+            else if (action === 'prev-month') { dpCurrentMonth--; if (dpCurrentMonth < 1) { dpCurrentMonth = 12; dpCurrentYear--; } }
+            else if (action === 'next-month') { dpCurrentMonth++; if (dpCurrentMonth > 12) { dpCurrentMonth = 1; dpCurrentYear++; } }
+            renderDatepicker();
+            return;
+        }
+        const valBtn = e.target.closest('button[data-dpval]');
+        if (valBtn) {
+            const val = valBtn.getAttribute('data-dpval');
+            closeDatepicker();
+            selectYearMonth(selectedYearMonth === val ? '' : val);
+        }
+    });
+
+    document.addEventListener('click', (e) => {
+        if (!document.getElementById('custom-cascader').contains(e.target)) closeCascader();
+        if (!document.getElementById('custom-datepicker').contains(e.target)) closeDatepicker();
+        const ap = document.getElementById('add-cat-panel');
+        const at = document.getElementById('add-cat-trigger');
+        if (ap && at && ap.classList.contains('open') && !ap.contains(e.target) && !at.contains(e.target)) closeAddCatPanel();
+    });
+
+    // ========== 数据与逻辑联动 ==========
+    let selectedSource = '全部';
+    document.querySelectorAll('.source-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            selectedSource = btn.dataset.source;
+            document.querySelectorAll('.source-btn').forEach(b => b.classList.toggle('active', b.dataset.source === selectedSource));
+            applyFilter();
+        });
+    });
+
+    let selectedStatusTab = '';
+    const statusTabAll = document.getElementById('status-tab-all');
+
+    function renderStatusTabsActive() {
+        statusTabAll.classList.toggle('active', selectedStatusTab === '');
+        document.querySelectorAll('#status-tabs .status-tab[data-tab]').forEach(b => {
+            b.classList.toggle('active', b.dataset.tab === selectedStatusTab);
+        });
+    }
+
+    function updateStatusTabsVisibility() {
+        // 清单页：审批状态 Tab 始终显示
+        document.querySelectorAll('#status-tabs .status-tab[data-tab]').forEach(b => {
+            b.classList.remove('hidden');
+        });
+        // “全部”始终显示
+        statusTabAll.classList.remove('hidden');
+        // 切换问题流程时，默认选中“全部”（蓝色底）
+        selectedStatusTab = '';
+        renderStatusTabsActive();
+    }
+
+    function renderStatusTabCounts() {
+        const data = chartData;
+        const setCount = (selector, n) => {
+            const el = document.querySelector(`#status-tabs .status-tab${selector} .tab-count`);
+            if (el) el.textContent = `(${n})`;
+        };
+        setCount('#status-tab-all', data.length);
+        setCount('[data-tab="待反馈"]', data.filter(i => i.status === 'pending' && i.reject !== '是').length);
+        setCount('[data-tab="已反馈"]', data.filter(i => i.status === 'done' && i.reject !== '是').length);
+        setCount('[data-tab="已驳回"]', data.filter(i => i.reject === '是').length);
+        setCount('[data-tab="已销号"]', data.filter(i => i.status === 'closed' && i.reject !== '是').length);
+    }
+
+    document.querySelectorAll('#status-tabs .status-tab[data-tab]').forEach(btn => {
+        btn.addEventListener('click', () => {
+            selectedStatusTab = (selectedStatusTab === btn.dataset.tab) ? '' : btn.dataset.tab;
+            renderStatusTabsActive();
+            applyFilter();
+        });
+    });
+    if (statusTabAll) {
+        statusTabAll.addEventListener('click', () => {
+            selectedStatusTab = '';
+            renderStatusTabsActive();
+            applyFilter();
+        });
+    }
+
+    function matchStatusTab(item, tab) {
+        if (!tab) return true;
+        if (tab === '待反馈') return item.status === 'pending' && item.reject !== '是';
+        if (tab === '已反馈') return item.status === 'done' && item.reject !== '是';
+        if (tab === '已驳回') return item.reject === '是';
+        if (tab === '已销号') return item.status === 'closed' && item.reject !== '是';
+        return true;
+    }
+
+    function updateConditionalFilterVisibility() {
+        // 是否调查反馈/驳回/销号 筛选已隐藏，始终保持“全部”
+        ['filter-survey', 'filter-reject', 'filter-closed'].forEach(id => {
+            document.getElementById(id).value = '全部';
+        });
+        updateStatusTabsVisibility();
+        applyFilter();
+    }
+
+    let filteredData = [];
+    let chartData = [];
+    const rowsPerPage = 10;
+    let currentPage = 1;
+
+    let currentRole = '省级';
+    // 市级角色的“当前市州”：清单/统计仅展示该市州归属问题（省级不受限，看全部）
+    let currentCity = '';
+
+    // 市级切市州：立即按新市州过滤重绘
+    const cityScopeSel = document.getElementById('city-scope-sel');
+    if (cityScopeSel) {
+        cityScopeSel.addEventListener('change', () => {
+            currentCity = cityScopeSel.value;
+            applyFilter();
+        });
+    }
+
+    // 市州范围下拉：仅市级角色显示；市级隐藏“新增”(省级手工登记)按钮
+    function updateRoleScope() {
+        const wrap = document.getElementById('city-scope-wrap');
+        const sel = document.getElementById('city-scope-sel');
+        const addBtn = document.getElementById('toolbar-add-btn');
+        const isCity = currentRole === '市级';
+        if (wrap) wrap.classList.toggle('hidden', !isCity);
+        if (isCity) {
+            if (!currentCity) currentCity = (sel && sel.value) ? sel.value : '武汉市';
+            if (sel) sel.value = currentCity;
+        }
+        // .add-btn 自带 display 样式，Tailwind .hidden 压不过它 → 用行内样式控制显隐
+        if (addBtn) addBtn.style.display = isCity ? 'none' : '';
+    }
+
+    function switchRole(btn) {
+        currentRole = btn.getAttribute('data-role');
+        document.querySelectorAll('.role-switch-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        updateRoleScope();
+        // 市级/省级看到的数据集不同，需重走筛选（含市州归属过滤与状态统计）
+        if (typeof applyFilter === 'function') applyFilter();
+        // 详情弹窗若已打开，同步其底部省级审核操作条的显隐
+        if (typeof updateDtActions === 'function') updateDtActions();
+    }
+
+    function applyFilter() {
+        const f = {
+            survey: document.getElementById('filter-survey').value,
+            reject: document.getElementById('filter-reject').value,
+            closed: document.getElementById('filter-closed').value,
+            lake: document.getElementById('filter-lake').value,
+            basin1: document.getElementById('filter-basin1').value,
+            basin2: document.getElementById('filter-basin2').value,
+            category: selectedCategorySub,
+            source: selectedSource,
+            level: filterLevelSel ? filterLevelSel.value : '全部',
+            keyword: (document.getElementById('filter-keyword').value || '').trim()
+        };
+
+        chartData = focusData.filter(item => {
+            if (f.survey !== '全部' && item.survey !== f.survey) return false;
+            if (f.reject !== '全部' && item.reject !== f.reject) return false;
+            if (f.closed !== '全部' && item.closed !== f.closed) return false;
+            // 清单页：只展示已加入清单的问题
+            if (item.inList !== '是') return false;
+            // 市级角色：只展示归属当前市州的问题（省级不受限，看全部）
+            if (currentRole === '市级' && currentCity && item.city !== currentCity) return false;
+            if (f.lake !== '全部' && item.lake !== f.lake) return false;
+            if (f.basin1 !== '全部' && item.basin1 !== f.basin1) return false;
+            if (f.basin2 !== '全部' && item.basin2 !== f.basin2) return false;
+            if (f.category && item.category !== f.category) return false;
+            if (f.level !== '全部' && item.level !== f.level) return false;
+            if (f.source !== '全部' && item.source !== f.source) return false;
+            if (f.keyword && !item.name.includes(f.keyword)) return false;
+            return true;
+        });
+
+        renderStatusTabCounts();
+
+        filteredData = selectedYearMonth ? chartData.filter(i => matchTimeValue(i.date)) : chartData;
+        filteredData = filteredData.filter(item => matchStatusTab(item, selectedStatusTab));
+
+        currentPage = 1;
+        renderTable();
+    }
+
+    function resetFilter() {
+        document.getElementById('filter-survey').value = '全部';
+        document.getElementById('filter-reject').value = '全部';
+        document.getElementById('filter-closed').value = '全部';
+        document.getElementById('filter-lake').value = '全部';
+        document.getElementById('filter-basin1').value = '全部';
+        document.getElementById('filter-basin2').value = '全部';
+        document.getElementById('filter-keyword').value = '';
+        clearCascader();
+        selectYearMonth('');
+        selectedSource = '全部';
+        document.querySelectorAll('.source-btn').forEach((b, i) => b.classList.toggle('active', i === 0));
+        selectedStatusTab = '';
+        renderStatusTabsActive();
+        updateConditionalFilterVisibility();
+    }
+
+    // 渲染表格 (保持原版逻辑与字段，不乱动)
+    function renderTable() {
+        const tbody = document.getElementById('focus-table-body');
+        const total = filteredData.length;
+        document.getElementById('focus-total').innerText = total;
+
+        // 驳回原因列：仅“已驳回”列表中展示，其余状态列表隐藏该列
+        const isRejectList = selectedStatusTab === '已驳回';
+        const thR = document.getElementById('th-reject');
+        if (thR) thR.classList.toggle('hidden', !isRejectList);
+
+        // 清单页：始终显示操作列
+
+        const totalPages = Math.ceil(total / rowsPerPage) || 1;
+        if (currentPage > totalPages) currentPage = totalPages;
+
+        const start = (currentPage - 1) * rowsPerPage;
+        const end = Math.min(start + rowsPerPage, total);
+
+        let html = '';
+        for (let i = start; i < end; i++) {
+            const item = filteredData[i];
+            let closedCell, sourceCell, rejectCell;
+            closedCell = item.closed === "是" ? '<span class="closed-tag closed-yes">是</span>' : '<span class="closed-tag closed-no">否</span>';
+            sourceCell = item.source;
+            // 已驳回：独立“驳回原因”列展示（红色文字，超长省略号截断并悬浮显示完整内容）；仅“已驳回”列表输出该单元格
+            rejectCell = (item.reject === '是')
+                ? `<span class="reject-reason" title="${escAttr(item.reason || '已驳回')}">${escAttr(item.reason || '已驳回')}</span>`
+                : '<span class="text-slate-300">—</span>';
+            const rejectTd = isRejectList ? `<td>${rejectCell}</td>` : '';
+
+            // 操作列：清单页审批操作，按钮随角色+问题状态联动
+            // 业务流程：省级识别/录入 → 地市反馈 → 省级驳回或销号
+            let actionCell = '';
+            if (currentRole === '省级') {
+                // 地市已反馈后可驳回/销号；待反馈、已驳回、已销号均无可操作项（反馈内容点击问题名称查看）
+                if (item.status === 'done' && item.reject !== '是') {
+                    actionCell = `<div class="flex items-center justify-center">
+                        <button class="op-btn op-reject" onclick="handleReject(${i})"><i class="ri-close-circle-line"></i>驳回</button>
+                        <button class="op-btn op-close" onclick="handleClose(${i})"><i class="ri-checkbox-circle-line"></i>销号</button>
+                    </div>`;
+                }
+            } else {
+                // 待反馈 → 反馈问题/继续反馈（可多次新增反馈，问题仍留待反馈）；已驳回 → 重新反馈；
+                //   点“提交反馈·送省厅”才把所记反馈交给省厅（此后锁定）；已反馈(待省级审核)/已销号 地市无可操作项
+                if (item.reject === '是') {
+                    actionCell = `<div class="flex items-center justify-center">
+                        <button class="op-btn op-refeedback" onclick="openFeedbackModal(${i})"><i class="ri-refresh-line"></i>重新反馈</button>
+                    </div>`;
+                } else if (item.status === 'pending') {
+                    actionCell = `<div class="flex items-center justify-center">
+                        <button class="op-btn op-feedback" onclick="openFeedbackModal(${i})"><i class="ri-chat-1-line"></i>${(item.fbs && item.fbs.length) ? '继续反馈' : '反馈问题'}</button>
+                    </div>`;
+                }
+            }
+
+            // 预警级别标签：仅“水质类别变化报警 / 浓度变化预警”的自动站记录带级别
+            const levelCls = item.level ? (item.level === '一级' ? 'level-lv1' : item.level === '二级' ? 'level-lv2' : 'level-lv3') : '';
+            const lvTag = item.level ? `<span class="level-tag ${levelCls}" title="预警级别：${item.level}">${item.level}</span>` : '';
+
+            html += `
+                <tr>
+                    <td class="text-left pl-6"><a href="javascript:void(0)" class="name-link" onclick="openProblemDetail(${i})" title="查看问题详情与反馈情况">${item.name}</a></td>
+                    <td>${sourceCell}</td>
+                    <td><span class="type-tag text-slate-600">${item.category}</span></td>
+                    <td>${lvTag || '<span class="text-slate-300">—</span>'}</td>
+                    <td>${item.date}</td>
+                    <td class="text-slate-800">${item.city}</td>
+                    ${rejectTd}
+                    <td>${closedCell}</td>
+                    <td class="op-cell">${actionCell || '<span class="text-slate-300">—</span>'}</td>
+                </tr>`;
+        }
+        tbody.innerHTML = html || `<tr><td colspan="${isRejectList ? 9 : 8}" class="py-10 text-slate-400"><i class="ri-inbox-2-line text-2xl mb-1 block"></i>暂无符合条件的记录</td></tr>`;
+
+        // 翻页器
+        let pageHtml = `<button onclick="goPage(${currentPage - 1})" ${currentPage===1?'disabled':''} class="px-2 py-1 text-xs border border-slate-200 rounded text-slate-600 hover:bg-slate-50 disabled:opacity-30">上一页</button>`;
+        for (let p=1; p<=totalPages; p++) {
+            pageHtml += `<button onclick="goPage(${p})" class="px-2.5 py-1 text-xs rounded font-medium ${p===currentPage ? 'bg-blue-500 text-white' : 'border border-slate-200 text-slate-600 hover:bg-slate-50'}">${p}</button>`;
+        }
+        pageHtml += `<button onclick="goPage(${currentPage + 1})" ${currentPage===totalPages?'disabled':''} class="px-2 py-1 text-xs border border-slate-200 rounded text-slate-600 hover:bg-slate-50 disabled:opacity-30">下一页</button>`;
+        document.getElementById('focus-pagination').innerHTML = pageHtml;
+    }
+
+    window.goPage = function(p) { currentPage = p; renderTable(); };
+
+    // 操作列交互（mock 数据演示，直接修改内存数据后重绘）
+    let pendingRejectIdx = -1;
+    window.handleReject = function(idx) {
+        const item = filteredData[idx];
+        if (!item || item.reject === '是') return;
+        pendingRejectIdx = idx;
+        const nameEl = document.getElementById('reject-item-name');
+        if (nameEl) nameEl.innerText = item.name;
+        document.getElementById('reject-reason').value = '';
+        document.getElementById('reject-modal').classList.add('open');
+        setTimeout(() => { const ta = document.getElementById('reject-reason'); if (ta) ta.focus(); }, 60);
+    };
+    window.closeRejectModal = function() {
+        document.getElementById('reject-modal').classList.remove('open');
+        pendingRejectIdx = -1;
+    };
+    // 驳回/销号 操作时间戳：审核调度情况时间轴“审核驳回/审核销号”节点显示当天日期
+    function todayStr() {
+        const d = new Date();
+        const p = n => String(n).padStart(2, '0');
+        return d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate());
+    }
+
+    window.confirmReject = function() {
+        const item = filteredData[pendingRejectIdx];
+        if (!item) return;
+        const reason = (document.getElementById('reject-reason').value || '').trim();
+        const errEl = document.getElementById('reject-error');
+        const ta = document.getElementById('reject-reason');
+        if (!reason) {
+            // 必须填写驳回原因
+            if (errEl) errEl.classList.remove('hidden');
+            if (ta) { ta.classList.add('reject-error-border'); ta.focus(); }
+            return;
+        }
+        if (errEl) errEl.classList.add('hidden');
+        if (ta) ta.classList.remove('reject-error-border');
+        item.reject = '是';
+        item.reason = reason;
+        item.rejectDate = todayStr();
+        document.getElementById('reject-modal').classList.remove('open');
+        pendingRejectIdx = -1;
+        renderStatusTabCounts();
+        renderTable();
+    };
+    window.handleClose = function(idx) {
+        const item = filteredData[idx];
+        if (!item || item.closed === '是') return;
+        item.closed = '是';
+        item.status = 'closed';
+        item.closeDate = todayStr();
+        renderStatusTabCounts();
+        renderTable();
+    };
+    // ========== 地市反馈内容（反馈问题 / 重新反馈，支持多次反馈：每次提交追加一条反馈记录，历史全部保留） ==========
+    let pendingFbIdx = -1;
+    let fbEditIdx = -1; // 编辑模式：-1 = 新增反馈；>=0 = 正在修改第 k 条反馈
+    let fbArmDel = -1;  // 两步删除：等于 k 表示第 k 条反馈正处于“确认删除”态；-1 = 无
+    let fbView = 'list'; // 当前视图：'list' = 反馈记录列表（默认）；'edit' = 新增/修改反馈的表单
+
+    // 列表视图 ↔ 编辑视图 切换：编辑视图出现时才显示“暂存”，取消按钮改为“返回记录列表”
+    function setFbView(v) {
+        fbView = v;
+        const listEl = document.getElementById('fb-view-list');
+        const editEl = document.getElementById('fb-view-edit');
+        if (listEl) listEl.classList.toggle('on', v === 'list');
+        if (editEl) editEl.classList.toggle('on', v === 'edit');
+        const saveBtn = document.getElementById('fb-save-btn');
+        if (saveBtn) saveBtn.classList.toggle('hidden', v !== 'edit');
+        const cl = document.getElementById('fb-cancel-label');
+        if (cl) cl.textContent = (v === 'edit') ? '返回记录列表' : '取消';
+    }
+
+    // 底部主取消按钮：编辑视图 = 返回记录列表；列表视图 = 关闭弹框
+    window.fbCancel = function() {
+        if (fbView === 'edit') fbBackToList();
+        else closeFeedbackModal();
+    };
+
+    // 从编辑视图返回记录列表：放弃当前未保存的输入，回到空白“新增反馈”态
+    window.fbBackToList = function() {
+        fbEditIdx = -1;
+        fbArmDel = -1;
+        fbHideError();
+        clearFbEditor();
+        syncFbMode();
+        renderFeedbackHistory();
+        const m = document.getElementById('fb-msg');
+        if (m) m.textContent = '';
+        setFbView('list');
+    };
+    // 语义：进入弹框默认展示“反馈记录”列表（每条支持 修改/删除，右上可新增反馈），多次记录期间问题仍留待反馈/已驳回；
+    //       问题处理完成才点“提交反馈·送省厅”一次（此后锁定；省厅驳回后可再补充反馈并重新提交）
+
+    // ===== 反馈附件（现场照片 / 现场视频 / 辅助材料）=====
+    // 均支持多选；历史记录里的 photo/video/aux 统一用数组保存。
+    // 照片/视频的新上传项以 {name, url} 记录（url=本页临时 blob 源，可直接预览），历史 mock 为纯文件名字符串（无源，仅展示名称）
+    const FB_CFG = {
+        photo: { addIcon: 'ri-image-add-line', fileIcon: 'ri-image-line', hint: '继续添加照片', placeholder: '请上传jpg/png文件' },
+        video: { addIcon: 'ri-video-add-line', fileIcon: 'ri-video-line', hint: '继续添加视频', placeholder: '请上传mp4文件' },
+        aux:   { addIcon: 'ri-file-add-line',  fileIcon: 'ri-file-line',  hint: '继续添加材料', placeholder: '请上传辅助材料（可多选）' }
+    };
+    let fbFiles = { photo: [], video: [], aux: [] };
+
+    // 兼容字符串或数组，统一转成数组；历史文件名为字符串，新上传为 {name,url} 对象，二者都原样保留
+    function toFileArr(v) {
+        if (Array.isArray(v)) return v.filter(x => x && (typeof x === 'object' ? !!x.name : String(x).trim()));
+        if (v && typeof v === 'object') return [v];
+        if (v && String(v).trim()) return [String(v).trim()];
+        return [];
+    }
+
+    // 按类别渲染当前已选附件：照片/视频（有 blob 源）显示缩略图/播放块，其余（无源或辅助材料）显示文件名 chips
+    function renderFbFiles(cat) {
+        const list = fbFiles[cat] || [];
+        const box = document.getElementById('fb-' + cat + '-box');
+        const ctl = document.getElementById('fb-' + cat + '-ctl');
+        const listEl = document.getElementById('fb-' + cat + '-list');
+        if (box) box.classList.toggle('has-file', list.length > 0);
+        if (ctl) ctl.textContent = list.length ? FB_CFG[cat].hint : FB_CFG[cat].placeholder;
+        if (listEl) {
+            listEl.innerHTML = list.map((x, i) => {
+                const isObj = x && typeof x === 'object';
+                const name = isObj ? String(x.name || '') : String(x || '').trim();
+                const url = isObj ? (x.url || '') : '';
+                const e = escAttr(name);
+                if (url && cat !== 'aux') {
+                    if (cat === 'photo') {
+                        return `<span class="fb-thumb" title="${e}"><img src="${url}" alt="" data-media="img" data-src="${url}" data-name="${e}" onclick="event.stopPropagation();openMediaViewer('img', this.getAttribute('data-src'), this.getAttribute('data-name'))"/><i class="ri-close-line fb-chip-rm" onclick="event.stopPropagation();removeFbFile('${cat}', ${i})"></i></span>`;
+                    }
+                    return `<span class="fb-vthumb" data-media="video" data-src="${url}" data-name="${e}" title="${e}" onclick="event.stopPropagation();openMediaViewer('video', this.getAttribute('data-src'), this.getAttribute('data-name'))"><i class="ri-play-fill tv-play"></i><i class="ri-close-line fb-chip-rm" onclick="event.stopPropagation();removeFbFile('${cat}', ${i})"></i></span>`;
+                }
+                return `<span class="fb-chip"><i class="fb-chip-ic ${FB_CFG[cat].fileIcon}"></i><span class="fb-chip-name" title="${e}">${e}</span><i class="ri-close-line fb-chip-rm" onclick="removeFbFile('${cat}', ${i})"></i></span>`;
+            }).join('');
+        }
+    }
+
+    // 选择（可多选）后追加到对应类别：照片/视频额外读入本页临时 blob 源以便直接预览
+    window.addFbFiles = function(cat, input) {
+        if (!fbFiles[cat]) fbFiles[cat] = [];
+        const files = input.files || [];
+        for (let k = 0; k < files.length; k++) {
+            const f = files[k];
+            if (!f || !f.name) continue;
+            const dup = fbFiles[cat].some(x => (x && typeof x === 'object' ? x.name : String(x)) === f.name);
+            if (dup) continue;
+            const entry = { name: f.name };
+            if (cat === 'photo' || cat === 'video') {
+                try { entry.url = URL.createObjectURL(f); } catch (err) { entry.url = ''; }
+            }
+            fbFiles[cat].push(entry);
+        }
+        input.value = ''; // 允许再次选择同一批文件时仍触发 change
+        renderFbFiles(cat);
+    };
+
+    // 删除某个已选文件
+    window.removeFbFile = function(cat, idx) {
+        if (Array.isArray(fbFiles[cat])) fbFiles[cat].splice(idx, 1);
+        renderFbFiles(cat);
+    };
+
+    // ===== 附件媒体查看层：照片放大 / 视频播放（blob 源仅本页会话有效）=====
+    window.openMediaViewer = function(kind, url, name) {
+        if (!url) return;
+        const v = document.getElementById('media-viewer');
+        const img = document.getElementById('media-img');
+        const vid = document.getElementById('media-video');
+        const isImg = kind === 'img';
+        img.style.display = isImg ? 'block' : 'none';
+        vid.style.display = isImg ? 'none' : 'block';
+        if (isImg) {
+            vid.pause(); vid.removeAttribute('src');
+            img.src = url;
+        } else {
+            img.removeAttribute('src');
+            vid.src = url; vid.load();
+            const p = vid.play();
+            if (p && p.catch) p.catch(function() {});
+        }
+        const nm = document.getElementById('media-name');
+        if (nm) nm.textContent = name || '';
+        v.classList.add('open');
+    };
+    window.closeMediaViewer = function() {
+        const v = document.getElementById('media-viewer');
+        const img = document.getElementById('media-img');
+        const vid = document.getElementById('media-video');
+        if (!v) return;
+        v.classList.remove('open');
+        if (vid) { vid.pause(); vid.removeAttribute('src'); }
+        if (img) img.removeAttribute('src');
+    };
+
+    // 读取当前编辑表单内容
+    function readFbEditor() {
+        return {
+            reporter: (document.getElementById('fb-reporter').value || '').trim(),
+            surveyor: (document.getElementById('fb-surveyor').value || '').trim(),
+            basic: (document.getElementById('fb-basic').value || '').trim(),
+            invTime: document.getElementById('fb-invtime').value,
+            photo: (fbFiles.photo || []).slice(),
+            video: (fbFiles.video || []).slice(),
+            aux: (fbFiles.aux || []).slice()
+        };
+    }
+
+    // 把某条反馈内容回填到编辑表单（rec 为空对象即清空表单）
+    function fillFbEditor(rec) {
+        rec = rec || {};
+        document.getElementById('fb-reporter').value = rec.reporter || '';
+        document.getElementById('fb-surveyor').value = rec.surveyor || '';
+        document.getElementById('fb-basic').value = rec.basic || '';
+        document.getElementById('fb-invtime').value = rec.invTime || '';
+        fbFiles.photo = toFileArr(rec.photo);
+        fbFiles.video = toFileArr(rec.video);
+        fbFiles.aux = toFileArr(rec.aux);
+        renderFbFiles('photo');
+        renderFbFiles('video');
+        renderFbFiles('aux');
+    }
+
+    // 清空编辑表单：回到空白的“新增反馈”
+    function clearFbEditor() {
+        fillFbEditor({});
+    }
+
+    // 标题/保存按钮随模式联动：fbEditIdx=-1 → 新增反馈；fbEditIdx>=0 → 修改该条反馈
+    function syncFbMode() {
+        const item = filteredData[pendingFbIdx];
+        const fbs = (item && Array.isArray(item.fbs)) ? item.fbs : [];
+        const n = fbs.length;
+        const editing = fbEditIdx >= 0 && fbEditIdx < n;
+        const titleEl = document.getElementById('fb-form-title-text');
+        if (titleEl) {
+            titleEl.textContent = editing ? '修改反馈' : '新增反馈';
+        }
+        const sl = document.getElementById('fb-save-label');
+        if (sl) sl.textContent = editing ? '保存修改' : '暂存';
+        const ic = document.getElementById('fb-save-icon');
+        if (ic) ic.className = 'ri-save-3-line';
+    }
+
+    // 渲染左侧“反馈记录”列表：历史（只读）/本次（可增删改）分组；sel=正在编辑行高亮，arm=两步删除确认行
+    function renderFeedbackHistory() {
+        const item = filteredData[pendingFbIdx];
+        const wrap = document.getElementById('fb-history');
+        const cnt = document.getElementById('fb-hist-count');
+        const hint = document.getElementById('fb-crud-hint');
+        if (!item || !wrap) return;
+        const list = Array.isArray(item.fbs) ? item.fbs : [];
+        const hist = list.filter(f => f && f.sub).length;
+        if (cnt) cnt.textContent = hist
+            ? `历史 ${hist} 条 · 本次 ${list.length - hist} 条`
+            : (list.length ? `共 ${list.length} 条` : '');
+        // 有历史反馈时分组标题自带说明，顶部不再重复“可修改/删除”提示
+        if (hint) hint.textContent = hist ? '' : '（可修改 / 删除）';
+        wrap.innerHTML = fbListHtml(item, fbEditIdx, fbArmDel);
+    }
+
+    window.openFeedbackModal = function(idx) {
+        const item = filteredData[idx];
+        if (!item) return;
+        pendingFbIdx = idx;
+        fbEditIdx = -1;   // 打开默认“新增反馈”
+        fbArmDel = -1;
+        // 一律先进“问题反馈”页签的记录列表（带“新增反馈”按钮）：无论有没有历史反馈，都不默认弹出填写表单
+
+        // 左侧问题详情（基础信息 / 问题描述 / 流程状态，含驳回原因提示），与“问题详情”弹框共用同一渲染
+        document.getElementById('fb-left-body').innerHTML = buildDetailLeftHtml(item);
+        // 右侧页签一：审核调度情况（地市经办本人视角：可见本次草稿与“地市重报”环节）
+        document.getElementById('fb-audit-list').innerHTML = buildAuditHtml(item, { mine: true });
+        switchFbTab('fb');
+
+        clearFbEditor();
+        syncFbMode();
+        renderFeedbackHistory();
+        setFbView('list');
+
+        const errEl = document.getElementById('fb-error');
+        if (errEl) errEl.classList.add('hidden');
+        const bEl = document.getElementById('fb-basic');
+        if (bEl) bEl.classList.remove('field-invalid');
+        const m = document.getElementById('fb-msg');
+        if (m) m.textContent = '';
+
+        document.getElementById('feedback-modal').classList.add('open');
+        const lb = document.getElementById('fb-left-body');
+        if (lb) lb.scrollTop = 0;
+    };
+
+    window.closeFeedbackModal = function() {
+        document.getElementById('feedback-modal').classList.remove('open');
+        pendingFbIdx = -1;
+        fbEditIdx = -1;
+        fbArmDel = -1;
+        fbView = 'list';
+    };
+
+    // 反馈必填错误提示（记录与提交共用）
+    function fbShowError(text) {
+        const errEl = document.getElementById('fb-error');
+        if (errEl) { errEl.innerHTML = `<i class="ri-error-warning-line"></i>${text}`; errEl.classList.remove('hidden'); }
+        const bEl = document.getElementById('fb-basic');
+        if (bEl) { bEl.classList.add('field-invalid'); bEl.focus(); }
+    }
+    function fbHideError() {
+        const errEl = document.getElementById('fb-error');
+        if (errEl) errEl.classList.add('hidden');
+        const bEl = document.getElementById('fb-basic');
+        if (bEl) bEl.classList.remove('field-invalid');
+    }
+
+    // 保存当前内容：fbEditIdx>=0 → 更新该条反馈；否则新增反馈。保存后仍留待反馈，不送省厅
+    window.saveFbEditor = function() {
+        const item = filteredData[pendingFbIdx];
+        if (!item) return;
+        if (!readFbEditor().basic) return fbShowError('请填写反馈内容后再保存');
+        const rec = readFbEditor();
+        if (!Array.isArray(item.fbs)) item.fbs = [];
+        const editing = fbEditIdx >= 0 && fbEditIdx < item.fbs.length;
+        const idx = editing ? fbEditIdx : item.fbs.length;
+        if (editing) item.fbs[idx] = rec;
+        else item.fbs.push(rec);
+        fbHideError();
+        fbArmDel = -1;
+        fbEditIdx = -1;      // 保存后回到“新增反馈”
+        clearFbEditor();
+        syncFbMode();
+        renderFeedbackHistory();
+        renderTable();
+        const m = document.getElementById('fb-msg');
+        if (m) m.textContent = editing ? '修改已保存' : '反馈已暂存';
+        setFbView('list');   // 保存后返回“反馈记录”列表
+    };
+
+    // 进入“新增反馈”（从列表切到编辑视图，空白新增）
+    window.startNewFb = function() {
+        const item = filteredData[pendingFbIdx];
+        if (!item) return;
+        fbEditIdx = -1;
+        fbArmDel = -1;
+        fbHideError();
+        clearFbEditor();
+        syncFbMode();
+        renderFeedbackHistory();
+        setFbView('edit');
+        const m = document.getElementById('fb-msg');
+        if (m) m.textContent = '';
+        const b = document.getElementById('fb-basic'); if (b) b.focus();
+    };
+
+    // 修改某条反馈：从列表切到编辑视图并载入该条内容（历史已提交的只读记录不允许修改）
+    window.editFbRow = function(k) {
+        const item = filteredData[pendingFbIdx];
+        if (!item || !Array.isArray(item.fbs) || !item.fbs[k] || item.fbs[k].sub) return;
+        fbArmDel = -1;
+        fbEditIdx = k;
+        fbHideError();
+        fillFbEditor(item.fbs[k]);
+        syncFbMode();
+        renderFeedbackHistory();
+        setFbView('edit');
+        const m = document.getElementById('fb-msg');
+        if (m) m.textContent = '';
+        setTimeout(() => { const r = document.getElementById('fb-basic'); if (r) r.focus(); }, 40);
+    };
+
+    // 删除两步：第一次点“删除”进入确认态（再次点同一行“删除”=取消），第二步点“确认删除”执行（历史已提交的只读记录不允许删除）
+    window.fbDelStep = function(k) {
+        const item = filteredData[pendingFbIdx];
+        if (!item || !Array.isArray(item.fbs) || !item.fbs[k] || item.fbs[k].sub) return;
+        fbArmDel = (fbArmDel === k) ? -1 : k;
+        renderFeedbackHistory();
+    };
+
+    window.confirmDeleteFb = function(k) {
+        const item = filteredData[pendingFbIdx];
+        if (!item || !Array.isArray(item.fbs) || !item.fbs[k] || item.fbs[k].sub) return;
+        item.fbs.splice(k, 1);
+        fbArmDel = -1;
+        fbEditIdx = -1;      // 复位到“新增反馈”（避免引用已删行号）
+        clearFbEditor();
+        syncFbMode();
+        renderFeedbackHistory();
+        renderTable();
+        const m = document.getElementById('fb-msg');
+        if (m) m.textContent = '该条反馈已删除';
+    };
+
+    // 提交反馈（送省厅）：唯一送省厅动作。右侧若有未保存内容，先按当前模式落库（新增/更新），保证提交的与左侧所见一致；
+    //   要求至少已有 1 条反馈；被驳回的重报须有新补充内容；全部校验通过后弹二次确认，确认才真正锁定送省厅
+    window.submitFeedback = function() {
+        const item = filteredData[pendingFbIdx];
+        if (!item) return;
+        if (!Array.isArray(item.fbs)) item.fbs = [];
+        // 先落库编辑器内未保存内容（新增/更新为“本次”草稿，仍可改，未送省厅）
+        const rec = readFbEditor();
+        if (rec.basic) {
+            if (fbEditIdx >= 0 && fbEditIdx < item.fbs.length) item.fbs[fbEditIdx] = rec;
+            else item.fbs.push(rec);
+            fbEditIdx = -1;
+            fbArmDel = -1;
+            clearFbEditor();
+            syncFbMode();
+            renderFeedbackHistory();
+            setFbView('list');   // 内容已暂存为草稿，回到记录列表
+        }
+        const toEditView = () => {
+            if (fbView !== 'edit') {
+                fbEditIdx = -1;
+                fbArmDel = -1;
+                clearFbEditor();
+                syncFbMode();
+                renderFeedbackHistory();
+                setFbView('edit');
+            }
+        };
+        if (!item.fbs.length) {
+            // 尚无任何反馈记录：跳到编辑视图引导先填写（反馈必填框在编辑视图内），避免在隐藏表单上报错
+            toEditView();
+            return fbShowError('请先填写并保存至少一条反馈，处理完成后再提交送省厅');
+        }
+        // 驳回后重报须新增内容：不允许把原样历史反馈原封送回（避免空转来回）
+        if (item.reject === '是' && !item.fbs.some(f => f && !f.sub)) {
+            toEditView();
+            return fbShowError('该问题已被省级驳回，请先点右上“新增反馈”补充核实材料后再提交，避免无新内容重复送审');
+        }
+        fbHideError();
+        openFbSubmitConfirm(item);
+    };
+
+    // 提交二次确认：展示将送省厅的提示；确认后锁定全部反馈并流转到“已反馈”(省级审核)
+    function openFbSubmitConfirm(item) {
+        const isRe = item.reject === '是';
+        const textEl = document.getElementById('fb-submit-confirm-text');
+        if (textEl) {
+            textEl.innerHTML = (isRe
+                ? '该问题曾被省级驳回，本次将把新补充的反馈一并<strong>送省厅重新审核</strong>。提交后全部反馈记录将锁定为只读，如需再改须待省厅再次驳回。'
+                : '提交后，本次全部反馈记录将<strong>锁定为只读并送省厅审核</strong>；省级通过后销号办结，不通过将驳回退回。')
+                + '<div class="mt-2.5 pt-2.5 border-t border-slate-100 text-slate-400">问题：<span class="text-slate-700 font-medium">' + escAttr(item.name) + '</span></div>';
+        }
+        document.getElementById('fb-submit-confirm-modal').classList.add('open');
+    }
+
+    window.cancelFbSubmit = function() {
+        document.getElementById('fb-submit-confirm-modal').classList.remove('open');
+        // 未真正送省厅：本次草稿仍在，提示可继续补充
+        const m = document.getElementById('fb-msg');
+        if (m) m.textContent = '已暂存为本次反馈草稿，未送省厅，可继续新增/修改后再提交';
+    };
+
+    window.confirmFbSubmit = function() {
+        document.getElementById('fb-submit-confirm-modal').classList.remove('open');
+        const item = filteredData[pendingFbIdx];
+        if (!item) return;
+        if (item.reject === '是') { item.reject = '否'; item.reason = ''; }
+        // 提交送省厅后，全部反馈（含本次新补的）整体锁定为历史只读；若省厅再次驳回，再新增的反馈才重新可增删改
+        item.fbs.forEach(f => { f.sub = true; });
+        item.status = 'done';
+        fbEditIdx = -1;
+        fbArmDel = -1;
+        document.getElementById('feedback-modal').classList.remove('open');
+        pendingFbIdx = -1;
+        renderStatusTabCounts();
+        renderTable();
+    };
+
+    // ========== 反馈时间轴 HTML（地市多次反馈，按调查时间倒序展示；左栏历史/详情弹框均只读） ==========
+    function fbTimelineHtml(item, o) {
+        o = o || {};
+        const t = v => v.invTime ? new Date(v.invTime).getTime() : -Infinity;
+        // o.onlySub=true 时只展示已提交送省厅的反馈(sub)：用于“问题详情”只读时间轴；
+        // 地市在反馈弹框内维护的“本次未提交草稿”不属已反馈信息，不对外展示
+        const list = (Array.isArray(item.fbs) ? item.fbs : [])
+            .map((fb, k) => ({ fb, k }))
+            .filter(x => !(o.onlySub && !x.fb.sub))
+            .sort((a, b) => t(b.fb) - t(a.fb));
+        const orDash = v => (v && String(v).trim()) ? String(v).trim() : '—';
+        // 附件条：照片有 blob 源→缩略小图；视频有 blob 源→播放封面块；其余（无源/辅助材料）→文件名胶囊
+        const fileChips = (files, cat) => toFileArr(files).map(x => {
+            const isObj = x && typeof x === 'object';
+            const name = isObj ? String(x.name || '') : String(x || '').trim();
+            const url = isObj ? (x.url || '') : '';
+            const e = escAttr(name);
+            if (url && cat === 'photo') {
+                return `<img class="tl-img" src="${url}" alt="" data-media="img" data-src="${url}" data-name="${e}" title="${e}" onclick="event.stopPropagation();openMediaViewer('img', this.getAttribute('data-src'), this.getAttribute('data-name'))"/>`;
+            }
+            if (url && cat === 'video') {
+                return `<span class="tl-video" data-media="video" data-src="${url}" data-name="${e}" title="${e}" onclick="event.stopPropagation();openMediaViewer('video', this.getAttribute('data-src'), this.getAttribute('data-name'))"><span class="tv-play"><i class="ri-play-fill"></i></span><span class="tl-vname">${e}</span></span>`;
+            }
+            const icon = cat === 'photo' ? 'ri-image-line' : cat === 'video' ? 'ri-video-line' : 'ri-file-line';
+            return `<span class="attach-chip" title="${e}"><i class="${icon}"></i><span>${e}</span></span>`;
+        }).join('');
+        const fileRow = (key, chipsHtml) =>
+            `<div class="tl-fgroup"><span class="tl-fkey">${key}</span><span class="tl-fval">${chipsHtml || '<span class="tl-none">未上传</span>'}</span></div>`;
+        if (!list.length) return `<div class="tl-empty"><i class="ri-inbox-2-line text-lg"></i>${o.emptyMsg || '暂无反馈内容'}</div>`;
+        return list.map(({ fb, k }) => {
+            return `
+            <div class="tl-item">
+                <div class="tl-rail"><span class="tl-dot"></span></div>
+                <div class="tl-body">
+                    <div class="tl-head">
+                        <div class="tl-meta"><div class="tl-date">${fb.invTime ? escAttr(fb.invTime) : '<span class="text-slate-300">—</span>'}</div></div>
+                        <div class="tl-people">
+                            <span class="tl-person"><span class="tl-pk">反馈人</span><b class="tl-pv rep">${orDash(fb.reporter)}</b></span>
+                            <span class="tl-person"><span class="tl-pk">调查人</span><b class="tl-pv inv">${orDash(fb.surveyor)}</b></span>
+                        </div>
+                    </div>
+                    <div class="tl-text">
+                        <div class="tl-label">反馈内容</div>
+                        <p>${orDash(fb.basic)}</p>
+                    </div>
+                    <div class="tl-files">
+                        ${fileRow('现场照片', fileChips(fb.photo, 'photo'))}
+                        ${fileRow('现场视频', fileChips(fb.video, 'video'))}
+                        ${fileRow('辅助材料', fileChips(fb.aux, 'aux'))}
+                    </div>
+                </div>
+            </div>`;
+        }).join('');
+    }
+
+    // ===== “反馈记录”列表（最新在上）：历史反馈（fb.sub=true，已提交省级，含被驳回的）与本次反馈分组拆开展示 =====
+    //       历史 = 仅查看（无 修改/删除）；本次（驳回后新补 / 未提交的草稿）= 可增删改，删除为两步确认
+    function fbListHtml(item, sel, arm) {
+        const list = (item && Array.isArray(item.fbs)) ? item.fbs : [];
+        const orDash = v => (v && String(v).trim()) ? String(v).trim() : '—';
+        const fileChips = (files, cat) => toFileArr(files).map(x => {
+            const isObj = x && typeof x === 'object';
+            const name = isObj ? String(x.name || '') : String(x || '').trim();
+            const url = isObj ? (x.url || '') : '';
+            const e = escAttr(name);
+            if (url && cat === 'photo') {
+                return `<img class="tl-img" src="${url}" alt="" data-media="img" data-src="${url}" data-name="${e}" title="${e}" onclick="event.stopPropagation();openMediaViewer('img', this.getAttribute('data-src'), this.getAttribute('data-name'))"/>`;
+            }
+            if (url && cat === 'video') {
+                return `<span class="tl-video" data-media="video" data-src="${url}" data-name="${e}" title="${e}" onclick="event.stopPropagation();openMediaViewer('video', this.getAttribute('data-src'), this.getAttribute('data-name'))"><span class="tv-play"><i class="ri-play-fill"></i></span><span class="tl-vname">${e}</span></span>`;
+            }
+            const icon = cat === 'photo' ? 'ri-image-line' : cat === 'video' ? 'ri-video-line' : 'ri-file-line';
+            return `<span class="attach-chip" title="${e}"><i class="${icon}"></i><span>${e}</span></span>`;
+        }).join('');
+        const fileRow = (key, chipsHtml) =>
+            `<div class="tl-fgroup"><span class="tl-fkey">${key}</span><span class="tl-fval">${chipsHtml || '<span class="tl-none">未上传</span>'}</span></div>`;
+        const byTimeDesc = (a, b) => {
+            const ta = a.fb.invTime ? new Date(a.fb.invTime).getTime() : -Infinity;
+            const tb = b.fb.invTime ? new Date(b.fb.invTime).getTime() : -Infinity;
+            return tb - ta;
+        };
+
+        // 单条记录：ed=false 为历史只读行（无修改/删除，不响应选中高亮）；k 为原数组下标，供修改/删除定位
+        const rowHtml = ({ fb, k }, ed) => {
+            const selCls = (ed && sel === k) ? ' sel' : '';
+            const armed = ed && arm === k;
+            const actHtml = !ed
+                ? `<span class="fbrow-lock"><i class="ri-lock-2-line"></i>已提交省级 · 仅查看</span>`
+                : armed
+                ? `<span class="fbrow-confirm"><i class="ri-error-warning-line"></i>删除后不可恢复？</span>
+                   <button class="fbrow-act fbrow-ok" onclick="event.stopPropagation();confirmDeleteFb(${k})"><i class="ri-check-line"></i>确认删除</button>
+                   <button class="fbrow-act fbrow-no" onclick="event.stopPropagation();fbDelStep(${k})"><i class="ri-close-line"></i>取消</button>`
+                : `<button class="fbrow-act fbrow-edit" onclick="event.stopPropagation();editFbRow(${k})"><i class="ri-edit-2-line"></i>修改</button>
+                   <button class="fbrow-act fbrow-del" onclick="event.stopPropagation();fbDelStep(${k})"><i class="ri-delete-bin-6-line"></i>删除</button>`;
+            return `
+            <div class="tl-item${ed ? ' act' : ''} fbrow${selCls}" data-k="${k}">
+                <div class="tl-rail"><span class="tl-dot"></span></div>
+                <div class="tl-body">
+                    <div class="tl-head">
+                        <div class="tl-meta"><div class="tl-date">${fb.invTime ? escAttr(fb.invTime) : '<span class="text-slate-300">—</span>'}</div></div>
+                        <div class="tl-people">
+                            <span class="tl-person"><span class="tl-pk">反馈人</span><b class="tl-pv rep">${orDash(fb.reporter)}</b></span>
+                            <span class="tl-person"><span class="tl-pk">调查人</span><b class="tl-pv inv">${orDash(fb.surveyor)}</b></span>
+                        </div>
+                    </div>
+                    <div class="tl-text"><div class="tl-label">反馈内容</div><p>${orDash(fb.basic)}</p></div>
+                    <div class="tl-files">
+                        ${fileRow('现场照片', fileChips(fb.photo, 'photo'))}
+                        ${fileRow('现场视频', fileChips(fb.video, 'video'))}
+                        ${fileRow('辅助材料', fileChips(fb.aux, 'aux'))}
+                    </div>
+                    <div class="fbrow-actions">${actHtml}</div>
+                </div>
+            </div>`;
+        };
+
+        if (!list.length) {
+            return `<div class="tl-empty"><i class="ri-inbox-2-line text-lg"></i>暂无反馈记录，点右上“新增反馈”开始填写</div>`;
+        }
+        const all = list.map((fb, k) => ({ fb, k }));
+        const hist = all.filter(x => x.fb.sub).sort(byTimeDesc);   // 历史：已提交省级，只读
+        const cur = all.filter(x => !x.fb.sub).sort(byTimeDesc);   // 本次：驳回后新补 / 未提交草稿，可增删改
+        if (!hist.length) {
+            // 从未提交过省级：全部为可编辑草稿，单组展示（保持原样式）
+            return cur.map(x => rowHtml(x, true)).join('');
+        }
+        // 有已提交省级的历史反馈（当前必处于“被驳回后重新反馈”场景）：历史与本次拆成两组，不混排；
+        // 组标题下展示省级驳回原因（对应这一批被驳回的反馈）
+        let html = `<div class="fb-grp-l"><i class="ri-lock-2-line"></i>历史反馈 · 省级已驳回</div>`;
+        if (item.reject === '是' && item.reason) {
+            html += `<div class="fb-grp-reject"><i class="ri-error-warning-line"></i><b>驳回原因：</b>${escAttr(item.reason)}</div>`;
+        }
+        html += hist.map(x => rowHtml(x, false)).join('');
+        html += `<div class="fb-grp-l fb-grp-cur fb-grp-empty-tip"><i class="ri-edit-2-line"></i>本次反馈</div>`;
+        html += cur.length
+            ? cur.map(x => rowHtml(x, true)).join('')
+            : `<div class="tl-empty"><i class="ri-inbox-2-line text-lg"></i>暂无本次反馈记录，点右上“新增反馈”继续反馈</div>`;
+        return html;
+    }
+
+    // ========== 问题详情弹框（左=问题详情/底单，右=反馈时间轴 + 审核调度情况） ==========
+    // 右侧“审核调度情况”：由问题数据推导的闭环流转记录（登记→入库→下发→反馈→审核/销号/驳回）
+    // o.mine=true 表示“地市经办本人”视角（问题反馈弹窗）：本次未提交草稿归属本市，计入反馈记录并体现“地市重报”当前环节；
+    // 其余视角（省级/问题详情）只认已提交送省厅的反馈(sub)，草稿不对外，避免泄露出未送审内容
+    function buildAuditHtml(item, o) {
+        o = o || {};
+        const mine = !!o.mine;
+        const srcPhrase = item.source === '系统识别' ? '系统识别自动生成'
+            : item.source === '手工录入' ? '省级手工登记'
+            : item.source === '外部系统调度' ? '外部系统调度转入' : (item.source || '省级登记');
+        // 各环节经办人：登记人 regUser / 入库审核 inUser / 调度经办 disUser / 省级处理(驳回·销号·审核) okUser，由问题数据字段提供；
+        // 系统自动或尚未处理到的环节无人名，显示灰色“—”占位
+        const nameOf = k => { const v = item[k]; return (v && String(v).trim()) ? String(v).trim() : '—'; };
+        // 各环节日期推导：原型记录仅存“登记日期 date”与“各次反馈调查日期 invTime”，中间/终结环节无独立时间字段，
+        // 故按环节逻辑就近取日期，保证时间轴每一节点都有日期、不留空白：
+        //   入库 / 下发     = 登记日（“新增即登记入库下发”，同日完成）
+        //   销号 / 驳回 / 待省审核 = 最近一次送省厅反馈的调查日期（省侧据此决策；运行时点“驳回/销号”再写当天真实日期）
+        //   待反馈 / 暂存底单 = 登记日（当前等待环节的起点）
+        const d0 = (item.date || '').trim();
+        const fbsAll = Array.isArray(item.fbs) ? item.fbs.slice() : [];
+        const subList = fbsAll.filter(x => x && x.sub);          // 已提交送省厅的历史反馈
+        const drafts = fbsAll.filter(x => x && !x.sub);          // 本次草稿（仅本人可见）
+        const tt = v => (v && v.invTime) ? new Date(v.invTime).getTime() : -Infinity;
+        const lastInv = arr => { const a = (arr || []).filter(x => x && x.invTime).sort((x, y) => tt(y) - tt(x)); return a.length ? String(a[0].invTime) : ''; };
+        const repOf = f => (f && f.reporter && String(f.reporter).trim()) ? String(f.reporter).trim() : '—';
+        const lastSubDate = lastInv(subList);                    // 最近一次送省厅反馈的日期
+        const endDate = lastSubDate || d0;                       // 省级决策环节的时间锚（驳回/销号/待省审核）
+        const replying = mine && drafts.length > 0;              // 本人视角：已按驳回意见补了草稿 → 重报中
+        const viewList = mine ? fbsAll : subList;                // 视角可见反馈集
+        const rows = [];
+        rows.push({ title: '问题登记', time: d0, desc: `${srcPhrase}，进入问题池待审核`, user: nameOf('regUser'), tone: 'blue' });
+
+        if (item.inList === '是') {
+            rows.push({ title: '审核入库', time: item.inDate || d0, desc: '审核通过，纳入问题清单，进入地市反馈流程', user: nameOf('inUser'), tone: 'slate' });
+            rows.push({ title: '调度下发', time: item.disDate || d0, desc: `下发至 ${escAttr(item.city) || '—'}，组织现场核实与反馈`, user: nameOf('disUser'), tone: 'blue' });
+            if (viewList.length) {
+                const last = viewList.slice().sort((a, b) => tt(b) - tt(a))[0];
+                const desc = mine
+                    ? (drafts.length
+                        ? `已记录 ${fbsAll.length} 条反馈（含本次 ${drafts.length} 条待提交草稿，地市现场核实填报）`
+                        : `已记录 ${fbsAll.length} 条反馈（地市现场核实填报）`)
+                    : `地市已反馈 ${subList.length} 条（现场核实填报）`;
+                rows.push({ title: '地市反馈记录', time: last.invTime || '', desc: desc, user: repOf(last), ut: 'city', tone: 'blue' });
+            }
+            if (item.reject === '是') {
+                // 已驳回：本人已补“本次”草稿 → 当前环节为“地市重报”，审核驳回转为历史节点；其他视角仍显示“审核驳回”当前
+                rows.push({ title: '审核驳回', time: item.rejectDate || endDate, desc: item.reason ? `驳回原因：${escAttr(item.reason)}` : '省级审核未通过，退回地市重新反馈', user: nameOf('okUser'), tone: 'red', cur: !replying, curTone: replying ? '' : 'rej' });
+                if (replying) {
+                    const rd = drafts.slice().sort((a, b) => tt(b) - tt(a))[0];
+                    rows.push({ title: '地市重报', time: item.resubDate || lastInv(drafts) || d0, desc: '地市已按驳回意见补充反馈，待提交送省厅重新审核', user: repOf(rd), ut: 'city', tone: 'amber', cur: true });
+                }
+            } else if (item.status === 'closed') {
+                rows.push({ title: '审核销号', time: item.closeDate || endDate, desc: '省级审核通过，问题已销号办结', user: nameOf('okUser'), tone: 'green', cur: true, curTone: 'fin' });
+            } else if (item.status === 'done') {
+                rows.push({ title: '省级审核', time: endDate, desc: '地市已提交反馈，待省级审核处理（可销号或驳回）', user: '—', tone: 'amber', cur: true });
+            } else {
+                // 未提交前一律“待反馈”：地市可多次记录进展，处理完成点“提交”后才流转到省级审核
+                rows.push({ title: '待反馈', time: d0, desc: mine && fbsAll.length
+                    ? `已记录 ${fbsAll.length} 条反馈（尚未提交），处理完成后提交反馈送省厅`
+                    : `已调度下发，等待 ${escAttr(item.city) || '地市'} 现场核实并反馈`, user: '—', tone: 'amber', cur: true });
+            }
+        } else {
+            rows.push({ title: '暂存底单', time: d0, desc: '尚未纳入问题清单，暂存问题底单待后续处理', user: nameOf('regUser'), tone: 'slate', cur: true });
+        }
+
+        return rows.map(r => `
+            <div class="au-item">
+                <div class="au-rail"><span class="au-dot au-${r.tone}"></span></div>
+                <div class="au-main">
+                    <div class="au-title">${r.title}${r.cur ? `<span class="au-cur ${r.curTone || ''}">当前环节</span>` : ''}<span class="au-user${r.ut ? ' ' + r.ut : ''}${(r.user && r.user !== '—') ? '' : ' empty'}"><i class="ri-user-3-line"></i>${r.user || '—'}</span></div>
+                    <div class="au-desc">${r.desc}</div>
+                </div>
+                <div class="au-time">${r.time || ''}</div>
+            </div>`).join('');
+    }
+
+    // 问题描述文本：手工新增录入的取录入内容（item.detail）；系统识别/外部系统调度等缺描述记录按类别+区域字段自动生成
+    function problemDetailText(item) {
+        if (item.detail && String(item.detail).trim()) return String(item.detail).trim();
+        const date = (item.date || '').trim();
+        const regParts = [item.basin1, item.basin2].filter(v => v && String(v).trim() && String(v).trim() !== '—').map(v => String(v).trim());
+        const reg = regParts.join('·');
+        const lake = (item.lake || '').trim();
+        const city = (item.city || '').trim();
+        const where = lake
+            ? `${lake}（${reg || '—'}）`
+            : (city ? (reg ? `${city}（${reg}）` : city) : (reg || '相关区域'));
+        const cat = String(item.category || '');
+        const lv = item.level ? `（${item.level}级）` : '';
+        const head = date ? `${date}，` : '';
+        let txt;
+        if (cat.indexOf('自动站水质超标') === 0) {
+            const unit = cat.indexOf('（天）') > -1 ? '按日统计' : (cat.indexOf('（小时）') > -1 ? '按小时统计' : '');
+            txt = `${head}${where}水质自动监测站数据显示水质指标出现超标${lv}${unit ? '（' + unit + '）' : ''}，已自动生成超标问题线索，请属地核查超标成因并开展排查。`;
+        } else if (cat.indexOf('水质类别变化') > -1) {
+            txt = `${head}${where}断面水质类别发生降类变化${lv}，触发水质类别变化报警，已自动生成问题线索，请属地核实变化原因并组织溯源排查。`;
+        } else if (cat.indexOf('浓度变化预警') > -1) {
+            txt = `${head}${where}主要污染物浓度出现持续上升趋势${lv}，触发浓度变化预警，已自动生成问题线索，请属地加强监测并开展溯源调查。`;
+        } else {
+            txt = `${head}${where}水环境质量出现明显恶化迹象，存在水质下降风险，已生成问题线索，请属地开展现场调查核实与原因排查。`;
+        }
+        return txt;
+    }
+
+    // 问题类别完整路径（大类 › 小类 › 具体类型）
+    // 手工新增记录保存时自带 cat1/cat3；历史记录按小类反查大类，小类下仅一种识别规则（且不重名）时自动补全具体类型
+    function categoryPathText(item) {
+        const c2 = String(item.category || '').trim();
+        if (!c2) return '—';
+        let c1 = String(item.cat1 || '').trim();
+        let c3 = String(item.cat3 || '').trim();
+        cascaderData.some(top => {
+            const sub = (top.children || []).find(s => s && s.category === c2);
+            if (!sub) return false;
+            if (!c1) c1 = top.category;
+            if (!c3) {
+                const uniq = (sub.items || []).map(i => i && i.name).filter(n => n && n !== c2);
+                if (uniq.length === 1) c3 = uniq[0];
+            }
+            return true;
+        });
+        const segs = [];
+        if (c1 && segs.indexOf(c1) === -1) segs.push(c1);
+        if (c2 && segs.indexOf(c2) === -1) segs.push(c2);
+        if (c3 && segs.indexOf(c3) === -1) segs.push(c3);
+        if (!segs.length) return '—';
+        return segs.map(v => escAttr(v)).join('<span class="text-slate-300">›</span>');
+    }
+
+    // 反馈弹框右侧“审核调度情况 / 问题反馈”页签切换（默认问题反馈）
+    window.switchFbTab = function(name) {
+        document.querySelectorAll('#feedback-modal .dt-tab').forEach(b => {
+            b.classList.toggle('active', b.getAttribute('data-fb-tab') === name);
+        });
+        document.getElementById('fb-tab-audit').style.display = name === 'audit' ? 'flex' : 'none';
+        document.getElementById('fb-tab-fb').style.display = name === 'fb' ? 'flex' : 'none';
+        // 切到“审核调度情况”时按当前状态重建：地市新补了“本次反馈”即体现“地市重报”当前环节（地市本人视角）
+        if (name === 'audit') {
+            const item = filteredData[pendingFbIdx];
+            const el = document.getElementById('fb-audit-list');
+            if (item && el) el.innerHTML = buildAuditHtml(item, { mine: true });
+        }
+    };
+
+    // 左侧问题详情（底单式只读字段；此区块也适用于问题底单页）
+    function buildDetailLeftHtml(item) {
+        const orDash = v => (v && String(v).trim()) ? String(v).trim() : '—';
+        const levelText = item.level ? item.level : '';
+        // 问题状态（与表格口径一致：已驳回优先显示为“已驳回”）
+        let statusText, statusYes = '';
+        if (item.reject === '是') { statusText = '已驳回'; statusYes = 'no'; }
+        else if (item.status === 'done') { statusText = '已反馈'; statusYes = ''; }
+        else if (item.status === 'closed') { statusText = '已销号'; statusYes = 'yes'; }
+        else { statusText = '待反馈'; statusYes = 'no'; }
+
+        // 驳回原因不再在左侧重复展示：反馈弹窗内随“历史反馈 · 省级已驳回”组展示，详情弹窗内随右侧“审核调度情况”展示
+
+        return `
+            <div class="dt-name">${escAttr(item.name)}</div>
+            <div class="dl-g">基础信息</div>
+            <div class="dl-row"><span class="dl-k">问题类别</span><span class="dl-v">${categoryPathText(item)}</span></div>
+            <div class="dl-row"><span class="dl-k">预警级别</span><span class="dl-v">${levelText || '<span class="text-slate-300">—</span>'}</span></div>
+            <div class="dl-row"><span class="dl-k">数据来源</span><span class="dl-v">${orDash(item.source)}</span></div>
+            <div class="dl-row"><span class="dl-k">问题时间</span><span class="dl-v">${orDash(item.date)}</span></div>
+            <div class="dl-row"><span class="dl-k">市州</span><span class="dl-v">${orDash(item.city)}</span></div>
+            <div class="dl-row"><span class="dl-k">所属水系</span><span class="dl-v">${orDash(item.basin1)}</span></div>
+            <div class="dl-desc-label">问题描述</div>
+            <div class="dl-desc">${escAttr(problemDetailText(item))}</div>
+            <div class="dl-g">流程状态</div>
+            <div class="dl-row"><span class="dl-k">纳入清单</span><span class="dl-v ${item.inList === '是' ? 'yes' : 'no'}">${item.inList === '是' ? '已纳入' : '未纳入'}</span></div>
+            <div class="dl-row"><span class="dl-k">问题状态</span><span class="dl-v ${statusYes ? statusYes : ''}">${statusText}</span></div>
+            <div class="dl-row"><span class="dl-k">是否销号</span><span class="dl-v ${item.closed === '是' ? 'yes' : 'no'}">${item.closed === '是' ? '已销号' : '未销号'}</span></div>
+        `;
+    }
+
+    let detailIdx = -1; // 详情弹窗当前展示的 filteredData 行号（供底部省级审核操作引用）
+
+    // 详情弹窗底部“省级审核操作条”显隐：仅省级角色查看“地市已反馈、待审核”问题时展示 驳回/销号
+    function updateDtActions() {
+        const bar = document.getElementById('dt-actions');
+        if (!bar) return;
+        const item = filteredData[detailIdx];
+        const show = detailIdx >= 0 && item && currentRole === '省级'
+            && item.status === 'done' && item.reject !== '是';
+        bar.style.display = show ? 'flex' : 'none';
+    }
+
+    // 详情弹窗内点击“驳回”：关闭详情后复用公共的“驳回原因”弹窗（驳回逻辑与表格操作一致）
+    window.detailActionReject = function() {
+        const idx = detailIdx; // 先保存，closeProblemDetail 会重置 detailIdx
+        if (idx < 0) return;
+        closeProblemDetail();
+        handleReject(idx);
+    };
+    window.detailActionClose = function() {
+        const idx = detailIdx;
+        if (idx < 0) return;
+        closeProblemDetail();
+        handleClose(idx);
+    };
+
+    window.openProblemDetail = function(idx) {
+        const item = filteredData[idx];
+        if (!item) return;
+        detailIdx = idx;
+        document.getElementById('dt-left-body').innerHTML = buildDetailLeftHtml(item);
+        // 详情“反馈情况”只读时间轴只展示已提交送省厅的反馈(sub)；未提交草稿仍属地市私有（在反馈弹框内维护），省厅不可见
+        document.getElementById('dt-fb-list').innerHTML = fbTimelineHtml(item, { onlySub: true });
+        // 问题详情（含省级查看）：非地市本人视角，草稿不入审核调度情况
+        document.getElementById('dt-audit-list').innerHTML = buildAuditHtml(item, { mine: currentRole === '市级' });
+        // 待反馈 的问题尚未有地市反馈，不存在“反馈情况”，弹窗仅展示“审核调度情况”
+        const isPendingState = item.reject !== '是' && item.status === 'pending';
+        const fbTab = document.querySelector('.dt-tab[data-dt-tab="fb"]');
+        if (fbTab) fbTab.style.display = isPendingState ? 'none' : '';
+        switchDtTab(isPendingState ? 'audit' : 'fb');
+        updateDtActions();
+        document.getElementById('detail-modal').classList.add('open');
+        document.getElementById('dt-left-body').scrollTop = 0;
+        document.getElementById('dt-fb-list').scrollTop = 0;
+    };
+
+    window.closeProblemDetail = function() {
+        document.getElementById('detail-modal').classList.remove('open');
+        detailIdx = -1;
+        updateDtActions();
+    };
+
+    // 右侧“反馈情况 / 审核调度情况”页签切换（默认反馈时间轴；仅作用于详情弹框，不影响反馈弹框的同名页签）
+    window.switchDtTab = function(name) {
+        document.querySelectorAll('#detail-modal .dt-tab').forEach(b => {
+            b.classList.toggle('active', b.getAttribute('data-dt-tab') === name);
+        });
+        document.getElementById('dt-fb-pane').style.display = name === 'fb' ? 'flex' : 'none';
+        document.getElementById('dt-audit-pane').style.display = name === 'audit' ? 'flex' : 'none';
+    };
+
+    // ========== 新增问题弹框 ==========
+    const HUBEI_CITIES = ["武汉市","黄石市","十堰市","宜昌市","襄阳市","鄂州市","荆门市","孝感市","荆州市","黄冈市","咸宁市","随州市","恩施州","仙桃市","潜江市","天门市","神农架林区"];
+
+    // 市级角色“市州范围”下拉填充
+    (function fillCityScope() {
+        const sel = document.getElementById('city-scope-sel');
+        if (!sel || sel.options.length) return;
+        HUBEI_CITIES.forEach(c => {
+            const o = document.createElement('option');
+            o.value = c;
+            o.textContent = c;
+            sel.appendChild(o);
+        });
+        sel.value = currentCity || '武汉市';
+    })();
+
+    // 各市州对省厅工作的对接联系人（省级派发/流转时提示使用）
+    const CITY_CONTACT = {
+        "武汉市": "李文静", "黄石市": "刘建华", "十堰市": "王洪涛", "宜昌市": "陈国庆",
+        "襄阳市": "张明辉", "鄂州市": "黄志刚", "荆门市": "吴建军", "孝感市": "徐海燕",
+        "荆州市": "杨立新", "黄冈市": "罗文杰", "咸宁市": "熊玉萍", "随州市": "彭志强",
+        "恩施州": "谭清平", "仙桃市": "杜文斌", "潜江市": "龚晓军", "天门市": "倪淑芳",
+        "神农架林区": "贺华明"
+    };
+
+    // 切换市州时提示该市州联系人
+    window.onAddCityContact = function() {
+        const sel = document.getElementById('add-city');
+        const hint = document.getElementById('add-city-hint');
+        if (!hint) return;
+        const name = (sel && CITY_CONTACT[sel.value]) || '';
+        hint.innerHTML = name ? `<i class="ri-user-3-line text-slate-400"></i><span class="text-slate-400">对接联系人：</span><span class="text-slate-600 font-medium">${name}</span>` : '';
+    };
+
+    function fillSelectOptions(sel, options, withPlaceholder) {
+        if (sel.options.length > 0) return;
+        if (withPlaceholder) {
+            const ph = document.createElement('option');
+            ph.value = '';
+            ph.textContent = '请选择';
+            sel.appendChild(ph);
+        }
+        options.forEach(v => {
+            const o = document.createElement('option');
+            o.value = v;
+            o.textContent = v;
+            sel.appendChild(o);
+        });
+    }
+
+    // ===== 新增问题弹框：问题类别 = 单框级联（大类 → 小类 → 识别规则），与筛选区级联面板一致 =====
+    // 当前弹框内已选值：大类 addCat1 / 小类 addCat2 / 具体类型(识别规则) addCat3
+    let addCat1 = '';
+    let addCat2 = '';
+    let addCat3 = '';
+    let addCIdx = 0;   // cascaderData 大类下标
+    let addSIdx = 0;   // children 小类下标
+
+    function addPickPath() {
+        const top = cascaderData[addCIdx] || cascaderData[0];
+        const sub = (top.children || [])[addSIdx] || null;
+        return { top: top, sub: sub };
+    }
+
+    // 顶部输入框展示“大类 / 小类 / 识别规则”完整路径，与筛选项选择后仅显示末级不同（新增需提交三级）
+    function syncAddCatText() {
+        const t = document.getElementById('add-cat-text');
+        const has = !!addCat3;
+        if (t) {
+            t.textContent = has ? `${addCat1} / ${addCat2} / ${addCat3}` : '请选择大类 / 小类 / 识别规则';
+            t.classList.toggle('text-slate-800', has);
+            t.classList.toggle('text-slate-400', !has);
+        }
+    }
+
+    function renderAddCatPanel() {
+        const { top } = addPickPath();
+        let html = '';
+        cascaderData.forEach((cat, i) => {
+            const act = i === addCIdx;
+            html += `<div class="ac-item${act ? ' active' : ''}"${tipAttr(cat.desc)} onclick="addPickTop(${i})">${cat.category}</div>`;
+        });
+        const c1 = document.getElementById('add-cat-cols');
+        if (c1) c1.innerHTML = html || '<div class="ac-empty">无类别</div>';
+
+        html = '';
+        (top.children || []).forEach((sub, j) => {
+            const act = j === addSIdx;
+            html += `<div class="ac-item${act ? ' active' : ''}"${tipAttr(sub.desc)} onclick="addPickSub(${j})">${sub.category}</div>`;
+        });
+        const c2 = document.getElementById('add-cat-subs');
+        if (c2) c2.innerHTML = html || '<div class="ac-empty">无小类</div>';
+
+        html = '';
+        const sub = (top.children || [])[addSIdx];
+        if (sub) {
+            (sub.items || []).forEach((it, k) => {
+                const act = !!addCat3 && top.category === addCat1 && sub.category === addCat2 && it.name === addCat3;
+                html += `<div class="ac-item${act ? ' active' : ''}"${tipAttr(it.tip)} onclick="addPickItem(${k})">${it.name}</div>`;
+            });
+        }
+        const c3 = document.getElementById('add-cat-items');
+        if (c3) c3.innerHTML = html || '<div class="ac-empty">无规则</div>';
+    }
+
+    window.addPickTop = function(i) {
+        if (addCIdx === i) return;
+        addCIdx = i;
+        addSIdx = 0;
+        renderAddCatPanel();
+    };
+    window.addPickSub = function(j) {
+        if (addSIdx === j) return;
+        addSIdx = j;
+        renderAddCatPanel();
+    };
+    window.addPickItem = function(k) {
+        const { top, sub } = addPickPath();
+        if (!top || !sub || !sub.items[k]) return;
+        addCat1 = top.category;
+        addCat2 = sub.category;
+        addCat3 = sub.items[k].name;
+        syncAddCatText();
+        closeAddCatPanel();
+    };
+
+    function closeAddCatPanel() {
+        const panel = document.getElementById('add-cat-panel');
+        const icon = document.getElementById('add-cat-icon');
+        if (panel) panel.classList.remove('open');
+        if (icon) icon.classList.remove('rotate-180');
+    }
+    // 打开时按触发框位置把面板悬浮定位到遮罩之上（相对整屏定位），不占位、不撑开弹框高度
+    window.toggleAddCatPanel = function() {
+        const panel = document.getElementById('add-cat-panel');
+        const trig = document.getElementById('add-cat-trigger');
+        if (!panel || !trig) return;
+        if (!panel.classList.contains('open')) {
+            renderAddCatPanel();
+            const r = trig.getBoundingClientRect();
+            const pw = 590, phEst = 300;
+            const left = Math.min(r.left, Math.max(8, innerWidth - pw - 8));
+            const down = r.bottom + 6;
+            const top = (down + phEst <= innerHeight - 8) ? down : Math.max(8, r.top - phEst - 6);
+            panel.style.left = left + 'px';
+            panel.style.top = top + 'px';
+            panel.classList.add('open');
+            const icon = document.getElementById('add-cat-icon');
+            if (icon) icon.classList.add('rotate-180');
+        } else {
+            closeAddCatPanel();
+        }
+    };
+
+    // 每次打开新增弹框：类别重置为常用默认（断面水质问题 / 断面水质明显恶化 / 首条识别规则）
+    function resetAddCat() {
+        let ci = cascaderData.findIndex(t => t.category === '断面水质问题');
+        if (ci < 0) ci = 0;
+        const top = cascaderData[ci];
+        let si = (top.children || []).findIndex(s => s.category === '断面水质明显恶化');
+        if (si < 0) si = 0;
+        addCIdx = ci;
+        addSIdx = si;
+        const sub = (top.children || [])[si];
+        addCat1 = top.category;
+        addCat2 = sub ? sub.category : '';
+        addCat3 = sub && sub.items && sub.items[0] ? sub.items[0].name : '';
+        syncAddCatText();
+        closeAddCatPanel();
+    }
+
+    window.openAddModal = function() {
+        resetAddCat();
+        fillSelectOptions(document.getElementById('add-city'), HUBEI_CITIES, false);
+
+        document.getElementById('add-name').value = '';
+        document.getElementById('add-detail').value = '';
+        document.getElementById('add-city').value = '武汉市';
+        onAddCityContact();
+        const d = new Date();
+        const pad = n => String(n).padStart(2, '0');
+        document.getElementById('add-date').value = d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
+        // 登记人预填当前登录账号对应的姓名（可修改）；缺映射时用通用经办名
+        document.getElementById('add-reg-user').value = ADD_OPERATOR_NAME();
+
+        document.getElementById('add-modal').classList.add('open');
+        setTimeout(() => { const n = document.getElementById('add-name'); if (n) n.focus(); }, 60);
+    };
+
+    // 账号 → 姓名（登记人默认值）；无映射时退化为通用名
+    function ADD_OPERATOR_NAME() {
+        const acc = 'wangyunpeng';
+        const map = { wangyunpeng: '王云鹏' };
+        return map[acc] || '省厅经办';
+    }
+
+    window.closeAddModal = function() {
+        document.getElementById('add-modal').classList.remove('open');
+    };
+
+    window.saveAddItem = function() {
+        const name = (document.getElementById('add-name').value || '').trim();
+        const date = document.getElementById('add-date').value || '';
+        if (!name) { alert('请输入问题名称'); document.getElementById('add-name').focus(); return; }
+        if (!date) { alert('请选择问题时间'); return; }
+        const reg = (document.getElementById('add-reg-user').value || '').trim();
+        if (!reg) { alert('请输入登记人姓名'); document.getElementById('add-reg-user').focus(); return; }
+
+        const cat1 = addCat1 || '';
+        const cat2 = addCat2 || '断面水质明显恶化';
+        const cat3 = addCat3 || '';
+
+        focusData.push({
+            name: name,
+            category: cat2,
+            cat1: cat1,
+            cat3: cat3,
+            basin: '长江流域',
+            date: date,
+            city: document.getElementById('add-city').value || '武汉市',
+            status: 'pending',
+            closed: '否',
+            survey: '否',
+            reject: '否',
+            inList: '是',
+            lake: '',
+            basin1: '长江干流流域',
+            basin2: '鄂东南片区',
+            source: '手工录入',
+            // 新增即登记入库并下发：登记/入库/下发经办均记为登记人，避免审核调度情况留空
+            regUser: reg,
+            inUser: reg,
+            disUser: reg,
+            detail: (document.getElementById('add-detail').value || '').trim()
+        });
+
+        closeAddModal();
+        // 重置筛选，让新记录出现在列表（默认“全部”页签）
+        resetFilter();
+        // 跳到最后一条可见
+        currentPage = 9999;
+        renderTable();
+    };
+
+    // 初始化
+    window.addEventListener('load', () => {
+        const provGroup = document.getElementById('group-provincial');
+        if (provGroup) provGroup.style.maxHeight = provGroup.scrollHeight + "px";
+        updateConditionalFilterVisibility();
+    });
+</script>
+
+<!-- 新增问题弹框 -->
+<div id="add-modal" class="modal-mask">
+    <div class="modal-card">
+        <div class="modal-head">
+            <h3 class="text-[16px] font-bold text-slate-800 flex items-center gap-2">
+                <i class="ri-add-circle-line text-blue-600"></i>新增问题
+            </h3>
+            <button onclick="closeAddModal()" class="text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-sm w-7 h-7 flex items-center justify-center text-lg transition-colors modal-close">
+                <i class="ri-close-line"></i>
+            </button>
+        </div>
+        <div class="px-6 py-5 space-y-4">
+            <div>
+                <label class="modal-label">问题名称 <span class="text-red-500">*</span></label>
+                <input id="add-name" type="text" placeholder="请输入问题名称" class="modal-field" maxlength="60"/>
+            </div>
+            <div>
+                <label class="modal-label">问题类别 <span class="text-red-500">*</span></label>
+                <button type="button" id="add-cat-trigger" class="modal-field flex items-center justify-between gap-2 text-left cursor-pointer group" onclick="event.stopPropagation();toggleAddCatPanel()">
+                    <span id="add-cat-text" class="truncate text-slate-400">请选择大类 / 小类 / 识别规则</span>
+                    <i id="add-cat-icon" class="ri-arrow-down-s-line flex-none text-slate-400 group-hover:text-blue-500 transition-transform"></i>
+                </button>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="modal-label">市州</label>
+                    <select id="add-city" class="modal-field" onchange="onAddCityContact()"></select>
+                    <div id="add-city-hint" class="flex items-center gap-1 text-[12px] leading-4 mt-1.5 min-h-[16px]"></div>
+                </div>
+                <div>
+                    <label class="modal-label">问题时间 <span class="text-red-500">*</span></label>
+                    <input id="add-date" type="date" class="modal-field"/>
+                </div>
+            </div>
+            <div>
+                <label class="modal-label">登记人 <span class="text-red-500">*</span></label>
+                <input id="add-reg-user" type="text" placeholder="请输入登记人姓名（经办人），将记录在审核调度情况中" maxlength="20" class="modal-field"/>
+            </div>
+            <div>
+                <label class="modal-label">问题描述</label>
+                <textarea id="add-detail" class="modal-field" rows="2" placeholder="请填写问题的具体情况、排查核实等信息（选填）" maxlength="500" style="resize:none;"></textarea>
+            </div>
+        </div>
+        <div class="flex justify-end gap-3 px-6 py-4 border-t border-slate-100 bg-slate-50/60">
+            <button onclick="closeAddModal()" class="px-4 py-1.5 rounded-sm text-[13px] font-medium border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 transition-colors">取消</button>
+            <button onclick="saveAddItem()" class="add-btn">
+                <i class="ri-check-line"></i><span>保存</span>
+            </button>
+        </div>
+    </div>
+    <!-- 问题类别级联面板：悬浮于弹框之上（相对弹框遮罩定位），不占位、不撑开弹框高度 -->
+    <div id="add-cat-panel">
+        <div class="ac-col ac-col1">
+            <div class="ac-head">大类</div>
+            <div id="add-cat-cols" class="ac-list"></div>
+        </div>
+        <div class="ac-col ac-col2">
+            <div class="ac-head">小类</div>
+            <div id="add-cat-subs" class="ac-list"></div>
+        </div>
+        <div class="ac-col ac-col3">
+            <div class="ac-head">识别规则</div>
+            <div id="add-cat-items" class="ac-list"></div>
+        </div>
+    </div>
+</div>
+
+<!-- 驳回原因弹框 -->
+<div id="reject-modal" class="modal-mask">
+    <div class="modal-card">
+        <div class="modal-head">
+            <h3 class="text-[16px] font-bold text-slate-800 flex items-center gap-2">
+                <i class="ri-close-circle-line text-red-500"></i>驳回原因
+            </h3>
+            <button onclick="closeRejectModal()" class="text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-sm w-7 h-7 flex items-center justify-center text-lg transition-colors modal-close">
+                <i class="ri-close-line"></i>
+            </button>
+        </div>
+        <div class="px-6 py-5 space-y-4">
+            <div class="text-[13px] text-slate-500 bg-slate-50 border border-slate-100 rounded-sm px-3 py-2.5">
+                问题：<span id="reject-item-name" class="font-medium text-slate-700"></span>
+            </div>
+            <div>
+                <label class="modal-label">驳回原因 <span class="text-red-500">*</span></label>
+                <textarea id="reject-reason" class="modal-field" rows="4" placeholder="请填写驳回原因，将退回地市重新反馈核实" maxlength="200" style="resize:none;" oninput="var t=this;document.getElementById('reject-reason-count').textContent=t.value.length;document.getElementById('reject-error').classList.add('hidden');t.classList.remove('reject-error-border');"></textarea>
+                <p id="reject-error" class="hidden text-xs text-red-500 mt-1"><i class="ri-error-warning-line"></i> 请填写驳回原因</p>
+                <div class="text-right text-xs text-slate-400 mt-1"><span id="reject-reason-count">0</span>/200</div>
+            </div>
+        </div>
+        <div class="flex justify-end gap-3 px-6 py-4 border-t border-slate-100 bg-slate-50/60">
+            <button onclick="closeRejectModal()" class="px-4 py-1.5 rounded-sm text-[13px] font-medium border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 transition-colors">取消</button>
+            <button onclick="confirmReject()" class="inline-flex items-center gap-1 bg-red-500 hover:bg-red-600 text-white px-4 py-1.5 rounded-sm text-[13px] font-medium transition-colors shadow-sm">
+                <i class="ri-check-line"></i><span>确认驳回</span>
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- 地市反馈处理弹框（反馈问题 / 继续反馈 / 重新反馈：默认展示反馈记录，可 新增反馈/修改/删除，处理完成再“提交反馈·送省厅”） -->
+<div id="feedback-modal" class="modal-mask">
+    <div class="modal-card-xl">
+        <div class="modal-head">
+            <h3 class="text-[16px] font-bold text-slate-800 flex items-center gap-2">
+                <i class="ri-chat-1-line text-blue-600"></i>地市反馈处理
+            </h3>
+            <button onclick="closeFeedbackModal()" class="text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-sm w-7 h-7 flex items-center justify-center text-lg transition-colors modal-close">
+                <i class="ri-close-line"></i>
+            </button>
+        </div>
+        <div class="dt-body">
+            <!-- 左：问题详情（与“问题详情”弹框左侧一致：基础信息 / 问题描述 / 流程状态），只读 -->
+            <aside class="dt-left" id="fb-left-body"></aside>
+            <!-- 右：两个页签 —— 审核调度情况 / 问题反馈 -->
+            <section class="dt-right">
+                <div class="dt-tabs">
+                    <button class="dt-tab" data-fb-tab="audit" onclick="switchFbTab('audit')">审核调度情况</button>
+                    <button class="dt-tab active" data-fb-tab="fb" onclick="switchFbTab('fb')">问题反馈</button>
+                </div>
+                <!-- 页签一：审核调度情况（由问题数据推导的闭环流转记录，只读） -->
+                <div class="dt-pane" id="fb-tab-audit" style="display:none;">
+                    <div id="fb-audit-list" class="dt-scroll au-list"></div>
+                </div>
+                <!-- 页签二：问题反馈（反馈记录列表 + 新增反馈表单） -->
+                <div class="dt-pane" id="fb-tab-fb" style="padding:0;">
+                    <div class="fb-stage">
+                        <!-- 列表视图（默认进入）：反馈记录，点右上“新增反馈”或某条“修改”才切到编辑视图 -->
+                        <section id="fb-view-list" class="fb-viewv fb-listv on">
+                            <div class="fb-sec-head">
+                                <span class="fb-form-title"><i class="ri-list-check-2-line"></i>反馈记录<span id="fb-crud-hint" class="fb-crud-hint">（可修改 / 删除）</span></span>
+                                <span class="flex items-center gap-2">
+                                    <span id="fb-hist-count" class="fb-sec-count"></span>
+                                    <button id="fb-list-new" class="fb-link-btn" onclick="startNewFb()"><i class="ri-add-line"></i>新增反馈</button>
+                                </span>
+                            </div>
+                            <div id="fb-history" class="fb-hist-scroll tl-list"></div>
+                        </section>
+                        <!-- 编辑视图（新增/修改反馈时才显示；暂存或返回记录列表后回到列表） -->
+                        <section id="fb-view-edit" class="fb-viewv fb-editv">
+                            <div class="fb-edit-head">
+                                <span class="fb-form-title" id="fb-form-title">
+                                    <i class="ri-edit-2-line"></i><span id="fb-form-title-text">新增反馈</span>
+                                </span>
+                            </div>
+                            <div class="fb-edit-scroll">
+                                <div class="space-y-4">
+                                    <div class="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <label class="modal-label">反馈人</label>
+                                            <input id="fb-reporter" type="text" placeholder="请输入反馈人" maxlength="20" class="modal-field"/>
+                                        </div>
+                                        <div>
+                                            <label class="modal-label">调查人</label>
+                                            <input id="fb-surveyor" type="text" placeholder="请输入调查人" maxlength="20" class="modal-field"/>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label class="modal-label">反馈内容 <span class="text-red-500">*</span></label>
+                                        <textarea id="fb-basic" class="modal-field" rows="3" placeholder="请输入反馈内容" maxlength="500" style="resize:none;"></textarea>
+                                    </div>
+                                    <div>
+                                        <label class="modal-label">调查时间</label>
+                                        <input id="fb-invtime" type="date" class="modal-field"/>
+                                    </div>
+                                    <div class="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <label class="modal-label">现场照片</label>
+                                            <label class="upload-field" id="fb-photo-box">
+                                                <i class="ri-image-add-line"></i>
+                                                <span id="fb-photo-ctl" class="truncate">请上传jpg/png文件</span>
+                                                <input id="fb-photo" type="file" multiple accept=".jpg,.jpeg,.png" onchange="addFbFiles('photo',this)"/>
+                                            </label>
+                                            <div id="fb-photo-list" class="fb-file-list"></div>
+                                        </div>
+                                        <div>
+                                            <label class="modal-label">现场视频</label>
+                                            <label class="upload-field" id="fb-video-box">
+                                                <i class="ri-video-add-line"></i>
+                                                <span id="fb-video-ctl" class="truncate">请上传mp4文件</span>
+                                                <input id="fb-video" type="file" multiple accept=".mp4" onchange="addFbFiles('video',this)"/>
+                                            </label>
+                                            <div id="fb-video-list" class="fb-file-list"></div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label class="modal-label">辅助材料</label>
+                                        <label class="upload-field" id="fb-aux-box">
+                                            <i class="ri-file-add-line"></i>
+                                            <span id="fb-aux-ctl" class="truncate">请上传辅助材料（可多选）</span>
+                                            <input id="fb-aux" type="file" multiple onchange="addFbFiles('aux',this)"/>
+                                        </label>
+                                        <div id="fb-aux-list" class="fb-file-list"></div>
+                                    </div>
+                                    <div id="fb-error" class="hidden text-[12px] text-red-600 flex items-center gap-1">
+                                        <i class="ri-error-warning-line"></i>请填写反馈内容
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+            </section>
+        </div>
+        <!-- 底部操作条：暂存（仅编辑视图显示，只落库不送省厅）/ 提交反馈（送省厅，提交后问题流转到“已反馈”） -->
+        <div class="flex items-center justify-end gap-3 px-6 py-4 border-t border-slate-100 bg-slate-50/60 shrink-0">
+            <span id="fb-msg" class="mr-auto text-[12px] text-emerald-600 font-medium"></span>
+            <button id="fb-cancel-btn" onclick="fbCancel()" class="px-4 py-1.5 rounded-sm text-[13px] font-medium border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 transition-colors"><span id="fb-cancel-label">取消</span></button>
+            <button id="fb-save-btn" onclick="saveFbEditor()" class="hidden inline-flex items-center gap-1 px-4 py-1.5 rounded-sm text-[13px] font-medium border border-blue-200 bg-white text-blue-600 hover:bg-blue-50 transition-colors">
+                <i class="ri-save-3-line" id="fb-save-icon"></i><span id="fb-save-label">暂存</span>
+            </button>
+            <button onclick="submitFeedback()" class="inline-flex items-center gap-1 bg-blue-500 hover:bg-blue-600 text-white px-4 py-1.5 rounded-sm text-[13px] font-medium transition-colors shadow-sm">
+                <i class="ri-send-plane-line"></i><span id="fb-submit-label">提交反馈</span>
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- 提交反馈二次确认（确认后锁定全部反馈并送省厅审核，取消则仅暂存为草稿） -->
+<div id="fb-submit-confirm-modal" class="modal-mask" onclick="if(event.target===this)cancelFbSubmit()">
+    <div class="modal-card" style="max-width:440px;">
+        <div class="modal-head">
+            <h3 class="text-[16px] font-bold text-slate-800 flex items-center gap-2">
+                <i class="ri-send-plane-line text-blue-600"></i>提交反馈
+            </h3>
+            <button onclick="cancelFbSubmit()" class="text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-sm w-7 h-7 flex items-center justify-center text-lg transition-colors modal-close">
+                <i class="ri-close-line"></i>
+            </button>
+        </div>
+        <div class="px-6 py-5">
+            <div id="fb-submit-confirm-text" class="text-[13px] leading-relaxed text-slate-600"></div>
+            <div class="mt-3 text-[12px] text-amber-600 bg-amber-50 border border-amber-100 rounded-sm px-3 py-2">
+                <i class="ri-error-warning-line"></i> 提交后反馈记录将锁定为只读，请确认已核实无误后再提交。
+            </div>
+        </div>
+        <div class="flex justify-end gap-3 px-6 py-4 border-t border-slate-100 bg-slate-50/60">
+            <button onclick="cancelFbSubmit()" class="px-4 py-1.5 rounded-sm text-[13px] font-medium border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 transition-colors">取消</button>
+            <button onclick="confirmFbSubmit()" class="inline-flex items-center gap-1 bg-blue-500 hover:bg-blue-600 text-white px-4 py-1.5 rounded-sm text-[13px] font-medium transition-colors shadow-sm">
+                <i class="ri-check-line"></i><span>确认提交</span>
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- 附件媒体查看层（照片大图 / 视频播放） -->
+<div id="media-viewer" class="media-mask" onclick="if(event.target===this)closeMediaViewer()">
+    <div class="media-box">
+        <i class="ri-close-circle-fill media-x" onclick="closeMediaViewer()"></i>
+        <div class="media-main">
+            <img id="media-img" alt="" style="display:none"/>
+            <video id="media-video" controls playsinline preload="metadata" style="display:none"></video>
+        </div>
+        <div id="media-name" class="media-name"></div>
+    </div>
+</div>
+
+<!-- 问题详情弹框（点击问题名称打开：左=问题详情/底单，右=反馈时间轴 + 审核调度情况） -->
+<div id="detail-modal" class="modal-mask" onclick="if(event.target===this)closeProblemDetail()">
+    <div class="modal-card-xl">
+        <div class="modal-head">
+            <h3 class="text-[16px] font-bold text-slate-800 flex items-center gap-2">
+                <i class="ri-file-search-line text-blue-600"></i>问题详情
+            </h3>
+            <button onclick="closeProblemDetail()" class="text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-sm w-7 h-7 flex items-center justify-center text-lg transition-colors modal-close">
+                <i class="ri-close-line"></i>
+            </button>
+        </div>
+        <div class="dt-body">
+            <aside class="dt-left" id="dt-left-body"></aside>
+            <section class="dt-right">
+                <div class="dt-tabs">
+                    <button class="dt-tab active" data-dt-tab="fb" onclick="switchDtTab('fb')">反馈情况</button>
+                    <button class="dt-tab" data-dt-tab="audit" onclick="switchDtTab('audit')">审核调度情况</button>
+                </div>
+                <div class="dt-pane" id="dt-fb-pane">
+                    <div id="dt-fb-list" class="dt-scroll tl-list"></div>
+                </div>
+                <div class="dt-pane" id="dt-audit-pane" style="display:none;">
+                    <div id="dt-audit-list" class="dt-scroll au-list"></div>
+                </div>
+            </section>
+        </div>
+        <!-- 省级审核操作条：地市已反馈后展示 驳回/销号；驳回复用公共“驳回原因”弹窗 -->
+        <div id="dt-actions">
+            <span class="dt-actions-tip"><i class="ri-check-double-line"></i>地市已完成反馈，请省级审核：通过点击“销号”，不通过可“驳回”退回地市重新反馈</span>
+            <span class="inline-flex items-center">
+                <button onclick="detailActionReject()" class="op-btn op-reject"><i class="ri-close-circle-line"></i>驳回</button>
+                <button onclick="detailActionClose()" class="op-btn op-close"><i class="ri-checkbox-circle-line"></i>销号</button>
+            </span>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

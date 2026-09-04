@@ -99,6 +99,7 @@
         .level-lv1 { color: #dc2626; }
         .level-lv2 { color: #d97706; }
         .level-lv3 { color: #2563eb; }
+        .level-remind { color: #64748b; }
 
         /* 时间筛选框激活态（主框选日期或三角频率下拉展开时） */
         .dp-open { border-color: #3b82f6 !important; box-shadow: 0 0 0 1px #3b82f6; }
@@ -791,7 +792,9 @@
         { name: "自动站超标问题",     category: "浓度变化预警", level: "一级", basin: "汉江流域",   date: "2026-08-04", city: "十堰市",    status: "pending",   closed: "否", survey: "否", reject: "否", inList: "是", lake: "丹江口水库", basin1: "汉江流域",    basin2: "三峡库区", source: "外部系统调度" },
         { name: "自动站超标问题",     category: "浓度变化预警", level: "二级", basin: "汉江流域",   date: "2026-08-07", city: "襄阳市",    status: "done",      closed: "否", survey: "是", reject: "否", inList: "是", lake: "龙感湖",     basin1: "汉江流域",    basin2: "府澴河片区", fbs: [ { reporter: "陈静", surveyor: "赵磊", basic: "经比对历史数据与在线质控记录，判定为站点运维校准引起的短时数据异常，非实际超标，恢复正常后已解除预警。", invTime: "2026-08-09", photo: ["自动站运维校准记录.png"], video: [], aux: ["在线质控记录截图.png", "运维工单.pdf"] } ], source: "外部系统调度" },
         { name: "自动站超标问题",     category: "浓度变化预警", level: "三级", basin: "清江流域",   date: "2026-08-11", city: "恩施州",    status: "pending",   closed: "否", survey: "否", reject: "否", inList: "否", lake: "隔河岩水库", basin1: "清江流域",    basin2: "三峡库区", source: "外部系统调度" },
-        { name: "自动站超标问题",     category: "浓度变化预警", level: "一级", basin: "通顺河流域", date: "2026-08-14", city: "仙桃市",    status: "pending", closed: "否", survey: "否", reject: "否", inList: "否", lake: "长湖",       basin1: "长江干流流域", basin2: "四湖片区", source: "外部系统调度" }
+        { name: "自动站超标问题",     category: "浓度变化预警", level: "一级", basin: "通顺河流域", date: "2026-08-14", city: "仙桃市",    status: "pending", closed: "否", survey: "否", reject: "否", inList: "否", lake: "长湖",       basin1: "长江干流流域", basin2: "四湖片区", source: "外部系统调度" },
+        { name: "自动站超标问题", category: "水质类别变化报警", remind: true, basin: "汉江流域", date: "2026-08-09", city: "孝感市", status: "pending", closed: "否", survey: "否", reject: "否", inList: "是", lake: "洪湖", basin1: "汉江流域", basin2: "府澴河片区", source: "外部系统调度" },
+        { name: "自动站超标问题", category: "浓度变化预警", remind: true, basin: "汉江流域", date: "2026-08-16", city: "随州市", status: "pending", closed: "否", survey: "否", reject: "否", inList: "是", lake: "丹江口水库", basin1: "汉江流域", basin2: "府澴河片区", source: "外部系统调度" }
     ];
 
     // 反馈只读标记：已提交过省级的反馈（提交后被驳回/已审核的记录）一律锁定（fb.sub=true），
@@ -1000,12 +1003,22 @@
     // 悬浮提示：分类有 desc / 规则有 tip 时显示识别说明
     function tipAttr(t) { return t ? ` title="${escAttr(t)}"` : ''; }
 
-    // 仅“水质类别变化报警 / 浓度变化预警”两个小类才带预警级别，可进一步按级别筛选
+    // 仅“水质类别变化报警 / 浓度变化预警”两个小类才带预警级别，可进一步按级别筛选；
+    // 但小类下个别识别规则不设级别、仅作提醒（如“昨日水质劣于前日提醒”）：选中时不再显示级别筛选框
     const LEVEL_CATEGORIES = ['水质类别变化报警', '浓度变化预警'];
+    // 位于级别小类下、但本身不划分一级/二级/三级、仅作提醒的识别规则
+    const REMIND_RULES = ['昨日水质劣于前日提醒', '锑因子超标预警'];
+    function isRemindRule(ruleName) {
+        return REMIND_RULES.indexOf(ruleName) >= 0;
+    }
+    // 当前识别规则是否“分级预警”（级别小类 + 非提醒规则）→ 才显示“问题级别”筛选框
+    function selectedRuleHasLevel() {
+        return LEVEL_CATEGORIES.indexOf(selectedCategorySub) >= 0 && !isRemindRule(selectedCategory);
+    }
     const filterLevelWrap = document.getElementById('filter-level-wrap');
     const filterLevelSel = document.getElementById('filter-level');
     function updateLevelFilterVisibility() {
-        const show = LEVEL_CATEGORIES.indexOf(selectedCategorySub) >= 0;
+        const show = selectedRuleHasLevel();
         if (filterLevelWrap) filterLevelWrap.classList.toggle('hidden', !show);
         if (filterLevelSel && !show) filterLevelSel.value = '全部';
     }
@@ -1541,6 +1554,8 @@
             if (f.basin1 !== '全部' && item.basin1 !== f.basin1) return false;
             if (f.basin2 !== '全部' && item.basin2 !== f.basin2) return false;
             if (f.category && item.category !== f.category) return false;
+            // 级别小类下再区分“分级预警 / 仅提醒”两类识别规则：提醒规则只列“提醒”记录，分级预警规则剔除“提醒”记录
+            if (f.category && LEVEL_CATEGORIES.indexOf(f.category) >= 0 && (isRemindRule(selectedCategory) !== !!item.remind)) return false;
             if (f.level !== '全部' && item.level !== f.level) return false;
             if (f.source !== '全部' && item.source !== f.source) return false;
             if (f.keyword && !item.name.includes(f.keyword)) return false;
@@ -1629,9 +1644,14 @@
                 }
             }
 
-            // 预警级别标签：仅“水质类别变化报警 / 浓度变化预警”的自动站记录带级别
-            const levelCls = item.level ? (item.level === '一级' ? 'level-lv1' : item.level === '二级' ? 'level-lv2' : 'level-lv3') : '';
-            const lvTag = item.level ? `<span class="level-tag ${levelCls}" title="预警级别：${item.level}">${item.level}</span>` : '';
+            // 预警级别标签：分级记录显示 一级/二级/三级；提醒记录（无级别）标注“提醒”
+            let lvTag = '';
+            if (item.level) {
+                const levelCls = item.level === '一级' ? 'level-lv1' : item.level === '二级' ? 'level-lv2' : 'level-lv3';
+                lvTag = `<span class="level-tag ${levelCls}" title="预警级别：${item.level}">${item.level}</span>`;
+            } else if (item.remind) {
+                lvTag = `<span class="level-tag level-remind" title="仅提醒，不设预警级别">提醒</span>`;
+            }
 
             html += `
                 <tr>
@@ -2355,7 +2375,7 @@
             ? `${lake}（${reg || '—'}）`
             : (city ? (reg ? `${city}（${reg}）` : city) : (reg || '相关区域'));
         const cat = String(item.category || '');
-        const lv = item.level ? `（${item.level}级）` : '';
+        const lv = item.remind ? '（提醒）' : (item.level ? `（${item.level}级）` : '');
         const head = date ? `${date}，` : '';
         let txt;
         if (cat.indexOf('自动站水质超标') === 0) {
@@ -2414,7 +2434,7 @@
     // 左侧问题详情（底单式只读字段；此区块也适用于问题底单页）
     function buildDetailLeftHtml(item) {
         const orDash = v => (v && String(v).trim()) ? String(v).trim() : '—';
-        const levelText = item.level ? item.level : '';
+        const levelText = item.remind ? '提醒' : (item.level ? item.level : '');
         // 问题状态（与表格口径一致：已驳回优先显示为“已驳回”）
         let statusText, statusYes = '';
         if (item.reject === '是') { statusText = '已驳回'; statusYes = 'no'; }

@@ -2,7 +2,9 @@
 module.exports = {
     darkMode: "class",
     content: [
-        "D:\\runanjian\\gzkj\\hubei-design-new\\03_水平台\\04_问题聚焦\\02-省级分析\\问题聚焦.html"
+        "./问题聚焦-清单.html",
+        "./问题聚焦-底单.html",
+        "./问题聚焦-统计.html"
     ],
     theme: {
         extend: {

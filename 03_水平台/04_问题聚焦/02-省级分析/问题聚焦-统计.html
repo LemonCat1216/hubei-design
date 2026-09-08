@@ -78,12 +78,12 @@
                 overflow: hidden;
                 display: flex;
                 flex-direction: column;
-                padding: 6px 24px 2px;
+                padding: 16px 24px 16px;
             }
             main.flex-1 > footer { display: none; }
             #ctrlbar { flex: 0 0 auto; height: 56px; margin-bottom: 12px; }
             #kpi-row { flex: 0 0 auto; margin-bottom: 12px; gap: 16px; }
-            #charts-grid { flex: 1 1 auto; min-height: 0; margin-bottom: 0; grid-template-rows: repeat(2, minmax(0, 1fr)); gap: 20px 24px; }
+            #charts-grid { flex: 1 1 auto; min-height: 0; margin-bottom: 0; grid-template-rows: repeat(2, minmax(0, 1fr)); gap: 16px 24px; }
             #charts-grid > div { height: auto; min-height: 0; }
             #charts-grid > div > .flex-1 { min-height: 0; }
         }
@@ -144,13 +144,13 @@
                     <a class="flex items-center pl-11 pr-4 py-2 text-[14px] text-slate-600 dark:text-slate-400 hover:text-blue-600 hover:bg-blue-50/50 transition-all rounded-lg group" href="#">
                         <span class="w-1.5 h-1.5 bg-slate-300 group-hover:bg-blue-600 rounded-full mr-3 shrink-0"></span><span class="sidebar-text">环保舆情</span>
                     </a>
-                    <a class="flex items-center pl-11 pr-4 py-2 text-[14px] text-slate-600 dark:text-slate-400 hover:text-blue-600 hover:bg-blue-50/50 transition-all rounded-lg group" href="#">
+                    <a class="flex items-center pl-11 pr-4 py-2 text-[14px] text-slate-600 dark:text-slate-400 hover:text-blue-600 hover:bg-blue-50/50 transition-all rounded-lg group" href="问题聚焦-清单.html">
                         <span class="w-1.5 h-1.5 bg-slate-300 group-hover:bg-blue-600 rounded-full mr-3 shrink-0"></span><span class="sidebar-text">问题清单</span>
                     </a>
-                    <a class="flex items-center pl-11 pr-4 py-2 text-[14px] text-slate-600 dark:text-slate-400 hover:text-blue-600 hover:bg-blue-50/50 transition-all rounded-lg group" href="#">
+                    <a class="flex items-center pl-11 pr-4 py-2 text-[14px] text-slate-600 dark:text-slate-400 hover:text-blue-600 hover:bg-blue-50/50 transition-all rounded-lg group" href="问题聚焦-底单.html">
                         <span class="w-1.5 h-1.5 bg-slate-300 group-hover:bg-blue-600 rounded-full mr-3 shrink-0"></span><span class="sidebar-text">问题底单</span>
                     </a>
-                    <a class="nav-item w-full flex items-center pl-11 pr-4 py-2 text-[14px] text-blue-700 font-bold bg-blue-50 dark:bg-blue-900/30 rounded-lg transition-all relative mt-1 group" href="#">
+                    <a class="nav-item w-full flex items-center pl-11 pr-4 py-2 text-[14px] text-blue-700 font-bold bg-blue-50 dark:bg-blue-900/30 rounded-lg transition-all relative mt-1 group" href="问题聚焦-统计.html">
                         <span class="w-1.5 h-1.5 bg-blue-600 rounded-full mr-3 shrink-0"></span>
                         <span class="sidebar-text">问题统计</span>
                         <div class="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-5 bg-blue-600 rounded-r-full sidebar-text"></div>
@@ -617,53 +617,76 @@
             '已驳回': [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
             '已销号': [0, 1, 1, 2, 2, 2, 2, 2, 3, 3, 3, 3]
         };
-        const c = statusCounts(list);
-        const SAMPLE_END = { '待反馈': 29, '已反馈': 14, '已驳回': 1, '已销号': 3 };
-        const target = { '待反馈': c.pending, '已反馈': c.done, '已驳回': c.reject, '已销号': c.closed };
-        const seriesData = {};
-        STATUS_ORDER.forEach(s => {
-            const k = SAMPLE_END[s] ? target[s] / SAMPLE_END[s] : 0;
-            let mx = 0;
-            seriesData[s] = SAMPLE[s].map(v => mx = Math.max(mx, Math.round(v * k)));
+        const tooltip = { trigger: 'axis', backgroundColor: 'rgba(255, 255, 255, 0.95)', borderColor: '#e2e8f0', textStyle: { color: '#334155', fontSize: 12 }, extraCssText: 'box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); border-radius: 6px;' };
+        const legend = { top: 0, right: 0, icon: 'circle', itemWidth: 8, itemHeight: 8, textStyle: { color: textColor(), fontSize: 11 }, itemGap: 10 };
+        const grid = { left: 8, right: 16, top: 30, bottom: 6, containLabel: true };
+        const xAxis = Object.assign({}, baseAxis(), { type: 'category', boundaryGap: false, data: months, axisLabel: { color: textColor(), fontSize: 11, interval: 0, formatter: v => Number(String(v).slice(5, 7)) + '月' } });
+        const yAxis = Object.assign({ type: 'value', minInterval: 1 }, baseAxis());
+        const sysColor = SOURCE_COLORS['系统识别'];
+        const lineOpt = (s, color) => ({
+            name: s, type: 'line', stack: 'total', smooth: true,
+            symbol: 'emptyCircle', symbolSize: 4, showSymbol: false,
+            lineStyle: { width: 2, color },
+            areaStyle: {
+                opacity: 0.15, // 进一步降低透明度，避免画面太脏
+                color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                    { offset: 0, color },
+                    { offset: 1, color: '#ffffff00' }
+                ])
+            },
+            emphasis: { focus: 'series' }
         });
+        let series;
+        if (listScope === 'dandi') {
+            // 底单口径：不再按处置状态堆叠，仅一条“系统识别”曲线，末尾月 = 当前统计条数
+            const tot = months.map((_, mi) => STATUS_ORDER.reduce((a, s) => a + SAMPLE[s][mi], 0));
+            const k = tot[tot.length - 1] ? list.length / tot[tot.length - 1] : 0;
+            let mx = 0;
+            const data = tot.map(v => mx = Math.max(mx, Math.round(v * k)));
+            series = [Object.assign(lineOpt('系统识别', sysColor), { data })];
+        } else {
+            const c = statusCounts(list);
+            const SAMPLE_END = { '待反馈': 29, '已反馈': 14, '已驳回': 1, '已销号': 3 };
+            const target = { '待反馈': c.pending, '已反馈': c.done, '已驳回': c.reject, '已销号': c.closed };
+            const seriesData = {};
+            STATUS_ORDER.forEach(s => {
+                const k = SAMPLE_END[s] ? target[s] / SAMPLE_END[s] : 0;
+                let mx = 0;
+                seriesData[s] = SAMPLE[s].map(v => mx = Math.max(mx, Math.round(v * k)));
+            });
+            series = STATUS_ORDER.map(s => Object.assign(lineOpt(s, STATUS_COLORS[s]), { data: seriesData[s] }));
+        }
         charts.chartMonth.setOption({
-            color: STATUS_ORDER.map(s => STATUS_COLORS[s]),
-            tooltip: { trigger: 'axis', backgroundColor: 'rgba(255, 255, 255, 0.95)', borderColor: '#e2e8f0', textStyle: { color: '#334155', fontSize: 12 }, extraCssText: 'box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); border-radius: 6px;' },
-            legend: { top: 0, right: 0, icon: 'circle', itemWidth: 8, itemHeight: 8, textStyle: { color: textColor(), fontSize: 11 }, itemGap: 10 },
-            grid: { left: 8, right: 16, top: 30, bottom: 6, containLabel: true },
-            xAxis: Object.assign({}, baseAxis(), { type: 'category', boundaryGap: false, data: months, axisLabel: { color: textColor(), fontSize: 11, interval: 0, formatter: v => Number(String(v).slice(5, 7)) + '月' } }),
-            yAxis: Object.assign({ type: 'value', minInterval: 1 }, baseAxis()),
-            series: STATUS_ORDER.map(s => ({
-                name: s, type: 'line', stack: 'total', smooth: true,
-                symbol: 'emptyCircle', symbolSize: 4, showSymbol: false,
-                lineStyle: { width: 2, color: STATUS_COLORS[s] },
-                areaStyle: {
-                    opacity: 0.15, // 进一步降低透明度，避免画面太脏
-                    color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-                        { offset: 0, color: STATUS_COLORS[s] },
-                        { offset: 1, color: '#ffffff00' }
-                    ])
-                },
-                emphasis: { focus: 'series' },
-                data: seriesData[s]
-            }))
+            color: (listScope === 'dandi') ? [sysColor] : STATUS_ORDER.map(s => STATUS_COLORS[s]),
+            tooltip, legend, grid, xAxis, yAxis, series
         }, true);
     }
 
     function drawSource(list) {
-        const arr = SOURCES.map(src => ({ name: src, value: list.filter(i => i.source === src).length }));
-        const colors = SOURCES.map(s => SOURCE_COLORS[s]);
+        // 只保留计数>0 的来源分片（如底单口径仅剩“系统识别”，隐藏其它 0 值来源）
+        const arr = SOURCES
+            .map(src => ({ name: src, value: list.filter(i => i.source === src).length }))
+            .filter(x => x.value > 0)
+            .map(x => Object.assign(x, { itemStyle: { color: SOURCE_COLORS[x.name] } }));
         const total = list.length;
-        charts.chartSource.setOption(donutOption(arr, colors, total ? String(total) : ''), true);
+        charts.chartSource.setOption(donutOption(arr, [], total ? String(total) : ''), true);
     }
 
     function drawStatus(list) {
+        const total = list.length;
+        if (listScope === 'dandi') {
+            // 底单口径：合并为一个“系统识别”扇区，不再按处置状态细分
+            charts.chartStatus.setOption(donutOption(
+                [{ name: '系统识别', value: total, itemStyle: { color: SOURCE_COLORS['系统识别'] } }],
+                [], total ? String(total) : ''), true);
+            return;
+        }
         const c = statusCounts(list);
         const KEY = { '待反馈': 'pending', '已反馈': 'done', '已驳回': 'reject', '已销号': 'closed' };
         const arr = STATUS_ORDER
             .map(s => ({ name: s, value: c[KEY[s]], itemStyle: { color: STATUS_COLORS[s] } }))
             .filter(x => x.value > 0);
-        charts.chartStatus.setOption(donutOption(arr, [], list.length ? String(list.length) : ''), true);
+        charts.chartStatus.setOption(donutOption(arr, [], total ? String(total) : ''), true);
     }
 
     function drawCategory(list) {
@@ -701,7 +724,8 @@
     function render() {
         const stat = scopeData();
         renderKpi(stat);
-        const list = stat.filter(i => (listScope === 'dandi') ? i.inList !== '是' : i.inList === '是');
+        // 底单口径：仅统计来源为「系统识别」的底单记录（清单口径不变，仍为全部来源）
+        const list = stat.filter(i => (listScope === 'dandi') ? (i.inList !== '是' && i.source === '系统识别') : i.inList === '是');
         drawMonth(list);
         drawSource(list);
         drawStatus(list);

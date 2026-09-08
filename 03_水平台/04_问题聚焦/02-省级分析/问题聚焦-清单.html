@@ -101,6 +101,22 @@
         .level-lv3 { color: #2563eb; }
         .level-remind { color: #64748b; font-weight: 400; }
 
+        /* 级别角标：浅底彩色字描边标签，同行紧贴问题名称前方（提醒=浅灰底灰字），替代原“问题级别”列 */
+        /* 问题名称列内容整体居中：级别与名称作为整体在单元格内居中，级别紧贴于名称前 */
+        .nm-line { display: flex; align-items: center; justify-content: center; gap: 5px; min-width: 0; width: 100%; }
+        .nm-line .name-link { flex: 0 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: left; }
+        .lv-badge {
+            flex: none;
+            display: inline-flex; align-items: center;
+            font-size: 11px; line-height: 1; font-weight: 600;
+            padding: 2px 6px; border-radius: 3px; border: 1px solid;
+            white-space: nowrap; pointer-events: none;
+        }
+        .lv-badge.lv1 { color: #dc2626; background: #fef2f2; border-color: #fecaca; }
+        .lv-badge.lv2 { color: #d97706; background: #fffbeb; border-color: #fcd34d; }
+        .lv-badge.lv3 { color: #2563eb; background: #eff6ff; border-color: #bfdbfe; }
+        .lv-badge.remind { color: #64748b; background: #f8fafc; border-color: #e2e8f0; font-weight: 400; }
+
         /* 时间筛选框激活态（主框选日期或三角频率下拉展开时） */
         .dp-open { border-color: #3b82f6 !important; box-shadow: 0 0 0 1px #3b82f6; }
         #dp-freq-trigger:hover #dp-freq-label, #dp-freq-trigger:hover #dp-freq-caret { color: #3b82f6; }
@@ -122,6 +138,22 @@
         .op-feedback:hover { color: #1d4ed8; border-color: #60a5fa; background: #dbeafe; }
         .op-refeedback { color: #d97706; border-color: #fcd34d; background: #fffbeb; }
         .op-refeedback:hover { color: #b45309; border-color: #fbbf24; background: #fef3c7; }
+
+        /* 仅展示模式：平台只负责预警展示、不承担业务处理，流转（驳回/销号/反馈/提交送省厅等）按钮一律去色禁用；
+           保留图标与文字，悬浮提示“处理在对应业务系统进行”，hover 不再高亮 */
+        .flow-dis, button.flow-dis, .flow-dis:not(:disabled) {
+            color: #94a3b8 !important;
+            border-color: #e2e8f0 !important;
+            background: #f1f5f9 !important;
+            box-shadow: none !important;
+            cursor: not-allowed;
+        }
+        .flow-dis i { color: #94a3b8 !important; }
+
+        /* “去办理”按钮：销号/驳回/问题反馈等业务办理统一在调度平台进行，本平台仅引导跳转 */
+        .op-go { color: #fff; border-color: #2563eb; background: #2563eb; box-shadow: 0 1px 2px rgba(37, 99, 235, 0.25); }
+        .op-go:hover { color: #fff; border-color: #1d4ed8; background: #1d4ed8; box-shadow: 0 2px 4px rgba(37, 99, 235, 0.3); }
+        .op-go i { color: #fff; }
 
         /* 上传框（现场照片 / 现场视频 / 辅助材料：可多选，仅记录文件名） */
         .upload-field {
@@ -145,7 +177,7 @@
         .fb-chip-rm { cursor: pointer; color: #94a3b8; font-size: 14px; padding: 1px 2px; flex: none; border-radius: 2px; }
         .fb-chip-rm:hover { color: #dc2626; background: #fef2f2; }
 
-        /* 地市反馈弹框：左=问题详情（基础信息/问题描述/流程状态），右=审核调度情况 + 问题反馈两页签；
+        /* 地市反馈弹框：左=问题详情（基础信息/问题描述），右=审核调度情况 + 问题反馈两页签；
            问题反馈页内为“列表视图 ↔ 编辑视图”单区切换（新增/修改/删除反馈），处理完成才“提交反馈·送省厅” */
         /* 弹框主体为“列表视图 ↔ 编辑视图”单区切换：默认展示反馈记录，点“新增反馈/修改”才切出编辑表单 */
         .fb-stage { flex: 1; min-height: 0; display: flex; flex-direction: column; }
@@ -303,7 +335,7 @@
         }
         .modal-field:focus { border-color: #3b82f6; box-shadow: 0 0 0 2px rgba(59,130,246,0.2); }
         select.modal-field { cursor: pointer; }
-        textarea.reject-error-border { border-color: #ef4444 !important; }
+        textarea.reject-error-border, input.reject-error-border, select.reject-error-border { border-color: #ef4444 !important; }
 
         /* ── 新增问题弹框：问题类别单框级联悬浮面板（不占位、不撑开弹框高度，参照筛选区三级级联） ── */
         #add-cat-panel {
@@ -373,17 +405,27 @@
         .dt-scroll { flex: 1; min-height: 0; overflow-y: auto; padding: 0 3px 10px 0; }
 
         /* 左侧问题详情 / 底单 字段 */
+        .dt-title { display: flex; align-items: flex-start; gap: 10px; }
+        .dt-title .dt-name { flex: 1 1 auto; min-width: 0; }
         .dt-name { font-size: 15px; font-weight: 700; color: #0f172a; line-height: 1.45; }
         .dt-name-tag { display: inline-flex; margin-left: 6px; vertical-align: 2px; }
+        /* 问题状态（移置于问题名称右侧的小标签，浅底彩色字，与操作按钮同风格） */
+        .dt-st { display: inline-flex; align-items: center; gap: 4px; flex: none; margin-top: 3px; margin-left: auto; font-size: 12px; line-height: 1; font-weight: 600; padding: 3px 8px; border-radius: 6px; border: 1px solid; white-space: nowrap; }
+        .dt-st i { font-size: 13px; }
+        .dt-st.s-pending { color: #d97706; background: #fffbeb; border-color: #fcd34d; }
+        .dt-st.s-done    { color: #2563eb; background: #eff6ff; border-color: #bfdbfe; }
+        .dt-st.s-reject  { color: #dc2626; background: #fef2f2; border-color: #fecaca; }
+        .dt-st.s-closed  { color: #059669; background: #ecfdf5; border-color: #a7f3d0; }
         /* 问题描述（通栏段落，位于“基础信息”末尾，非键值行） */
         .dl-desc-label { margin-top: 12px; font-size: 12px; font-weight: 600; color: #94a3b8; letter-spacing: 0.04em; }
         .dl-desc { margin-top: 5px; font-size: 13px; line-height: 1.75; color: #475569; word-break: break-word; }
         .dl-g { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #94a3b8; font-weight: 600; letter-spacing: 0.04em; margin: 18px 0 2px; }
         .dl-g::after { content: ''; flex: 1; height: 1px; background: #eef2f7; }
-        .dl-row { display: flex; align-items: baseline; justify-content: space-between; gap: 14px; padding: 6px 0; border-bottom: 1px dashed #eef2f7; font-size: 13px; }
+        .dl-row { display: flex; align-items: flex-start; gap: 12px; padding: 6px 0; border-bottom: 1px dashed #eef2f7; font-size: 13px; }
         .dl-row:last-child { border-bottom: none; }
-        .dl-k { flex: none; color: #94a3b8; }
-        .dl-v { text-align: right; color: #334155; font-weight: 500; min-width: 0; word-break: break-all; }
+        .dl-k { flex: none; width: 104px; text-align: right; color: #64748b; line-height: 1.6; }
+        .dl-k::after { content: '：'; }
+        .dl-v { flex: 1 1 auto; min-width: 0; text-align: left; color: #334155; font-weight: 500; line-height: 1.6; word-break: break-word; }
         .dl-v.yes { color: #059669; }
         .dl-v.no { color: #94a3b8; }
         .dl-note { margin-top: 6px; font-size: 12px; color: #b91c1c; line-height: 1.6; background: #fef2f2; border: 1px solid #fee2e2; border-radius: 2px; padding: 6px 8px; }
@@ -413,6 +455,17 @@
         .au-title .au-user.city i { color: #059669; }
         .au-title .au-user.empty { color: #cbd5e1; background: #f8fafc; border-color: #eef2f7; }
         .au-title .au-user.empty i { color: #d1d5db; }
+        /* 审核调度各环节“执行层级”标注：省级=蓝 / 地市=绿 / 系统=靛蓝；左点 + 标题 + 文字标签同色 */
+        .au-dot.dot-prov { background: #2563eb; box-shadow: 0 0 0 3px #eff6ff; }
+        .au-dot.dot-city { background: #10b981; box-shadow: 0 0 0 3px #ecfdf5; }
+        .au-dot.dot-sys  { background: #6366f1; box-shadow: 0 0 0 3px #eef2ff; }
+        .au-title.t-prov { color: #1d4ed8; }
+        .au-title.t-city { color: #047857; }
+        .au-title.t-sys  { color: #4f46e5; }
+        .au-tag { flex: none; display: inline-flex; align-items: center; line-height: 1; font-size: 11px; font-weight: 600; padding: 3px 6px; border-radius: 4px; }
+        .au-tag.tag-prov { color: #1d4ed8; background: #eff6ff; border: 1px solid #bfdbfe; }
+        .au-tag.tag-city { color: #065f46; background: #ecfdf5; border: 1px solid #a7f3d0; }
+        .au-tag.tag-sys  { color: #4338ca; background: #eef2ff; border: 1px solid #c7d2fe; }
 
         /* 详情弹窗底部“省级审核操作条”（地市已反馈 → 省级驳回/销号；默认隐藏） */
         #dt-actions {
@@ -421,6 +474,35 @@
         }
         #dt-actions .dt-actions-tip { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: #64748b; }
         #dt-actions .dt-actions-tip i { color: #2563eb; font-size: 14px; }
+
+        /* ===== “+筛选”：按需展开 湖库/一级流域/二级流域 筛选下拉 ===== */
+        .flt-wrap { position: relative; display: inline-flex; }
+        .flt-btn {
+            display: inline-flex; align-items: center; gap: 5px;
+            background: #10b981; color: #fff; border: none;
+            padding: 5px 13px; border-radius: 6px; font-size: 13px; font-weight: 500;
+            cursor: pointer; transition: background .15s, box-shadow .15s;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08); line-height: 1.4;
+        }
+        .flt-btn:hover { background: #059669; }
+        .flt-btn.active { background: #059669; box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.25); }
+        .flt-btn i { font-size: 15px; line-height: 1; }
+        .flt-pop {
+            display: none; position: absolute; top: calc(100% + 5px); right: 0; z-index: 60;
+            min-width: 184px; padding: 4px 0; background: #fff; border: 1px solid #e2e8f0; border-radius: 6px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+        }
+        .flt-pop.open { display: block; }
+        .flt-title {
+            padding: 7px 14px 3px; font-size: 11px; font-weight: 600; letter-spacing: 0.05em;
+            color: #94a3b8; text-transform: uppercase;
+        }
+        .flt-opt {
+            display: flex; align-items: center; gap: 8px; padding: 7px 14px;
+            font-size: 13px; color: #334155; cursor: pointer; transition: background .12s;
+        }
+        .flt-opt:hover { background: #f1f5f9; }
+        .flt-opt input { width: 15px; height: 15px; margin: 0; flex: none; cursor: pointer; accent-color: #10b981; }
     </style>
 </head>
 <body class="bg-background-light dark:bg-background-dark text-slate-800 dark:text-slate-100 h-screen overflow-hidden flex flex-col">
@@ -516,6 +598,10 @@
                         <span class="w-1.5 h-1.5 bg-slate-300 dark:bg-slate-600 group-hover:bg-blue-600 rounded-full mr-3 shrink-0 transition-colors"></span>
                         <span class="sidebar-text">问题底单</span>
                     </a>
+                    <a class="flex items-center px-12 py-2.5 text-[14px] text-slate-600 dark:text-slate-400 hover:text-blue-600 hover:bg-blue-50/50 dark:hover:bg-blue-900/20 transition-all rounded-lg group" href="问题聚焦-统计.html">
+                        <span class="w-1.5 h-1.5 bg-slate-300 dark:bg-slate-600 group-hover:bg-blue-600 rounded-full mr-3 shrink-0 transition-colors"></span>
+                        <span class="sidebar-text">问题统计</span>
+                    </a>
                 </div>
             </div>
         </div>
@@ -550,7 +636,7 @@
                         <i id="cascader-clear" class="ri-close-line hidden text-slate-400 hover:text-red-500 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-full px-0.5 cursor-pointer flex-none text-[13px]" title="清除类别"></i>
                         <i id="cascader-icon" class="ri-arrow-up-s-line text-slate-300 group-hover:text-slate-400 transition-transform rotate-180 flex-none"></i>
                     </button>
-                    <div id="cascader-popover" class="hidden absolute top-full right-0 mt-1 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-lg shadow-xl popover-shadow z-50 flex overflow-hidden w-[700px]">
+                    <div id="cascader-popover" class="hidden absolute top-full left-0 mt-1 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-lg shadow-xl popover-shadow z-50 flex overflow-hidden w-[700px]">
                         <div class="w-[180px] shrink-0 border-r border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/80 py-1" id="cascader-categories"></div>
                         <div class="w-[200px] shrink-0 border-r border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/80 py-1" id="cascader-subs"></div>
                         <div class="flex-1 bg-white dark:bg-slate-800 py-1 max-h-[340px] overflow-y-auto custom-scrollbar" id="cascader-options"></div>
@@ -617,7 +703,7 @@
                     </select>
                 </div>
 
-                <div class="relative">
+                <div class="relative hidden" id="flt-lake">
                     <select id="filter-lake" class="appearance-none bg-white border border-slate-200 dark:bg-slate-800 dark:border-slate-700 rounded pl-3 pr-8 py-1.5 text-[13px] text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-all cursor-pointer hover:border-blue-400 w-36 shadow-sm">
                         <option value="全部">请选择湖库</option>
                         <option value="梁子湖">梁子湖</option>
@@ -626,7 +712,7 @@
                     </select>
                 </div>
 
-                <div class="relative">
+                <div class="relative hidden" id="flt-basin1">
                     <select id="filter-basin1" class="appearance-none bg-white border border-slate-200 dark:bg-slate-800 dark:border-slate-700 rounded pl-3 pr-8 py-1.5 text-[13px] text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-all cursor-pointer hover:border-blue-400 w-36 shadow-sm">
                         <option value="全部">选择一级流域</option>
                         <option value="长江干流流域">长江干流流域</option>
@@ -635,7 +721,7 @@
                     </select>
                 </div>
 
-                <div class="relative">
+                <div class="relative hidden" id="flt-basin2">
                     <select id="filter-basin2" class="appearance-none bg-white border border-slate-200 dark:bg-slate-800 dark:border-slate-700 rounded pl-3 pr-8 py-1.5 text-[13px] text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-all cursor-pointer hover:border-blue-400 w-36 shadow-sm">
                         <option value="全部">选择二级流域</option>
                         <option value="富水片区">富水片区</option>
@@ -644,11 +730,22 @@
                     </select>
                 </div>
 
+                <div class="flt-wrap" id="flt-wrap">
+                    <button type="button" id="flt-trigger" class="flt-btn" onclick="toggleFltMenu(event)" title="按需展开 湖库/流域 筛选下拉">
+                        <i class="ri-add-line"></i><span>筛选</span>
+                    </button>
+                    <div id="flt-pop" class="flt-pop">
+                        <div class="flt-title">按维度筛选</div>
+                        <label class="flt-opt"><input type="checkbox" data-flt="flt-lake" onchange="toggleFltCheck(this)">湖库</label>
+                        <label class="flt-opt"><input type="checkbox" data-flt="flt-basin1,flt-basin2" onchange="toggleFltCheck(this)">流域（一级、二级）</label>
+                    </div>
+                </div>
+
                 <button onclick="applyFilter()" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-1.5 rounded text-[13px] transition-colors shadow-sm font-medium flex items-center space-x-1">
                     <i class="ri-search-line"></i><span>搜索</span>
                 </button>
-                <button onclick="resetFilter()" class="bg-white hover:bg-slate-50 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 px-3 py-1.5 rounded text-[13px] transition-colors font-medium">
-                    重置
+                <button onclick="resetFilter()" class="bg-white hover:bg-slate-50 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 px-3 py-1.5 rounded text-[13px] transition-colors font-medium flex items-center space-x-1">
+                    <i class="ri-refresh-line"></i><span>重置</span>
                 </button>
                 <button id="toolbar-add-btn" onclick="openAddModal()" class="add-btn">
                     <i class="ri-add-circle-line"></i><span>新增</span>
@@ -682,15 +779,12 @@
                 <table id="focus-table" class="data-table">
                     <thead>
                     <tr>
-                        <th class="w-64 text-left pl-6">问题名称</th>
+                        <th class="w-64">问题名称</th>
                         <th class="w-28">数据来源</th>
                         <th class="w-36">问题类别</th>
-                        <th class="w-20">问题级别</th>
                         <th class="w-32">问题时间</th>
                         <th class="w-28">市州</th>
                         <th id="th-reject" class="w-48 hidden">驳回原因</th>
-                        <th class="w-28">是否销号</th>
-                        <th class="w-64" id="th-operation">操作</th>
                     </tr>
                     </thead>
                     <tbody id="focus-table-body">
@@ -802,6 +896,49 @@
     focusData.forEach(it => {
         if (Array.isArray(it.fbs) && (it.reject === '是' || it.status === 'done' || it.status === 'closed')) {
             it.fbs.forEach(fb => { fb.sub = true; });
+        }
+    });
+
+    // 已销号问题（closed === '是'）的“反馈情况”需完整回溯：销号办结前必经地市现场核实 → 整改复核，
+    // 原型记录中这类问题未带 fbs，按问题名称补齐反馈记录（含 sub 锁定标记，与已办结历史一致）
+    const closedFeedbackByName = {
+        "卷桥河化学需氧量超标问题": [
+            { sub: true, reporter: "周正", surveyor: "万青", basic: "现场排查COD超标河段，发现上游一处雨水排口混入生活污水并直排，已采样取证，同步移交市政部门限期整改。", invTime: "2026-06-25", photo: ["卷桥河混排排口排查照片.jpg"], video: ["卷桥河现场巡查视频.mp4"], aux: ["现场采样记录单.pdf", "排口溯源台账.xlsx"] },
+            { sub: true, reporter: "周正", surveyor: "刘畅", basic: "整改复核：混排排口已完成雨污分流改造并接入市政管网，复测化学需氧量已稳定达标，问题办结销号。", invTime: "2026-07-16", photo: ["卷桥河整改后复测记录.jpg"], video: [], aux: ["复测监测报告.pdf"] }
+        ],
+        "长江石首段污水收集整治": [
+            { sub: true, reporter: "郑涛", surveyor: "钱进", basic: "沿江排查发现石首城区两处散排口未接入收集管网，生活污水直排长江，已函告住建部门限期纳管整改。", invTime: "2026-07-11", photo: ["石首段散排口排查照片.jpg"], video: ["石首段岸线巡查视频.mp4"], aux: ["入河排口登记台账.xlsx"] },
+            { sub: true, reporter: "郑涛", surveyor: "孙岳", basic: "复核：两处排口已封堵并接入污水收集系统，岸线巡查未再发现污水下河，周边水质恢复，问题办结销号。", invTime: "2026-08-06", photo: ["石首段整改后复测记录.jpg"], video: [], aux: ["复测监测报告.pdf"] }
+        ],
+        "清江景区水生态破坏问题": [
+            { sub: true, reporter: "王芳", surveyor: "刘洋", basic: "核查清江景区沿岸餐饮、民宿及游船污水排放情况，发现部分经营户污水未接入收集管网，存在直排隐患。", invTime: "2026-07-21", photo: ["清江景区排污口排查照片.jpg"], video: [], aux: ["景区经营户排查清单.xlsx"] },
+            { sub: true, reporter: "王芳", surveyor: "陈静", basic: "复核：景区完成雨污分流改造，游船生活污水全部上岸转运处置，水质监测指标恢复，问题办结销号。", invTime: "2026-08-13", photo: ["清江景区整改后现场照片.jpg"], video: [], aux: ["水质复测监测报告.pdf"] }
+        ],
+        "当阳河非法捕捞整治问题": [
+            { sub: true, reporter: "胡斌", surveyor: "赵磊", basic: "联合农业农村部门巡查当阳河重点河段，清理非法捕捞网具并放归渔获物，对相关责任人立案调查。", invTime: "2026-07-31", photo: ["当阳河联合执法现场照片.jpg"], video: ["当阳河执法巡查视频.mp4"], aux: ["执法检查记录表.pdf"] },
+            { sub: true, reporter: "胡斌", surveyor: "周俊", basic: "复核：非法捕捞行为已杜绝，河段增设禁渔宣传牌并纳入常态化巡查，渔业资源逐步恢复，问题办结销号。", invTime: "2026-08-21", photo: ["当阳河常态化巡查照片.jpg"], video: [], aux: ["禁渔常态化巡查记录.xlsx"] }
+        ],
+        "堵河水源地违建拆除问题": [
+            { sub: true, reporter: "黄志刚", surveyor: "李强", basic: "排查堵河黄龙滩水库饮用水水源保护区，发现一级保护区内存在违建经营设施并直排生活污水，已启动整治。", invTime: "2025-09-24", photo: ["堵河水源地违建现场照片.jpg"], video: ["堵河水源地整治前影像.mp4"], aux: ["水源保护区排查记录.pdf"] },
+            { sub: true, reporter: "黄志刚", surveyor: "吴刚", basic: "复核：违建设施已全部拆除并复绿，保护区周边设置物理围网与警示标志，未再新增排污口，问题办结销号。", invTime: "2025-10-20", photo: ["堵河水源地拆除复绿照片.jpg"], video: [], aux: ["拆违验收记录.xlsx"] }
+        ],
+        "洪湖围网养殖问题": [
+            { sub: true, reporter: "杨立新", surveyor: "孙国栋", basic: "核查洪湖围网养殖情况，摸清围网面积与养殖主体信息，制定退养还湖与围网拆除实施计划。", invTime: "2025-10-29", photo: ["洪湖围网养殖航拍照片.jpg"], video: ["洪湖围网现状航拍视频.mp4"], aux: ["围网养殖摸底台账.xlsx"] },
+            { sub: true, reporter: "杨立新", surveyor: "刘建军", basic: "复核：围网养殖设施已按期拆除，湖区水域连通性恢复，水质呈持续改善趋势，问题办结销号。", invTime: "2025-12-15", photo: ["洪湖围网拆除后现场照片.jpg"], video: [], aux: ["退养还湖验收记录.pdf"] }
+        ],
+        "汤逊湖汛期污染问题": [
+            { sub: true, reporter: "陈静", surveyor: "赵磊", basic: "排查汛期汤逊湖入湖排口，发现多处雨水排口混入生活污水并在降雨期间溢流入湖，已溯源登记建立台账。", invTime: "2025-08-15", photo: ["汤逊湖汛期排口溢流照片.jpg"], video: ["汤逊湖汛期巡查视频.mp4"], aux: ["入湖排口溯源台账.xlsx"] },
+            { sub: true, reporter: "陈静", surveyor: "张伟", basic: "复核：混接排口已分批完成整改，汛期溢流明显减少，湖区氨氮等指标回落，问题办结销号。", invTime: "2025-10-22", photo: ["汤逊湖整改后监测照片.jpg"], video: [], aux: ["水质复测监测报告.pdf"] }
+        ],
+        "富河总磷超标问题": [
+            { sub: true, reporter: "李文静", surveyor: "周俊", basic: "排查富河总磷超标来源，锁定上游畜禽养殖与农业面源排放，已推动沿线养殖场完善粪污处理并还田利用。", invTime: "2025-09-06", photo: ["富河沿线养殖场排查照片.jpg"], video: [], aux: ["养殖场粪污处理核查表.xlsx"] },
+            { sub: true, reporter: "李文静", surveyor: "钱进", basic: "复核：沿线养殖场均完成整改，入河排口总磷浓度显著下降，富河总磷指标连续稳定达标，问题办结销号。", invTime: "2025-11-16", photo: ["富河整改后复测记录.jpg"], video: [], aux: ["复测监测报告.pdf"] }
+        ]
+    };
+    // 仅补齐缺失反馈的已销号记录（已有反馈的保持不变），并统一加已提交锁定标记
+    focusData.forEach(it => {
+        if (it.closed === '是' && !Array.isArray(it.fbs) && closedFeedbackByName[it.name]) {
+            it.fbs = closedFeedbackByName[it.name];
         }
     });
 
@@ -1404,6 +1541,12 @@
         const ap = document.getElementById('add-cat-panel');
         const at = document.getElementById('add-cat-trigger');
         if (ap && at && ap.classList.contains('open') && !ap.contains(e.target) && !at.contains(e.target)) closeAddCatPanel();
+        // “+筛选”弹出层：点击组件外部时收起
+        const fltWrap = document.getElementById('flt-wrap');
+        if (fltWrap && !fltWrap.contains(e.target)) {
+            const fp = document.getElementById('flt-pop');
+            if (fp) fp.classList.remove('open');
+        }
     });
 
     // ========== 数据与逻辑联动 ==========
@@ -1571,6 +1714,27 @@
         renderTable();
     }
 
+    // ========== “+筛选”：湖库 / 一级流域 / 二级流域 下拉按需显隐 ==========
+    function toggleFltMenu(ev) {
+        if (ev && ev.stopPropagation) ev.stopPropagation();
+        const pop = document.getElementById('flt-pop');
+        if (pop) pop.classList.toggle('open');
+    }
+
+    function toggleFltCheck(cb) {
+        const ids = (cb.getAttribute('data-flt') || '').split(',').map(s => s.trim()).filter(Boolean);
+        ids.forEach(id => {
+            const target = document.getElementById(id);
+            if (!target) return;
+            target.classList.toggle('hidden', !cb.checked);
+            // 取消勾选（隐藏）时，将该维度下拉恢复为“全部”，避免残留筛选值
+            if (!cb.checked) {
+                const sel = target.querySelector('select');
+                if (sel) sel.value = '全部';
+            }
+        });
+    }
+
     function resetFilter() {
         document.getElementById('filter-survey').value = '全部';
         document.getElementById('filter-reject').value = '全部';
@@ -1599,7 +1763,7 @@
         const thR = document.getElementById('th-reject');
         if (thR) thR.classList.toggle('hidden', !isRejectList);
 
-        // 清单页：始终显示操作列
+        // 清单页：平台仅负责预警跟踪展示，办理在对应业务系统进行，表格无操作列
 
         const totalPages = Math.ceil(total / rowsPerPage) || 1;
         if (currentPage > totalPages) currentPage = totalPages;
@@ -1610,8 +1774,7 @@
         let html = '';
         for (let i = start; i < end; i++) {
             const item = filteredData[i];
-            let closedCell, sourceCell, rejectCell;
-            closedCell = item.closed === "是" ? '<span class="closed-tag closed-yes">是</span>' : '<span class="closed-tag closed-no">否</span>';
+            let sourceCell, rejectCell;
             sourceCell = item.source;
             // 已驳回：独立“驳回原因”列展示（红色文字，超长省略号截断并悬浮显示完整内容）；仅“已驳回”列表输出该单元格
             rejectCell = (item.reject === '是')
@@ -1619,54 +1782,26 @@
                 : '<span class="text-slate-300">—</span>';
             const rejectTd = isRejectList ? `<td>${rejectCell}</td>` : '';
 
-            // 操作列：清单页审批操作，按钮随角色+问题状态联动
-            // 业务流程：省级识别/录入 → 地市反馈 → 省级驳回或销号
-            let actionCell = '';
-            if (currentRole === '省级') {
-                // 地市已反馈后可驳回/销号；待反馈、已驳回、已销号均无可操作项（反馈内容点击问题名称查看）
-                if (item.status === 'done' && item.reject !== '是') {
-                    actionCell = `<div class="flex items-center justify-center">
-                        <button class="op-btn op-reject" onclick="handleReject(${i})"><i class="ri-close-circle-line"></i>驳回</button>
-                        <button class="op-btn op-close" onclick="handleClose(${i})"><i class="ri-checkbox-circle-line"></i>销号</button>
-                    </div>`;
-                }
-            } else {
-                // 待反馈 → 反馈问题/继续反馈（可多次新增反馈，问题仍留待反馈）；已驳回 → 重新反馈；
-                //   点“提交反馈·送省厅”才把所记反馈交给省厅（此后锁定）；已反馈(待省级审核)/已销号 地市无可操作项
-                if (item.reject === '是') {
-                    actionCell = `<div class="flex items-center justify-center">
-                        <button class="op-btn op-refeedback" onclick="openFeedbackModal(${i})"><i class="ri-refresh-line"></i>重新反馈</button>
-                    </div>`;
-                } else if (item.status === 'pending') {
-                    actionCell = `<div class="flex items-center justify-center">
-                        <button class="op-btn op-feedback" onclick="openFeedbackModal(${i})"><i class="ri-chat-1-line"></i>${(item.fbs && item.fbs.length) ? '继续反馈' : '反馈问题'}</button>
-                    </div>`;
-                }
-            }
-
-            // 预警级别标签：分级记录显示 一级/二级/三级；提醒记录（无级别）标注“提醒”
-            let lvTag = '';
+            // 级别角标：实心色块白字“一级/二级/三级”贴问题名称单元格左上角；提醒（无级别）= 灰块（替代原“问题级别”列）
+            let lvBadge = '';
             if (item.level) {
-                const levelCls = item.level === '一级' ? 'level-lv1' : item.level === '二级' ? 'level-lv2' : 'level-lv3';
-                lvTag = `<span class="level-tag ${levelCls}" title="预警级别：${item.level}">${item.level}</span>`;
+                const lvCls = item.level === '一级' ? 'lv1' : item.level === '二级' ? 'lv2' : 'lv3';
+                lvBadge = `<span class="lv-badge ${lvCls}" title="预警级别：${item.level}">${item.level}</span>`;
             } else if (item.remind) {
-                lvTag = `<span class="level-tag level-remind" title="仅提醒，不设预警级别">提醒</span>`;
+                lvBadge = `<span class="lv-badge remind" title="仅提醒，不设预警级别">提醒</span>`;
             }
 
             html += `
                 <tr>
-                    <td class="text-left pl-6"><a href="javascript:void(0)" class="name-link" onclick="openProblemDetail(${i})" title="查看问题详情与反馈情况">${item.name}</a></td>
+                    <td><span class="nm-line">${lvBadge}<a href="javascript:void(0)" class="name-link" onclick="openProblemDetail(${i})" title="查看问题详情与反馈情况">${item.name}</a></span></td>
                     <td>${sourceCell}</td>
                     <td><span class="type-tag text-slate-600">${item.category}</span></td>
-                    <td>${lvTag || '<span class="text-slate-300">—</span>'}</td>
                     <td>${item.date}</td>
                     <td class="text-slate-800">${item.city}</td>
                     ${rejectTd}
-                    <td>${closedCell}</td>
-                    <td class="op-cell">${actionCell || '<span class="text-slate-300">—</span>'}</td>
                 </tr>`;
         }
-        tbody.innerHTML = html || `<tr><td colspan="${isRejectList ? 9 : 8}" class="py-10 text-slate-400"><i class="ri-inbox-2-line text-2xl mb-1 block"></i>暂无符合条件的记录</td></tr>`;
+        tbody.innerHTML = html || `<tr><td colspan="${isRejectList ? 6 : 5}" class="py-10 text-slate-400"><i class="ri-inbox-2-line text-2xl mb-1 block"></i>暂无符合条件的记录</td></tr>`;
 
         // 翻页器
         let pageHtml = `<button onclick="goPage(${currentPage - 1})" ${currentPage===1?'disabled':''} class="px-2 py-1 text-xs border border-slate-200 rounded text-slate-600 hover:bg-slate-50 disabled:opacity-30">上一页</button>`;
@@ -1947,7 +2082,7 @@
         fbArmDel = -1;
         // 一律先进“问题反馈”页签的记录列表（带“新增反馈”按钮）：无论有没有历史反馈，都不默认弹出填写表单
 
-        // 左侧问题详情（基础信息 / 问题描述 / 流程状态，含驳回原因提示），与“问题详情”弹框共用同一渲染
+        // 左侧问题详情（基础信息 / 问题描述），与“问题详情”弹框共用同一渲染
         document.getElementById('fb-left-body').innerHTML = buildDetailLeftHtml(item);
         // 右侧页签一：审核调度情况（地市经办本人视角：可见本次草稿与“地市重报”环节）
         document.getElementById('fb-audit-list').innerHTML = buildAuditHtml(item, { mine: true });
@@ -2316,6 +2451,14 @@
         const endDate = lastSubDate || d0;                       // 省级决策环节的时间锚（驳回/销号/待省审核）
         const replying = mine && drafts.length > 0;              // 本人视角：已按驳回意见补了草稿 → 重报中
         const viewList = mine ? fbsAll : subList;                // 视角可见反馈集
+        // 各环节“执行层级”标注：省级(prov) / 地市(city) / 系统(sys)，左点+标题+文字标签同色
+        const auto = item.source === '系统识别' || item.source === '外部系统调度';   // 系统/外部系统 自动生成登记
+        const lvOfRow = r => {
+            if (r.title === '地市反馈记录' || r.title === '地市重报' || r.title === '待反馈') return 'city'; // 地市经办
+            if (r.title === '问题登记' || r.title === '暂存底单') return auto ? 'sys' : 'prov';               // 系统自动 or 省级人工登记
+            return 'prov';   // 审核入库 / 调度下发 / 审核驳回 / 审核销号 / 省级审核 = 省级处理
+        };
+        const lvTxt = { prov: '省级', city: '地市', sys: '系统' };
         const rows = [];
         rows.push({ title: '问题登记', time: d0, desc: `${srcPhrase}，进入问题池待审核`, user: nameOf('regUser'), tone: 'blue' });
 
@@ -2352,15 +2495,18 @@
             rows.push({ title: '暂存底单', time: d0, desc: '尚未纳入问题清单，暂存问题底单待后续处理', user: nameOf('regUser'), tone: 'slate', cur: true });
         }
 
-        return rows.map(r => `
+        return rows.map(r => {
+            const lv = lvOfRow(r);
+            return `
             <div class="au-item">
-                <div class="au-rail"><span class="au-dot au-${r.tone}"></span></div>
+                <div class="au-rail"><span class="au-dot dot-${lv}"></span></div>
                 <div class="au-main">
-                    <div class="au-title">${r.title}${r.cur ? `<span class="au-cur ${r.curTone || ''}">当前环节</span>` : ''}<span class="au-user${r.ut ? ' ' + r.ut : ''}${(r.user && r.user !== '—') ? '' : ' empty'}"><i class="ri-user-3-line"></i>${r.user || '—'}</span></div>
+                    <div class="au-title t-${lv}"><span class="au-tag tag-${lv}">${lvTxt[lv]}</span>${r.title}${r.cur ? `<span class="au-cur ${r.curTone || ''}">当前环节</span>` : ''}<span class="au-user${r.ut ? ' ' + r.ut : ''}${(r.user && r.user !== '—') ? '' : ' empty'}"><i class="ri-user-3-line"></i>${r.user || '—'}</span></div>
                     <div class="au-desc">${r.desc}</div>
                 </div>
                 <div class="au-time">${r.time || ''}</div>
-            </div>`).join('');
+            </div>`;
+        }).join('');
     }
 
     // 问题描述文本：手工新增录入的取录入内容（item.detail）；系统识别/外部系统调度等缺描述记录按类别+区域字段自动生成
@@ -2435,17 +2581,16 @@
     function buildDetailLeftHtml(item) {
         const orDash = v => (v && String(v).trim()) ? String(v).trim() : '—';
         const levelText = item.remind ? '提醒' : (item.level ? item.level : '');
-        // 问题状态（与表格口径一致：已驳回优先显示为“已驳回”）
-        let statusText, statusYes = '';
-        if (item.reject === '是') { statusText = '已驳回'; statusYes = 'no'; }
-        else if (item.status === 'done') { statusText = '已反馈'; statusYes = ''; }
-        else if (item.status === 'closed') { statusText = '已销号'; statusYes = 'yes'; }
-        else { statusText = '待反馈'; statusYes = 'no'; }
-
-        // 驳回原因不再在左侧重复展示：反馈弹窗内随“历史反馈 · 省级已驳回”组展示，详情弹窗内随右侧“审核调度情况”展示
+        // 问题状态（与表格口径一致：已驳回优先显示为“已驳回”），以标签形式置于问题名称右侧
+        let stTxt, stCls, stIcon;
+        if (item.reject === '是') { stTxt = '已驳回'; stCls = 's-reject'; stIcon = 'ri-error-warning-line'; }
+        else if (item.status === 'done') { stTxt = '已反馈'; stCls = 's-done'; stIcon = 'ri-chat-check-line'; }
+        else if (item.status === 'closed') { stTxt = '已销号'; stCls = 's-closed'; stIcon = 'ri-check-double-line'; }
+        else { stTxt = '待反馈'; stCls = 's-pending'; stIcon = 'ri-time-line'; }
+        const stTag = `<span class="dt-st ${stCls}"><i class="${stIcon}"></i>${stTxt}</span>`;
 
         return `
-            <div class="dt-name">${escAttr(item.name)}</div>
+            <div class="dt-title"><div class="dt-name">${escAttr(item.name)}</div>${stTag}</div>
             <div class="dl-g">基础信息</div>
             <div class="dl-row"><span class="dl-k">问题类别</span><span class="dl-v">${categoryPathText(item)}</span></div>
             <div class="dl-row"><span class="dl-k">预警级别</span><span class="dl-v">${levelText || '<span class="text-slate-300">—</span>'}</span></div>
@@ -2455,37 +2600,40 @@
             <div class="dl-row"><span class="dl-k">所属水系</span><span class="dl-v">${orDash(item.basin1)}</span></div>
             <div class="dl-desc-label">问题描述</div>
             <div class="dl-desc">${escAttr(problemDetailText(item))}</div>
-            <div class="dl-g">流程状态</div>
-            <div class="dl-row"><span class="dl-k">纳入清单</span><span class="dl-v ${item.inList === '是' ? 'yes' : 'no'}">${item.inList === '是' ? '已纳入' : '未纳入'}</span></div>
-            <div class="dl-row"><span class="dl-k">问题状态</span><span class="dl-v ${statusYes ? statusYes : ''}">${statusText}</span></div>
-            <div class="dl-row"><span class="dl-k">是否销号</span><span class="dl-v ${item.closed === '是' ? 'yes' : 'no'}">${item.closed === '是' ? '已销号' : '未销号'}</span></div>
         `;
     }
 
     let detailIdx = -1; // 详情弹窗当前展示的 filteredData 行号（供底部省级审核操作引用）
 
-    // 详情弹窗底部“省级审核操作条”显隐：仅省级角色查看“地市已反馈、待审核”问题时展示 驳回/销号
+    // 详情弹窗底部“去办理”引导条显隐：当前环节涉及业务办理（省级：已反馈待审核销号/驳回；
+    // 市级：待反馈 或 已被省厅驳回需重新反馈）时展示，办理统一引导至调度平台
     function updateDtActions() {
         const bar = document.getElementById('dt-actions');
         if (!bar) return;
         const item = filteredData[detailIdx];
-        const show = detailIdx >= 0 && item && currentRole === '省级'
-            && item.status === 'done' && item.reject !== '是';
-        bar.style.display = show ? 'flex' : 'none';
+        const cfgMap = {
+            provAudit: { icon: 'ri-check-double-line', txt: '地市已完成反馈，等待省级审核：销号/驳回由调度平台统一办理，本平台仅展示流转结果' },
+            cityFb:    { icon: 'ri-chat-1-line',        txt: '该问题待市级办理：问题反馈由调度平台统一办理，本平台仅展示流转结果' },
+            cityRefb:  { icon: 'ri-arrow-go-back-line', txt: '省厅已驳回，待市级补充反馈后重新提交：处理在调度平台统一进行，本平台仅展示流转结果' }
+        };
+        let mode = '';
+        if (detailIdx >= 0 && item && item.closed !== '是' && item.status !== 'closed') {
+            if (currentRole === '省级' && item.status === 'done' && item.reject !== '是') mode = 'provAudit';
+            else if (currentRole === '市级' && item.reject === '是') mode = 'cityRefb';
+            else if (currentRole === '市级' && item.status === 'pending') mode = 'cityFb';
+        }
+        if (!mode) { bar.style.display = 'none'; return; }
+        const tip = document.getElementById('dt-actions-tip');
+        if (tip) tip.innerHTML = `<i class="${cfgMap[mode].icon}"></i>${cfgMap[mode].txt}`;
+        bar.style.display = 'flex';
     }
 
-    // 详情弹窗内点击“驳回”：关闭详情后复用公共的“驳回原因”弹窗（驳回逻辑与表格操作一致）
-    window.detailActionReject = function() {
-        const idx = detailIdx; // 先保存，closeProblemDetail 会重置 detailIdx
-        if (idx < 0) return;
-        closeProblemDetail();
-        handleReject(idx);
+    // 详情弹窗内点击“去办理”：提示办理跳转调度平台（本平台仅展示）
+    window.goHandleDetail = function() {
+        document.getElementById('go-handle-modal').classList.add('open');
     };
-    window.detailActionClose = function() {
-        const idx = detailIdx;
-        if (idx < 0) return;
-        closeProblemDetail();
-        handleClose(idx);
+    window.closeGoHandleModal = function() {
+        document.getElementById('go-handle-modal').classList.remove('open');
     };
 
     window.openProblemDetail = function(idx) {
@@ -2705,9 +2853,6 @@
         const d = new Date();
         const pad = n => String(n).padStart(2, '0');
         document.getElementById('add-date').value = d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
-        // 登记人预填当前登录账号对应的姓名（可修改）；缺映射时用通用经办名
-        document.getElementById('add-reg-user').value = ADD_OPERATOR_NAME();
-
         document.getElementById('add-modal').classList.add('open');
         setTimeout(() => { const n = document.getElementById('add-name'); if (n) n.focus(); }, 60);
     };
@@ -2726,10 +2871,21 @@
     window.saveAddItem = function() {
         const name = (document.getElementById('add-name').value || '').trim();
         const date = document.getElementById('add-date').value || '';
-        if (!name) { alert('请输入问题名称'); document.getElementById('add-name').focus(); return; }
-        if (!date) { alert('请选择问题时间'); return; }
-        const reg = (document.getElementById('add-reg-user').value || '').trim();
-        if (!reg) { alert('请输入登记人姓名'); document.getElementById('add-reg-user').focus(); return; }
+        const nameField = document.getElementById('add-name');
+        const dateField = document.getElementById('add-date');
+        const nameErr = document.getElementById('add-name-error');
+        const dateErr = document.getElementById('add-date-error');
+        nameErr.classList.add('hidden'); dateErr.classList.add('hidden');
+        nameField.classList.remove('reject-error-border'); dateField.classList.remove('reject-error-border');
+        if (!name) {
+            nameErr.classList.remove('hidden'); nameField.classList.add('reject-error-border');
+            nameField.focus(); return;
+        }
+        if (!date) {
+            dateErr.classList.remove('hidden'); dateField.classList.add('reject-error-border');
+            dateField.focus(); return;
+        }
+        const reg = ADD_OPERATOR_NAME(); // 登记人 = 当前登录账号姓名，随保存自动记录在审核调度情况中
 
         const cat1 = addCat1 || '';
         const cat2 = addCat2 || '断面水质明显恶化';
@@ -2789,7 +2945,8 @@
         <div class="px-6 py-5 space-y-4">
             <div>
                 <label class="modal-label">问题名称 <span class="text-red-500">*</span></label>
-                <input id="add-name" type="text" placeholder="请输入问题名称" class="modal-field" maxlength="60"/>
+                <input id="add-name" type="text" placeholder="请输入问题名称" class="modal-field" maxlength="60" oninput="document.getElementById('add-name-error').classList.add('hidden');this.classList.remove('reject-error-border');"/>
+                <p id="add-name-error" class="hidden text-xs text-red-500 mt-1"><i class="ri-error-warning-line"></i> 请输入问题名称</p>
             </div>
             <div>
                 <label class="modal-label">问题类别 <span class="text-red-500">*</span></label>
@@ -2806,12 +2963,9 @@
                 </div>
                 <div>
                     <label class="modal-label">问题时间 <span class="text-red-500">*</span></label>
-                    <input id="add-date" type="date" class="modal-field"/>
+                    <input id="add-date" type="date" class="modal-field" onchange="document.getElementById('add-date-error').classList.add('hidden');this.classList.remove('reject-error-border');"/>
+                    <p id="add-date-error" class="hidden text-xs text-red-500 mt-1"><i class="ri-error-warning-line"></i> 请选择问题时间</p>
                 </div>
-            </div>
-            <div>
-                <label class="modal-label">登记人 <span class="text-red-500">*</span></label>
-                <input id="add-reg-user" type="text" placeholder="请输入登记人姓名（经办人），将记录在审核调度情况中" maxlength="20" class="modal-field"/>
             </div>
             <div>
                 <label class="modal-label">问题描述</label>
@@ -2885,7 +3039,7 @@
             </button>
         </div>
         <div class="dt-body">
-            <!-- 左：问题详情（与“问题详情”弹框左侧一致：基础信息 / 问题描述 / 流程状态），只读 -->
+            <!-- 左：问题详情（与“问题详情”弹框左侧一致：基础信息 / 问题描述），只读 -->
             <aside class="dt-left" id="fb-left-body"></aside>
             <!-- 右：两个页签 —— 审核调度情况 / 问题反馈 -->
             <section class="dt-right">
@@ -2903,10 +3057,10 @@
                         <!-- 列表视图（默认进入）：反馈记录，点右上“新增反馈”或某条“修改”才切到编辑视图 -->
                         <section id="fb-view-list" class="fb-viewv fb-listv on">
                             <div class="fb-sec-head">
-                                <span class="fb-form-title"><i class="ri-list-check-2-line"></i>反馈记录<span id="fb-crud-hint" class="fb-crud-hint">（可修改 / 删除）</span></span>
+                                <span class="fb-form-title"><i class="ri-list-check-2-line"></i>反馈记录<span id="fb-crud-hint" class="fb-crud-hint">（处理由地市业务系统办理，本平台仅展示）</span></span>
                                 <span class="flex items-center gap-2">
                                     <span id="fb-hist-count" class="fb-sec-count"></span>
-                                    <button id="fb-list-new" class="fb-link-btn" onclick="startNewFb()"><i class="ri-add-line"></i>新增反馈</button>
+                                    <button id="fb-list-new" class="fb-link-btn flow-dis" disabled title="仅展示，处理在对应业务系统进行"><i class="ri-add-line"></i>新增反馈</button>
                                 </span>
                             </div>
                             <div id="fb-history" class="fb-hist-scroll tl-list"></div>
@@ -2981,10 +3135,10 @@
         <div class="flex items-center justify-end gap-3 px-6 py-4 border-t border-slate-100 bg-slate-50/60 shrink-0">
             <span id="fb-msg" class="mr-auto text-[12px] text-emerald-600 font-medium"></span>
             <button id="fb-cancel-btn" onclick="fbCancel()" class="px-4 py-1.5 rounded-sm text-[13px] font-medium border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 transition-colors"><span id="fb-cancel-label">取消</span></button>
-            <button id="fb-save-btn" onclick="saveFbEditor()" class="hidden inline-flex items-center gap-1 px-4 py-1.5 rounded-sm text-[13px] font-medium border border-blue-200 bg-white text-blue-600 hover:bg-blue-50 transition-colors">
+            <button id="fb-save-btn" onclick="saveFbEditor()" class="hidden inline-flex items-center gap-1 px-4 py-1.5 rounded-sm text-[13px] font-medium border border-blue-200 bg-white text-blue-600 hover:bg-blue-50 transition-colors flow-dis" disabled title="仅展示，处理在对应业务系统进行">
                 <i class="ri-save-3-line" id="fb-save-icon"></i><span id="fb-save-label">暂存</span>
             </button>
-            <button onclick="submitFeedback()" class="inline-flex items-center gap-1 bg-blue-500 hover:bg-blue-600 text-white px-4 py-1.5 rounded-sm text-[13px] font-medium transition-colors shadow-sm">
+            <button onclick="submitFeedback()" class="inline-flex items-center gap-1 bg-blue-500 hover:bg-blue-600 text-white px-4 py-1.5 rounded-sm text-[13px] font-medium transition-colors shadow-sm flow-dis" disabled title="仅展示，送省厅审核在地市业务系统办理">
                 <i class="ri-send-plane-line"></i><span id="fb-submit-label">提交反馈</span>
             </button>
         </div>
@@ -3010,7 +3164,7 @@
         </div>
         <div class="flex justify-end gap-3 px-6 py-4 border-t border-slate-100 bg-slate-50/60">
             <button onclick="cancelFbSubmit()" class="px-4 py-1.5 rounded-sm text-[13px] font-medium border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 transition-colors">取消</button>
-            <button onclick="confirmFbSubmit()" class="inline-flex items-center gap-1 bg-blue-500 hover:bg-blue-600 text-white px-4 py-1.5 rounded-sm text-[13px] font-medium transition-colors shadow-sm">
+            <button onclick="confirmFbSubmit()" class="inline-flex items-center gap-1 bg-blue-500 hover:bg-blue-600 text-white px-4 py-1.5 rounded-sm text-[13px] font-medium transition-colors shadow-sm flow-dis" disabled title="仅展示，处理在对应业务系统进行">
                 <i class="ri-check-line"></i><span>确认提交</span>
             </button>
         </div>
@@ -3026,6 +3180,33 @@
             <video id="media-video" controls playsinline preload="metadata" style="display:none"></video>
         </div>
         <div id="media-name" class="media-name"></div>
+    </div>
+</div>
+
+<!-- 去办理提示：销号/驳回/问题反馈等业务办理在调度平台进行，本平台仅展示流转结果 -->
+<div id="go-handle-modal" class="modal-mask" style="z-index:340;" onclick="if(event.target===this)closeGoHandleModal()">
+    <div class="modal-card" style="max-width:440px;">
+        <div class="modal-head">
+            <h3 class="text-[16px] font-bold text-slate-800 flex items-center gap-2">
+                <i class="ri-external-link-line text-blue-600"></i>前往调度平台办理
+            </h3>
+            <button onclick="closeGoHandleModal()" class="text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-sm w-7 h-7 flex items-center justify-center text-lg transition-colors modal-close">
+                <i class="ri-close-line"></i>
+            </button>
+        </div>
+        <div class="px-6 py-5">
+            <div class="text-[13px] leading-relaxed text-slate-600">
+                该问题的销号、驳回、问题反馈等业务办理在<b>调度平台</b>统一进行，本平台仅展示流转结果。将跳转至调度平台对应问题的办理页面。
+            </div>
+            <div class="mt-3 flex items-start gap-1.5 text-[12px] text-slate-500 bg-slate-50 border border-slate-100 rounded-sm px-3 py-2">
+                <i class="ri-information-line text-blue-500"></i>如需继续处理，请到调度平台完成操作，返回后可刷新查看最新流转状态。
+            </div>
+        </div>
+        <div class="flex justify-end px-6 py-4 border-t border-slate-100 bg-slate-50/60">
+            <button onclick="closeGoHandleModal()" class="inline-flex items-center gap-1 bg-blue-500 hover:bg-blue-600 text-white px-4 py-1.5 rounded-sm text-[13px] font-medium transition-colors shadow-sm">
+                <i class="ri-check-line"></i><span>我知道了</span>
+            </button>
+        </div>
     </div>
 </div>
 
@@ -3055,12 +3236,11 @@
                 </div>
             </section>
         </div>
-        <!-- 省级审核操作条：地市已反馈后展示 驳回/销号；驳回复用公共“驳回原因”弹窗 -->
+        <!-- 去办理引导条：当前环节涉及省级/市级业务办理时展示，处理统一引导至调度平台 -->
         <div id="dt-actions">
-            <span class="dt-actions-tip"><i class="ri-check-double-line"></i>地市已完成反馈，请省级审核：通过点击“销号”，不通过可“驳回”退回地市重新反馈</span>
+            <span class="dt-actions-tip" id="dt-actions-tip"><i class="ri-check-double-line"></i>当前环节的办理由调度平台统一处理，本平台仅展示流转结果</span>
             <span class="inline-flex items-center">
-                <button onclick="detailActionReject()" class="op-btn op-reject"><i class="ri-close-circle-line"></i>驳回</button>
-                <button onclick="detailActionClose()" class="op-btn op-close"><i class="ri-checkbox-circle-line"></i>销号</button>
+                <button onclick="goHandleDetail()" class="op-btn op-go" title="销号/驳回/问题反馈等业务办理在调度平台进行"><i class="ri-external-link-line"></i>去办理</button>
             </span>
         </div>
     </div>

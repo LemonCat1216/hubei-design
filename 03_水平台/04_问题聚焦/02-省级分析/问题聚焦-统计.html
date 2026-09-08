@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>湖北省水生态环境综合管理 - 问题聚焦 · 问题统计</title>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography,container-queries"></script>
+
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#3b82f6",
+                        "background-light": "#f4f7fb",
+                        "background-dark": "#0f172a",
+                    },
+                    fontFamily: {
+                        display: ["Inter", "system-ui", "-apple-system", "sans-serif"],
+                    },
+                },
+            },
+        };
+    </script>
+
+    <style type="text/tailwindcss">
+        body { font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif; }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+        .section-title-bar {
+            width: 4px;
+            height: 16px;
+            background: linear-gradient(to bottom, #93c5fd, #3b82f6);
+            border-radius: 4px;
+            margin-right: 8px;
+        }
+
+        #sidebar { transition: width 0.3s ease; }
+        .sidebar-text { transition: opacity 0.2s ease; white-space: nowrap; }
+        .hide-text .sidebar-text { display: none; opacity: 0; }
+        .collapsed-sidebar .nav-item { justify-content: center; padding-left: 0; padding-right: 0; }
+        .collapsed-sidebar .nav-item i { margin-right: 0; }
+
+        .card-shadow { box-shadow: 0 2px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05); transition: box-shadow 0.3s ease; }
+        .card-shadow:hover { box-shadow: 0 4px 12px -2px rgb(0 0 0 / 0.08), 0 4px 8px -3px rgb(0 0 0 / 0.08); }
+
+        .toggle-btn {
+            @apply h-full px-4 flex items-center justify-center text-xs font-bold rounded-md transition-colors cursor-pointer select-none;
+        }
+        .toggle-btn.active { @apply bg-blue-600 text-white shadow-sm; }
+        .toggle-btn.inactive { @apply text-slate-600 hover:text-slate-800 hover:bg-slate-200 dark:text-slate-400 dark:hover:bg-slate-700/50; }
+
+        .top-metric-card {
+            @apply bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-5 py-2 flex flex-col justify-center relative overflow-hidden card-shadow h-[96px];
+        }
+        .top-metric-card::before {
+            content: '';
+            position: absolute;
+            top: 0; right: 0; bottom: 0; left: 0;
+            background: linear-gradient(135deg, transparent 50%, rgba(59, 130, 246, 0.04) 100%);
+            pointer-events: none;
+        }
+
+        /* 下拉选择器精简无边框样式 */
+        .range-sel {
+            @apply appearance-none bg-transparent border-none outline-none text-[13px] text-slate-700 dark:text-slate-200 cursor-pointer text-center px-1 py-0 focus:ring-0;
+        }
+
+        /* ===== 一屏高度优化（xl 及以上：整页不滚动，图表区吃掉剩余可视高度） ===== */
+        @media (min-width: 1280px) {
+            main.flex-1 {
+                overflow: hidden;
+                display: flex;
+                flex-direction: column;
+                padding: 6px 24px 2px;
+            }
+            main.flex-1 > footer { display: none; }
+            #ctrlbar { flex: 0 0 auto; height: 56px; margin-bottom: 12px; }
+            #kpi-row { flex: 0 0 auto; margin-bottom: 12px; gap: 16px; }
+            #charts-grid { flex: 1 1 auto; min-height: 0; margin-bottom: 0; grid-template-rows: repeat(2, minmax(0, 1fr)); gap: 20px 24px; }
+            #charts-grid > div { height: auto; min-height: 0; }
+            #charts-grid > div > .flex-1 { min-height: 0; }
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-800 dark:text-slate-100 h-screen overflow-hidden flex flex-col">
+
+<header class="bg-primary h-14 flex items-center justify-between px-4 text-white shrink-0 shadow-md z-50">
+    <div class="flex items-center space-x-3">
+        <div class="w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-inner">
+            <i class="ri-water-flash-fill text-primary text-xl"></i>
+        </div>
+        <h1 class="text-xl font-bold tracking-tight">湖北省水生态环境综合管理</h1>
+    </div>
+    <nav class="flex h-full">
+        <a class="px-6 flex items-center space-x-2 hover:bg-white/10 transition-colors" href="#"><i class="ri-dashboard-line text-[18px]"></i><span class="text-sm">总体概览</span></a>
+        <a class="px-6 flex items-center space-x-2 hover:bg-white/10 transition-colors" href="#"><i class="ri-bar-chart-box-line text-[18px]"></i><span class="text-sm">形势分析</span></a>
+        <a class="px-6 flex items-center space-x-2 hover:bg-white/10 transition-colors" href="#"><i class="ri-map-pin-line text-[18px]"></i><span class="text-sm">空间分析</span></a>
+        <a class="px-6 flex items-center space-x-2 hover:bg-white/10 transition-colors" href="#"><i class="ri-water-flash-line text-[18px]"></i><span class="text-sm">水污染源</span></a>
+        <a class="px-6 flex items-center space-x-2 bg-white/20 border-b-2 border-white transition-colors" href="#"><i class="ri-error-warning-line text-[18px]"></i><span class="text-sm font-bold">问题聚焦</span></a>
+        <a class="px-6 flex items-center space-x-2 hover:bg-white/10 transition-colors" href="#"><i class="ri-apps-line text-[18px]"></i><span class="text-sm">专题应用</span></a>
+    </nav>
+    <div class="flex items-center space-x-6">
+        <div class="flex items-center bg-white/15 rounded-full p-0.5 text-sm">
+            <button class="role-switch-btn active bg-white text-blue-700 shadow-sm px-3 py-1 rounded-full font-medium transition-colors" data-role="省级" onclick="switchRole(this)">省级</button>
+            <button class="role-switch-btn text-white hover:bg-white/10 px-3 py-1 rounded-full font-medium transition-colors" data-role="市级" onclick="switchRole(this)">市级</button>
+        </div>
+        <div class="flex items-center space-x-2 text-sm opacity-90 border-l border-white/20 pl-4">
+            <i class="ri-earth-line text-[18px]"></i><span>碧水荆灵</span>
+        </div>
+        <div class="flex items-center space-x-2 text-sm">
+            <i class="ri-user-smile-line text-[18px]"></i><span>wangyunpeng</span>
+        </div>
+    </div>
+</header>
+
+<div class="flex flex-1 overflow-hidden">
+    <aside id="sidebar" class="w-[270px] bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 flex flex-col shrink-0 transition-all duration-300">
+        <div class="flex-1 py-4 overflow-y-auto custom-scrollbar flex flex-col gap-1 px-3">
+            <div class="mb-1">
+                <button class="nav-item w-full flex items-center justify-between px-4 py-2.5 text-[15px] font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg transition-colors group" onclick="toggleGroup('group-ministerial')">
+                    <div class="flex items-center"><i class="ri-government-line mr-3 text-lg text-slate-400 group-hover:text-primary"></i><span class="sidebar-text">部级分析</span></div>
+                    <i class="ri-arrow-down-s-line text-slate-400 sidebar-chevron transition-transform duration-200"></i>
+                </button>
+                <div id="group-ministerial" class="mt-1 space-y-1 overflow-hidden transition-all duration-300" style="max-height: 0px;">
+                    <a class="flex items-center pl-11 pr-4 py-2 text-[14px] text-slate-600 dark:text-slate-400 hover:text-blue-600 hover:bg-blue-50/50 transition-all rounded-lg group" href="#">
+                        <span class="w-1.5 h-1.5 bg-slate-300 group-hover:bg-blue-600 rounded-full mr-3 shrink-0"></span><span class="sidebar-text">问题线索及反馈</span>
+                    </a>
+                </div>
+            </div>
+
+            <div class="mb-1">
+                <button class="nav-item w-full flex items-center justify-between px-4 py-2.5 text-[15px] font-medium text-slate-800 dark:text-white bg-slate-50 dark:bg-slate-800/50 rounded-lg transition-colors group" onclick="toggleGroup('group-provincial')">
+                    <div class="flex items-center"><i class="ri-building-4-line mr-3 text-lg text-blue-500"></i><span class="sidebar-text font-bold">省级分析</span></div>
+                    <i class="ri-arrow-down-s-line text-slate-400 sidebar-chevron transition-transform duration-200 transform rotate-180"></i>
+                </button>
+                <div id="group-provincial" class="mt-1 space-y-1 overflow-hidden transition-all duration-300">
+                    <a class="flex items-center pl-11 pr-4 py-2 text-[14px] text-slate-600 dark:text-slate-400 hover:text-blue-600 hover:bg-blue-50/50 transition-all rounded-lg group" href="#">
+                        <span class="w-1.5 h-1.5 bg-slate-300 group-hover:bg-blue-600 rounded-full mr-3 shrink-0"></span><span class="sidebar-text">环保舆情</span>
+                    </a>
+                    <a class="flex items-center pl-11 pr-4 py-2 text-[14px] text-slate-600 dark:text-slate-400 hover:text-blue-600 hover:bg-blue-50/50 transition-all rounded-lg group" href="#">
+                        <span class="w-1.5 h-1.5 bg-slate-300 group-hover:bg-blue-600 rounded-full mr-3 shrink-0"></span><span class="sidebar-text">问题清单</span>
+                    </a>
+                    <a class="flex items-center pl-11 pr-4 py-2 text-[14px] text-slate-600 dark:text-slate-400 hover:text-blue-600 hover:bg-blue-50/50 transition-all rounded-lg group" href="#">
+                        <span class="w-1.5 h-1.5 bg-slate-300 group-hover:bg-blue-600 rounded-full mr-3 shrink-0"></span><span class="sidebar-text">问题底单</span>
+                    </a>
+                    <a class="nav-item w-full flex items-center pl-11 pr-4 py-2 text-[14px] text-blue-700 font-bold bg-blue-50 dark:bg-blue-900/30 rounded-lg transition-all relative mt-1 group" href="#">
+                        <span class="w-1.5 h-1.5 bg-blue-600 rounded-full mr-3 shrink-0"></span>
+                        <span class="sidebar-text">问题统计</span>
+                        <div class="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-5 bg-blue-600 rounded-r-full sidebar-text"></div>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <button id="toggleSidebarBtn" class="h-12 border-t border-slate-200 dark:border-slate-800 flex items-center justify-center space-x-2 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all text-slate-500 hover:text-primary group">
+            <i id="toggleIcon" class="ri-arrow-left-s-line text-xl transition-transform duration-300"></i>
+            <span class="sidebar-text text-sm font-medium tracking-wide">收起侧栏</span>
+        </button>
+    </aside>
+
+    <main class="flex-1 overflow-y-auto custom-scrollbar p-6 relative">
+        <!-- 顶部控制栏 -->
+        <div id="ctrlbar" class="h-[72px] bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-6 flex items-center justify-between shrink-0 card-shadow mb-6 z-10 relative">
+            <div class="flex items-center gap-3">
+                <span class="relative flex h-3 w-3 shrink-0">
+                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-3 w-3 bg-blue-500"></span>
+                </span>
+                <h2 class="text-[17px] font-bold text-slate-800 dark:text-white tracking-tight flex items-center mr-4">问题聚焦 · 统计分析</h2>
+            </div>
+
+            <div class="flex items-center space-x-4">
+                <!-- 时间范围筛选 -->
+                <div class="flex items-center bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-1.5 hover:border-blue-400 transition-colors" title="按问题识别月份筛选统计口径">
+                    <i class="ri-calendar-2-line text-slate-400 text-[15px] mr-2"></i>
+                    <select id="range-start-year" class="range-sel"></select>
+                    <span class="text-slate-400 text-[13px] mx-0.5">年</span>
+                    <select id="range-start-month" class="range-sel"></select>
+                    <span class="text-slate-400 text-[13px] mx-0.5">月</span>
+                    <span class="text-slate-300 dark:text-slate-600 text-[13px] select-none mx-2">至</span>
+                    <select id="range-end-year" class="range-sel"></select>
+                    <span class="text-slate-400 text-[13px] mx-0.5">年</span>
+                    <select id="range-end-month" class="range-sel"></select>
+                    <span class="text-slate-400 text-[13px] mx-0.5">月</span>
+                </div>
+
+                <!-- 清单 / 底单 切换 -->
+                <div class="flex bg-slate-100 dark:bg-slate-800 p-0 rounded-lg border border-slate-200 dark:border-slate-700 h-8">
+                    <button type="button" data-scope="list" class="list-scope-btn toggle-btn active" onclick="switchListScope(this)">清单</button>
+                    <button type="button" data-scope="dandi" class="list-scope-btn toggle-btn inactive" onclick="switchListScope(this)">底单</button>
+                </div>
+
+                <button type="button" id="btn-range-query" class="bg-blue-600 hover:bg-blue-700 text-white px-4 h-8 rounded-lg text-sm transition-colors shadow-sm font-medium flex items-center space-x-1">
+                    <i class="ri-search-line"></i><span>查询</span>
+                </button>
+
+                <!-- 市级角色：市州范围下拉 -->
+                <div class="relative hidden ml-2" id="city-scope-wrap" title="当前登录市州：统计仅显示本市的问题">
+                    <i class="ri-map-pin-2-line absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-[15px]"></i>
+                    <select id="city-scope-sel" class="appearance-none bg-slate-50 border border-slate-200 dark:bg-slate-800 dark:border-slate-700 rounded-lg pl-9 pr-8 py-1.5 text-[13px] font-medium text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-all cursor-pointer hover:border-blue-400 w-40 h-8"></select>
+                    <i class="ri-arrow-down-s-line absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- 顶部大指标 KPI -->
+        <div id="kpi-row" class="grid grid-cols-2 lg:grid-cols-5 gap-5 mb-6">
+            <div id="kpi-total"></div>
+            <div id="kpi-city"></div>
+            <div id="kpi-lake"></div>
+            <div id="kpi-qingdan"></div>
+            <div id="kpi-dandi"></div>
+        </div>
+
+        <!-- 图表区 -->
+        <div id="charts-grid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mb-6">
+            <!-- 问题来源分类 -->
+            <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 card-shadow p-5 flex flex-col h-[340px]">
+                <div class="flex items-center space-x-2 mb-4">
+                    <div class="section-title-bar m-0"></div>
+                    <h3 class="font-bold text-slate-800 dark:text-slate-200 text-[15px]">问题来源分类</h3>
+                </div>
+                <div id="chartSource" class="flex-1 w-full"></div>
+            </div>
+
+            <!-- 问题状态统计 -->
+            <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 card-shadow p-5 flex flex-col h-[340px]">
+                <div class="flex items-center space-x-2 mb-4">
+                    <div class="section-title-bar m-0"></div>
+                    <h3 class="font-bold text-slate-800 dark:text-slate-200 text-[15px]">问题状态统计</h3>
+                </div>
+                <div id="chartStatus" class="flex-1 w-full"></div>
+            </div>
+
+            <!-- 问题类别分布 -->
+            <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 card-shadow p-5 flex flex-col h-[340px]">
+                <div class="flex items-center space-x-2 mb-4">
+                    <div class="section-title-bar m-0"></div>
+                    <h3 class="font-bold text-slate-800 dark:text-slate-200 text-[15px]">问题类别分布</h3>
+                </div>
+                <div id="chartCategory" class="flex-1 w-full"></div>
+            </div>
+
+            <!-- 问题数量趋势 -->
+            <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 card-shadow p-5 flex flex-col h-[340px]">
+                <div class="flex items-center space-x-2 mb-4">
+                    <div class="section-title-bar m-0"></div>
+                    <h3 class="font-bold text-slate-800 dark:text-slate-200 text-[15px]">问题数量趋势</h3>
+                </div>
+                <div id="chartMonth" class="flex-1 w-full"></div>
+            </div>
+
+            <!-- 市州问题分布 -->
+            <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 card-shadow p-5 flex flex-col h-[340px]">
+                <div class="flex items-center space-x-2 mb-4">
+                    <div class="section-title-bar m-0"></div>
+                    <h3 class="font-bold text-slate-800 dark:text-slate-200 text-[15px]">市州问题分布</h3>
+                </div>
+                <div id="chartCity" class="flex-1 w-full"></div>
+            </div>
+
+            <!-- 流域问题分布 -->
+            <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 card-shadow p-5 flex flex-col h-[340px]">
+                <div class="flex items-center space-x-2 mb-4">
+                    <div class="section-title-bar m-0"></div>
+                    <h3 class="font-bold text-slate-800 dark:text-slate-200 text-[15px]">流域问题分布</h3>
+                </div>
+                <div id="chartBasin" class="flex-1 w-full"></div>
+            </div>
+        </div>
+
+        <footer class="mt-4 border-t border-slate-200 dark:border-slate-800 text-center text-xs text-slate-400 pb-2 pt-4">
+            <p>&copy; 2026 湖北省生态环境厅 · 版权所有</p>
+        </footer>
+    </main>
+</div>
+
+<script>
+    // ========== 侧边栏交互 ==========
+    const sidebar = document.getElementById('sidebar');
+    const toggleIcon = document.getElementById('toggleIcon');
+    let isCollapsed = false;
+
+    document.getElementById('toggleSidebarBtn').addEventListener('click', () => {
+        isCollapsed = !isCollapsed;
+        if (isCollapsed) {
+            sidebar.classList.remove('w-[270px]');
+            sidebar.classList.add('w-[80px]', 'hide-text', 'collapsed-sidebar');
+            toggleIcon.classList.replace('ri-arrow-left-s-line', 'ri-arrow-right-s-line');
+        } else {
+            sidebar.classList.remove('w-[80px]', 'hide-text', 'collapsed-sidebar');
+            sidebar.classList.add('w-[270px]');
+            toggleIcon.classList.replace('ri-arrow-right-s-line', 'ri-arrow-left-s-line');
+        }
+        setTimeout(() => Object.values(charts).forEach(c => c && c.resize()), 300);
+    });
+
+    function toggleGroup(id) {
+        if (isCollapsed) return;
+        const el = document.getElementById(id);
+        if (!el) return;
+        const open = el.style.maxHeight !== '0px' && el.style.maxHeight !== '';
+        el.style.maxHeight = open ? '0px' : el.scrollHeight + 'px';
+        const chev = el.previousElementSibling.querySelector('.sidebar-chevron');
+        if (chev) chev.style.transform = open ? 'rotate(0deg)' : 'rotate(180deg)';
+    }
+
+    // 初始化展开指定菜单
+    window.addEventListener('load', () => {
+        const provGroup = document.getElementById('group-provincial');
+        if (provGroup) {
+            provGroup.style.maxHeight = provGroup.scrollHeight + 'px';
+        }
+    });
+
+
+    // ========== Mock 数据与逻辑 ==========
+    const focusData = [
+        { name: "后官湖总磷超标问题", category: "断面水质明显恶化", basin: "长江流域", date: "2026-06-15", city: "武汉市", status: "done", closed: "否", survey: "是", reject: "否", inList: "是", lake: "梁子湖", basin1: "长江干流流域", basin2: "鄂东南片区", source: "手工录入" },
+        { name: "大冶湖氨氮超标问题", category: "断面水质明显恶化", basin: "长江流域", date: "2026-06-20", city: "黄石市", status: "pending", closed: "否", survey: "否", reject: "否", inList: "否", lake: "梁子湖", basin1: "长江干流流域", basin2: "鄂东南片区", source: "系统识别" },
+        { name: "丹江口入河排污口整治问题", category: "断面水质明显恶化", basin: "汉江流域", date: "2026-06-18", city: "十堰市", status: "pending", closed: "否", survey: "是", reject: "否", inList: "是", lake: "丹江口水库", basin1: "汉江流域", basin2: "三峡库区", source: "手工录入" },
+        { name: "卷桥河化学需氧量超标问题", category: "断面水质明显恶化", basin: "长江流域", date: "2026-06-22", city: "宜昌市", status: "done", closed: "是", survey: "是", reject: "否", inList: "否", lake: "隔河岩水库", basin1: "长江干流流域", basin2: "黄柏河片区", source: "系统识别" },
+        { name: "汉江老河口段偷排问题", category: "断面水质明显恶化", basin: "汉江流域", date: "2026-06-25", city: "襄阳市", status: "pending", closed: "否", survey: "否", reject: "否", inList: "否", lake: "龙感湖", basin1: "汉江流域", basin2: "府澴河片区", source: "手工录入" },
+        { name: "梁子湖水质恶化问题", category: "断面水质明显恶化", basin: "长江流域", date: "2026-06-28", city: "鄂州市", status: "done", closed: "否", survey: "是", reject: "否", inList: "否", lake: "梁子湖", basin1: "长江干流流域", basin2: "鄂东南片区", source: "系统识别" },
+        { name: "漳河水库水华风险问题", category: "断面水质明显恶化", basin: "长江流域", date: "2026-07-02", city: "荆门市", status: "pending", closed: "否", survey: "是", reject: "否", inList: "否", lake: "漳河水库", basin1: "长江干流流域", basin2: "沮漳河片区", source: "手工录入" },
+        { name: "汈汊湖总磷持续超标问题", category: "断面水质明显恶化", basin: "汉江流域", date: "2026-07-05", city: "孝感市", status: "pending", closed: "否", survey: "否", reject: "否", inList: "否", lake: "洪湖", basin1: "汉江流域", basin2: "府澴河片区", source: "系统识别" },
+        { name: "长江石首段污水收集整治", category: "断面水质明显恶化", basin: "长江流域", date: "2026-07-08", city: "荆州市", status: "done", closed: "是", survey: "是", reject: "否", inList: "否", lake: "长湖", basin1: "长江干流流域", basin2: "荆南四河片区", source: "手工录入" },
+        { name: "巴河氨氮超标问题", category: "断面水质明显恶化", basin: "长江流域", date: "2026-07-10", city: "黄冈市", status: "pending", closed: "否", survey: "否", reject: "否", inList: "否", lake: "白莲河水库", basin1: "长江干流流域", basin2: "鄂东五河片区", source: "系统识别" },
+        { name: "斧头湖水华预警问题", category: "断面水质明显恶化", basin: "长江流域", date: "2026-07-12", city: "咸宁市", status: "done", closed: "否", survey: "是", reject: "是", reason: "监测数据未达判定标准，退回补充材料", inList: "是", lake: "斧头湖", basin1: "长江干流流域", basin2: "富水片区", source: "手工录入" },
+        { name: "府河汛期污染问题", category: "断面水质明显恶化", basin: "府河流域", date: "2026-07-15", city: "随州市", status: "pending", closed: "否", survey: "否", reject: "否", inList: "否", lake: "丹江口水库", basin1: "汉江流域", basin2: "府澴河片区", source: "系统识别" },
+        { name: "清江景区水生态破坏问题", category: "断面水质明显恶化", basin: "清江流域", date: "2026-07-18", city: "恩施州", status: "done", closed: "是", survey: "是", reject: "否", inList: "否", lake: "隔河岩水库", basin1: "清江流域", basin2: "三峡库区", source: "手工录入" },
+        { name: "通顺河生活污水直排问题", category: "断面水质明显恶化", basin: "通顺河流域", date: "2026-07-20", city: "仙桃市", status: "pending", closed: "否", survey: "是", reject: "否", inList: "是", lake: "长湖", basin1: "长江干流流域", basin2: "四湖片区", source: "系统识别" },
+        { name: "田关河养殖尾水治理问题", category: "断面水质明显恶化", basin: "汉江流域", date: "2026-07-22", city: "潜江市", status: "pending", closed: "否", survey: "否", reject: "否", inList: "否", lake: "长湖", basin1: "汉江流域", basin2: "四湖片区", source: "手工录入" },
+        { name: "汉北河底泥淤积问题", category: "断面水质明显恶化", basin: "汉江流域", date: "2026-07-25", city: "天门市", status: "pending", closed: "否", survey: "否", reject: "否", inList: "否", lake: "黄盖湖", basin1: "汉江流域", basin2: "四湖片区", source: "系统识别" },
+        { name: "当阳河非法捕捞整治问题", category: "断面水质明显恶化", basin: "长江流域", date: "2026-07-28", city: "神农架林区", status: "done", closed: "是", survey: "是", reject: "否", inList: "否", lake: "漳河水库", basin1: "长江干流流域", basin2: "三峡库区", source: "手工录入" },
+        { name: "汤逊湖汛期污染问题", category: "断面水质明显恶化", basin: "长江流域", date: "2025-08-12", city: "武汉市", status: "closed", closed: "是", survey: "是", reject: "否", inList: "否", lake: "斧头湖", basin1: "长江干流流域", basin2: "鄂东南片区", source: "系统识别" },
+        { name: "富河总磷超标问题", category: "断面水质明显恶化", basin: "富水流域", date: "2025-09-03", city: "黄石市", status: "closed", closed: "是", survey: "是", reject: "否", inList: "是", lake: "富水水库", basin1: "长江干流流域", basin2: "富水片区", source: "手工录入" },
+        { name: "堵河水源地违建拆除问题", category: "断面水质明显恶化", basin: "汉江流域", date: "2025-09-20", city: "十堰市", status: "done", closed: "是", survey: "是", reject: "否", inList: "否", lake: "黄龙滩水库", basin1: "汉江流域", basin2: "三峡库区", source: "系统识别" },
+        { name: "洪湖围网养殖问题", category: "断面水质明显恶化", basin: "长江流域", date: "2025-10-25", city: "荆州市", status: "done", closed: "是", survey: "是", reject: "否", inList: "否", lake: "洪湖", basin1: "长江干流流域", basin2: "四湖片区", source: "系统识别" },
+        { name: "自动站超标问题", category: "自动站水质超标（天）", basin: "长江流域", date: "2026-08-02", city: "武汉市", status: "pending", closed: "否", survey: "否", reject: "否", inList: "是", lake: "梁子湖", basin1: "长江干流流域", basin2: "鄂东南片区", source: "外部系统调度" },
+        { name: "自动站超标问题", category: "自动站水质超标（小时）", basin: "汉江流域", date: "2026-08-08", city: "十堰市", status: "pending", closed: "否", survey: "是", reject: "否", inList: "是", lake: "丹江口水库", basin1: "汉江流域", basin2: "三峡库区", source: "外部系统调度" },
+        { name: "自动站超标问题", category: "自动站水质超标（小时）", basin: "汉江流域", date: "2026-08-15", city: "襄阳市", status: "done", closed: "否", survey: "是", reject: "否", inList: "否", lake: "龙感湖", basin1: "汉江流域", basin2: "府澴河片区", source: "外部系统调度" },
+        { name: "自动站超标问题", category: "水质类别变化报警", basin: "长江流域", date: "2026-08-03", city: "武汉市", status: "pending", closed: "否", survey: "否", reject: "否", level: "一级", inList: "是", lake: "梁子湖", basin1: "长江干流流域", basin2: "鄂东南片区", source: "外部系统调度" },
+        { name: "自动站超标问题", category: "水质类别变化报警", basin: "长江流域", date: "2026-08-06", city: "宜昌市", status: "pending", closed: "否", survey: "是", reject: "否", level: "二级", inList: "是", lake: "隔河岩水库", basin1: "长江干流流域", basin2: "黄柏河片区", source: "外部系统调度" },
+        { name: "自动站超标问题", category: "水质类别变化报警", basin: "长江流域", date: "2026-08-10", city: "荆州市", status: "pending", closed: "否", survey: "否", reject: "否", level: "三级", inList: "否", lake: "长湖", basin1: "长江干流流域", basin2: "荆南四河片区", source: "外部系统调度" },
+        { name: "自动站超标问题", category: "水质类别变化报警", basin: "长江流域", date: "2026-08-12", city: "咸宁市", status: "pending", closed: "否", survey: "是", reject: "否", level: "二级", inList: "否", lake: "斧头湖", basin1: "长江干流流域", basin2: "富水片区", source: "外部系统调度" },
+        { name: "自动站超标问题", category: "浓度变化预警", basin: "汉江流域", date: "2026-08-04", city: "十堰市", status: "pending", closed: "否", survey: "否", reject: "否", level: "一级", inList: "是", lake: "丹江口水库", basin1: "汉江流域", basin2: "三峡库区", source: "外部系统调度" },
+        { name: "自动站超标问题", category: "浓度变化预警", basin: "汉江流域", date: "2026-08-07", city: "襄阳市", status: "done", closed: "否", survey: "是", reject: "否", level: "二级", inList: "是", lake: "龙感湖", basin1: "汉江流域", basin2: "府澴河片区", source: "外部系统调度" },
+        { name: "自动站超标问题", category: "浓度变化预警", basin: "清江流域", date: "2026-08-11", city: "恩施州", status: "pending", closed: "否", survey: "否", reject: "否", level: "三级", inList: "否", lake: "隔河岩水库", basin1: "清江流域", basin2: "三峡库区", source: "外部系统调度" },
+        { name: "自动站超标问题", category: "浓度变化预警", basin: "通顺河流域", date: "2026-08-14", city: "仙桃市", status: "pending", closed: "否", survey: "否", reject: "否", level: "一级", inList: "否", lake: "长湖", basin1: "长江干流流域", basin2: "四湖片区", source: "外部系统调度" },
+        { name: "自动站超标问题", category: "水质类别变化报警", basin: "汉江流域", date: "2026-08-09", city: "孝感市", status: "pending", closed: "否", survey: "否", reject: "否", remind: true, inList: "是", lake: "洪湖", basin1: "汉江流域", basin2: "府澴河片区", source: "外部系统调度" },
+        { name: "自动站超标问题", category: "浓度变化预警", basin: "汉江流域", date: "2026-08-16", city: "随州市", status: "pending", closed: "否", survey: "否", reject: "否", remind: true, inList: "是", lake: "丹江口水库", basin1: "汉江流域", basin2: "府澴河片区", source: "外部系统调度" },
+        { name: "洪湖黑臭水体返黑整治任务", category: "黑臭水体问题", basin: "长江流域", date: "2026-06-18", city: "荆州市", status: "done", closed: "否", survey: "是", reject: "否", inList: "否", lake: "洪湖", basin1: "长江干流流域", basin2: "四湖片区", source: "手工录入" },
+        { name: "富水水库水源地保护问题", category: "饮用水水源地问题", basin: "富水流域", date: "2026-07-06", city: "黄石市", status: "pending", closed: "否", survey: "否", reject: "否", inList: "否", lake: "富水水库", basin1: "长江干流流域", basin2: "富水片区", source: "手工录入" },
+        { name: "宜昌市饮用水水源地环境问题", category: "饮用水水源地问题", basin: "长江流域", date: "2026-07-19", city: "宜昌市", status: "done", closed: "否", survey: "是", reject: "否", inList: "是", lake: "隔河岩水库", basin1: "长江干流流域", basin2: "黄柏河片区", source: "手工录入" },
+        { name: "大冶湖周边工业园区整改问题", category: "工业园区水污染问题", basin: "长江流域", date: "2026-07-27", city: "黄石市", status: "pending", closed: "否", survey: "否", reject: "否", inList: "否", lake: "富水水库", basin1: "长江干流流域", basin2: "鄂东南片区", source: "手工录入" },
+        { name: "襄阳某污水处理厂超标恒定异常", category: "污水处理厂问题", basin: "汉江流域", date: "2026-08-05", city: "襄阳市", status: "pending", closed: "否", survey: "否", reject: "否", inList: "是", lake: "龙感湖", basin1: "汉江流域", basin2: "府澴河片区", source: "外部系统调度" },
+        { name: "武汉某污水处理厂24小时恒值问题", category: "污水处理厂问题", basin: "长江流域", date: "2025-11-06", city: "武汉市", status: "closed", closed: "是", survey: "是", reject: "否", inList: "否", lake: "梁子湖", basin1: "长江干流流域", basin2: "鄂东南片区", source: "外部系统调度" },
+        { name: "未来三天通顺河断面超Ⅴ类预警", category: "断面预警", basin: "通顺河流域", date: "2026-07-16", city: "仙桃市", status: "pending", closed: "否", survey: "否", reject: "否", inList: "是", lake: "长湖", basin1: "长江干流流域", basin2: "四湖片区", source: "系统识别" },
+        { name: "未来三天斧头湖断面超Ⅴ类预警", category: "断面预警", basin: "长江流域", date: "2026-08-13", city: "咸宁市", status: "pending", closed: "否", survey: "否", reject: "否", inList: "否", lake: "斧头湖", basin1: "长江干流流域", basin2: "富水片区", source: "系统识别" },
+        { name: "梁子湖健康指数差预警", category: "湖库预警", basin: "长江流域", date: "2026-07-23", city: "鄂州市", status: "done", closed: "否", survey: "是", reject: "否", inList: "否", lake: "梁子湖", basin1: "长江干流流域", basin2: "鄂东南片区", source: "系统识别" },
+        { name: "天门河超标断面占比预警", category: "河流预警", basin: "汉江流域", date: "2026-08-17", city: "天门市", status: "pending", closed: "否", survey: "否", reject: "否", inList: "是", lake: "黄盖湖", basin1: "汉江流域", basin2: "四湖片区", source: "系统识别" },
+        { name: "荆江段水质舆情关注问题", category: "舆情问题", basin: "长江流域", date: "2026-08-11", city: "荆州市", status: "done", closed: "否", survey: "是", reject: "否", inList: "否", lake: "长湖", basin1: "长江干流流域", basin2: "荆南四河片区", source: "外部系统调度" },
+        { name: "府河沿线养殖污染舆情", category: "舆情问题", basin: "府河流域", date: "2026-08-14", city: "随州市", status: "pending", closed: "否", survey: "否", reject: "否", inList: "否", lake: "丹江口水库", basin1: "汉江流域", basin2: "府澴河片区", source: "外部系统调度" },
+        { name: "仙桃非法排污信访举报", category: "信访举报问题", basin: "长江流域", date: "2026-08-08", city: "仙桃市", status: "pending", closed: "否", survey: "否", reject: "否", inList: "否", lake: "长湖", basin1: "长江干流流域", basin2: "四湖片区", source: "手工录入" }
+    ];
+
+    const HUBEI_CITIES = ["武汉市", "黄石市", "十堰市", "宜昌市", "襄阳市", "鄂州市", "荆门市", "孝感市", "荆州市", "黄冈市", "咸宁市", "随州市", "恩施州", "仙桃市", "潜江市", "天门市", "神农架林区"];
+    const SOURCES = ['手工录入', '系统识别', '外部系统调度'];
+
+    // ========== 统一的政务专业色彩规范 ==========
+    // 来源配色：采用同色系的 科技深蓝 - 亮蓝 - 青绿，体现专业连贯性
+    const SOURCE_COLORS = { '手工录入': '#2563eb', '系统识别': '#3b82f6', '外部系统调度': '#0ea5e9' };
+    const STATUS_ORDER = ['待反馈', '已反馈', '已驳回', '已销号'];
+    // 状态配色：严格的语义色（警告黄、常规蓝、危险红、成功绿），适当控制饱和度
+    const STATUS_COLORS = { '待反馈': '#f59e0b', '已反馈': '#3b82f6', '已驳回': '#ef4444', '已销号': '#10b981' };
+    // 类别配色：蓝色系渐变
+    const CAT_COLORS = { '自动站超标问题': '#1d4ed8', '断面水质问题': '#2563eb', '重点任务': '#3b82f6', '水质预测': '#60a5fa', '其他类型': '#94a3b8' };
+    const CAT_TOP_OF = {
+        '自动站水质超标（天）': '自动站超标问题', '自动站水质超标（小时）': '自动站超标问题', '水质类别变化报警': '自动站超标问题', '浓度变化预警': '自动站超标问题',
+        '断面水质明显恶化': '断面水质问题', '断面水质存在有毒有害物质超标': '断面水质问题', '南水北调调水水质超标': '断面水质问题', '四不两直专项检查': '断面水质问题', '重点攻坚断面整治': '断面水质问题',
+        '工业园区水污染问题': '重点任务', '饮用水水源地问题': '重点任务', '黑臭水体问题': '重点任务', '污水处理厂问题': '重点任务',
+        '断面预警': '水质预测', '湖库预警': '水质预测', '河流预警': '水质预测',
+        '舆情问题': '其他类型', '信访举报问题': '其他类型'
+    };
+
+    let currentRole = '省级';
+    let currentCity = '';
+    let rangeStart = '';
+    let rangeEnd = '';
+    let listScope = 'list';
+
+    const $ = id => document.getElementById(id);
+    const charts = {};
+
+    function init() {
+        const csel = $('city-scope-sel');
+        HUBEI_CITIES.forEach(c => {
+            const o = document.createElement('option');
+            o.value = c; o.textContent = c;
+            csel.appendChild(o);
+        });
+        csel.addEventListener('change', () => { currentCity = csel.value; render(); });
+
+        const years = ['2025', '2026'];
+        const months = Array.from({ length: 12 }, (_, i) => String(i + 1).padStart(2, '0'));
+        [['range-start-year', '2025'], ['range-end-year', '2026']].forEach(([id, v]) => {
+            const s = $(id);
+            years.forEach(y => {
+                const o = document.createElement('option');
+                o.value = y; o.textContent = y;
+                s.appendChild(o);
+            });
+            s.value = v;
+        });
+        [['range-start-month', '08'], ['range-end-month', '08']].forEach(([id, v]) => {
+            const s = $(id);
+            months.forEach(m => {
+                const o = document.createElement('option');
+                o.value = m; o.textContent = m;
+                s.appendChild(o);
+            });
+            s.value = v;
+        });
+        $('btn-range-query').addEventListener('click', () => {
+            const sy = $('range-start-year').value, sm = $('range-start-month').value;
+            const ey = $('range-end-year').value, em = $('range-end-month').value;
+            rangeStart = (sy && sm) ? sy + '-' + sm : '';
+            rangeEnd = (ey && em) ? ey + '-' + em : '';
+            render();
+        });
+
+        ['chartMonth', 'chartSource', 'chartStatus', 'chartCategory', 'chartCity', 'chartBasin'].forEach(id => {
+            charts[id] = echarts.init($(id));
+        });
+        window.addEventListener('resize', () => Object.values(charts).forEach(c => c && c.resize()));
+
+        render();
+        // 一屏自适应：等 Tailwind 工具类与网格布局稳定后再让图表按其真实容器尺寸重绘
+        requestAnimationFrame(() => {
+            setTimeout(() => Object.values(charts).forEach(c => c && c.resize()), 0);
+        });
+    }
+
+    function switchRole(btn) {
+        currentRole = btn.getAttribute('data-role');
+        document.querySelectorAll('.role-switch-btn').forEach(b => {
+            b.classList.remove('bg-white', 'text-blue-700', 'shadow-sm', 'text-white', 'hover:bg-white/10');
+            if (b === btn) {
+                b.classList.add('bg-white', 'text-blue-700', 'shadow-sm');
+            } else {
+                b.classList.add('text-white', 'hover:bg-white/10');
+            }
+        });
+        const wrap = $('city-scope-wrap');
+        const isCity = currentRole === '市级';
+        if (wrap) wrap.classList.toggle('hidden', !isCity);
+        if (isCity) {
+            if (!currentCity) currentCity = $('city-scope-sel').value || '武汉市';
+            $('city-scope-sel').value = currentCity;
+        } else {
+            currentCity = '';
+        }
+        render();
+    }
+
+    function switchListScope(btn) {
+        listScope = btn.getAttribute('data-scope');
+        document.querySelectorAll('.list-scope-btn').forEach(b => {
+            if (b === btn) {
+                b.classList.remove('inactive'); b.classList.add('active');
+            } else {
+                b.classList.remove('active'); b.classList.add('inactive');
+            }
+        });
+        render();
+    }
+
+    function scopeData() {
+        return focusData.filter(item => {
+            if (currentRole === '市级' && currentCity && item.city !== currentCity) return false;
+            if (rangeStart || rangeEnd) {
+                const ym = String(item.date || '').slice(0, 7);
+                if (rangeStart && ym < rangeStart) return false;
+                if (rangeEnd && ym > rangeEnd) return false;
+            }
+            return true;
+        });
+    }
+
+    function buildKpi(containerId, label, icon, chipCls, iconCls, value, unit) {
+        const el = $(containerId);
+        el.className = "top-metric-card";
+        el.innerHTML = `
+            <div class="flex justify-between items-center">
+                <div class="text-[13px] font-bold text-slate-600 dark:text-slate-300">${label}</div>
+                <div class="w-8 h-8 rounded-full ${chipCls} flex items-center justify-center shrink-0">
+                    <i class="${icon} ${iconCls} text-base"></i>
+                </div>
+            </div>
+            <div class="flex items-baseline mt-1.5">
+                <div class="text-[26px] font-black text-blue-600 leading-none">${value}<span class="text-sm font-normal text-slate-500 ml-1">${unit || ''}</span></div>
+            </div>`;
+    }
+
+    function distinctLen(list) {
+        return new Set(list.filter(Boolean)).size;
+    }
+
+    function renderKpi(stat) {
+        const total = stat.length;
+        const cityN = distinctLen(stat.map(i => i.city));
+        const lakeN = distinctLen(stat.map(i => i.lake));
+        const qingdanN = stat.filter(i => i.inList === '是').length;
+        const dandiN = stat.filter(i => i.inList !== '是').length;
+
+        const icons = { total: 'ri-database-2-fill', city: 'ri-building-2-fill', lake: 'ri-water-flash-fill', qingdan: 'ri-list-check-2', dandi: 'ri-file-list-3-fill' };
+        const chips = {
+            total: 'bg-blue-50 dark:bg-blue-900/30 text-blue-500',
+            city: 'bg-amber-50 dark:bg-amber-900/30 text-amber-500',
+            lake: 'bg-emerald-50 dark:bg-emerald-900/30 text-emerald-500',
+            qingdan: 'bg-cyan-50 dark:bg-cyan-900/30 text-cyan-500',
+            dandi: 'bg-slate-100 dark:bg-slate-800 text-slate-500'
+        };
+
+        const arr = [
+            { k: 'total', label: '问题总数', v: total, unit: '条' },
+            { k: 'city', label: '覆盖市州', v: cityN, unit: '个' },
+            { k: 'lake', label: '涉及湖库', v: lakeN, unit: '个' },
+            { k: 'qingdan', label: '清单数量', v: qingdanN, unit: '条' },
+            { k: 'dandi', label: '底单数量', v: dandiN, unit: '条' }
+        ];
+        arr.forEach(o => buildKpi('kpi-' + o.k, o.label, icons[o.k], chips[o.k], '', o.v, o.unit));
+    }
+
+    // ECharts 通用设置
+    const PALETTE = ['#3b82f6', '#0ea5e9', '#14b8a6', '#f59e0b', '#06b6d4', '#64748b', '#10b981', '#60a5fa', '#fbbf24', '#94a3b8', '#2dd4bf', '#38bdf8'];
+    const textColor = () => (document.documentElement.classList.contains('dark') ? '#cbd5e1' : '#64748b');
+    const axisColor = () => (document.documentElement.classList.contains('dark') ? '#475569' : '#e2e8f0');
+    const gridColor = () => (document.documentElement.classList.contains('dark') ? '#1e293b' : '#f1f5f9');
+
+    function baseAxis(color) {
+        return {
+            axisLine: { lineStyle: { color: axisColor() } },
+            axisTick: { show: false },
+            axisLabel: { color: color || textColor(), fontSize: 11 },
+            splitLine: { lineStyle: { color: gridColor() } }
+        };
+    }
+
+    function donutOption(seriesData, colors, centerLabel) {
+        const total = seriesData.reduce((s, x) => s + x.value, 0);
+        return {
+            tooltip: { trigger: 'item', backgroundColor: 'rgba(255, 255, 255, 0.95)', borderColor: '#e2e8f0', textStyle: { color: '#334155', fontSize: 12 }, extraCssText: 'box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); border-radius: 6px;', formatter: p => `${p.marker}${p.name} ${p.value} 条（${total ? (p.percent).toFixed(1) : 0}%）` },
+            legend: { bottom: 0, icon: 'circle', itemWidth: 8, itemHeight: 8, textStyle: { color: textColor(), fontSize: 11 }, itemGap: 12 },
+            color: colors,
+            series: [{
+                type: 'pie',
+                radius: ['52%', '70%'], // 环形调细
+                center: ['50%', '42%'],
+                avoidLabelOverlap: true,
+                itemStyle: { borderColor: '#fff', borderWidth: 2 },
+                label: { show: total > 0, position: 'center', formatter: () => centerLabel || '', fontSize: 24, fontWeight: 700, color: '#1e293b' },
+                data: seriesData
+            }]
+        };
+    }
+
+    // 优化2：柱状图变细，并加入微弱的科技蓝渐变
+    function hbarOption(categories, values, extra) {
+        return {
+            tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' }, backgroundColor: 'rgba(255, 255, 255, 0.95)', borderColor: '#e2e8f0', textStyle: { color: '#334155', fontSize: 12 }, extraCssText: 'box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); border-radius: 6px;', formatter: p => `${p[0].name} ${p[0].value} 条` },
+            grid: { left: 8, right: 40, top: 10, bottom: 6, containLabel: true },
+            xAxis: Object.assign({ type: 'value', minInterval: 1, splitNumber: 5 }, baseAxis()),
+            yAxis: Object.assign({ type: 'category', data: categories, axisLabel: { color: textColor(), fontSize: 11 }, axisLine: { show: false }, axisTick: { show: false } }, extra || {}),
+            series: [{
+                type: 'bar',
+                data: values.map((v, i) => ({
+                    value: v,
+                    itemStyle: {
+                        // 如果没有特殊指定颜色，则使用政务蓝渐变
+                        color: extra && extra.colorFn ? extra.colorFn(i) : new echarts.graphic.LinearGradient(1, 0, 0, 0, [
+                            { offset: 0, color: '#3b82f6' },
+                            { offset: 1, color: '#93c5fd' }
+                        ]),
+                        borderRadius: [0, 4, 4, 0]
+                    }
+                })),
+                barMaxWidth: 12, // 柱子变细
+                label: { show: true, position: 'right', color: textColor(), fontSize: 11 }
+            }]
+        };
+    }
+
+    function statusCounts(list) {
+        const c = { pending: 0, done: 0, reject: 0, closed: 0 };
+        list.forEach(i => {
+            if (i.reject === '是') c.reject++;
+            else if (i.status === 'pending') c.pending++;
+            else if (i.status === 'done') c.done++;
+            else if (i.status === 'closed') c.closed++;
+        });
+        return c;
+    }
+
+    function drawMonth(list) {
+        const months = ['2025-09', '2025-10', '2025-11', '2025-12', '2026-01', '2026-02', '2026-03', '2026-04', '2026-05', '2026-06', '2026-07', '2026-08'];
+        const SAMPLE = {
+            '待反馈': [9, 11, 12, 14, 15, 17, 19, 21, 23, 26, 28, 29],
+            '已反馈': [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14],
+            '已驳回': [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+            '已销号': [0, 1, 1, 2, 2, 2, 2, 2, 3, 3, 3, 3]
+        };
+        const c = statusCounts(list);
+        const SAMPLE_END = { '待反馈': 29, '已反馈': 14, '已驳回': 1, '已销号': 3 };
+        const target = { '待反馈': c.pending, '已反馈': c.done, '已驳回': c.reject, '已销号': c.closed };
+        const seriesData = {};
+        STATUS_ORDER.forEach(s => {
+            const k = SAMPLE_END[s] ? target[s] / SAMPLE_END[s] : 0;
+            let mx = 0;
+            seriesData[s] = SAMPLE[s].map(v => mx = Math.max(mx, Math.round(v * k)));
+        });
+        charts.chartMonth.setOption({
+            color: STATUS_ORDER.map(s => STATUS_COLORS[s]),
+            tooltip: { trigger: 'axis', backgroundColor: 'rgba(255, 255, 255, 0.95)', borderColor: '#e2e8f0', textStyle: { color: '#334155', fontSize: 12 }, extraCssText: 'box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); border-radius: 6px;' },
+            legend: { top: 0, right: 0, icon: 'circle', itemWidth: 8, itemHeight: 8, textStyle: { color: textColor(), fontSize: 11 }, itemGap: 10 },
+            grid: { left: 8, right: 16, top: 30, bottom: 6, containLabel: true },
+            xAxis: Object.assign({}, baseAxis(), { type: 'category', boundaryGap: false, data: months, axisLabel: { color: textColor(), fontSize: 11, interval: 0, formatter: v => Number(String(v).slice(5, 7)) + '月' } }),
+            yAxis: Object.assign({ type: 'value', minInterval: 1 }, baseAxis()),
+            series: STATUS_ORDER.map(s => ({
+                name: s, type: 'line', stack: 'total', smooth: true,
+                symbol: 'emptyCircle', symbolSize: 4, showSymbol: false,
+                lineStyle: { width: 2, color: STATUS_COLORS[s] },
+                areaStyle: {
+                    opacity: 0.15, // 进一步降低透明度，避免画面太脏
+                    color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                        { offset: 0, color: STATUS_COLORS[s] },
+                        { offset: 1, color: '#ffffff00' }
+                    ])
+                },
+                emphasis: { focus: 'series' },
+                data: seriesData[s]
+            }))
+        }, true);
+    }
+
+    function drawSource(list) {
+        const arr = SOURCES.map(src => ({ name: src, value: list.filter(i => i.source === src).length }));
+        const colors = SOURCES.map(s => SOURCE_COLORS[s]);
+        const total = list.length;
+        charts.chartSource.setOption(donutOption(arr, colors, total ? String(total) : ''), true);
+    }
+
+    function drawStatus(list) {
+        const c = statusCounts(list);
+        const KEY = { '待反馈': 'pending', '已反馈': 'done', '已驳回': 'reject', '已销号': 'closed' };
+        const arr = STATUS_ORDER
+            .map(s => ({ name: s, value: c[KEY[s]], itemStyle: { color: STATUS_COLORS[s] } }))
+            .filter(x => x.value > 0);
+        charts.chartStatus.setOption(donutOption(arr, [], list.length ? String(list.length) : ''), true);
+    }
+
+    function drawCategory(list) {
+        if (!list.length) { charts.chartCategory.clear(); return; }
+        const buckets = new Map();
+        list.forEach(i => {
+            const top = CAT_TOP_OF[i.category] || i.category;
+            buckets.set(top, (buckets.get(top) || 0) + 1);
+        });
+        const tops = Array.from(buckets.keys()).sort((a, b) => buckets.get(b) - buckets.get(a));
+        const names = tops.map(t => t);
+        const vals = tops.map(t => buckets.get(t));
+        const colorFn = i => CAT_COLORS[tops[i]] || PALETTE[i % PALETTE.length];
+        charts.chartCategory.setOption(hbarOption(names, vals, { colorFn, inverse: true }), true);
+    }
+
+    function drawCity(list) {
+        const m = new Map();
+        list.forEach(i => m.set(i.city, (m.get(i.city) || 0) + 1));
+        const pairs = Array.from(m.entries()).sort((a, b) => b[1] - a[1]);
+        const names = pairs.map(p => p[0]);
+        const vals = pairs.map(p => p[1]);
+        charts.chartCity.setOption(hbarOption(names, vals, { inverse: true }), true);
+    }
+
+    function drawBasin(list) {
+        const m = new Map();
+        list.forEach(i => m.set(i.basin1, (m.get(i.basin1) || 0) + 1));
+        const arr = Array.from(m.entries()).map(([name, value]) => ({ name, value }));
+        arr.sort((a, b) => b.value - a.value);
+        const colors = ['#3b82f6', '#06b6d4', '#14b8a6', '#94a3b8'];
+        charts.chartBasin.setOption(donutOption(arr.map((x, i) => Object.assign(x, { itemStyle: { color: colors[i % colors.length] } })), colors, list.length ? String(list.length) : ''), true);
+    }
+
+    function render() {
+        const stat = scopeData();
+        renderKpi(stat);
+        const list = stat.filter(i => (listScope === 'dandi') ? i.inList !== '是' : i.inList === '是');
+        drawMonth(list);
+        drawSource(list);
+        drawStatus(list);
+        drawCategory(list);
+        drawCity(list);
+        drawBasin(list);
+    }
+
+    init();
+</script>
+</body>
+</html>

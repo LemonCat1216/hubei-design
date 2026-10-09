@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>问题线索 - 湖北省排污口综合监管系统</title>
+    <link rel="icon" href="data:,">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.min.css">
+    <link rel="stylesheet" href="assets/clue-common.css">
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.min.js"></script>
+</head>
+<body>
+<div class="viewport">
+    <div class="app-shell" id="appShell">
+        <header class="topbar">
+            <div class="brand">
+                <span class="brand-mark" aria-hidden="true">鄂</span>
+                <span>湖北省排污口综合监管系统</span>
+            </div>
+            <nav class="top-nav" aria-label="主导航">
+                <button type="button" data-nav="首页"><i class="fa-solid fa-house"></i><span>首页</span></button>
+                <button type="button" data-nav="一张图"><i class="fa-regular fa-image"></i><span>一张图</span></button>
+                <button type="button" class="active" data-nav="业务管理"><i class="fa-regular fa-clipboard"></i><span>业务管理</span></button>
+                <button type="button" data-nav="一口一档"><i class="fa-regular fa-file-lines"></i><span>一口一档</span></button>
+                <button type="button" data-nav="水污染源"><i class="fa-solid fa-list-check"></i><span>水污染源</span></button>
+                <button type="button" data-nav="综合统计"><i class="fa-solid fa-gavel"></i><span>综合统计</span></button>
+            </nav>
+            <div class="user">
+                <div class="role-switch" id="roleSwitch" role="group" aria-label="省市角色切换">
+                    <button type="button" data-role="province" class="active">省级</button>
+                    <button type="button" data-role="city">市级</button>
+                </div>
+                <button class="top-bell" id="remindBtn" type="button" title="到期提醒" aria-label="到期提醒">
+                    <i class="fa-regular fa-bell"></i><span>到期提醒</span>
+                </button>
+                <i class="fa-regular fa-user"></i><span>王羽鹏</span>
+            </div>
+        </header>
+
+        <div class="workspace">
+            <aside class="sidebar" aria-label="业务菜单">
+                <div class="side-group collapsed">
+                    <button type="button" class="side-item side-parent">
+                        <i class="fa-solid fa-sliders side-icon"></i><span>排污口管理</span><i class="fa-solid fa-chevron-up chevron"></i>
+                    </button>
+                    <div class="side-children"></div>
+                </div>
+                <div class="side-group">
+                    <button type="button" class="side-item side-parent">
+                        <i class="fa-solid fa-sliders side-icon"></i><span>排污口监管</span><i class="fa-solid fa-chevron-up chevron"></i>
+                    </button>
+                    <div class="side-children">
+                        <button type="button" class="side-item side-child"><i class="fa-regular fa-circle-dot side-icon"></i><span>日常监管</span></button>
+                        <button type="button" class="side-item side-child"><i class="fa-regular fa-chart-bar side-icon"></i><span>在线监控</span></button>
+                        <button type="button" class="side-item side-child"><i class="fa-regular fa-flag side-icon"></i><span>盯办帮扶</span></button>
+                        <button type="button" class="side-item side-child"><i class="fa-regular fa-circle-info side-icon"></i><span>日常监管监测预警</span></button>
+                        <div class="side-child-branch">
+                            <button type="button" class="side-item side-child branch-toggle on">
+                                <i class="fa-regular fa-circle-pause side-icon"></i><span>问题线索</span><i class="fa-solid fa-chevron-up chevron"></i>
+                            </button>
+                            <div class="side-grandchildren">
+                                <button type="button" class="side-item side-grandchild active" data-page="clue"><i class="fa-regular fa-file-lines side-icon"></i><span>问题线索</span></button>
+                                <button type="button" class="side-item side-grandchild" data-page="defer"><i class="fa-solid fa-hourglass-half side-icon"></i><span>延期申请</span></button>
+                                <button type="button" class="side-item side-grandchild" data-page="sms"><i class="fa-regular fa-comment-dots side-icon"></i><span>短信通知记录</span></button>
+                                <button type="button" class="side-item side-grandchild" data-page="contact"><i class="fa-solid fa-address-book side-icon"></i><span>联系人设置</span></button>
+                            </div>
+                        </div>
+                        <button type="button" class="side-item side-child"><i class="fa-regular fa-bell side-icon"></i><span>水功能区纳污统计</span></button>
+                    </div>
+                </div>
+                <div class="side-group collapsed">
+                    <button type="button" class="side-item side-parent">
+                        <i class="fa-solid fa-sliders side-icon"></i><span>排污口设置审批</span><i class="fa-solid fa-chevron-up chevron"></i>
+                    </button>
+                    <div class="side-children"></div>
+                </div>
+            </aside>
+
+            <main class="main-panel">
+                <section class="summary summary-6" aria-label="问题线索概览" id="summaryCards">
+                    <article class="stat" role="button" tabindex="0" data-view="all" aria-pressed="true">
+                        <span class="stat-icon" aria-hidden="true"><i class="fa-solid fa-layer-group"></i></span>
+                        <div class="stat-copy">
+                            <div class="stat-label">全部</div>
+                            <div class="stat-number-line"><span class="stat-number" id="statAll">0</span><span class="stat-unit">条</span></div>
+                        </div>
+                    </article>
+                    <article class="stat t-orange" role="button" tabindex="0" data-view="待办" aria-pressed="false">
+                        <span class="stat-icon" aria-hidden="true"><i class="fa-regular fa-clock"></i></span>
+                        <div class="stat-copy">
+                            <div class="stat-label">待填报</div>
+                            <div class="stat-number-line"><span class="stat-number" id="statTodo">0</span><span class="stat-unit">条</span></div>
+                        </div>
+                    </article>
+                    <article class="stat t-green" role="button" tabindex="0" data-view="已办" aria-pressed="false">
+                        <span class="stat-icon" aria-hidden="true"><i class="fa-regular fa-circle-check"></i></span>
+                        <div class="stat-copy">
+                            <div class="stat-label">已反馈</div>
+                            <div class="stat-number-line"><span class="stat-number" id="statDone">0</span><span class="stat-unit">条</span></div>
+                        </div>
+                    </article>
+                    <article class="stat t-cyan" role="button" tabindex="0" data-view="未反馈" aria-pressed="false">
+                        <span class="stat-icon" aria-hidden="true"><i class="fa-regular fa-circle-xmark"></i></span>
+                        <div class="stat-copy">
+                            <div class="stat-label">未反馈</div>
+                            <div class="stat-number-line"><span class="stat-number" id="statUndone">0</span><span class="stat-unit">条</span></div>
+                        </div>
+                    </article>
+                    <article class="stat t-gold" role="button" tabindex="0" data-view="即将到期" aria-pressed="false">
+                        <span class="stat-icon" aria-hidden="true"><i class="fa-regular fa-bell"></i></span>
+                        <div class="stat-copy">
+                            <div class="stat-label">即将到期</div>
+                            <div class="stat-number-line"><span class="stat-number" id="statNearDue">0</span><span class="stat-unit">条</span></div>
+                        </div>
+                    </article>
+                    <article class="stat t-red" role="button" tabindex="0" data-view="过期未反馈" aria-pressed="false">
+                        <span class="stat-icon" aria-hidden="true"><i class="fa-solid fa-triangle-exclamation"></i></span>
+                        <div class="stat-copy">
+                            <div class="stat-label">过期未反馈</div>
+                            <div class="stat-number-line"><span class="stat-number" id="statOverdue">0</span><span class="stat-unit">条</span></div>
+                        </div>
+                    </article>
+                </section>
+
+                <form class="filter-bar" id="filterForm">
+                    <label class="field select" style="width:134px"><select id="cityFilter" aria-label="所属地市">
+                        <option value="">所属地市</option>
+                    </select></label>
+                    <label class="field select" style="width:148px"><select id="typeFilter" aria-label="问题类型">
+                        <option value="">问题类型</option><option>重大问题</option><option>突出问题</option><option>一般问题</option><option>其他问题</option>
+                    </select></label>
+                    <label class="field select" style="width:128px"><select id="deferFilter" aria-label="是否延期">
+                        <option value="">是否延期</option><option value="yes">已延期</option><option value="no">未延期</option>
+                    </select></label>
+                    <div class="field year-field" id="yearFilterWrap" style="width:128px">
+                        <input id="yearFilter" readonly placeholder="交办年份" aria-label="交办年份" aria-haspopup="dialog" autocomplete="off">
+                        <i class="fa-regular fa-calendar year-field-icon" aria-hidden="true"></i>
+                        <div class="year-panel" id="yearFilterPanel" role="dialog" aria-label="选择交办年份" hidden>
+                            <div class="year-panel-head">
+                                <button type="button" data-ystep="-12" aria-label="上一组年份"><i class="fa-solid fa-angles-left"></i></button>
+                                <span id="yearFilterRange"></span>
+                                <button type="button" data-ystep="12" aria-label="下一组年份"><i class="fa-solid fa-angles-right"></i></button>
+                            </div>
+                            <div class="year-grid" id="yearFilterGrid"></div>
+                            <button type="button" class="year-clear" data-yclear>不限年份</button>
+                        </div>
+                    </div>
+                    <label class="field" style="width:250px"><input id="kwFilter" type="search" placeholder="问题线索标题" aria-label="关键词"></label>
+                    <button class="filter-btn search" type="submit"><i class="fa-solid fa-magnifying-glass"></i><span>搜索</span></button>
+                    <button class="filter-btn reset" id="resetBtn" type="button"><i class="fa-solid fa-rotate-left"></i><span>重置</span></button>
+                    <button class="filter-btn export" id="exportBtn" type="button"><i class="fa-regular fa-file-lines"></i><span>数据导出</span></button>
+                    <span class="spacer"></span>
+                    <button class="primary-btn" id="addBtn" type="button"><i class="fa-solid fa-plus"></i><span>新增问题线索</span></button>
+                </form>
+
+                <div class="table-wrap">
+                    <div class="table-scroll">
+                        <table aria-label="问题线索列表">
+                            <colgroup>
+                                <col style="width:3.5%"><col style="width:36%"><col style="width:8%"><col style="width:9%">
+                                <col style="width:10%"><col style="width:11.5%"><col style="width:11%"><col style="width:11%">
+                            </colgroup>
+                            <thead>
+                            <tr>
+                                <th class="center">序号</th><th>问题线索标题</th><th>问题类型</th><th>所属地市</th>
+                                <th>交办日期</th><th>计划截止日期</th><th>延期截止日期</th><th>操作</th>
+                            </tr>
+                            </thead>
+                            <tbody id="tableBody"></tbody>
+                        </table>
+                    </div>
+                    <div class="pagination" id="pagination"></div>
+                </div>
+
+                <!-- 到期提醒弹窗 -->
+                <div class="modal-backdrop" id="remindModal" role="dialog" aria-modal="true" aria-labelledby="remindTitle">
+                    <section class="modal w-lg">
+                        <header class="modal-header"><span id="remindTitle"><i class="fa-regular fa-bell" style="color:#e88724;margin-right:8px"></i>近5日即将到期问题线索提醒</span>
+                            <button class="modal-close" type="button" data-close="remindModal" aria-label="关闭"><i class="fa-solid fa-xmark"></i></button></header>
+                        <div class="modal-body">
+                            <p class="popup-note">以下问题线索将于 <strong>5日内到期</strong>，请督促相关地市在办结日前完成整改并填报情况；因客观因素确需延期的，须在整改期满前10个工作日提交延期申请。</p>
+                            <div class="popup-list" id="remindList"></div>
+                        </div>
+                        <footer class="modal-footer">
+                            <span class="foot-hint">提示：点击「不再提示」后，今日内不再自动弹出。</span>
+                            <button class="btn ghost" id="remindNever" type="button">不再提示</button>
+                            <button class="btn primary" data-close="remindModal" type="button">知道了</button>
+                        </footer>
+                    </section>
+                </div>
+
+                <!-- 新增 / 编辑弹窗 -->
+                <div class="modal-backdrop" id="editModal" role="dialog" aria-modal="true" aria-labelledby="editTitle">
+                    <section class="modal w-edit">
+                        <header class="modal-header">
+                            <div class="head-title"><span id="editTitle">新增问题线索</span></div>
+                            <button class="modal-close" type="button" data-close="editModal" aria-label="关闭"><i class="fa-solid fa-xmark"></i></button>
+                        </header>
+                        <div class="modal-body">
+                            <div class="edit-body">
+                                <div class="edit-form">
+                                    <input type="hidden" id="fStart">
+                                    <div class="form-grid">
+                                        <div class="form-item col-2">
+                                            <label class="form-label">问题地区<i class="req">*</i></label>
+                                            <select class="form-select" id="fCity"></select>
+                                        </div>
+                                        <div class="form-item col-2">
+                                            <label class="form-label">地市负责人</label>
+                                            <input class="form-input" id="fOfficer" readonly placeholder="选择问题地区后自动带出">
+                                        </div>
+                                        <div class="form-item col-4">
+                                            <label class="form-label">问题标题<i class="req">*</i></label>
+                                            <input class="form-input" id="fTitle" placeholder="请输入问题标题">
+                                        </div>
+                                        <div class="form-item col-2">
+                                            <label class="form-label">问题类型<i class="req">*</i></label>
+                                            <select class="form-select" id="fType">
+                                                <option value="">请选择</option><option>重大问题</option><option>突出问题</option><option>一般问题</option><option>其他问题</option>
+                                            </select>
+                                            <p class="type-hint" id="typeHint" hidden></p>
+                                        </div>
+                                        <div class="form-item col-2">
+                                            <label class="form-label">截止日期（整改期限）<i class="req">*</i></label>
+                                            <input class="form-input" type="date" id="fDue">
+                                            <p class="field-hint" id="dueHint"></p>
+                                        </div>
+                                        <div class="form-item col-2">
+                                            <label class="form-label">经度</label>
+                                            <input class="form-input mono" id="fLng" placeholder="点击右侧地图选点">
+                                        </div>
+                                        <div class="form-item col-2">
+                                            <label class="form-label">纬度</label>
+                                            <input class="form-input mono" id="fLat" placeholder="点击右侧地图选点">
+                                        </div>
+                                    </div>
+                                </div>
+                                <aside class="map-panel">
+                                    <div class="map-head"><i class="fa-solid fa-location-dot"></i><strong>问题位置</strong><span class="map-mode" id="editMapMode">选点模式</span>
+                                        <button class="map-zoom-btn" id="editMapZoom" type="button"><i class="fa-solid fa-expand"></i>放大选点</button></div>
+                                    <div class="map-svg-wrap pick" id="editMapWrap"></div>
+                                    <div class="map-coord" id="editCoord">点击地图设置问题坐标</div>
+                                    <div class="map-legend">
+                                        <span><i class="dot red"></i>问题点位</span>
+                                    </div>
+                                </aside>
+                            </div>
+                            <div class="form-grid edit-extra">
+                                <div class="form-item col-4">
+                                    <label class="form-label">问题描述<i class="req">*</i></label>
+                                    <textarea class="form-textarea" id="fDesc" rows="5" placeholder="请描述问题基本情况、现场核查发现等"></textarea>
+                                </div>
+                                <div class="form-item col-4">
+                                    <label class="form-label">问题材料（可上传多份）</label>
+                                    <div class="upload-box" id="materialUpload">
+                                        <div class="upload-add" data-add="file"><i class="fa-solid fa-file-arrow-up"></i>点击上传</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <footer class="modal-footer">
+                            <span class="foot-hint" id="editIdLabel"></span>
+                            <button class="btn ghost" data-close="editModal" type="button">取 消</button>
+                            <button class="btn primary" id="editSave" type="button">提 交</button>
+                        </footer>
+                    </section>
+                </div>
+
+                <!-- 放大选点弹窗 -->
+                <div class="modal-backdrop" id="mapZoomModal" role="dialog" aria-modal="true" aria-labelledby="mapZoomTitle">
+                    <section class="modal w-xl map-zoom-modal">
+                        <header class="modal-header">
+                            <div class="head-title">
+                                <i class="fa-regular fa-map"></i>
+                                <span id="mapZoomTitle">选择问题点位</span>
+                                <div class="head-tags"><span class="tag general" id="mapZoomCity">—</span></div>
+                            </div>
+                            <div style="display:flex;align-items:center;gap:14px">
+                                <button class="modal-close" type="button" data-close="mapZoomModal" aria-label="关闭"><i class="fa-solid fa-xmark"></i></button>
+                            </div>
+                        </header>
+                        <div class="modal-body">
+                            <div class="zoom-map-wrap" id="zoomMapWrap"></div>
+                            <div class="zoom-bar">
+                                <div class="zoom-coord" id="zoomCoord">当前点位：未选择</div>
+                                <div class="zoom-ops">
+                                    <button class="filter-btn reset" id="zoomOut" type="button"><i class="fa-solid fa-magnifying-glass-minus"></i><span>缩小</span></button>
+                                    <button class="filter-btn reset" id="zoomIn" type="button"><i class="fa-solid fa-magnifying-glass-plus"></i><span>放大</span></button>
+                                    <button class="filter-btn reset" id="zoomReset" type="button"><i class="fa-solid fa-rotate-left"></i><span>复位</span></button>
+                                </div>
+                            </div>
+                        </div>
+                        <footer class="modal-footer">
+                            <span class="foot-hint">确定后将该点位回填到「经度 / 纬度」输入框。</span>
+                            <button class="btn ghost" data-close="mapZoomModal" type="button">取 消</button>
+                            <button class="btn primary" id="zoomConfirm" type="button"><i class="fa-solid fa-check"></i>确 定</button>
+                        </footer>
+                    </section>
+                </div>
+
+                <!-- 整改填报弹窗 -->
+                <div class="modal-backdrop" id="reportModal" role="dialog" aria-modal="true" aria-labelledby="reportTitle">
+                    <section class="modal w-lg">
+                        <header class="modal-header"><span id="reportTitle">地市反馈填报</span>
+                            <button class="modal-close" type="button" data-close="reportModal" aria-label="关闭"><i class="fa-solid fa-xmark"></i></button></header>
+                        <div class="modal-body">
+                            <div class="report-split">
+                                <div class="report-main">
+                                    <div id="reportClueInfo" style="margin-top:14px"></div>
+                                    <div class="form-grid" style="margin-top:14px">
+                                <div class="form-item col-4" id="reportMeasuresItem" style="display:none">
+                                    <label class="form-label">整改措施<i class="req">*</i></label>
+                                    <textarea class="form-textarea" id="reportMeasures" rows="3" placeholder="请说明已采取及计划采取的整改措施"></textarea>
+                                </div>
+                                <div class="form-item col-4" id="reportPlanItem" style="display:none">
+                                    <label class="form-label">整改方案<i class="req">*</i></label>
+                                    <textarea class="form-textarea" id="reportPlan" rows="3" placeholder="请说明整改目标、工程安排、时间节点及责任分工"></textarea>
+                                </div>
+                                <div class="form-item col-4">
+                                    <label class="form-label">是否完成整改<i class="req">*</i></label>
+                                    <div class="radio-row">
+                                        <label><input type="radio" name="reportDone" value="no" checked>整改中</label>
+                                        <label><input type="radio" name="reportDone" value="yes">已完成整改（办结）</label>
+                                    </div>
+                                </div>
+                                <div class="form-item col-4" id="reportSourceItem" style="display:none">
+                                    <label class="form-label">溯源排查结果<i class="req">*</i></label>
+                                    <textarea class="form-textarea" id="reportSource" rows="3" placeholder="请说明问题成因溯源分析、影响范围及责任主体等排查结果"></textarea>
+                                </div>
+                                <div class="form-item col-4">
+                                    <label class="form-label" id="reportNoteLabel">立行立改完成情况<i class="req">*</i></label>
+                                    <textarea class="form-textarea" id="reportNote" rows="3" placeholder="请说明立行立改措施及完成情况"></textarea>
+                                </div>
+                                <div class="form-item col-2">
+                                    <label class="form-label">整改前照片（可上传多张）</label>
+                                    <div class="upload-box" id="reportBeforeUpload">
+                                        <div class="upload-add" data-add="photo"><i class="fa-solid fa-camera"></i>点击上传</div>
+                                    </div>
+                                </div>
+                                <div class="form-item col-2">
+                                    <label class="form-label">整改后照片（可上传多张）</label>
+                                    <div class="upload-box" id="afterUpload">
+                                        <div class="upload-add" data-add="photo"><i class="fa-solid fa-camera"></i>点击上传</div>
+                                    </div>
+                                </div>
+                                <div class="form-item col-4">
+                                    <label class="form-label">佐证材料（可上传多份）</label>
+                                    <div class="upload-box" id="reportFileUpload">
+                                        <div class="upload-add" data-add="file"><i class="fa-solid fa-file-arrow-up"></i>点击上传</div>
+                                    </div>
+                                </div>
+                                    </div>
+                                </div>
+                                <aside class="map-panel report-map">
+                                    <div class="map-head"><i class="fa-solid fa-location-dot"></i><strong>问题点位（省级发布）</strong><span class="map-mode view">在线GIS</span></div>
+                                    <div class="gis-map" id="reportGisMap"></div>
+                                    <div class="map-coord" id="reportGisCoord"></div>
+                                    <div class="map-legend"><span><i class="dot red"></i>省发布问题点位</span></div>
+                                </aside>
+                            </div>
+                        </div>
+                        <footer class="modal-footer">
+                            <button class="btn ghost" data-close="reportModal" type="button">取 消</button>
+                            <button class="btn primary" id="reportSave" type="button"><i class="fa-solid fa-paper-plane"></i>提交填报</button>
+                        </footer>
+                    </section>
+                </div>
+
+                <!-- 延期说明弹窗 -->
+                <div class="modal-backdrop" id="deferNoteModal" role="dialog" aria-modal="true" aria-labelledby="deferNoteTitle">
+                    <section class="modal w-md">
+                        <header class="modal-header"><span id="deferNoteTitle">延期说明</span>
+                            <button class="modal-close" type="button" data-close="deferNoteModal" aria-label="关闭"><i class="fa-solid fa-xmark"></i></button></header>
+                        <div class="modal-body" id="deferNoteBody"></div>
+                        <footer class="modal-footer">
+                            <button class="btn primary" data-close="deferNoteModal" type="button">关 闭</button>
+                        </footer>
+                    </section>
+                </div>
+
+                <!-- 详情弹窗 -->
+                <div class="modal-backdrop" id="detailModal" role="dialog" aria-modal="true" aria-labelledby="detailHeadTitle">
+                    <section class="modal w-xl detail-modal">
+                        <header class="modal-header">
+                            <div class="head-title">
+                                <i class="fa-regular fa-file-lines" style="color:#2e7dec"></i>
+                                <span id="detailHeadTitle">问题线索详情</span>
+                                <div class="head-tags" id="detailHeadTags"></div>
+                            </div>
+                            <div style="display:flex;align-items:center;gap:10px">
+                                <div class="detail-actions" id="detailActions"></div>
+                                <button class="modal-close" type="button" data-close="detailModal" aria-label="关闭"><i class="fa-solid fa-xmark"></i></button>
+                            </div>
+                        </header>
+                        <div class="detail-body">
+                            <nav class="d-tabs" id="detailTabs">
+                                <button class="d-tab active" type="button" data-pane="paneInfo"><i class="fa-solid fa-circle-info" style="margin-right:7px"></i>问题信息</button>
+                                <button class="d-tab" type="button" data-pane="paneReport"><i class="fa-solid fa-comment-dots" style="margin-right:7px"></i>地市反馈</button>
+                                <button class="d-tab" type="button" data-pane="paneDefer"><i class="fa-solid fa-hourglass-half" style="margin-right:7px"></i>延期记录</button>
+                            </nav>
+                            <section class="d-pane d-pane-split" id="paneInfo" style="padding-top:14px">
+                                <div class="pane-main" id="paneInfoMain"></div>
+                                <aside class="map-panel pane-map">
+                                    <div class="map-head"><i class="fa-solid fa-location-dot"></i><strong>问题位置</strong><span class="map-mode view">查看模式</span></div>
+                                    <div class="map-svg-wrap" id="detailMapWrap"></div>
+                                    <div class="map-coord" id="detailCoord"></div>
+                                    <div class="map-legend">
+                                        <span><i class="dot red"></i>问题点位</span>
+                                    </div>
+                                </aside>
+                            </section>
+                            <section class="d-pane" id="paneReport" style="padding-top:14px;display:none"></section>
+                            <section class="d-pane" id="paneDefer" style="padding-top:14px;display:none"></section>
+                        </div>
+                    </section>
+                </div>
+
+                <div class="toast" id="toast" role="status"></div>
+            </main>
+        </div>
+    </div>
+</div>
+
+<script src="assets/clue-data.js"></script>
+<script src="assets/clue-map.js"></script>
+<script src="assets/clue-shell.js"></script>
+<script src="assets/clue-main.js"></script>
+</body>
+</html>

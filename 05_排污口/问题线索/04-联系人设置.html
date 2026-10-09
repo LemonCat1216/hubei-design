@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>联系人设置 - 湖北省排污口综合监管系统</title>
+    <link rel="icon" href="data:,">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="assets/clue-common.css">
+    <link rel="stylesheet" href="assets/clue-contact.css">
+</head>
+<body>
+<div class="viewport">
+    <div class="app-shell" id="appShell">
+        <header class="topbar">
+            <div class="brand">
+                <span class="brand-mark" aria-hidden="true">鄂</span>
+                <span>湖北省排污口综合监管系统</span>
+            </div>
+            <nav class="top-nav" aria-label="主导航">
+                <button type="button" data-nav="首页"><i class="fa-solid fa-house"></i><span>首页</span></button>
+                <button type="button" data-nav="一张图"><i class="fa-regular fa-image"></i><span>一张图</span></button>
+                <button type="button" class="active" data-nav="业务管理"><i class="fa-regular fa-clipboard"></i><span>业务管理</span></button>
+                <button type="button" data-nav="一口一档"><i class="fa-regular fa-file-lines"></i><span>一口一档</span></button>
+                <button type="button" data-nav="水污染源"><i class="fa-solid fa-list-check"></i><span>水污染源</span></button>
+                <button type="button" data-nav="综合统计"><i class="fa-solid fa-gavel"></i><span>综合统计</span></button>
+            </nav>
+            <div class="user"><i class="fa-regular fa-user"></i><span>王羽鹏</span></div>
+        </header>
+
+        <div class="workspace">
+            <aside class="sidebar" aria-label="业务菜单">
+                <div class="side-group collapsed">
+                    <button type="button" class="side-item side-parent">
+                        <i class="fa-solid fa-sliders side-icon"></i><span>排污口管理</span><i class="fa-solid fa-chevron-up chevron"></i>
+                    </button>
+                    <div class="side-children"></div>
+                </div>
+                <div class="side-group">
+                    <button type="button" class="side-item side-parent">
+                        <i class="fa-solid fa-sliders side-icon"></i><span>排污口监管</span><i class="fa-solid fa-chevron-up chevron"></i>
+                    </button>
+                    <div class="side-children">
+                        <button type="button" class="side-item side-child"><i class="fa-regular fa-circle-dot side-icon"></i><span>日常监管</span></button>
+                        <button type="button" class="side-item side-child"><i class="fa-regular fa-chart-bar side-icon"></i><span>在线监控</span></button>
+                        <button type="button" class="side-item side-child"><i class="fa-regular fa-flag side-icon"></i><span>盯办帮扶</span></button>
+                        <button type="button" class="side-item side-child"><i class="fa-regular fa-circle-info side-icon"></i><span>日常监管监测预警</span></button>
+                        <div class="side-child-branch">
+                            <button type="button" class="side-item side-child branch-toggle on">
+                                <i class="fa-regular fa-circle-pause side-icon"></i><span>问题线索</span><i class="fa-solid fa-chevron-up chevron"></i>
+                            </button>
+                            <div class="side-grandchildren">
+                                <button type="button" class="side-item side-grandchild" data-page="clue"><i class="fa-regular fa-file-lines side-icon"></i><span>问题线索</span></button>
+                                <button type="button" class="side-item side-grandchild" data-page="defer"><i class="fa-solid fa-hourglass-half side-icon"></i><span>延期申请</span></button>
+                                <button type="button" class="side-item side-grandchild" data-page="sms"><i class="fa-regular fa-comment-dots side-icon"></i><span>短信通知记录</span></button>
+                                <button type="button" class="side-item side-grandchild active" data-page="contact"><i class="fa-solid fa-address-book side-icon"></i><span>联系人设置</span></button>
+                            </div>
+                        </div>
+                        <button type="button" class="side-item side-child"><i class="fa-regular fa-bell side-icon"></i><span>水功能区纳污统计</span></button>
+                    </div>
+                </div>
+                <div class="side-group collapsed">
+                    <button type="button" class="side-item side-parent">
+                        <i class="fa-solid fa-sliders side-icon"></i><span>排污口设置审批</span><i class="fa-solid fa-chevron-up chevron"></i>
+                    </button>
+                    <div class="side-children"></div>
+                </div>
+            </aside>
+
+            <main class="main-panel">
+                <div class="toolbar-row">
+                    <div class="seg" id="stateSeg">
+                        <button type="button" class="active" data-state="all">全部地市</button>
+                        <button type="button" data-state="set">已设置</button>
+                        <button type="button" data-state="unset">未设置</button>
+                    </div>
+                    <span class="spacer"></span>
+                    <button class="filter-btn bell" id="checkAllBtn" type="button"><i class="fa-solid fa-shield-halved"></i><span>一键校验</span></button>
+                    <button class="filter-btn reset" id="directoryBtn" type="button"><i class="fa-solid fa-users-viewfinder"></i><span>系统人员库</span></button>
+                    <button class="filter-btn export" id="exportBtn" type="button"><i class="fa-regular fa-file-lines"></i><span>数据导出</span></button>
+                </div>
+
+                <div class="contact-layout">
+                    <aside class="city-panel" aria-label="地市列表">
+                        <div class="panel-head">
+                            <i class="fa-solid fa-list-ul"></i><span>地市列表</span>
+                            <span class="panel-count" id="panelCount">已设置 0 / 17</span>
+                        </div>
+                        <div class="city-list" id="cityList"></div>
+                    </aside>
+
+                    <section class="detail-panel" aria-label="联系人设置">
+                        <div class="detail-head">
+                            <span class="dh-city" id="detailCity">武汉市</span>
+                            <span class="cc-pill empty" id="detailPill">未设置</span>
+                            <span class="dh-time" id="detailTime">尚未设置</span>
+                        </div>
+                        <div class="detail-body" id="detailBody"></div>
+                        <div class="detail-foot">
+                            <span class="foot-hint">保存时自动校验系统人员手机号是否与系统用户相匹配，系统中不存在此人或信息不一致的不可设置；每个地市仅保留 1 名联系人。</span>
+                            <button class="btn ghost" id="resetBtn" type="button"><i class="fa-solid fa-rotate-left"></i>重 置</button>
+                            <button class="btn primary" id="saveBtn" type="button"><i class="fa-solid fa-floppy-disk"></i>保存联系人</button>
+                        </div>
+                    </section>
+                </div>
+
+                <!-- 系统人员库弹窗 -->
+                <div class="modal-backdrop" id="dirModal" role="dialog" aria-modal="true" aria-labelledby="dirTitle">
+                    <section class="modal w-md">
+                        <header class="modal-header">
+                            <div class="head-title"><span id="dirTitle">系统人员库</span></div>
+                            <button class="modal-close" type="button" data-close="dirModal" aria-label="关闭"><i class="fa-solid fa-xmark"></i></button>
+                        </header>
+                        <div class="modal-body">
+                            <div class="notice-bar" style="margin-top:0"><i class="fa-solid fa-circle-info"></i>
+                                <span>仅可从系统人员库中选择人员作为地市联系人；未登记人员须先在系统完成用户注册，方可被设置。</span>
+                            </div>
+                            <div class="dir-search" style="margin-top:14px">
+                                <label style="flex:1"><input class="kv-input" id="dirSearch" type="search" placeholder="按姓名 / 手机号 / 单位检索"></label>
+                                <span style="color:#8290a4;font-size:14px" id="dirCount"></span>
+                            </div>
+                            <div class="dir-scroll">
+                                <table class="mini-table">
+                                    <thead>
+                                    <tr>
+                                        <th style="width:22%">姓名</th>
+                                        <th style="width:26%" class="mono">手机号</th>
+                                        <th style="width:30%">所属单位</th>
+                                        <th style="width:22%">人员类型</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody id="dirBody"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <footer class="modal-footer">
+                            <span class="foot-hint">人员库共维护 <strong id="dirTotal">0</strong> 人，含省级人员与17个地市联系人。</span>
+                            <button class="btn primary" data-close="dirModal" type="button">关 闭</button>
+                        </footer>
+                    </section>
+                </div>
+
+                <!-- 一键校验报告弹窗 -->
+                <div class="modal-backdrop" id="reportModal" role="dialog" aria-modal="true" aria-labelledby="reportTitle">
+                    <section class="modal w-md">
+                        <header class="modal-header">
+                            <div class="head-title"><span id="reportTitle">联系人校验报告</span></div>
+                            <button class="modal-close" type="button" data-close="reportModal" aria-label="关闭"><i class="fa-solid fa-xmark"></i></button>
+                        </header>
+                        <div class="modal-body">
+                            <div class="report-tip"><i class="fa-solid fa-shield-halved"></i><span id="reportTip"></span></div>
+                            <div class="report-grid" id="reportGrid"></div>
+                        </div>
+                        <footer class="modal-footer">
+                            <span class="foot-hint">校验不通过的地市，请联系人员先行在系统完成登记。</span>
+                            <button class="btn primary" data-close="reportModal" type="button">知道了</button>
+                        </footer>
+                    </section>
+                </div>
+
+                <div class="toast" id="toast" role="status"></div>
+            </main>
+        </div>
+    </div>
+</div>
+
+<script src="assets/clue-data.js"></script>
+<script src="assets/clue-shell.js"></script>
+<script src="assets/clue-contact.js"></script>
+</body>
+</html>

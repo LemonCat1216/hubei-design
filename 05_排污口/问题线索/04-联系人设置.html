@@ -97,7 +97,7 @@
                         </div>
                         <div class="detail-body" id="detailBody"></div>
                         <div class="detail-foot">
-                            <span class="foot-hint">保存时自动校验系统人员手机号是否与系统用户相匹配，系统中不存在此人或信息不一致的不可设置；每个地市仅保留 1 名联系人。</span>
+                            <span class="foot-hint">联系人须从系统人员库中选择：点击「选择联系人」，输入人员姓名搜索并点击即可返回；每个地市仅保留 1 名联系人，保存后自动生效。</span>
                             <button class="btn ghost" id="resetBtn" type="button"><i class="fa-solid fa-rotate-left"></i>重 置</button>
                             <button class="btn primary" id="saveBtn" type="button"><i class="fa-solid fa-floppy-disk"></i>保存联系人</button>
                         </div>
@@ -136,6 +136,44 @@
                         <footer class="modal-footer">
                             <span class="foot-hint">人员库共维护 <strong id="dirTotal">0</strong> 人，含省级人员与17个地市联系人。</span>
                             <button class="btn primary" data-close="dirModal" type="button">关 闭</button>
+                        </footer>
+                    </section>
+                </div>
+
+                <!-- 选择联系人弹窗 -->
+                <div class="modal-backdrop" id="pickerModal" role="dialog" aria-modal="true" aria-labelledby="pickTitle">
+                    <section class="modal w-md">
+                        <header class="modal-header">
+                            <div class="head-title"><span id="pickTitle">选择联系人</span></div>
+                            <button class="modal-close" type="button" data-close="pickerModal" aria-label="关闭"><i class="fa-solid fa-xmark"></i></button>
+                        </header>
+                        <div class="modal-body">
+                            <div class="notice-bar" style="margin-top:0"><i class="fa-solid fa-circle-info"></i>
+                                <span>输入人员姓名或手机号并点击「搜索」，再点击列表中的人员，即可作为「<strong id="pickCity">—</strong>」联系人返回并填充表单。</span>
+                            </div>
+                            <div class="dir-search" style="margin-top:14px">
+                                <label style="flex:1"><input class="kv-input" id="pickSearch" type="search" placeholder="请输入人员姓名或手机号" autocomplete="off"></label>
+                                <button class="btn primary pick-search-btn" id="pickSearchBtn" type="button"><i class="fa-solid fa-magnifying-glass"></i>搜 索</button>
+                                <span style="color:#8290a4;font-size:14px" id="pickCount"></span>
+                            </div>
+                            <div class="dir-scroll">
+                                <table class="mini-table pick-table">
+                                    <thead>
+                                    <tr>
+                                        <th style="width:18%">姓名</th>
+                                        <th style="width:22%" class="mono">手机号</th>
+                                        <th style="width:30%">所属单位</th>
+                                        <th style="width:18%">人员类型</th>
+                                        <th style="width:12%">操作</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody id="pickBody"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <footer class="modal-footer">
+                            <span class="foot-hint">系统人员库共维护 <strong id="pickTotal">0</strong> 人，点击列表中的联系人即可返回。</span>
+                            <button class="btn ghost" data-close="pickerModal" type="button">取 消</button>
                         </footer>
                     </section>
                 </div>

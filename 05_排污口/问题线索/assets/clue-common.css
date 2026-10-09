@@ -729,6 +729,9 @@ tbody tr.row-near td .muted-dash { color: #b8860b; }
 
 .modal-backdrop.open { display: flex; }
 
+/* 填报弹窗需浮于详情弹窗之上（提交后原地刷新详情页签） */
+#reportModal { z-index: 25; }
+
 .modal {
     width: 760px;
     max-height: 1010px;

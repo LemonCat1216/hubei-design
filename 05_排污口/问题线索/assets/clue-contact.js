@@ -44,17 +44,17 @@
         const personPhone = String(phone || "").replace(/[\s-]/g, "");
 
         if (!personName && !personPhone) {
-            return { key: "idle", cls: "", ok: false, text: "请输入联系人姓名与手机号，系统将自动校验系统中是否存在此人。" };
+            return { key: "idle", cls: "", ok: false, text: "尚未选择联系人，请点击「选择联系人」从系统人员库中检索并选择。" };
         }
-        if (!personName) return { key: "idle", cls: "warn", ok: false, text: "请输入联系人姓名。" };
-        if (!personPhone) return { key: "idle", cls: "warn", ok: false, text: "请输入联系人手机号。" };
+        if (!personName) return { key: "idle", cls: "warn", ok: false, text: "尚未选择联系人。" };
+        if (!personPhone) return { key: "idle", cls: "warn", ok: false, text: "所选联系人缺少手机号，请重新选择。" };
         if (!/^1\d{10}$/.test(personPhone)) {
             return { key: "bad", cls: "bad", ok: false, text: "手机号格式不正确，应为 11 位手机号码。" };
         }
 
         const matched = staffByName(personName);
         if (!matched.length) {
-            return { key: "bad", cls: "bad", ok: false, text: `系统中不存在此人（${personName}），不允许设置，请先完成用户注册。` };
+            return { key: "bad", cls: "bad", ok: false, text: `系统中不存在此人（${personName}），不允许设置，请重新选择。` };
         }
 
         const staff = matched[0];
@@ -101,10 +101,38 @@
         renderDetail();
     }
 
-    /* ---------- 右栏：联系人表单 ---------- */
+    /* ---------- 右栏：联系人表单（从系统人员库中选择） ---------- */
+    function pickedOf(city) {
+        const draft = draftOf(city);
+        if (!draft || !draft.name) return null;
+        const matched = staffByName(draft.name);
+        return matched.find(item => item.phone === draft.phone) || matched[0] || null;
+    }
+
+    function pickFieldHtml(staff) {
+        if (!staff) {
+            return `<button type="button" class="pick-field empty" id="pickField">
+                    <span class="pf-avatar"><i class="fa-solid fa-user-plus"></i></span>
+                    <span class="pf-main">
+                        <span class="pf-name">点击选择联系人</span>
+                        <span class="pf-sub">从系统人员库中检索并选择联系人</span>
+                    </span>
+                    <span class="pf-action">选择<i class="fa-solid fa-chevron-right"></i></span>
+                </button>`;
+        }
+        return `<button type="button" class="pick-field" id="pickField">
+                <span class="pf-avatar">${esc(staff.name.slice(0, 1))}</span>
+                <span class="pf-main">
+                    <span class="pf-name">${esc(staff.name)}</span>
+                    <span class="pf-sub">${esc(staff.dept)} · ${esc(staff.phone)}</span>
+                </span>
+                <span class="pf-action">更换<i class="fa-solid fa-chevron-right"></i></span>
+            </button>`;
+    }
+
     function renderDetail() {
         const city = state.city;
-        const draft = draftOf(city);
+        const staff = pickedOf(city);
         document.getElementById("detailCity").textContent = city;
         document.getElementById("detailBody").innerHTML = `
             <table class="kv-table">
@@ -114,30 +142,20 @@
                     <td><span class="kv-static" id="kvCityName">${esc(city)}</span></td>
                 </tr>
                 <tr>
-                    <th>联系人姓名<i class="req">*</i></th>
-                    <td>
-                        <div class="input-wrap">
-                            <input class="kv-input" id="ccName" type="text" maxlength="20" autocomplete="off" placeholder="请输入联系人姓名" value="${esc(draft.name)}">
-                            <i class="kv-state" id="nameState"></i>
-                        </div>
-                    </td>
+                    <th>选择联系人<i class="req">*</i></th>
+                    <td>${pickFieldHtml(staff)}</td>
                 </tr>
                 <tr>
-                    <th>手机号码<i class="req">*</i></th>
-                    <td>
-                        <div class="input-wrap">
-                            <input class="kv-input mono" id="ccPhone" type="text" maxlength="11" autocomplete="off" placeholder="请输入11位手机号码" value="${esc(draft.phone)}">
-                            <i class="kv-state" id="phoneState"></i>
-                        </div>
-                    </td>
+                    <th>手机号码</th>
+                    <td><span class="kv-static mono" id="kvPhone">${staff ? esc(staff.phone) : "—"}</span></td>
+                </tr>
+                <tr>
+                    <th>所属单位</th>
+                    <td><span class="kv-static" id="kvDept">${staff ? esc(staff.dept) : "—"}</span></td>
                 </tr>
                 <tr>
                     <th>校验结果</th>
                     <td><div class="kv-msg" id="kvMsg"></div></td>
-                </tr>
-                <tr>
-                    <th>系统登记信息</th>
-                    <td><div class="kv-staff" id="kvStaff"></div></td>
                 </tr>
                 <tr>
                     <th>最近更新时间</th>
@@ -148,49 +166,32 @@
         updateDetailUI();
     }
 
-    function setFieldState(el, key) {
-        if (key === "ok") {
-            el.className = "kv-state ok fa-solid fa-circle-check";
-        } else if (key === "bad") {
-            el.className = "kv-state bad fa-solid fa-circle-exclamation";
-        } else {
-            el.className = "kv-state fa-solid";
-        }
-    }
-
     function updateDetailUI() {
         const city = state.city;
-        const nameEl = document.getElementById("ccName");
-        const phoneEl = document.getElementById("ccPhone");
-        if (!nameEl || !phoneEl) return;
+        const draft = draftOf(city);
+        const msg = document.getElementById("kvMsg");
+        if (!msg) return;
 
-        const personName = nameEl.value.trim();
-        const personPhone = phoneEl.value.replace(/[\s-]/g, "");
+        const personName = String(draft.name || "").trim();
+        const personPhone = String(draft.phone || "").replace(/[\s-]/g, "");
         const v = validate(personName, personPhone, city);
         vstateMap[city] = v;
 
-        const matched = personName ? staffByName(personName)[0] : null;
-        const nameOk = !!matched;
-        const phoneOk = !!(matched && matched.phone === personPhone);
-        setFieldState(document.getElementById("nameState"), personName ? (nameOk ? "ok" : "bad") : "");
-        setFieldState(document.getElementById("phoneState"), personPhone ? (phoneOk ? "ok" : "bad") : "");
-        document.getElementById("ccName").classList.toggle("state-ok", !!personName && nameOk);
-        document.getElementById("ccName").classList.toggle("state-bad", !!personName && !nameOk);
-        document.getElementById("ccPhone").classList.toggle("state-ok", !!personPhone && phoneOk);
-        document.getElementById("ccPhone").classList.toggle("state-bad", !!personPhone && !phoneOk);
+        const matched = pickedOf(city);
 
         const icon = v.ok ? "fa-circle-check" : (v.key === "bad" ? "fa-circle-exclamation" : "fa-shield-halved");
-        const msg = document.getElementById("kvMsg");
         msg.className = `kv-msg ${v.cls}`;
         msg.innerHTML = `<i class="fa-solid ${icon}"></i><span>${esc(v.text)}</span>`;
 
-        const staffBox = document.getElementById("kvStaff");
-        if (matched) {
-            staffBox.innerHTML = `<span class="kv-static">${esc(matched.name)}</span>
-                <span class="kv-tag">${esc(matched.dept)}</span>
-                <span class="kv-tag ${phoneOk ? "ok" : "bad"}">${phoneOk ? "手机号一致" : `登记手机号 ${esc(maskPhone(matched.phone))}`}</span>`;
-        } else {
-            staffBox.innerHTML = `<span class="kv-static muted">${personName ? "系统中未查询到该人员" : "输入姓名后自动带出系统登记信息"}</span>`;
+        const kvPhone = document.getElementById("kvPhone");
+        const kvDept = document.getElementById("kvDept");
+        if (kvPhone) {
+            kvPhone.textContent = matched ? matched.phone : "—";
+            kvPhone.classList.toggle("muted", !matched);
+        }
+        if (kvDept) {
+            kvDept.textContent = matched ? matched.dept : "—";
+            kvDept.classList.toggle("muted", !matched);
         }
 
         const contact = contactByCity(city);
@@ -208,7 +209,8 @@
         }
 
         document.getElementById("detailTime").textContent = saved ? `更新 ${contact.updateTime}` : "尚未设置";
-        document.getElementById("kvTime").textContent = saved ? contact.updateTime : "尚未保存";
+        const kvTime = document.getElementById("kvTime");
+        if (kvTime) kvTime.textContent = saved ? contact.updateTime : "尚未保存";
         const saveBtn = document.getElementById("saveBtn");
         saveBtn.disabled = !v.ok;
         saveBtn.innerHTML = `<i class="fa-solid fa-floppy-disk"></i>${isChanged(city) && saved ? "保存修改" : "保存联系人"}`;
@@ -223,36 +225,86 @@
         renderDetail();
     });
 
-    let timer;
-    document.getElementById("detailBody").addEventListener("input", event => {
-        const input = event.target.closest(".kv-input");
-        if (!input) return;
-        const field = input.id === "ccPhone" ? "phone" : "name";
-        let value = input.value;
-        if (field === "phone") {
-            value = value.replace(/[^\d]/g, "").slice(0, 11);
-            if (value !== input.value) input.value = value;
-        }
-        draftOf(state.city)[field] = value;
-        document.getElementById("kvMsg").className = "kv-msg checking";
-        document.getElementById("kvMsg").innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i><span>正在校验系统人员信息…</span>`;
-        clearTimeout(timer);
-        timer = setTimeout(updateDetailUI, 340);
+    document.getElementById("detailBody").addEventListener("click", event => {
+        if (event.target.closest("#pickField")) openPicker();
     });
 
-    document.getElementById("detailBody").addEventListener("focusout", event => {
-        if (event.target.closest(".kv-input")) {
-            clearTimeout(timer);
-            updateDetailUI();
+    /* ---------- 选择联系人弹窗 ---------- */
+    function renderPickerPlaceholder(text) {
+        document.getElementById("pickBody").innerHTML =
+            `<tr class="pick-empty"><td colspan="5">${esc(text || "请输入人员姓名或手机号，点击「搜索」查询系统人员")}</td></tr>`;
+        document.getElementById("pickCount").textContent = "";
+    }
+
+    function renderPickerList(kw) {
+        const key = String(kw || "").trim().toLowerCase();
+        const rows = STAFF_DIRECTORY.filter(staff =>
+            !key || `${staff.name} ${staff.phone} ${staff.dept}`.toLowerCase().indexOf(key) >= 0);
+        const current = draftOf(state.city);
+        document.getElementById("pickBody").innerHTML = rows.length
+            ? rows.map(staff => {
+                const isCurrent = current.name === staff.name && current.phone === staff.phone;
+                return `<tr class="pick-row ${isCurrent ? "is-current" : ""}" data-name="${esc(staff.name)}" data-phone="${esc(staff.phone)}">
+                        <td>${esc(staff.name)}</td>
+                        <td class="mono">${esc(staff.phone)}</td>
+                        <td>${esc(staff.dept)}</td>
+                        <td><span class="dir-city">${staff.city === "省级" ? "省级人员" : "地市联系人"}</span></td>
+                        <td class="center">${isCurrent ? '<span class="pick-flag">当前</span>' : '<span class="pick-op">选择</span>'}</td>
+                    </tr>`;
+            }).join("")
+            : `<tr class="pick-empty"><td colspan="5">未查询到符合条件的人员</td></tr>`;
+        document.getElementById("pickCount").textContent = `匹配 ${rows.length} 人`;
+    }
+
+    function doPickerSearch() {
+        const kw = document.getElementById("pickSearch").value.trim();
+        if (!kw) {
+            renderPickerPlaceholder("请输入人员姓名或手机号后再点击「搜索」");
+            return;
         }
+        renderPickerList(kw);
+    }
+
+    function openPicker() {
+        document.getElementById("pickCity").textContent = state.city;
+        document.getElementById("pickTotal").textContent = STAFF_DIRECTORY.length;
+        document.getElementById("pickSearch").value = "";
+        renderPickerPlaceholder();
+        window.ClueUI.openModal("pickerModal");
+        setTimeout(() => document.getElementById("pickSearch").focus(), 30);
+    }
+
+    function pickContact(name, phone) {
+        const draft = draftOf(state.city);
+        draft.name = name;
+        draft.phone = phone;
+        window.ClueUI.closeModal("pickerModal");
+        renderDetail();
+        showToast(`已选择「${state.city}」联系人：${name}（${maskPhone(phone)}）`);
+    }
+
+    document.getElementById("pickSearchBtn").addEventListener("click", doPickerSearch);
+
+    document.getElementById("pickSearch").addEventListener("keydown", event => {
+        if (event.key === "Enter") {
+            event.preventDefault();
+            doPickerSearch();
+        }
+    });
+
+    document.getElementById("pickBody").addEventListener("click", event => {
+        const row = event.target.closest(".pick-row");
+        if (!row) return;
+        pickContact(row.dataset.name, row.dataset.phone);
     });
 
     function saveContact() {
         const city = state.city;
-        const name = document.getElementById("ccName").value.trim();
-        const phone = document.getElementById("ccPhone").value.replace(/[\s-]/g, "").slice(0, 11);
-        draftOf(city).name = name;
-        draftOf(city).phone = phone;
+        const draft = draftOf(city);
+        const name = String(draft.name || "").trim();
+        const phone = String(draft.phone || "").replace(/[\s-]/g, "").slice(0, 11);
+        draft.name = name;
+        draft.phone = phone;
 
         const v = validate(name, phone, city);
         vstateMap[city] = v;
@@ -286,7 +338,7 @@
         draftOf(city).name = contact ? contact.name : "";
         draftOf(city).phone = contact ? contact.phone : "";
         renderDetail();
-        showToast(contact && contact.name ? `已还原「${city}」已保存的联系人信息` : `已清空「${city}」输入内容`);
+        showToast(contact && contact.name ? `已还原「${city}」已保存的联系人信息` : `已清空「${city}」联系人选择`);
     });
 
     document.getElementById("stateSeg").addEventListener("click", event => {

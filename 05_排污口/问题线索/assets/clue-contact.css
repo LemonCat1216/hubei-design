@@ -335,3 +335,99 @@
 .report-item.empty .ri-text { color: #b8791c; }
 .report-item.bad { border-color: #f6dcdb; background: #fffbfb; }
 .report-item.bad .ri-text { color: #c8403b; }
+
+/* ===== 右栏：联系人选择器（选择代替手工输入） ===== */
+.pick-field {
+    width: 100%;
+    max-width: 470px;
+    min-height: 62px;
+    padding: 10px 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border: 1px dashed #b9cbe0;
+    border-radius: 8px;
+    background: #fbfdff;
+    color: #3c4b60;
+    text-align: left;
+    cursor: pointer;
+    transition: border-color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
+}
+
+.pick-field:hover {
+    border-color: #77a7fa;
+    background: #f6faff;
+    box-shadow: 0 0 0 2px rgba(52, 121, 236, 0.08);
+}
+
+.pick-field .pf-avatar {
+    flex: 0 0 40px;
+    width: 40px;
+    height: 40px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: #eaf2ff;
+    color: #2f7ce8;
+    font-size: 17px;
+    font-weight: 800;
+}
+
+.pick-field.empty .pf-avatar { background: #f1f4f8; color: #a9b7c9; font-size: 16px; }
+
+.pick-field .pf-main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+
+.pick-field .pf-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: #22344e;
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.pick-field.empty .pf-name { color: #7c8797; }
+
+.pick-field .pf-sub {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: #93a0b1;
+    font-size: 13px;
+}
+
+.pick-field .pf-action {
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    color: #2f7ce8;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.pick-field.empty .pf-action { color: #8b99aa; }
+.pick-field .pf-action i { font-size: 11px; }
+
+/* ===== 弹窗：选择联系人列表 ===== */
+.dir-search .pick-search-btn { height: 36px; padding: 0 18px; font-size: 15px; flex: 0 0 auto; }
+.pick-table tbody tr.pick-row { cursor: pointer; }
+.pick-table tbody tr.pick-row:hover { background: #f0f7ff; }
+.pick-table tbody tr.pick-row:hover td { color: #2f6fd6; }
+.pick-table tbody tr.pick-row.is-current { background: #f0fbf6; }
+.pick-table tbody tr.pick-row.is-current td { color: #1f8f63; }
+.pick-table td.center { text-align: center; }
+
+.pick-flag {
+    display: inline-block;
+    padding: 1px 8px;
+    border-radius: 4px;
+    background: #e7f8f0;
+    color: #1f8f63;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.pick-op { color: #2f7ce8; font-size: 13px; font-weight: 700; }
+.pick-table tr.pick-empty td { padding: 40px 0; text-align: center; color: #a5afbb; }

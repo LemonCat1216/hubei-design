@@ -330,7 +330,7 @@ button, input, select, textarea { font: inherit; }
 
 .summary > article[role="button"] { cursor: pointer; }
 .summary > article[role="button"]:hover { border-color: #c4d0e0; box-shadow: 0 1px 6px rgba(15, 35, 70, 0.06); }
-.summary > article.summary-active { border-color: var(--stat-accent); background: linear-gradient(180deg, #eff7ff 0%, #e3f0ff 100%); }
+.summary > article.summary-active { border-color: var(--stat-accent); }
 
 .stat { padding: 15px 18px 14px; }
 

@@ -4,6 +4,9 @@
 
     const state = { category: "", city: "", dateFrom: "", dateTo: "", kw: "", page: 1, pageSize: 12 };
 
+    /* 通知类型 → 标签配色 */
+    const CATEGORY_TAG = { "问题临期提醒": "wait", "问题过期提醒": "overdue", "延期成功提醒": "pass" };
+
     function filteredRecords() {
         const kw = state.kw.trim().toLowerCase();
         return SMS_RECORDS.filter(record => {
@@ -31,12 +34,13 @@
         const body = document.getElementById("tableBody");
 
         if (!pageRows.length) {
-            body.innerHTML = `<tr class="empty-row"><td colspan="6"><span class="empty-state"><i class="fa-regular fa-comment-dots"></i>暂无符合条件的短信通知记录</span></td></tr>`;
+            body.innerHTML = `<tr class="empty-row"><td colspan="7"><span class="empty-state"><i class="fa-regular fa-comment-dots"></i>暂无符合条件的短信通知记录</span></td></tr>`;
         } else {
             body.innerHTML = pageRows.map((record, index) => {
                 const content = window.smsContentOf(record);
                 return `<tr>
                     <td class="center mono">${(state.page - 1) * state.pageSize + index + 1}</td>
+                    <td class="center"><span class="tag ${CATEGORY_TAG[record.category] || "plain"}">${esc(record.category)}</span></td>
                     <td class="center">${esc(record.receiver)}</td>
                     <td class="center mono">${esc(record.phone)}</td>
                     <td class="center">${esc(record.city)}</td>

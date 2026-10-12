@@ -417,6 +417,10 @@
 .pick-table tbody tr.pick-row:hover td { color: #2f6fd6; }
 .pick-table tbody tr.pick-row.is-current { background: #f0fbf6; }
 .pick-table tbody tr.pick-row.is-current td { color: #1f8f63; }
+.pick-table tbody tr.pick-row.is-picked { background: #eaf3ff; box-shadow: inset 3px 0 0 #2e79ee; }
+.pick-table tbody tr.pick-row.is-picked td { color: #2f6fd6; }
+.pick-table tbody tr.pick-row.is-picked td:first-child { font-weight: 700; }
+.pick-check { margin-left: 4px; color: #2e79ee; font-size: 12px; }
 .pick-table td.center { text-align: center; }
 
 .pick-flag {

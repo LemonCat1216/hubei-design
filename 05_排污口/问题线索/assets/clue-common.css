@@ -319,6 +319,7 @@ button, input, select, textarea { font: inherit; }
     transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
+.summary > article.t-blue   { --stat-accent: #1677ff; --stat-icon-color: #1677ff; }
 .summary > article.t-orange { --stat-accent: #e8871a; --stat-icon-color: #e8871a; }
 .summary > article.t-green  { --stat-accent: #3aa05a; --stat-icon-color: #3aa05a; }
 .summary > article.t-gold   { --stat-accent: #c99a1a; --stat-icon-color: #c99a1a; }
@@ -554,6 +555,23 @@ tbody tr.row-near td .defer-red,
 tbody tr.row-near td .defer-note-link,
 tbody tr.row-near td .overdue-mark,
 tbody tr.row-near td .muted-dash { color: #e8830c; }
+
+/* 行级文字颜色（整行）：待填报=蓝色，已反馈=绿色；过期未反馈 / 即将到期的红、棕黄优先 */
+tbody tr.row-todo td,
+tbody tr.row-todo td .cell-title,
+tbody tr.row-todo td .tag:not(.tag-type),
+tbody tr.row-todo td .defer-red,
+tbody tr.row-todo td .defer-note-link,
+tbody tr.row-todo td .overdue-mark,
+tbody tr.row-todo td .muted-dash { color: #2f7ce8; }
+
+tbody tr.row-done td,
+tbody tr.row-done td .cell-title,
+tbody tr.row-done td .tag:not(.tag-type),
+tbody tr.row-done td .defer-red,
+tbody tr.row-done td .defer-note-link,
+tbody tr.row-done td .overdue-mark,
+tbody tr.row-done td .muted-dash { color: #21a675; }
 
 .cell-title { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #272d36; font-weight: 400; }
 .cell-title.danger { color: #e0342f; }

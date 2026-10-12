@@ -75,7 +75,7 @@
             <main class="main-panel">
                 <form class="filter-bar" id="filterForm">
                     <label class="field select" style="width:140px"><select id="categoryFilter" aria-label="通知类型">
-                        <option value="">通知类型</option><option>到期提醒</option><option>过期提醒</option><option>延期提醒</option>
+                        <option value="">通知类型</option><option>问题临期提醒</option><option>问题过期提醒</option><option>延期成功提醒</option>
                     </select></label>
                     <label class="field select" style="width:134px"><select id="cityFilter" aria-label="所属地市">
                         <option value="">所属地市</option>
@@ -94,13 +94,13 @@
                     <div class="table-scroll">
                         <table aria-label="短信通知记录列表">
                             <colgroup>
-                                <col style="width:6%"><col style="width:12%"><col style="width:14%"><col style="width:12%">
-                                <col style="width:40%"><col style="width:16%">
+                                <col style="width:6%"><col style="width:13%"><col style="width:11%"><col style="width:13%">
+                                <col style="width:11%"><col style="width:31%"><col style="width:15%">
                             </colgroup>
                             <thead>
                             <tr>
-                                <th class="center">序号</th><th class="center">接收人</th><th class="center">联系电话</th>
-                                <th class="center">所属地市</th><th>发送内容</th>
+                                <th class="center">序号</th><th class="center">通知类型</th><th class="center">接收人</th>
+                                <th class="center">联系电话</th><th class="center">所属地市</th><th>发送内容</th>
                                 <th class="center">发送时间</th>
                             </tr>
                             </thead>

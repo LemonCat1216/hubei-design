@@ -109,7 +109,7 @@
                         </header>
                         <div class="modal-body">
                             <div class="notice-bar" style="margin-top:0"><i class="fa-solid fa-circle-info"></i>
-                                <span>输入人员姓名或手机号并点击「搜索」，再点击列表中的人员，即可作为「<strong id="pickCity">—</strong>」联系人返回并填充表单。</span>
+                                <span>输入人员姓名或手机号并点击「搜索」，在列表中选中人员后点击「确定」，即可作为「<strong id="pickCity">—</strong>」联系人返回并填充表单。</span>
                             </div>
                             <div class="dir-search" style="margin-top:14px">
                                 <label style="flex:1"><input class="kv-input" id="pickSearch" type="search" placeholder="请输入人员姓名或手机号" autocomplete="off"></label>
@@ -120,11 +120,10 @@
                                 <table class="mini-table pick-table">
                                     <thead>
                                     <tr>
-                                        <th style="width:18%">姓名</th>
-                                        <th style="width:22%" class="mono">手机号</th>
-                                        <th style="width:30%">所属单位</th>
-                                        <th style="width:18%">人员类型</th>
-                                        <th style="width:12%">操作</th>
+                                        <th style="width:25%">姓名</th>
+                                        <th style="width:30%">登录名</th>
+                                        <th style="width:27%" class="mono">手机号</th>
+                                        <th style="width:18%" class="center">性别</th>
                                     </tr>
                                     </thead>
                                     <tbody id="pickBody"></tbody>
@@ -132,8 +131,9 @@
                             </div>
                         </div>
                         <footer class="modal-footer">
-                            <span class="foot-hint">系统人员库共维护 <strong id="pickTotal">0</strong> 人，点击列表中的联系人即可返回。</span>
+                            <span class="foot-hint">系统人员库共维护 <strong id="pickTotal">0</strong> 人，选中人员后点击「确定」即可返回。</span>
                             <button class="btn ghost" data-close="pickerModal" type="button">取 消</button>
+                            <button class="btn primary" id="pickConfirmBtn" type="button"><i class="fa-solid fa-check"></i>确 定</button>
                         </footer>
                     </section>
                 </div>

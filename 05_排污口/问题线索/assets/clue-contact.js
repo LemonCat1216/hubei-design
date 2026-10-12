@@ -220,6 +220,8 @@
     });
 
     /* ---------- 选择联系人弹窗 ---------- */
+    let pickerPick = null;
+
     function renderPickerPlaceholder(text) {
         document.getElementById("pickBody").innerHTML =
             `<tr class="pick-empty"><td colspan="5">${esc(text || "请输入人员姓名或手机号，点击「搜索」查询系统人员")}</td></tr>`;
@@ -229,20 +231,20 @@
     function renderPickerList(kw) {
         const key = String(kw || "").trim().toLowerCase();
         const rows = STAFF_DIRECTORY.filter(staff =>
-            !key || `${staff.name} ${staff.phone} ${staff.dept}`.toLowerCase().indexOf(key) >= 0);
+            !key || `${staff.name} ${staff.loginName} ${staff.phone} ${staff.dept}`.toLowerCase().indexOf(key) >= 0);
         const current = draftOf(state.city);
         document.getElementById("pickBody").innerHTML = rows.length
             ? rows.map(staff => {
                 const isCurrent = current.name === staff.name && current.phone === staff.phone;
-                return `<tr class="pick-row ${isCurrent ? "is-current" : ""}" data-name="${esc(staff.name)}" data-phone="${esc(staff.phone)}">
-                        <td>${esc(staff.name)}</td>
+                const isPicked = !!pickerPick && pickerPick.name === staff.name && pickerPick.phone === staff.phone;
+                return `<tr class="pick-row${isCurrent ? " is-current" : ""}${isPicked ? " is-picked" : ""}" data-name="${esc(staff.name)}" data-phone="${esc(staff.phone)}">
+                        <td>${esc(staff.name)}${isPicked ? ' <i class="fa-solid fa-circle-check pick-check"></i>' : ""}${isCurrent ? ' <span class="pick-flag">当前</span>' : ""}</td>
+                        <td class="mono">${esc(staff.loginName || "—")}</td>
                         <td class="mono">${esc(staff.phone)}</td>
-                        <td>${esc(staff.dept)}</td>
-                        <td><span class="dir-city">${staff.city === "省级" ? "省级人员" : "地市联系人"}</span></td>
-                        <td class="center">${isCurrent ? '<span class="pick-flag">当前</span>' : '<span class="pick-op">选择</span>'}</td>
+                        <td class="center">${esc(staff.gender || "—")}</td>
                     </tr>`;
             }).join("")
-            : `<tr class="pick-empty"><td colspan="5">未查询到符合条件的人员</td></tr>`;
+            : `<tr class="pick-empty"><td colspan="4">未查询到符合条件的人员</td></tr>`;
         document.getElementById("pickCount").textContent = `匹配 ${rows.length} 人`;
     }
 
@@ -256,6 +258,7 @@
     }
 
     function openPicker() {
+        pickerPick = null;
         document.getElementById("pickCity").textContent = state.city;
         document.getElementById("pickTotal").textContent = STAFF_DIRECTORY.length;
         document.getElementById("pickSearch").value = "";
@@ -268,6 +271,7 @@
         const draft = draftOf(state.city);
         draft.name = name;
         draft.phone = phone;
+        pickerPick = null;
         window.ClueUI.closeModal("pickerModal");
         renderDetail();
         showToast(`已选择「${state.city}」联系人：${name}（${maskPhone(phone)}）`);
@@ -282,10 +286,27 @@
         }
     });
 
+    /* 点击列表：仅选中（高亮），需点击「确定」才返回 */
     document.getElementById("pickBody").addEventListener("click", event => {
         const row = event.target.closest(".pick-row");
         if (!row) return;
-        pickContact(row.dataset.name, row.dataset.phone);
+        pickerPick = { name: row.dataset.name, phone: row.dataset.phone };
+        document.querySelectorAll("#pickBody .pick-row").forEach(el => {
+            const picked = el === row;
+            el.classList.toggle("is-picked", picked);
+            const nameCell = el.querySelector("td");
+            const check = nameCell.querySelector(".pick-check");
+            if (picked && !check) nameCell.insertAdjacentHTML("beforeend", ' <i class="fa-solid fa-circle-check pick-check"></i>');
+            if (!picked && check) check.remove();
+        });
+    });
+
+    document.getElementById("pickConfirmBtn").addEventListener("click", () => {
+        if (!pickerPick) {
+            showToast("请先在列表中选择联系人");
+            return;
+        }
+        pickContact(pickerPick.name, pickerPick.phone);
     });
 
     function saveContact() {

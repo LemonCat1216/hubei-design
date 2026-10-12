@@ -373,38 +373,39 @@ const CLUES = [
 ];
 
 const SMS_RECORDS = [
-    { id: 1, code: "DX20261009-001", receiver: "张建国", phone: "139****2871", city: "荆州市", category: "到期提醒", clueCode: "WT2026-017", sendTime: "2026-10-09 08:30:12", status: "成功" },
-    { id: 2, code: "DX20261009-002", receiver: "李文涛", phone: "137****6512", city: "武汉市", category: "到期提醒", clueCode: "WT2026-018", sendTime: "2026-10-09 08:30:15", status: "成功" },
-    { id: 3, code: "DX20261009-003", receiver: "王海燕", phone: "158****3904", city: "黄石市", category: "到期提醒", clueCode: "WT2026-021", sendTime: "2026-10-09 08:30:18", status: "成功" },
-    { id: 4, code: "DX20261009-004", receiver: "陈志强", phone: "186****2210", city: "鄂州市", category: "到期提醒", clueCode: "WT2026-022", sendTime: "2026-10-09 08:30:21", status: "成功" },
-    { id: 5, code: "DX20261009-005", receiver: "刘芳", phone: "135****7748", city: "潜江市", category: "到期提醒", clueCode: "WT2026-014", sendTime: "2026-10-09 08:30:24", status: "成功" },
-    { id: 6, code: "DX20261008-001", receiver: "张建国", phone: "139****2871", city: "荆州市", category: "到期提醒", clueCode: "WT2026-017", sendTime: "2026-10-08 08:30:11", status: "成功" },
-    { id: 7, code: "DX20261007-001", receiver: "赵鹏飞", phone: "150****9135", city: "随州市", category: "过期提醒", clueCode: "WT2026-016", sendTime: "2026-10-07 09:00:32", status: "成功" },
-    { id: 8, code: "DX20261006-001", receiver: "孙晓梅", phone: "188****4502", city: "十堰市", category: "过期提醒", clueCode: "WT2026-013", sendTime: "2026-10-06 09:00:28", status: "失败" },
-    { id: 9, code: "DX20261006-002", receiver: "孙晓梅", phone: "139****1188", city: "十堰市", category: "过期提醒", clueCode: "WT2026-013", sendTime: "2026-10-06 14:20:09", status: "成功" },
-    { id: 10, code: "DX20261003-001", receiver: "周伟", phone: "136****8867", city: "孝感市", category: "延期提醒", clueCode: "WT2026-009", sendTime: "2026-10-03 15:12:40", status: "成功" },
-    { id: 11, code: "DX20261003-002", receiver: "吴倩", phone: "182****3061", city: "黄冈市", category: "延期提醒", clueCode: "WT2026-005", sendTime: "2026-10-03 15:12:44", status: "成功" },
-    { id: 12, code: "DX20260926-001", receiver: "马俊杰", phone: "159****5177", city: "襄阳市", category: "延期提醒", clueCode: "WT2026-015", sendTime: "2026-09-26 10:05:18", status: "成功" },
-    { id: 13, code: "DX20260925-001", receiver: "郑立新", phone: "133****9246", city: "荆门市", category: "延期提醒", clueCode: "WT2026-010", sendTime: "2026-09-25 10:05:22", status: "成功" },
-    { id: 14, code: "DX20260913-001", receiver: "许云峰", phone: "187****6308", city: "宜昌市", category: "延期提醒", clueCode: "WT2026-003", sendTime: "2026-09-13 09:41:55", status: "成功" },
-    { id: 15, code: "DX20260912-001", receiver: "黄丽", phone: "139****8053", city: "武汉市", category: "到期提醒", clueCode: "WT2026-011", sendTime: "2026-09-12 08:30:16", status: "成功" },
-    { id: 16, code: "DX20260901-001", receiver: "秦浩", phone: "158****2719", city: "咸宁市", category: "到期提醒", clueCode: "WT2026-001", sendTime: "2026-09-01 08:30:20", status: "成功" }
+    { id: 1, code: "DX20261009-001", receiver: "张建国", phone: "139****2871", city: "荆州市", category: "问题临期提醒", clueCode: "WT2026-017", sendTime: "2026-10-09 08:30:12", status: "成功" },
+    { id: 2, code: "DX20261009-002", receiver: "李文涛", phone: "137****6512", city: "武汉市", category: "问题临期提醒", clueCode: "WT2026-018", sendTime: "2026-10-09 08:30:15", status: "成功" },
+    { id: 3, code: "DX20261009-003", receiver: "王海燕", phone: "158****3904", city: "黄石市", category: "问题临期提醒", clueCode: "WT2026-021", sendTime: "2026-10-09 08:30:18", status: "成功" },
+    { id: 4, code: "DX20261009-004", receiver: "陈志强", phone: "186****2210", city: "鄂州市", category: "问题临期提醒", clueCode: "WT2026-022", sendTime: "2026-10-09 08:30:21", status: "成功" },
+    { id: 5, code: "DX20261009-005", receiver: "刘芳", phone: "135****7748", city: "潜江市", category: "问题临期提醒", clueCode: "WT2026-014", sendTime: "2026-10-09 08:30:24", status: "成功" },
+    { id: 6, code: "DX20261008-001", receiver: "张建国", phone: "139****2871", city: "荆州市", category: "问题临期提醒", clueCode: "WT2026-017", sendTime: "2026-10-08 08:30:11", status: "成功" },
+    { id: 7, code: "DX20261007-001", receiver: "赵鹏飞", phone: "150****9135", city: "随州市", category: "问题过期提醒", clueCode: "WT2026-016", sendTime: "2026-10-07 09:00:32", status: "成功" },
+    { id: 8, code: "DX20261006-001", receiver: "孙晓梅", phone: "188****4502", city: "十堰市", category: "问题过期提醒", clueCode: "WT2026-013", sendTime: "2026-10-06 09:00:28", status: "失败" },
+    { id: 9, code: "DX20261006-002", receiver: "孙晓梅", phone: "139****1188", city: "十堰市", category: "问题过期提醒", clueCode: "WT2026-013", sendTime: "2026-10-06 14:20:09", status: "成功" },
+    { id: 10, code: "DX20261003-001", receiver: "周伟", phone: "136****8867", city: "孝感市", category: "延期成功提醒", clueCode: "WT2026-009", sendTime: "2026-10-03 15:12:40", status: "成功" },
+    { id: 11, code: "DX20261003-002", receiver: "吴倩", phone: "182****3061", city: "黄冈市", category: "延期成功提醒", clueCode: "WT2026-005", sendTime: "2026-10-03 15:12:44", status: "成功" },
+    { id: 12, code: "DX20260926-001", receiver: "马俊杰", phone: "159****5177", city: "襄阳市", category: "延期成功提醒", clueCode: "WT2026-015", sendTime: "2026-09-26 10:05:18", status: "成功" },
+    { id: 13, code: "DX20260925-001", receiver: "郑立新", phone: "133****9246", city: "荆门市", category: "延期成功提醒", clueCode: "WT2026-010", sendTime: "2026-09-25 10:05:22", status: "成功" },
+    { id: 14, code: "DX20260913-001", receiver: "许云峰", phone: "187****6308", city: "宜昌市", category: "延期成功提醒", clueCode: "WT2026-003", sendTime: "2026-09-13 09:41:55", status: "成功" },
+    { id: 15, code: "DX20260912-001", receiver: "黄丽", phone: "139****8053", city: "武汉市", category: "问题临期提醒", clueCode: "WT2026-011", sendTime: "2026-09-12 08:30:16", status: "成功" },
+    { id: 16, code: "DX20260901-001", receiver: "秦浩", phone: "158****2719", city: "咸宁市", category: "问题临期提醒", clueCode: "WT2026-001", sendTime: "2026-09-01 08:30:20", status: "成功" }
 ];
 
 function smsContentOf(record) {
     const clue = CLUES.find(item => item.code === record.clueCode);
     const title = clue ? clue.title : "问题线索";
-    if (record.category === "到期提醒") {
+    if (record.category === "问题临期提醒") {
         return `【湖北省排污口综合监管系统】${record.city}生态环境局：贵市问题线索${record.clueCode}《${title}》整改期限即将届满（5日内到期），请及时登录系统查看并填报整改情况，逾期未办结将进行通报。`;
     }
-    if (record.category === "过期提醒") {
+    if (record.category === "问题过期提醒") {
         return `【湖北省排污口综合监管系统】${record.city}生态环境局：贵市问题线索${record.clueCode}《${title}》已超过整改期限仍未办结，请抓紧组织整改，并在系统内说明逾期原因。`;
     }
-    if (record.category === "延期提醒") {
-        if (clue && clue.defer && clue.defer.status === "已通过") {
-            return `【湖北省排污口综合监管系统】${record.city}生态环境局：贵市问题线索${record.clueCode}《${title}》延期申请已审核通过，整改期限调整至${clue.defer.appliedDue}，请登录系统查看详情并按期完成整改。`;
+    if (record.category === "延期成功提醒") {
+        const due = clue && clue.defer ? (clue.defer.appliedDue || clue.extendedDue) : "";
+        if (due) {
+            return `【湖北省排污口综合监管系统】${record.city}生态环境局：贵市问题线索${record.clueCode}《${title}》延期申请已审核通过，整改期限调整至${due}，请登录系统查看详情并按期完成整改。`;
         }
-        return `【湖北省排污口综合监管系统】${record.city}生态环境局：贵市问题线索${record.clueCode}《${title}》延期申请已被驳回，请登录系统查看审核意见并补正材料后重新申请。`;
+        return `【湖北省排污口综合监管系统】${record.city}生态环境局：贵市问题线索${record.clueCode}《${title}》延期申请已审核通过，请登录系统查看详情并按期完成整改。`;
     }
     return `【湖北省排污口综合监管系统】${record.city}生态环境局：贵市问题线索${record.clueCode}《${title}》有新的办理动态，请登录系统查看。`;
 }
@@ -416,28 +417,28 @@ function clueById(id) { return CLUES.find(item => item.id === id); }
 /* ===== 联系人设置（17个地市，每地市仅1名联系人） ===== */
 /* 系统人员库：设置联系人时用于自动校验系统是否存在此人（姓名 + 手机号须与人员库登记一致） */
 const STAFF_DIRECTORY = [
-    { name: "李文涛", phone: "13871520031", dept: "武汉市生态环境局", city: "武汉市" },
-    { name: "王海燕", phone: "15927318804", dept: "黄石市生态环境局", city: "黄石市" },
-    { name: "孙晓梅", phone: "18772091288", dept: "十堰市生态环境局", city: "十堰市" },
-    { name: "许云峰", phone: "13697180333", dept: "宜昌市生态环境局", city: "宜昌市" },
-    { name: "马俊杰", phone: "13907275177", dept: "襄阳市生态环境局", city: "襄阳市" },
-    { name: "陈志强", phone: "13886650210", dept: "鄂州市生态环境局", city: "鄂州市" },
-    { name: "郑立新", phone: "13307249146", dept: "荆门市生态环境局", city: "荆门市" },
-    { name: "周伟", phone: "13607298867", dept: "孝感市生态环境局", city: "孝感市" },
-    { name: "张建国", phone: "13907212871", dept: "荆州市生态环境局", city: "荆州市" },
-    { name: "吴倩", phone: "18707253061", dept: "黄冈市生态环境局", city: "黄冈市" },
-    { name: "黄丽", phone: "18907248053", dept: "咸宁市生态环境局", city: "咸宁市" },
-    { name: "赵鹏飞", phone: "15972759135", dept: "随州市生态环境局", city: "随州市" },
-    { name: "谭明辉", phone: "13872740062", dept: "恩施州生态环境局", city: "恩施州" },
-    { name: "秦浩", phone: "15827912719", dept: "仙桃市生态环境局", city: "仙桃市" },
-    { name: "刘芳", phone: "13507227748", dept: "潜江市生态环境局", city: "潜江市" },
-    { name: "熊志刚", phone: "13986950866", dept: "天门市生态环境局", city: "天门市" },
-    { name: "田爱华", phone: "13451232210", dept: "神农架林区生态环境局", city: "神农架林区" },
-    { name: "王羽鹏", phone: "13707116688", dept: "省生态环境厅水生态环境处", city: "省级" },
-    { name: "郭建军", phone: "13871209805", dept: "省生态环境厅水生态环境处", city: "省级" },
-    { name: "何晓东", phone: "15623019866", dept: "省环境执法监督局", city: "省级" },
-    { name: "李姝", phone: "13026185633", dept: "省生态环境厅监测处", city: "省级" },
-    { name: "邓志远", phone: "17762513048", dept: "省生态环境厅信息中心", city: "省级" }
+    { name: "李文涛", loginName: "liwentao", phone: "13871520031", gender: "男", dept: "武汉市生态环境局", city: "武汉市" },
+    { name: "王海燕", loginName: "wanghaiyan", phone: "15927318804", gender: "女", dept: "黄石市生态环境局", city: "黄石市" },
+    { name: "孙晓梅", loginName: "sunxiaomei", phone: "18772091288", gender: "女", dept: "十堰市生态环境局", city: "十堰市" },
+    { name: "许云峰", loginName: "xuyunfeng", phone: "13697180333", gender: "男", dept: "宜昌市生态环境局", city: "宜昌市" },
+    { name: "马俊杰", loginName: "majunjie", phone: "13907275177", gender: "男", dept: "襄阳市生态环境局", city: "襄阳市" },
+    { name: "陈志强", loginName: "chenzhiqiang", phone: "13886650210", gender: "男", dept: "鄂州市生态环境局", city: "鄂州市" },
+    { name: "郑立新", loginName: "zhenglixin", phone: "13307249146", gender: "男", dept: "荆门市生态环境局", city: "荆门市" },
+    { name: "周伟", loginName: "zhouwei", phone: "13607298867", gender: "男", dept: "孝感市生态环境局", city: "孝感市" },
+    { name: "张建国", loginName: "zhangjianguo", phone: "13907212871", gender: "男", dept: "荆州市生态环境局", city: "荆州市" },
+    { name: "吴倩", loginName: "wuqian", phone: "18707253061", gender: "女", dept: "黄冈市生态环境局", city: "黄冈市" },
+    { name: "黄丽", loginName: "huangli", phone: "18907248053", gender: "女", dept: "咸宁市生态环境局", city: "咸宁市" },
+    { name: "赵鹏飞", loginName: "zhaopengfei", phone: "15972759135", gender: "男", dept: "随州市生态环境局", city: "随州市" },
+    { name: "谭明辉", loginName: "tanminghui", phone: "13872740062", gender: "男", dept: "恩施州生态环境局", city: "恩施州" },
+    { name: "秦浩", loginName: "qinhao", phone: "15827912719", gender: "男", dept: "仙桃市生态环境局", city: "仙桃市" },
+    { name: "刘芳", loginName: "liufang", phone: "13507227748", gender: "女", dept: "潜江市生态环境局", city: "潜江市" },
+    { name: "熊志刚", loginName: "xiongzhigang", phone: "13986950866", gender: "男", dept: "天门市生态环境局", city: "天门市" },
+    { name: "田爱华", loginName: "tianaihua", phone: "13451232210", gender: "女", dept: "神农架林区生态环境局", city: "神农架林区" },
+    { name: "王羽鹏", loginName: "wangyupeng", phone: "13707116688", gender: "男", dept: "省生态环境厅水生态环境处", city: "省级" },
+    { name: "郭建军", loginName: "guojianjun", phone: "13871209805", gender: "男", dept: "省生态环境厅水生态环境处", city: "省级" },
+    { name: "何晓东", loginName: "hexiaodong", phone: "15623019866", gender: "男", dept: "省环境执法监督局", city: "省级" },
+    { name: "李姝", loginName: "lishu", phone: "13026185633", gender: "女", dept: "省生态环境厅监测处", city: "省级" },
+    { name: "邓志远", loginName: "dengzhiyuan", phone: "17762513048", gender: "男", dept: "省生态环境厅信息中心", city: "省级" }
 ];
 
 const CONTACTS = [

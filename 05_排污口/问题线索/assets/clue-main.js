@@ -256,7 +256,9 @@
                 if (canReport(clue)) {
                     ops.push(`<button class="op-icon" data-report="${clue.id}" title="填报" aria-label="填报"><i class="fa-regular fa-pen-to-square"></i></button>`);
                 }
-                const rowCls = isOverdue(clue) ? "row-overdue" : (isNearDue(clue) ? "row-near" : "");
+                const rowCls = isOverdue(clue) ? "row-overdue"
+                    : (isNearDue(clue) ? "row-near"
+                        : (clue.status === "已办" ? "row-done" : (clue.status === "待办" ? "row-todo" : "")));
                 return `<tr${rowCls ? ` class="${rowCls}"` : ""} data-clue="${clue.id}">
                     <td class="center mono">${(state.page - 1) * state.pageSize + index + 1}</td>
                     <td><div class="cell-title" title="${esc(clue.title)}">${esc(clue.title)}</div></td>

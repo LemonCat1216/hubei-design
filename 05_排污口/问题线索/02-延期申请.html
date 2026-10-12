@@ -73,40 +73,24 @@
             </aside>
 
             <main class="main-panel">
-                <section class="summary" aria-label="延期申请概览" id="summaryCards">
-                    <article class="stat t-orange">
-                        <span class="stat-icon" aria-hidden="true"><i class="fa-regular fa-hourglass"></i></span>
-                        <div class="stat-copy">
-                            <div class="stat-label">待省级审核</div>
-                            <div class="stat-number-line"><span class="stat-number" id="statWait">0</span><span class="stat-unit">件</span></div>
-                        </div>
-                    </article>
-                    <article class="stat t-green">
-                        <span class="stat-icon" aria-hidden="true"><i class="fa-regular fa-circle-check"></i></span>
-                        <div class="stat-copy">
-                            <div class="stat-label">已通过</div>
-                            <div class="stat-number-line"><span class="stat-number" id="statPass">0</span><span class="stat-unit">件</span></div>
-                        </div>
-                    </article>
-                    <article class="stat t-red">
-                        <span class="stat-icon" aria-hidden="true"><i class="fa-regular fa-circle-xmark"></i></span>
-                        <div class="stat-copy">
-                            <div class="stat-label">已驳回</div>
-                            <div class="stat-number-line"><span class="stat-number" id="statReject">0</span><span class="stat-unit">件</span></div>
-                        </div>
-                    </article>
-                    <article class="stat" style="grid-column:span 2">
-                        <span class="stat-icon" aria-hidden="true"><i class="fa-regular fa-clock"></i></span>
-                        <div class="stat-copy">
-                            <div class="stat-label" id="windowLabel">近10个工作日内到期可申请线索</div>
-                            <div class="stat-number-line"><span class="stat-number" id="statWindow">0</span><span class="stat-unit">条</span></div>
-                        </div>
-                    </article>
-                </section>
-
-                <div class="notice-bar warn"><i class="fa-solid fa-circle-exclamation"></i>
+                <div class="notice-bar warn one-line"><i class="fa-solid fa-circle-exclamation"></i>
                     <span>延期申请规则：因管网改造、工程施工等客观因素确需延期的，须在<strong>整改期满前10个工作日</strong>提交延期申请、说明理由、补充工程可行性方案，并明确整改完成时限；经省级审核<strong>通过</strong>后方可延期，审核<strong>不通过的予以驳回</strong>，地市可补正材料后重新申请。</span>
                 </div>
+
+                <form class="filter-bar" id="deferFilterForm">
+                    <label class="field select" id="fCityWrap" style="width:134px" hidden><select id="fCity" aria-label="所属地市">
+                        <option value="">所属地市</option>
+                    </select></label>
+                    <label class="field select" style="width:132px"><select id="fCategory" aria-label="延期类型">
+                        <option value="">延期类型</option><option>管网改造</option><option>工程施工</option><option>其他</option>
+                    </select></label>
+                    <label class="field select" style="width:132px"><select id="fType" aria-label="问题类型">
+                        <option value="">问题类型</option><option>重大问题</option><option>突出问题</option><option>一般问题</option><option>其他问题</option>
+                    </select></label>
+                    <label class="field" style="width:250px"><input id="fKw" type="search" placeholder="问题标题 / 编号" aria-label="关键词"></label>
+                    <button class="filter-btn search" type="submit"><i class="fa-solid fa-magnifying-glass"></i><span>搜索</span></button>
+                    <button class="filter-btn reset" id="deferReset" type="button"><i class="fa-solid fa-rotate-left"></i><span>重置</span></button>
+                </form>
 
                 <div class="toolbar-row">
                     <label class="field select" id="citySelectWrap" hidden style="width:170px">

@@ -753,6 +753,12 @@
         /* 无延期记录时隐藏「延期记录」选项卡 */
         const deferTab = document.querySelector('#detailTabs .d-tab[data-pane="paneDefer"]');
         if (deferTab) deferTab.style.display = clue.defer ? "" : "none";
+        /* 待填报、过期未反馈记录尚无有效反馈，隐藏「地市反馈」选项卡 */
+        const reportTab = document.querySelector('#detailTabs .d-tab[data-pane="paneReport"]');
+        if (reportTab) {
+            const showReport = clue.status !== "待办" && !isOverdue(clue) && clue.reports.length > 0;
+            reportTab.style.display = showReport ? "" : "none";
+        }
         document.querySelectorAll("#detailTabs .d-tab").forEach((tab, index) => tab.classList.toggle("active", index === 0));
         ["paneInfo", "paneReport", "paneDefer"].forEach((paneId, index) => {
             document.getElementById(paneId).style.display = index === 0 ? "" : "none";

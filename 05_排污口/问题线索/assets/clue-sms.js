@@ -1,20 +1,13 @@
-/* 短信通知记录：筛选 / 列表 / 重发 / 导出 */
+/* 短信通知记录：筛选 / 列表 / 导出 */
 (function () {
     const { showToast, esc, exportCsv, todayStr } = window.ClueUI;
 
-    const state = { category: "", status: "", city: "", dateFrom: "", dateTo: "", kw: "", page: 1, pageSize: 12 };
-
-    const STATUS_TAG = { "成功": "done", "失败": "reject" };
-
-    function statusTagOf(status) {
-        return `<span class="tag ${STATUS_TAG[status] || "plain"}">${esc(status)}</span>`;
-    }
+    const state = { category: "", city: "", dateFrom: "", dateTo: "", kw: "", page: 1, pageSize: 12 };
 
     function filteredRecords() {
         const kw = state.kw.trim().toLowerCase();
         return SMS_RECORDS.filter(record => {
             if (state.category && record.category !== state.category) return false;
-            if (state.status && record.status !== state.status) return false;
             if (state.city && record.city !== state.city) return false;
             const day = record.sendTime.slice(0, 10);
             if (state.dateFrom && day < state.dateFrom) return false;
@@ -38,7 +31,7 @@
         const body = document.getElementById("tableBody");
 
         if (!pageRows.length) {
-            body.innerHTML = `<tr class="empty-row"><td colspan="7"><span class="empty-state"><i class="fa-regular fa-comment-dots"></i>暂无符合条件的短信通知记录</span></td></tr>`;
+            body.innerHTML = `<tr class="empty-row"><td colspan="6"><span class="empty-state"><i class="fa-regular fa-comment-dots"></i>暂无符合条件的短信通知记录</span></td></tr>`;
         } else {
             body.innerHTML = pageRows.map((record, index) => {
                 const content = window.smsContentOf(record);
@@ -49,7 +42,6 @@
                     <td class="center">${esc(record.city)}</td>
                     <td><div class="cell-title sms-content" title="${esc(content)}">${esc(content)}</div></td>
                     <td class="center mono">${esc(record.sendTime)}</td>
-                    <td class="center">${statusTagOf(record.status)}${record.status === "失败" ? '<button class="op-btn warn" data-resend="' + record.id + '" style="margin-left:8px">重发</button>' : ""}</td>
                 </tr>`;
             }).join("");
         }
@@ -82,15 +74,14 @@
         const rows = filteredRecords();
         if (!rows.length) return showToast("暂无可导出的数据");
         exportCsv(`短信通知记录_${todayStr().replace(/-/g, "")}.csv`,
-            ["短信编号", "通知类型", "接收人", "联系电话", "所属地市", "关联问题线索", "发送时间", "发送状态"],
-            rows.map(record => [record.code, record.category, record.receiver, record.phone, record.city, record.clueCode, record.sendTime, record.status]));
+            ["短信编号", "通知类型", "接收人", "联系电话", "所属地市", "关联问题线索", "发送时间"],
+            rows.map(record => [record.code, record.category, record.receiver, record.phone, record.city, record.clueCode, record.sendTime]));
     }
 
     function resetFilters() {
-        state.category = ""; state.status = ""; state.city = "";
+        state.category = ""; state.city = "";
         state.dateFrom = ""; state.dateTo = ""; state.kw = ""; state.page = 1;
         document.getElementById("categoryFilter").value = "";
-        document.getElementById("statusFilter").value = "";
         document.getElementById("cityFilter").value = "";
         document.getElementById("dateFrom").value = "";
         document.getElementById("dateTo").value = "";
@@ -103,7 +94,6 @@
     document.getElementById("filterForm").addEventListener("submit", event => {
         event.preventDefault();
         state.category = document.getElementById("categoryFilter").value;
-        state.status = document.getElementById("statusFilter").value;
         state.city = document.getElementById("cityFilter").value;
         state.dateFrom = document.getElementById("dateFrom").value;
         state.dateTo = document.getElementById("dateTo").value;
@@ -126,19 +116,6 @@
 
     document.getElementById("pagination").addEventListener("change", event => {
         if (event.target.id === "pageSize") { state.pageSize = Number(event.target.value); state.page = 1; renderTable(); }
-    });
-
-    document.getElementById("tableBody").addEventListener("click", event => {
-        const target = event.target.closest("[data-resend]");
-        if (!target) return;
-        const record = SMS_RECORDS.find(item => item.id === Number(target.dataset.resend));
-        if (record) {
-            record.status = "成功";
-            record.sendTime = `${todayStr()} ${new Date().toTimeString().slice(0, 8)}`;
-            record.code = `DX${todayStr().replace(/-/g, "")}-R${String(record.id).padStart(2, "0")}`;
-            renderTable();
-            showToast(`已重新发送短信至${record.receiver}`);
-        }
     });
 
     renderTable();

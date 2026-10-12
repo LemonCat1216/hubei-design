@@ -105,7 +105,6 @@
         document.getElementById("statAll").textContent = CLUES.length;
         document.getElementById("statTodo").textContent = CLUES.filter(item => item.status === "待办").length;
         document.getElementById("statDone").textContent = CLUES.filter(item => item.status === "已办").length;
-        document.getElementById("statUndone").textContent = CLUES.filter(item => item.status === "过期未办").length;
         document.getElementById("statOverdue").textContent = CLUES.filter(isOverdue).length;
         document.getElementById("statNearDue").textContent = CLUES.filter(isNearDue).length;
         document.querySelectorAll("#summaryCards article").forEach(card => {
@@ -185,7 +184,6 @@
         return CLUES.filter(item => {
             if (state.view === "待办" && item.status !== "待办") return false;
             if (state.view === "已办" && item.status !== "已办") return false;
-            if (state.view === "未反馈" && item.status !== "过期未办") return false;
             if (state.view === "过期未反馈" && !isOverdue(item)) return false;
             if (state.view === "即将到期" && !isNearDue(item)) return false;
             if (state.type && item.type !== state.type) return false;

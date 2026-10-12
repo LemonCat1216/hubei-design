@@ -1,8 +1,8 @@
-/* 延期申请页逻辑：市级（申请延期 / 待审核 / 已通过 / 已驳回） / 省级审核（可通过、可驳回） */
+/* 延期申请页逻辑：市级（可延期 / 已申请 / 已通过 / 已驳回） / 省级审核（可通过、可驳回） */
 (function () {
     const { showToast, openModal, closeModal, esc, todayStr, daysBetween, workingDaysLeft, typeTag, deferTag, exportCsv, getRole } = ClueUI;
 
-    const state = { role: getRole(), city: "武汉市", tab: "all" };
+    const state = { role: getRole(), city: "武汉市", tab: "all", fCity: "", fCategory: "", fType: "", fKw: "" };
     let applyClueId = null;
     let reviewClueId = null;
     const applyFiles = [];
@@ -11,31 +11,62 @@
     const PROVINCE_TABS = [
         { key: "all", label: "全部申请" },
         { key: "待省级审核", label: "待审核" },
-        { key: "已通过", label: "已通过" },
-        { key: "已驳回", label: "已驳回" }
+        { key: "已驳回", label: "已驳回" },
+        { key: "已通过", label: "已通过" }
     ];
-    /* 市级：四个选项卡 */
+    /* 市级：五个选项卡 */
     const CITY_TABS = [
-        { key: "apply", label: "申请延期" },
-        { key: "pending", label: "待审核" },
-        { key: "passed", label: "已通过" },
-        { key: "rejected", label: "已驳回" }
+        { key: "all", label: "全部" },
+        { key: "apply", label: "可延期" },
+        { key: "pending", label: "已申请" },
+        { key: "rejected", label: "已驳回" },
+        { key: "passed", label: "已通过" }
     ];
 
-    const citySelect = document.getElementById("citySelect");
-    CITIES.forEach(city => citySelect.insertAdjacentHTML("beforeend", `<option>${city}</option>`));
+    /* ===== 模糊筛选 ===== */
+    const fCitySelect = document.getElementById("fCity");
+    CITIES.forEach(city => fCitySelect.insertAdjacentHTML("beforeend", `<option>${city}</option>`));
+    fCitySelect.closest(".field").hidden = state.role !== "province";
+
+    function matchFilters(item) {
+        if (state.fCity && item.city !== state.fCity) return false;
+        if (state.fType && item.type !== state.fType) return false;
+        if (state.fCategory && (!item.defer || item.defer.category !== state.fCategory)) return false;
+        if (state.fKw) {
+            const kw = state.fKw.replace(/\s+/g, "").toLowerCase();
+            const title = String(item.title || "").replace(/\s+/g, "").toLowerCase();
+            const code = String(item.code || "").toLowerCase();
+            if (!title.includes(kw) && !code.includes(kw)) return false;
+        }
+        return true;
+    }
+
+    function readFilters() {
+        state.fCity = fCitySelect.value;
+        state.fCategory = document.getElementById("fCategory").value;
+        state.fType = document.getElementById("fType").value;
+        state.fKw = document.getElementById("fKw").value.trim();
+    }
+
+    function clearFilters() {
+        document.getElementById("deferFilterForm").reset();
+        Object.assign(state, { fCity: "", fCategory: "", fType: "", fKw: "" });
+    }
+
+    document.getElementById("deferFilterForm").addEventListener("submit", event => {
+        event.preventDefault();
+        readFilters();
+        renderTable();
+    });
+
+    document.getElementById("deferReset").addEventListener("click", () => {
+        clearFilters();
+        renderTable();
+        showToast("筛选条件已重置");
+    });
 
     /* ===== 统计 ===== */
     function deferClues() { return CLUES.filter(item => item.defer); }
-
-    function renderStats() {
-        const all = deferClues();
-        document.getElementById("statWait").textContent = all.filter(item => item.defer.status === "待省级审核").length;
-        document.getElementById("statPass").textContent = all.filter(item => item.defer.status === "已通过").length;
-        document.getElementById("statReject").textContent = all.filter(item => item.defer.status === "已驳回").length;
-        const windowCount = CLUES.filter(item => item.status === "待办" && !item.defer && windowStatus(item).key === "open").length;
-        document.getElementById("statWindow").textContent = windowCount;
-    }
 
     /* ===== 申请窗口判定 ===== */
     /* 距期限剩余工作日（含当日；当日为工作日时计入，符合“期满前10个工作日内可申请”的口径） */
@@ -80,27 +111,21 @@
     });
 
     /* 顶栏角色切换联动：省级=审核视角（可通过/驳回），市级=申请视角（仅本市） */
-    document.getElementById("citySelectWrap").hidden = state.role !== "city";
-
     document.addEventListener("rolechange", event => {
         state.role = event.detail.role;
-        document.getElementById("citySelectWrap").hidden = state.role !== "city";
+        fCitySelect.closest(".field").hidden = state.role !== "province";
         state.tab = state.role === "province" ? "all" : "apply";
-        if (state.role === "city") state.city = citySelect.value || state.city;
+        clearFilters();
         renderTabs();
-        renderTable();
-    });
-
-    citySelect.addEventListener("change", () => {
-        state.city = citySelect.value;
         renderTable();
     });
 
     /* ===== 数据分组 ===== */
     function cityClues() { return CLUES.filter(item => item.city === state.city); }
 
-    /* 市级四个选项卡的数据（互不重复） */
+    /* 市级选项卡的数据 */
     function cityTabRows(tab) {
+        if (tab === "all") return cityClues().filter(item => item.defer);
         if (tab === "apply") return cityClues().filter(item => !item.defer);
         if (tab === "pending") return cityClues().filter(item => item.defer && item.defer.status === "待省级审核");
         if (tab === "passed") return cityClues().filter(item => item.defer && item.defer.status === "已通过");
@@ -124,7 +149,8 @@
         if (state.role === "city" && state.tab === "apply") {
             cols.innerHTML = `<col style="width:3.5%"><col style="width:25%"><col style="width:8%"><col style="width:9%"><col style="width:9%"><col style="width:9%"><col style="width:20%"><col style="width:16.5%">`;
             head.innerHTML = `<tr><th class="center">序号</th><th>问题标题</th><th class="center">问题类型</th><th class="center">交办日期</th><th class="center">计划到期时间</th><th class="center">剩余(工作日)</th><th class="center">申请窗口状态</th><th class="center">操作</th></tr>`;
-            const rows = cityTabRows("apply");
+            /* 仅保留当前处于申请窗口期内、确实可以申请延期的线索，不在窗口期的不再灰显占位 */
+            const rows = cityTabRows("apply").filter(item => windowStatus(item).key === "open").filter(matchFilters);
             if (!rows.length) return emptyBody(body, 8, "本地市暂无可申请延期的线索");
             body.innerHTML = rows.map((clue, index) => {
                 const win = windowStatus(clue);
@@ -133,7 +159,7 @@
                 const canApply = win.key === "open";
                 return `<tr>
                     <td class="center mono">${index + 1}</td>
-                    <td><button class="link-btn" data-viewclue="${clue.id}" title="${esc(clue.title)}">${esc(clue.title)}</button><div class="cell-sub">${clue.code}</div></td>
+                    <td><button class="link-btn no-underline" data-viewclue="${clue.id}" title="${esc(clue.title)}">${esc(clue.title)}</button></td>
                     <td class="center">${typeTag(clue.type)}</td>
                     <td class="center mono">${clue.assignDate}</td>
                     <td class="center mono">${clue.dueDate}${clue.extendedDue ? `<span class="overdue-mark">已顺延</span>` : ""}</td>
@@ -147,42 +173,49 @@
             return;
         }
 
-        /* ---------- 市级：待审核 / 已通过 / 已驳回 ---------- */
+        /* ---------- 市级：全部 / 已申请 / 已驳回 / 已通过 ---------- */
         if (state.role === "city") {
-            cols.innerHTML = `<col style="width:3.5%"><col style="width:21%"><col style="width:7.5%"><col style="width:8%"><col style="width:8.5%"><col style="width:8.5%"><col style="width:8.5%"><col style="width:8.5%"><col style="width:19%"><col style="width:6.5%">`;
-            head.innerHTML = `<tr><th class="center">序号</th><th>问题标题</th><th class="center">问题类型</th><th class="center">延期类型</th><th class="center">原计划到期</th><th class="center">申请延期至</th><th class="center">申请日期</th><th class="center">审核状态</th><th>审核意见</th><th class="center">操作</th></tr>`;
-            const rows = cityTabRows(state.tab);
-            const emptyText = { pending: "暂无待审核的延期申请", passed: "暂无已通过的延期申请", rejected: "暂无被驳回的延期申请" }[state.tab];
-            if (!rows.length) return emptyBody(body, 10, emptyText);
-            body.innerHTML = rows.map((clue, index) => `<tr>
+            const showStatus = state.tab === "all";
+            cols.innerHTML = showStatus
+                ? `<col style="width:3.5%"><col style="width:21%"><col style="width:7.5%"><col style="width:8%"><col style="width:8.5%"><col style="width:8.5%"><col style="width:8.5%"><col style="width:8.5%"><col style="width:19%"><col style="width:6.5%">`
+                : `<col style="width:3.5%"><col style="width:24%"><col style="width:8%"><col style="width:9%"><col style="width:9.5%"><col style="width:9.5%"><col style="width:9.5%"><col style="width:20.5%"><col style="width:6.5%">`;
+            head.innerHTML = `<tr><th class="center">序号</th><th>问题标题</th><th class="center">问题类型</th><th class="center">延期类型</th><th class="center">原计划到期</th><th class="center">申请延期至</th><th class="center">申请日期</th>${showStatus ? `<th class="center">审核状态</th>` : ""}<th>审核意见</th><th class="center">操作</th></tr>`;
+            const rows = cityTabRows(state.tab).filter(matchFilters);
+            const emptyText = { all: "本地市暂无延期申请记录", pending: "暂无待审核的延期申请", passed: "暂无已通过的延期申请", rejected: "暂无被驳回的延期申请" }[state.tab] || "暂无延期申请记录";
+            if (!rows.length) return emptyBody(body, showStatus ? 10 : 9, emptyText);
+            body.innerHTML = rows.map((clue, index) => {
+                const isRejected = clue.defer.status === "已驳回";
+                return `<tr>
                 <td class="center mono">${index + 1}</td>
-                <td>${state.tab === "rejected"
-                    ? `<button class="link-btn" data-viewapply="${clue.id}" title="${esc(clue.title)}">${esc(clue.title)}</button>`
-                    : `<div class="cell-title" title="${esc(clue.title)}">${esc(clue.title)}</div>`}<div class="cell-sub">${clue.code}</div></td>
+                <td><div class="cell-title linked${isRejected ? " danger" : ""}" data-viewapply="${clue.id}" title="${esc(clue.title)}">${esc(clue.title)}</div></td>
                 <td class="center">${typeTag(clue.type)}</td>
                 <td class="center"><span class="tag general">${esc(clue.defer.category || "—")}</span></td>
                 <td class="center mono">${clue.dueDate}</td>
                 <td class="center mono ${clue.defer.status === "已通过" ? "defer-red" : ""}">${clue.defer.appliedDue}</td>
                 <td class="center mono">${clue.defer.applyDate}</td>
-                <td class="center">${deferTag(clue.defer.status)}</td>
-                <td title="${esc(clue.defer.reviewNote || "待省级审核")}"><span style="color:${clue.defer.reviewNote ? "#33465e" : "#a5afbb"}">${esc(clue.defer.reviewNote || "待省级审核")}</span></td>
+                ${showStatus ? `<td class="center">${deferTag(clue.defer.status)}</td>` : ""}
+                <td title="${esc(clue.defer.reviewNote || "—")}"><span style="color:${clue.defer.reviewNote ? "#33465e" : "#a5afbb"}">${esc(clue.defer.reviewNote || "—")}</span></td>
                 <td><div class="actions">
-                    ${state.tab === "rejected"
+                    ${isRejected
                         ? `<button class="op-btn warn" data-apply="${clue.id}">申请延期</button>`
                         : `<button class="op-btn" data-viewapply="${clue.id}">查看</button>`}
                 </div></td>
-            </tr>`).join("");
+            </tr>`;
+            }).join("");
             return;
         }
 
         /* ---------- 省级：审核视角 ---------- */
-        cols.innerHTML = `<col style="width:3.5%"><col style="width:17%"><col style="width:6%"><col style="width:7%"><col style="width:6.5%"><col style="width:6.5%"><col style="width:7%"><col style="width:6.5%"><col style="width:19%"><col style="width:6.5%"><col style="width:14.5%">`;
-        head.innerHTML = `<tr><th class="center">序号</th><th>问题标题</th><th class="center">问题类型</th><th class="center">延期类型</th><th class="center">所属地市</th><th class="center">原计划到期</th><th class="center">申请延期至</th><th class="center">申请日期</th><th>延期理由</th><th class="center">状态</th><th class="center">操作</th></tr>`;
-        const rows = deferRows();
-        if (!rows.length) return emptyBody(body, 11, "暂无延期申请记录");
+        const showStatus = state.tab === "all";
+        cols.innerHTML = showStatus
+            ? `<col style="width:3.5%"><col style="width:17%"><col style="width:6%"><col style="width:7%"><col style="width:6.5%"><col style="width:6.5%"><col style="width:7%"><col style="width:6.5%"><col style="width:19%"><col style="width:6.5%"><col style="width:14.5%">`
+            : `<col style="width:4%"><col style="width:19%"><col style="width:7%"><col style="width:8%"><col style="width:7.5%"><col style="width:7.5%"><col style="width:8%"><col style="width:7.5%"><col style="width:22%"><col style="width:9.5%">`;
+        head.innerHTML = `<tr><th class="center">序号</th><th>问题标题</th><th class="center">问题类型</th><th class="center">延期类型</th><th class="center">所属地市</th><th class="center">原计划到期</th><th class="center">申请延期至</th><th class="center">申请日期</th><th>延期理由</th>${showStatus ? `<th class="center">状态</th>` : ""}<th class="center">操作</th></tr>`;
+        const rows = deferRows().filter(matchFilters);
+        if (!rows.length) return emptyBody(body, showStatus ? 11 : 10, "暂无符合条件的延期申请记录");
         body.innerHTML = rows.map((clue, index) => `<tr>
             <td class="center mono">${index + 1}</td>
-            <td><div class="cell-title" title="${esc(clue.title)}">${esc(clue.title)}</div><div class="cell-sub">${clue.code}</div></td>
+            <td><div class="cell-title linked${clue.defer.status === "已驳回" ? " danger" : ""}" data-viewapply="${clue.id}" title="${esc(clue.title)}">${esc(clue.title)}</div></td>
             <td class="center">${typeTag(clue.type)}</td>
             <td class="center"><span class="tag general">${esc(clue.defer.category || "—")}</span></td>
             <td class="center">${esc(clue.city)}</td>
@@ -190,7 +223,7 @@
             <td class="center mono ${clue.defer.status === "已通过" ? "defer-red" : ""}">${clue.defer.appliedDue}</td>
             <td class="center mono">${clue.defer.applyDate}</td>
             <td title="${esc(clue.defer.reason)}">${esc(clue.defer.reason)}</td>
-            <td class="center">${deferTag(clue.defer.status)}</td>
+            ${showStatus ? `<td class="center">${deferTag(clue.defer.status)}</td>` : ""}
             <td><div class="actions">
                 <button class="op-btn" data-viewapply="${clue.id}">查看</button>
                 ${clue.defer.status === "待省级审核"
@@ -218,11 +251,11 @@
     });
 
     document.getElementById("exportBtn").addEventListener("click", () => {
-        const rows = state.role === "city" ? cityTabRows(state.tab) : deferRows();
+        const rows = (state.role === "city" ? cityTabRows(state.tab) : deferRows()).filter(matchFilters);
         exportCsv(`延期申请数据_${state.role === "city" ? state.city : "全省"}.csv`,
-            ["序号", "问题编号", "问题标题", "问题类型", "所属地市", "延期类型", "原计划到期时间", "申请延期至", "申请日期", "审核状态", "审核意见"],
+            ["序号", "问题标题", "问题类型", "所属地市", "延期类型", "原计划到期时间", "申请延期至", "申请日期", "审核状态", "审核意见"],
             rows.map((item, index) => [
-                index + 1, item.code, item.title, item.type, item.city,
+                index + 1, item.title, item.type, item.city,
                 item.defer ? item.defer.category || "" : "", item.dueDate,
                 item.defer ? item.defer.appliedDue : "", item.defer ? item.defer.applyDate : "",
                 item.defer ? item.defer.status : "未申请", item.defer ? item.defer.reviewNote || "" : ""
@@ -252,7 +285,7 @@
         const rejected = !!(clue.defer && clue.defer.status === "已驳回");
         applyFiles.length = 0;
         renderApplyFiles();
-        document.getElementById("applyTitle").textContent = `${rejected ? "重新申请延期" : "延期申请"} - ${clue.code}`;
+        document.getElementById("applyTitle").textContent = rejected ? "重新申请延期" : "延期申请";
         document.getElementById("applyClueInfo").innerHTML = `
             <div class="label">问题标题</div><div class="span3 wrap">${esc(clue.title)}</div>
             <div class="label">问题类型</div><div>${typeTag(clue.type)}</div>
@@ -301,7 +334,7 @@
     function openApplyView(id) {
         const clue = clueById(id);
         const defer = clue.defer;
-        document.getElementById("applyViewTitle").textContent = `延期申请详情 - ${clue.code}`;
+        document.getElementById("applyViewTitle").textContent = "延期申请详情";
         document.getElementById("applyViewBody").innerHTML = `
             <div class="info-grid">
                 <div class="label">问题标题</div><div class="span3 wrap">${esc(clue.title)}</div>
@@ -320,7 +353,7 @@
                 <div class="file-row"><i class="fa-solid fa-file-pdf file-ic"></i><span class="file-name">${esc(defer.planFile.name)}</span><span class="file-size">${defer.planFile.size}</span></div>
             </div>
             ${defer.reviewNote ? `<div class="block-label">省级审核意见</div><div class="desc-block" style="${defer.status === "已驳回" ? "color:#c8403b" : ""}">${esc(defer.reviewNote)}</div>` : ""}
-            ${defer.status === "已驳回" ? `<div class="block-label">后续办理</div><div class="desc-block">该申请已被省级驳回，请按审核意见补正材料后，在「申请延期」选项卡中重新提交申请。</div>` : ""}`;
+            ${defer.status === "已驳回" ? `<div class="block-label">后续办理</div><div class="desc-block">该申请已被省级驳回，请按审核意见补正材料后，在「可延期」选项卡中重新提交申请。</div>` : ""}`;
         openModal("applyViewModal");
     }
 
@@ -330,7 +363,7 @@
         const clue = clueById(id);
         const defer = clue.defer;
         const rejected = defer.status === "已驳回";
-        document.getElementById("reviewTitle").textContent = `${rejected ? "驳回意见" : "延期申请审核"} - ${clue.code}`;
+        document.getElementById("reviewTitle").textContent = rejected ? "驳回意见" : "延期申请审核";
         document.getElementById("reviewInfo").innerHTML = `
             <div class="label">问题标题</div><div class="span3 wrap">${esc(clue.title)}</div>
             <div class="label">延期类型</div><div class="span3"><span class="tag general">${esc(defer.category || "—")}</span></div>
@@ -377,7 +410,7 @@
     function openClueInfo(id) {
         const clue = clueById(id);
         const win = windowStatus(clue);
-        document.getElementById("applyViewTitle").textContent = `问题线索详情 - ${clue.code}`;
+        document.getElementById("applyViewTitle").textContent = "问题线索详情";
         document.getElementById("applyViewBody").innerHTML = `
             <div class="info-grid">
                 <div class="label">问题标题</div><div class="span3 wrap">${esc(clue.title)}</div>
@@ -395,7 +428,6 @@
     }
 
     function renderAll() {
-        renderStats();
         renderTabs();
         renderTable();
     }

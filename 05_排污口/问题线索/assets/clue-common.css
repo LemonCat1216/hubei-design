@@ -305,69 +305,62 @@ button, input, select, textarea { font: inherit; }
     flex: 0 0 auto;
     display: grid;
     grid-template-columns: repeat(5, 1fr);
-    gap: 10px;
+    gap: 12px;
 }
 
 .summary > article {
     position: relative;
-    border: 1px solid #edf2f7;
-    border-radius: 8px;
+    border: 1px solid #e2ecf8;
+    border-radius: 6px;
     overflow: hidden;
-    background: linear-gradient(135deg, #fff 0%, #fff 54%, #f4f9ff 100%);
-    box-shadow: 0 6px 18px rgba(45, 86, 139, 0.07);
-    --stat-accent: #2179ed;
-    --stat-icon-color: #3d94f7;
+    background: linear-gradient(180deg, #f7fbff 0%, #eff7ff 100%);
+    --stat-accent: #1677ff;
+    --stat-icon-color: #1677ff;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
-.summary > article.t-green { --stat-accent: #28a66a; --stat-icon-color: #42bd85; background: linear-gradient(135deg, #fff 0%, #fff 54%, #f2fcf7 100%); }
-.summary > article.t-orange { --stat-accent: #e88724; --stat-icon-color: #eea24d; background: linear-gradient(135deg, #fff 0%, #fff 54%, #fff8ed 100%); }
-.summary > article.t-cyan { --stat-accent: #13a8c8; --stat-icon-color: #35b8da; background: linear-gradient(135deg, #fff 0%, #fff 54%, #effbff 100%); }
-.summary > article.t-red { --stat-accent: #e0524e; --stat-icon-color: #ef7370; background: linear-gradient(135deg, #fff 0%, #fff 54%, #fff6f5 100%); }
-.summary > article.t-gold { --stat-accent: #b8860b; --stat-icon-color: #cf9d2e; background: linear-gradient(135deg, #fff 0%, #fff 54%, #fffaec 100%); }
+.summary > article.t-orange { --stat-accent: #e8871a; --stat-icon-color: #e8871a; }
+.summary > article.t-green  { --stat-accent: #3aa05a; --stat-icon-color: #3aa05a; }
+.summary > article.t-gold   { --stat-accent: #c99a1a; --stat-icon-color: #c99a1a; }
+.summary > article.t-red    { --stat-accent: #d9483f; --stat-icon-color: #d9483f; }
+.summary > article.t-cyan   { --stat-accent: #12a0bd; --stat-icon-color: #12a0bd; }
 
-/* 6 列概览（问题线索页） */
-.summary.summary-6 { grid-template-columns: repeat(6, 1fr); }
-.summary.summary-6 .stat { padding: 16px 18px 14px; }
-.summary.summary-6 .stat-number { font-size: 46px; }
-.summary.summary-6 .stat-icon { right: 16px; width: 44px; height: 44px; }
-.summary.summary-6 .stat-icon i { font-size: 34px; }
-.summary.summary-6 .stat-label { font-size: 17px; }
+/* 5 列概览（问题线索页） */
+.summary.summary-5 { grid-template-columns: repeat(5, 1fr); }
 
-.summary > article[role="button"] { cursor: pointer; transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease; }
-.summary > article[role="button"]:hover { border-color: #9cc2fb; box-shadow: 0 8px 22px rgba(45, 105, 188, 0.14); transform: translateY(-2px); }
-.summary > article.summary-active { border-color: var(--stat-accent); box-shadow: 0 8px 22px rgba(45, 105, 188, 0.16), inset 0 0 0 1px rgba(52, 121, 236, 0.12); transform: translateY(-1px); }
-.summary > article.summary-active::before { content: ""; position: absolute; z-index: 2; top: 0; left: 22px; width: 48px; height: 3px; border-radius: 0 0 3px 3px; background: var(--stat-accent); pointer-events: none; }
+.summary > article[role="button"] { cursor: pointer; }
+.summary > article[role="button"]:hover { border-color: #c4d0e0; box-shadow: 0 1px 6px rgba(15, 35, 70, 0.06); }
+.summary > article.summary-active { border-color: var(--stat-accent); background: linear-gradient(180deg, #eff7ff 0%, #e3f0ff 100%); }
 
-.stat { padding: 18px 20px 16px; }
+.stat { padding: 15px 18px 14px; }
 
 .stat-icon {
     position: absolute;
-    right: 20px;
-    top: 50%;
+    right: 16px;
+    top: 15px;
     display: inline-flex;
-    width: 52px;
-    height: 52px;
+    width: 22px;
+    height: 22px;
     align-items: center;
     justify-content: center;
-    transform: translateY(-50%);
 }
 
-.stat-icon i { color: var(--stat-icon-color); font-size: 42px; line-height: 1; opacity: 0.6; }
+.stat-icon i { color: var(--stat-icon-color); font-size: 19px; line-height: 1; }
 
-.stat-label { color: var(--stat-accent); font-size: 18px; line-height: 1; font-weight: 700; white-space: nowrap; }
+.stat-label { color: #6b7785; font-size: 14px; line-height: 1; font-weight: 400; white-space: nowrap; }
 
-.stat-number-line { margin-top: 20px; display: flex; align-items: baseline; gap: 8px; }
+.stat-number-line { margin-top: 10px; display: flex; align-items: baseline; gap: 5px; }
 
 .stat-number {
-    color: #162033;
+    color: #1f2733;
     font-family: var(--font);
-    font-size: 50px;
-    line-height: 0.92;
-    font-weight: 800;
+    font-size: 28px;
+    line-height: 1;
+    font-weight: 600;
     font-variant-numeric: tabular-nums;
 }
 
-.stat-unit { margin-bottom: 4px; color: #8290a4; font-size: 15px; line-height: 1; font-weight: 700; }
+.stat-unit { margin-bottom: 3px; color: #9aa4b2; font-size: 13px; line-height: 1; font-weight: 400; }
 
 /* ===== 筛选栏 ===== */
 .filter-bar {
@@ -475,6 +468,9 @@ button, input, select, textarea { font: inherit; }
 .notice-bar i { color: #3479ec; font-size: 16px; }
 .notice-bar.warn { border-color: #f6d5b8; background: #fff9f2; color: #8a5a22; }
 .notice-bar.warn i { color: #e88724; }
+.notice-bar.one-line { white-space: nowrap; font-size: 14px; }
+.notice-bar.one-line span { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.main-panel > .notice-bar:first-child { margin-top: 0; }
 
 /* ===== 视角切换 / 选项卡 ===== */
 .seg { display: inline-flex; height: 38px; overflow: hidden; border: 1px solid #cdddef; border-radius: 6px; background: #fff; }
@@ -557,10 +553,20 @@ tbody tr.row-near td .tag:not(.tag-type),
 tbody tr.row-near td .defer-red,
 tbody tr.row-near td .defer-note-link,
 tbody tr.row-near td .overdue-mark,
-tbody tr.row-near td .muted-dash { color: #b8860b; }
+tbody tr.row-near td .muted-dash { color: #e8830c; }
 
 .cell-title { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #272d36; font-weight: 400; }
+.cell-title.danger { color: #e0342f; }
+.cell-title.linked { cursor: pointer; transition: color .16s ease; }
+.cell-title.linked:hover { color: #2791ff; }
+.cell-title.linked.danger { color: #e0342f; }
+.cell-title.linked.danger:hover { color: #c22a25; }
+/* 可点击标题：仅颜色过渡，不加下划线 */
+.link-btn.no-underline { transition: color .16s ease; }
+.link-btn.no-underline:hover { text-decoration: none; }
 .cell-sub { margin-top: 3px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #98a2b0; font-size: 13px; }
+/* 短信通知记录：发送内容列（单行省略，悬停查看全文） */
+.cell-title.sms-content { color: #52627a; }
 
 .tag {
     display: inline-flex;

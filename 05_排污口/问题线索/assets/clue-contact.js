@@ -1,6 +1,6 @@
 /* 联系人设置：左侧地市列表 + 右侧联系人表单，保存时自动校验系统人员 */
 (function () {
-    const { showToast, esc, exportCsv, todayStr } = window.ClueUI;
+    const { showToast, esc, todayStr } = window.ClueUI;
 
     const state = { filter: "all", city: CITIES[0] };
     const draftMap = {};
@@ -154,10 +154,6 @@
                     <td><span class="kv-static" id="kvDept">${staff ? esc(staff.dept) : "—"}</span></td>
                 </tr>
                 <tr>
-                    <th>校验结果</th>
-                    <td><div class="kv-msg" id="kvMsg"></div></td>
-                </tr>
-                <tr>
                     <th>最近更新时间</th>
                     <td><span class="kv-time" id="kvTime"></span></td>
                 </tr>
@@ -169,8 +165,6 @@
     function updateDetailUI() {
         const city = state.city;
         const draft = draftOf(city);
-        const msg = document.getElementById("kvMsg");
-        if (!msg) return;
 
         const personName = String(draft.name || "").trim();
         const personPhone = String(draft.phone || "").replace(/[\s-]/g, "");
@@ -178,10 +172,6 @@
         vstateMap[city] = v;
 
         const matched = pickedOf(city);
-
-        const icon = v.ok ? "fa-circle-check" : (v.key === "bad" ? "fa-circle-exclamation" : "fa-shield-halved");
-        msg.className = `kv-msg ${v.cls}`;
-        msg.innerHTML = `<i class="fa-solid ${icon}"></i><span>${esc(v.text)}</span>`;
 
         const kvPhone = document.getElementById("kvPhone");
         const kvDept = document.getElementById("kvDept");
@@ -348,63 +338,6 @@
         button.classList.add("active");
         state.filter = button.dataset.state;
         renderList();
-    });
-
-    /* ---------- 一键校验 ---------- */
-    document.getElementById("checkAllBtn").addEventListener("click", () => {
-        let pass = 0, unset = 0, bad = 0;
-        const items = CITIES.map(city => {
-            const draft = draftOf(city);
-            const v = validate(draft.name, draft.phone, city);
-            vstateMap[city] = v;
-            let cls = "empty", text = "未设置";
-            if (v.key === "bad") { cls = "bad"; text = "校验不通过"; bad += 1; }
-            else if (v.ok) { cls = "ok"; text = "校验通过"; pass += 1; }
-            else { unset += 1; }
-            return `<div class="report-item ${cls}"><span class="ri-city">${esc(city)}</span><span class="ri-text">${text}</span></div>`;
-        });
-        document.getElementById("reportTip").textContent =
-            `共校验 ${CITIES.length} 个地市：校验通过 ${pass} 个，未设置 ${unset} 个，校验不通过 ${bad} 个。`;
-        document.getElementById("reportGrid").innerHTML = items.join("");
-        window.ClueUI.openModal("reportModal");
-        showToast(`已完成 ${CITIES.length} 个地市联系人校验`);
-    });
-
-    /* ---------- 系统人员库 ---------- */
-    function renderDirectory(kw) {
-        const key = String(kw || "").trim().toLowerCase();
-        const rows = STAFF_DIRECTORY.filter(staff =>
-            !key || `${staff.name} ${staff.phone} ${staff.dept}`.toLowerCase().includes(key));
-        document.getElementById("dirBody").innerHTML = rows.length
-            ? rows.map(staff => `<tr>
-                    <td>${esc(staff.name)}</td>
-                    <td class="mono">${esc(maskPhone(staff.phone))}</td>
-                    <td>${esc(staff.dept)}</td>
-                    <td><span class="dir-city">${staff.city === "省级" ? "省级人员" : "地市联系人"}</span></td>
-                </tr>`).join("")
-            : `<tr><td colspan="4" style="padding:40px 0;text-align:center;color:#a5afbb">未查询到符合条件的人员</td></tr>`;
-        document.getElementById("dirCount").textContent = `匹配 ${rows.length} 人`;
-    }
-
-    document.getElementById("directoryBtn").addEventListener("click", () => {
-        document.getElementById("dirSearch").value = "";
-        document.getElementById("dirTotal").textContent = STAFF_DIRECTORY.length;
-        renderDirectory("");
-        window.ClueUI.openModal("dirModal");
-    });
-
-    document.getElementById("dirSearch").addEventListener("input", event => renderDirectory(event.target.value));
-
-    /* ---------- 导出 ---------- */
-    document.getElementById("exportBtn").addEventListener("click", () => {
-        const rows = CITIES.map(city => {
-            const contact = contactByCity(city);
-            const staff = contact && contact.name ? staffByName(contact.name)[0] : null;
-            return [city, contact ? contact.name : "", contact ? contact.phone : "",
-                staff ? staff.dept : "", hasSaved(city) ? "已设置" : "未设置", contact ? contact.updateTime : ""];
-        });
-        exportCsv(`地市联系人设置_${todayStr().replace(/-/g, "")}.csv`,
-            ["地市", "联系人姓名", "手机号", "所属单位", "设置状态", "更新时间"], rows);
     });
 
     renderList();

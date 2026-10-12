@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>数据梳理表 · 菜单数据</title>
+<style>
+  :root{
+    --ink:#152521; --ink-2:#3c4f4a; --ink-3:#7b8b87;
+    --line:#e2e8e6; --line-2:#eff3f2; --bg:#f5f7f6; --card:#ffffff;
+    --accent:#0f766e; --accent-soft:#e6f4f2; --accent-2:#b45309;
+    --row-alt:#fafbfb; --radius:14px;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;padding:0}
+  body{
+    background:var(--bg); color:var(--ink);
+    font-family:"PingFang SC","Microsoft YaHei","Hiragino Sans GB","Source Han Sans SC",system-ui,sans-serif;
+    font-size:14px; line-height:1.6; padding:28px 22px 60px;
+  }
+  .wrap{max-width:1460px;margin:0 auto}
+
+  /* ---------- 头部 ---------- */
+  .head{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;flex-wrap:wrap;margin-bottom:18px}
+  .title-block h1{
+    font-family:"Noto Serif SC","Songti SC","SimSun",serif;
+    font-size:27px;line-height:1.25;margin:0 0 6px;letter-spacing:.5px;font-weight:700;
+  }
+  .title-block h1 .dot{color:var(--accent)}
+  .title-block p{margin:0;color:var(--ink-3);font-size:13px;letter-spacing:.3px}
+  .kpis{display:flex;gap:10px;flex-wrap:wrap}
+  .kpi{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:8px 16px;min-width:92px;text-align:center}
+  .kpi .n{font-size:20px;font-weight:700;color:var(--accent);font-variant-numeric:tabular-nums}
+  .kpi .l{font-size:11px;color:var(--ink-3);letter-spacing:1px}
+
+  /* ---------- 工具栏（只有按钮，无输入框） ---------- */
+  .bar{
+    background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+    padding:12px 14px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;
+    box-shadow:0 1px 2px rgba(21,37,33,.04);
+  }
+  .bar .grow{flex:1}
+  .chip{
+    border:1px solid var(--accent);background:var(--accent);border-radius:999px;
+    padding:5px 16px;font-size:12.5px;color:#fff;font-family:inherit;
+  }
+  .legend{display:flex;gap:14px;align-items:center;color:var(--ink-3);font-size:12px;margin-left:6px}
+  .legend i{display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:5px;vertical-align:1px}
+  .legend .a i{background:var(--accent)}
+  .legend .b i{background:#cbd5d2}
+  .btn{
+    border:1px solid var(--line);background:#fff;border-radius:10px;padding:8px 15px;
+    font-size:13px;color:var(--ink-2);cursor:pointer;transition:.15s;font-family:inherit;white-space:nowrap;
+  }
+  .btn:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
+
+  /* ---------- 表格 ---------- */
+  .table-card{
+    margin-top:14px;background:var(--card);border:1px solid var(--line);
+    border-radius:var(--radius);overflow:hidden;box-shadow:0 1px 2px rgba(21,37,33,.04);
+  }
+  .table-scroll{overflow:auto;max-height:calc(100vh - 280px)}
+  table{border-collapse:separate;border-spacing:0;width:100%;min-width:1290px;table-layout:fixed}
+  th,td{padding:10px 12px;text-align:left;vertical-align:top;font-size:13px;border-bottom:1px solid var(--line-2)}
+  thead th{
+    position:sticky;top:0;z-index:3;background:#f9fbfa;font-size:12px;font-weight:600;
+    color:var(--ink-2);letter-spacing:.6px;border-bottom:1px solid var(--line);
+  }
+  thead th .req{color:var(--accent-2)}
+  tbody tr{background:#fff}
+  tbody tr:nth-child(even){background:var(--row-alt)}
+  tbody tr:hover{background:var(--accent-soft)}
+  tbody tr.g-start td{border-top:1px solid var(--line)}
+
+  .col-idx{width:48px}
+  .col-l1{width:120px}
+  .col-l2{width:158px}
+  .col-l3{width:132px}
+  .col-src{width:206px}
+  .col-url{width:296px}
+  .col-file{width:196px}
+  .col-note{width:112px}
+
+  td.idx{color:var(--ink-3);font-variant-numeric:tabular-nums;text-align:center;padding-left:6px;padding-right:6px}
+  td.l1 .tag{
+    display:inline-block;background:var(--accent-soft);color:var(--accent);
+    border-radius:6px;padding:2px 8px;font-size:12px;font-weight:600;
+  }
+  td.l2 .item{display:block;padding:1px 0 1px 12px;position:relative;color:var(--ink);font-weight:500}
+  td.l2 .item::before{
+    content:"";position:absolute;left:2px;top:12px;width:5px;height:5px;border-radius:50%;
+    background:var(--accent);opacity:.55
+  }
+  /* 三级菜单 */
+  td.l3 .item{display:block;padding:1px 0 1px 15px;position:relative;color:var(--ink-2)}
+  td.l3 .item::before{
+    content:"";position:absolute;left:3px;top:12px;width:5px;height:5px;border-radius:2px;
+    background:#fff;border:1.5px solid var(--accent);opacity:.8
+  }
+  /* 同一二级下的续行：留白 + 竖向连线，形成树状层级 */
+  td.l2.cont{position:relative}
+  td.l2.cont::after{content:"";position:absolute;left:8px;top:-1px;bottom:-1px;width:1px;background:var(--line)}
+  td.l2.cont.last::after{bottom:50%}
+
+  /* 数据单元格：纯文本展示 */
+  .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12px;line-height:1.55}
+  a.url{color:var(--accent);text-decoration:none;word-break:break-all;border-bottom:1px dashed rgba(15,118,110,.4)}
+  a.url:hover{background:var(--accent-soft);border-bottom-style:solid}
+  .file{word-break:break-all;color:var(--ink-2)}
+  .file::before{content:"📄";font-size:11px;margin-right:4px;opacity:.6}
+  .muted{color:#b9c4c1;font-size:12px}
+  .badge{
+    display:inline-block;border:1px solid var(--accent);color:var(--accent);background:var(--accent-soft);
+    border-radius:5px;padding:0 5px;font-size:11px;line-height:16px;margin-left:6px;vertical-align:1px;white-space:nowrap;
+  }
+  .badge.xls{margin-left:0;border-color:#9fd3b6;background:#eaf6ef;color:#1d6f42;font-size:11.5px;padding:0 7px}
+  .note{color:var(--ink-3);font-size:12.5px}
+
+  /* ---------- 底部 ---------- */
+  .foot{margin-top:12px;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;color:var(--ink-3);font-size:12px}
+  .toast{
+    position:fixed;left:50%;bottom:34px;transform:translate(-50%,16px);background:var(--ink);color:#fff;
+    padding:10px 20px;border-radius:10px;font-size:13px;opacity:0;pointer-events:none;transition:.24s;z-index:99;
+  }
+  .toast.on{opacity:1;transform:translate(-50%,0)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="head">
+    <div class="title-block">
+      <h1>数据梳理表 <span class="dot">·</span> 菜单数据</h1>
+      <p>一 / 二 / 三级菜单对应的数据来源、数据地址与文件名称（纯展示，不可编辑）</p>
+    </div>
+    <div class="kpis">
+      <div class="kpi"><div class="n" id="kpi-l1">0</div><div class="l">一级菜单</div></div>
+      <div class="kpi"><div class="n" id="kpi-l2">0</div><div class="l">二级菜单</div></div>
+      <div class="kpi"><div class="n" id="kpi-l3">0</div><div class="l">三级菜单</div></div>
+      <div class="kpi"><div class="n" id="kpi-done">0</div><div class="l">已填地址</div></div>
+    </div>
+  </div>
+
+  <div class="bar">
+    <span class="chip">全部</span>
+    <span class="legend">
+      <span class="a"><i></i>已填数据</span>
+      <span class="b"><i></i>待补充</span>
+    </span>
+    <div class="grow"></div>
+    <button class="btn" id="csv">导出 CSV</button>
+    <button class="btn" id="md">复制 Markdown</button>
+  </div>
+
+  <div class="table-card">
+    <div class="table-scroll">
+      <table>
+        <colgroup>
+          <col class="col-idx"><col class="col-l1"><col class="col-l2"><col class="col-l3">
+          <col class="col-src"><col class="col-url"><col class="col-file"><col class="col-note">
+        </colgroup>
+        <thead>
+          <tr>
+            <th>序号</th>
+            <th>一级菜单</th>
+            <th>二级菜单</th>
+            <th>三级菜单</th>
+            <th>数据来源</th>
+            <th>数据地址</th>
+            <th>文件名称</th>
+            <th>备注</th>
+          </tr>
+        </thead>
+        <tbody id="tb"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="foot">
+    <span>「待补充」表示该条数据尚未确定来源 / 地址 / 文件名；数据地址可直接点击打开。</span>
+    <span id="stat"></span>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ================= 数据源 =================
+   l2s 内每项：{ name, l3:[三级菜单], src, srcType, url, file }
+   · 有 l3 时，每个三级菜单各占一行；无 l3 时，二级菜单自身占一行
+   · 数据来源只写类型，不写具体地址：网址来源填 srcType:'网址'，
+     文件来源填 src:'Excel'（或其它类型文字），地址一律放在「数据地址」列
+============================================== */
+const TR   = 'http://10.42.73.35:8888/three-screens/tr/json/';
+const ZYST = 'http://10.42.73.35:8888/three-screens/zyst/json/';
+
+const SEED = [
+  { l1:'入河排污口', l2s:[
+      { name:'排污口', l3:['已排查','已监测','已溯源','已整治'], srcType:'网址' }
+  ]},
+  { l1:'污水处理厂', l2s:[ { name:'污水处理厂' } ] },
+  { l1:'水污染源',   l2s:[
+      { name:'工业园区', l3:['全部','主园','分园'] },
+      { name:'黑臭水体', l3:['全部','地级黑臭','县级黑臭','县城黑臭'] }
+  ]},
+  { l1:'土壤环境',   l2s:[
+      { name:'建设用地环境管理',     srcType:'网址', url:TR + 'wrdk.json' },
+      { name:'土壤环境质量',         srcType:'网址', url:TR + 'soil-quality-stations.json', note:'聚合' },
+      { name:'土壤污染重点单位监管', srcType:'网址', url:TR + 'zdjgqy.csv' }
+  ]},
+  { l1:'农业农村',   l2s:[
+      { name:'农村黑臭', srcType:'网址', url:'http://10.42.73.35:8888/service-inner/serviceinterface/search/run.action?interfaceId=b16aa08e1da6b44bfba980c7730c809e&token=dcp&pageNum=1&pageSize=500' }
+  ]},
+  { l1:'重点湖库',   l2s:['梁子湖','斧头湖','丹江口水库','洪湖','东湖'].map(n=>({name:n, src:'系统'})) },
+  { l1:'矿山生态',   l2s:[
+      { name:'矿区分布（水平台）', src:'Excel' },
+      { name:'尾矿库', srcType:'网址', url:'http://10.42.73.35:8888/service-inner/serviceinterface/search/run.action?interfaceId=214c67d474787f3c7b5ea5800a288242&token=dcp' },
+      { name:'重金属隐患排查', srcType:'网址', url:'http://10.42.73.35:8888/service-inner/serviceinterface/search/run.action?interfaceId=c4724259b2dd759966d40e6cf5852b25&token=dcp' }
+  ]},
+  { l1:'磷石膏',     l2s:[
+      { name:'磷石膏库', srcType:'网址', url:TR + 'yqlclk.json' }
+  ]},
+  { l1:'自然生态',   l2s:[
+      { name:'自然保护区',       srcType:'网址', url:ZYST + 'bhq.json' },
+      { name:'生物多样性体验地', srcType:'网址', url:ZYST + 'biodiversity-experience-sites.json' },
+      { name:'水产种质资源保护区', src:'Excel', file:'api_sczz_hb' }
+  ]},
+  { l1:'水生态环境', l2s:['断面','自动站','饮用水水源地'].map(n=>({name:n, src:'系统'})) }
+];
+
+function buildRows(){
+  const rows = [];
+  SEED.forEach(g => {
+    let l1Pending = true, l2Pending = true;
+    g.l2s.forEach(item => {
+      const l3list = (item.l3 && item.l3.length) ? item.l3 : [''];
+      l3list.forEach((name3, i3) => {
+        rows.push({
+          l1: l1Pending ? g.l1 : '',
+          l2: l2Pending ? item.name : '',
+          l3: name3,
+          src: item.src || '',
+          srcType: item.srcType || '',
+          url: item.url || '',
+          file: item.file || '',
+          note: l2Pending ? (item.note || (l1Pending ? (g.note || '') : '')) : '',
+          first: l1Pending,
+          cont: !l2Pending,
+          last: (i3 === l3list.length - 1)
+        });
+        l1Pending = false; l2Pending = false;
+      });
+      l2Pending = true;
+    });
+  });
+  return rows;
+}
+
+const rows = buildRows();
+
+/* ================= 渲染 ================= */
+const tb = document.getElementById('tb');
+
+function esc(s){ return String(s||'').replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+function todo(){ return '<span class="muted">待补充</span>'; }
+
+function render(){
+  tb.innerHTML = '';
+  rows.forEach((r, idx)=>{
+    const tr = document.createElement('tr');
+    if(r.first) tr.classList.add('g-start');
+
+    tr.appendChild(td('idx', String(idx+1)));
+
+    const td1 = document.createElement('td');
+    td1.className = 'l1';
+    if(r.l1) td1.innerHTML = `<span class="tag">${esc(r.l1)}</span>`;
+    tr.appendChild(td1);
+
+    const td2 = document.createElement('td');
+    td2.className = 'l2' + (r.cont ? ' cont' : '') + (r.cont && r.last ? ' last' : '');
+    if(r.l2) td2.innerHTML = `<span class="item">${esc(r.l2)}</span>`;
+    tr.appendChild(td2);
+
+    const td3 = document.createElement('td');
+    td3.className = 'l3';
+    if(r.l3) td3.innerHTML = `<span class="item">${esc(r.l3)}</span>`;
+    tr.appendChild(td3);
+
+    const tdSrc = document.createElement('td');
+    let srcLabel = '';
+    if(r.srcType) srcLabel = r.srcType;                       // 已知类型，如 网址 / Excel
+    else if(r.src && /^https?:\/\//i.test(r.src)) srcLabel = '网址';  // 来源是地址时只写「网址」
+    else if(r.src) srcLabel = r.src;                          // 其它文字来源，如 Excel
+    if(srcLabel){
+      tdSrc.innerHTML = `<span class="badge ${/xls|csv|excel/i.test(srcLabel)?'xls':''}">${esc(srcLabel)}</span>`;
+    }else{
+      tdSrc.innerHTML = todo();
+    }
+    tr.appendChild(tdSrc);
+
+    const tdUrl = document.createElement('td');
+    tdUrl.className = 'mono';
+    tdUrl.innerHTML = r.url
+      ? `<a class="url" href="${esc(r.url)}" target="_blank" rel="noopener" title="点击打开">${esc(r.url)}</a>`
+      : todo();
+    tr.appendChild(tdUrl);
+
+    const tdFile = document.createElement('td');
+    tdFile.innerHTML = r.file ? `<span class="file">${esc(r.file)}</span>` : todo();
+    tr.appendChild(tdFile);
+
+    const tdNote = document.createElement('td');
+    tdNote.className = 'note';
+    tdNote.textContent = r.note || '';
+    tr.appendChild(tdNote);
+
+    tb.appendChild(tr);
+  });
+  updateKpi();
+}
+
+function td(cls, text){
+  const el = document.createElement('td');
+  el.className = cls; el.textContent = text;
+  return el;
+}
+
+function updateKpi(){
+  const l1s = new Set(rows.filter(r=>r.l1).map(r=>r.l1));
+  const l2s = new Set(rows.map(effectiveL2).filter(Boolean));
+  document.getElementById('kpi-l1').textContent = l1s.size;
+  document.getElementById('kpi-l2').textContent = l2s.size;
+  document.getElementById('kpi-l3').textContent = rows.filter(r=>r.l3 && r.l3.trim()).length;
+  const done = rows.filter(r=>r.url).length;
+  document.getElementById('kpi-done').textContent = done;
+  document.getElementById('stat').textContent =
+    `共 ${rows.length} 行 · 已填数据地址 ${done} 条 · 待补充 ${rows.length - done} 条`;
+}
+
+function effectiveL2(r){
+  const i = rows.indexOf(r);
+  for(let j=i;j>=0;j--){ if(rows[j].l2) return rows[j].l2; }
+  return '';
+}
+function effectiveL1(r){
+  const i = rows.indexOf(r);
+  for(let j=i;j>=0;j--){ if(rows[j].l1) return rows[j].l1; }
+  return '';
+}
+function srcText(r){
+  if(r.srcType) return r.srcType;
+  if(r.src) return /^https?:\/\//i.test(r.src) ? '网址' : r.src;
+  return '待补充';
+}
+
+/* ================= 导出 ================= */
+function toast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('on');
+  setTimeout(()=>t.classList.remove('on'), 1800);
+}
+
+document.getElementById('csv').onclick = ()=>{
+  const head = ['序号','一级菜单','二级菜单','三级菜单','数据来源','数据地址','文件名称','备注'];
+  const lines = [head.join(',')];
+  rows.forEach((r,i)=>{
+    lines.push([i+1, effectiveL1(r), effectiveL2(r), r.l3, srcText(r), r.url, r.file, r.note]
+      .map(v=>'"' + String(v||'').replace(/"/g,'""') + '"').join(','));
+  });
+  const blob = new Blob(['\ufeff' + lines.join('\r\n')], {type:'text/csv;charset=utf-8'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = '数据梳理表-菜单数据.csv';
+  a.click(); URL.revokeObjectURL(a.href);
+  toast('CSV 已导出');
+};
+
+document.getElementById('md').onclick = async ()=>{
+  const head = '| 序号 | 一级菜单 | 二级菜单 | 三级菜单 | 数据来源 | 数据地址 | 文件名称 | 备注 |';
+  const sep  = '| --- | --- | --- | --- | --- | --- | --- | --- |';
+  const body = rows.map((r,i)=>'| '+(i+1)+' | '+[effectiveL1(r),effectiveL2(r),r.l3,srcText(r),r.url,r.file,r.note]
+    .map(v=>String(v||'').replace(/\|/g,'\\|')).join(' | ')+' |').join('\n');
+  try{ await navigator.clipboard.writeText([head,sep,body].join('\n')); toast('Markdown 表格已复制'); }
+  catch(e){ toast('复制失败，请改用导出 CSV'); }
+};
+
+render();
+</script>
+</body>
+</html>

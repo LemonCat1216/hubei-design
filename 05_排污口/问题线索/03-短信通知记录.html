@@ -73,48 +73,6 @@
             </aside>
 
             <main class="main-panel">
-                <section class="summary" aria-label="短信通知概览">
-                    <article class="stat t-cyan">
-                        <span class="stat-icon" aria-hidden="true"><i class="fa-regular fa-paper-plane"></i></span>
-                        <div class="stat-copy">
-                            <div class="stat-label">累计发送</div>
-                            <div class="stat-number-line"><span class="stat-number" id="statTotal">0</span><span class="stat-unit">条</span></div>
-                        </div>
-                    </article>
-                    <article class="stat t-green">
-                        <span class="stat-icon" aria-hidden="true"><i class="fa-regular fa-circle-check"></i></span>
-                        <div class="stat-copy">
-                            <div class="stat-label">发送成功</div>
-                            <div class="stat-number-line"><span class="stat-number" id="statOk">0</span><span class="stat-unit">条</span></div>
-                        </div>
-                    </article>
-                    <article class="stat t-red">
-                        <span class="stat-icon" aria-hidden="true"><i class="fa-regular fa-circle-xmark"></i></span>
-                        <div class="stat-copy">
-                            <div class="stat-label">发送失败</div>
-                            <div class="stat-number-line"><span class="stat-number" id="statFail">0</span><span class="stat-unit">条</span></div>
-                        </div>
-                    </article>
-                    <article class="stat t-orange">
-                        <span class="stat-icon" aria-hidden="true"><i class="fa-regular fa-calendar-day"></i></span>
-                        <div class="stat-copy">
-                            <div class="stat-label">今日发送</div>
-                            <div class="stat-number-line"><span class="stat-number" id="statToday">0</span><span class="stat-unit">条</span></div>
-                        </div>
-                    </article>
-                    <article class="stat">
-                        <span class="stat-icon" aria-hidden="true"><i class="fa-solid fa-percent"></i></span>
-                        <div class="stat-copy">
-                            <div class="stat-label">发送成功率</div>
-                            <div class="stat-number-line"><span class="stat-number" id="statRate">0</span><span class="stat-unit">%</span></div>
-                        </div>
-                    </article>
-                </section>
-
-                <div class="notice-bar"><i class="fa-solid fa-circle-info"></i>
-                    <span>短信通知规则：系统每日 <strong>08:30</strong> 自动向相关地市联系人发送问题线索<strong>到期提醒</strong>（5日内到期）；对<strong>过期未办结</strong>线索每日提醒；<strong>延期申请审核结果</strong>实时通知。发送失败的短信将自动重发，重发记录一并留存。</span>
-                </div>
-
                 <form class="filter-bar" id="filterForm">
                     <label class="field select" style="width:140px"><select id="categoryFilter" aria-label="通知类型">
                         <option value="">通知类型</option><option>到期提醒</option><option>过期提醒</option><option>延期提醒</option>
@@ -128,7 +86,7 @@
                     <label class="field" style="width:152px"><input id="dateFrom" type="date" aria-label="发送时间起"></label>
                     <span style="color:#8290a4">至</span>
                     <label class="field" style="width:152px"><input id="dateTo" type="date" aria-label="发送时间止"></label>
-                    <label class="field" style="width:250px"><input id="kwFilter" type="search" placeholder="接收人 / 短信编号 / 线索编号" aria-label="关键词"></label>
+                    <label class="field" style="width:250px"><input id="kwFilter" type="search" placeholder="姓名 / 手机号" aria-label="按姓名或手机号搜索"></label>
                     <button class="filter-btn search" type="submit"><i class="fa-solid fa-magnifying-glass"></i><span>搜索</span></button>
                     <button class="filter-btn reset" id="resetBtn" type="button"><i class="fa-solid fa-rotate-left"></i><span>重置</span></button>
                     <span class="spacer"></span>
@@ -139,13 +97,13 @@
                     <div class="table-scroll">
                         <table aria-label="短信通知记录列表">
                             <colgroup>
-                                <col style="width:5%"><col style="width:13%"><col style="width:8%"><col style="width:8%"><col style="width:10%">
-                                <col style="width:9%"><col style="width:14%"><col style="width:15%"><col style="width:8%"><col style="width:10%">
+                                <col style="width:6%"><col style="width:10%"><col style="width:12%"><col style="width:10%">
+                                <col style="width:31%"><col style="width:15%"><col style="width:9%"><col style="width:7%">
                             </colgroup>
                             <thead>
                             <tr>
-                                <th class="center">序号</th><th>短信编号</th><th class="center">通知类型</th><th class="center">接收人</th>
-                                <th class="center">联系电话</th><th class="center">所属地市</th><th>关联问题线索</th>
+                                <th class="center">序号</th><th class="center">接收人</th><th class="center">联系电话</th>
+                                <th class="center">所属地市</th><th>发送内容</th>
                                 <th class="center">发送时间</th><th class="center">发送状态</th><th class="center">操作</th>
                             </tr>
                             </thead>

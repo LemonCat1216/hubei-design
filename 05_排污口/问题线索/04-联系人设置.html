@@ -74,10 +74,6 @@
                         <button type="button" data-state="set">已设置</button>
                         <button type="button" data-state="unset">未设置</button>
                     </div>
-                    <span class="spacer"></span>
-                    <button class="filter-btn bell" id="checkAllBtn" type="button"><i class="fa-solid fa-shield-halved"></i><span>一键校验</span></button>
-                    <button class="filter-btn reset" id="directoryBtn" type="button"><i class="fa-solid fa-users-viewfinder"></i><span>系统人员库</span></button>
-                    <button class="filter-btn export" id="exportBtn" type="button"><i class="fa-regular fa-file-lines"></i><span>数据导出</span></button>
                 </div>
 
                 <div class="contact-layout">
@@ -101,42 +97,6 @@
                             <button class="btn ghost" id="resetBtn" type="button"><i class="fa-solid fa-rotate-left"></i>重 置</button>
                             <button class="btn primary" id="saveBtn" type="button"><i class="fa-solid fa-floppy-disk"></i>保存联系人</button>
                         </div>
-                    </section>
-                </div>
-
-                <!-- 系统人员库弹窗 -->
-                <div class="modal-backdrop" id="dirModal" role="dialog" aria-modal="true" aria-labelledby="dirTitle">
-                    <section class="modal w-md">
-                        <header class="modal-header">
-                            <div class="head-title"><span id="dirTitle">系统人员库</span></div>
-                            <button class="modal-close" type="button" data-close="dirModal" aria-label="关闭"><i class="fa-solid fa-xmark"></i></button>
-                        </header>
-                        <div class="modal-body">
-                            <div class="notice-bar" style="margin-top:0"><i class="fa-solid fa-circle-info"></i>
-                                <span>仅可从系统人员库中选择人员作为地市联系人；未登记人员须先在系统完成用户注册，方可被设置。</span>
-                            </div>
-                            <div class="dir-search" style="margin-top:14px">
-                                <label style="flex:1"><input class="kv-input" id="dirSearch" type="search" placeholder="按姓名 / 手机号 / 单位检索"></label>
-                                <span style="color:#8290a4;font-size:14px" id="dirCount"></span>
-                            </div>
-                            <div class="dir-scroll">
-                                <table class="mini-table">
-                                    <thead>
-                                    <tr>
-                                        <th style="width:22%">姓名</th>
-                                        <th style="width:26%" class="mono">手机号</th>
-                                        <th style="width:30%">所属单位</th>
-                                        <th style="width:22%">人员类型</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody id="dirBody"></tbody>
-                                </table>
-                            </div>
-                        </div>
-                        <footer class="modal-footer">
-                            <span class="foot-hint">人员库共维护 <strong id="dirTotal">0</strong> 人，含省级人员与17个地市联系人。</span>
-                            <button class="btn primary" data-close="dirModal" type="button">关 闭</button>
-                        </footer>
                     </section>
                 </div>
 
@@ -174,24 +134,6 @@
                         <footer class="modal-footer">
                             <span class="foot-hint">系统人员库共维护 <strong id="pickTotal">0</strong> 人，点击列表中的联系人即可返回。</span>
                             <button class="btn ghost" data-close="pickerModal" type="button">取 消</button>
-                        </footer>
-                    </section>
-                </div>
-
-                <!-- 一键校验报告弹窗 -->
-                <div class="modal-backdrop" id="reportModal" role="dialog" aria-modal="true" aria-labelledby="reportTitle">
-                    <section class="modal w-md">
-                        <header class="modal-header">
-                            <div class="head-title"><span id="reportTitle">联系人校验报告</span></div>
-                            <button class="modal-close" type="button" data-close="reportModal" aria-label="关闭"><i class="fa-solid fa-xmark"></i></button>
-                        </header>
-                        <div class="modal-body">
-                            <div class="report-tip"><i class="fa-solid fa-shield-halved"></i><span id="reportTip"></span></div>
-                            <div class="report-grid" id="reportGrid"></div>
-                        </div>
-                        <footer class="modal-footer">
-                            <span class="foot-hint">校验不通过的地市，请联系人员先行在系统完成登记。</span>
-                            <button class="btn primary" data-close="reportModal" type="button">知道了</button>
                         </footer>
                     </section>
                 </div>
